@@ -1,6 +1,6 @@
 name: localizer
 description: A starting point for Dart libraries or applications.
-version: 1.0.1
+version: 1.0.1+1
 homepage: https://github.com/LinwoodCloud/flutter_plugins
 repository: https://github.com/LinwoodCloud/flutter_plugins
 documentation: https://github.com/LinwoodCloud/flutter_plugins

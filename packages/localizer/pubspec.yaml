@@ -1,0 +1,22 @@
+name: localizer
+description: A starting point for Dart libraries or applications.
+version: 1.0.0+1
+homepage: https://github.com/LinwoodCloud/flutter_plugins
+repository: https://github.com/LinwoodCloud/flutter_plugins
+documentation: https://github.com/LinwoodCloud/flutter_plugins
+issue_tracker: https://github.com/LinwoodCloud/flutter_plugins/issues
+
+environment:
+  sdk: '>=2.12.0 <3.0.0'
+
+
+# dependencies:
+#   path: ^1.8.0
+
+dev_dependencies:
+  lints: ^1.0.0
+  test: ^1.16.0
+dependencies: 
+  meta: ^1.7.0
+  sprintf: ^6.0.0
+  yaml: ^3.1.0

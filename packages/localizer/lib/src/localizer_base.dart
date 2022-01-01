@@ -108,10 +108,14 @@ class Localizer {
         localeData[prefix] = value;
       } else if (value is Map) {
         value.forEach((key, value) {
-          load('$prefix.$key', value);
+          var current = key;
+          if (prefix != '') current = '$prefix.$current';
+          load(current, value);
         });
       } else if (value is Iterable) {
         value.toList().asMap().forEach((index, value) {
+          var current = index.toString();
+          if (prefix != '') current = '$prefix.$current';
           load('$prefix.$index', value);
         });
       }

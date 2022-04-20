@@ -1,6 +1,9 @@
+import 'dart:typed_data';
+
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lnwd_pdf_renderer/lnwd_pdf_renderer_method_channel.dart';
+import 'package:lnwd_pdf_renderer/lnwd_pdf_renderer.dart';
+import 'package:lnwd_pdf_renderer/src/lnwd_pdf_renderer_method_channel.dart';
 
 void main() {
   MethodChannelLnwdPdfRenderer platform = MethodChannelLnwdPdfRenderer();
@@ -10,7 +13,7 @@ void main() {
 
   setUp(() {
     channel.setMockMethodCallHandler((MethodCall methodCall) async {
-      return '42';
+      return const PdfDocument();
     });
   });
 
@@ -19,6 +22,10 @@ void main() {
   });
 
   test('getPlatformVersion', () async {
-    expect(await platform.getPlatformVersion(), '42');
+    expect(
+        await platform
+            .render(Uint8List.fromList([]))
+            .then((value) => value.pages.length),
+        0);
   });
 }

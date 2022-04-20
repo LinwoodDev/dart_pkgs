@@ -1,7 +1,9 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'package:lnwd_pdf_renderer/lnwd_pdf_renderer.dart';
 
@@ -18,7 +20,6 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   PdfDocument? document;
-  final TextEditingController _dataController = TextEditingController();
   final _lnwdPdfRendererPlugin = LnwdPdfRenderer();
 
   @override
@@ -34,17 +35,19 @@ class _MyAppState extends State<MyApp> {
           title: const Text('Plugin example app'),
         ),
         body: ListView(children: [
-          TextField(
-            controller: _dataController,
-            decoration: const InputDecoration(
-                hintText: 'Enter data', labelText: 'Base64 encoded data'),
-          ),
           ElevatedButton(
-            child: const Text('Render'),
+            child: const Text('Render from clipboard'),
             onPressed: () async {
-              final data = _dataController.text;
-              document = await _lnwdPdfRendererPlugin
-                  .render(Uint8List.fromList(base64.decode(data)));
+              final data = await Clipboard.getData('text/plain')
+                  .then((value) => value?.text);
+              if (data != null) {
+                await _lnwdPdfRendererPlugin
+                    .render(Uint8List.fromList(base64.decode(data)))
+                    .then((value) => setState(() => document = value));
+              }
+              if (kDebugMode) {
+                print('Rendered ${document?.pages.length} pages');
+              }
             },
           ),
           if (document != null) ...[

@@ -1,6 +1,10 @@
+import 'dart:typed_data';
+
+import 'package:lnwd_pdf_renderer/lnwd_pdf_renderer.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 import 'lnwd_pdf_renderer_method_channel.dart';
+import 'document.dart';
 
 abstract class LnwdPdfRendererPlatform extends PlatformInterface {
   /// Constructs a LnwdPdfRendererPlatform.
@@ -14,7 +18,7 @@ abstract class LnwdPdfRendererPlatform extends PlatformInterface {
   ///
   /// Defaults to [MethodChannelLnwdPdfRenderer].
   static LnwdPdfRendererPlatform get instance => _instance;
-  
+
   /// Platform-specific implementations should set this with their own
   /// platform-specific class that extends [LnwdPdfRendererPlatform] when
   /// they register themselves.
@@ -23,7 +27,7 @@ abstract class LnwdPdfRendererPlatform extends PlatformInterface {
     _instance = instance;
   }
 
-  Future<String?> getPlatformVersion() {
-    throw UnimplementedError('platformVersion() has not been implemented.');
+  Future<PdfDocument> render(Uint8List data) {
+    throw UnimplementedError('render() has not been implemented.');
   }
 }

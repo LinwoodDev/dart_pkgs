@@ -1,5 +1,8 @@
+import 'dart:typed_data';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:lnwd_pdf_renderer/lnwd_pdf_renderer.dart';
 
 import 'lnwd_pdf_renderer_platform_interface.dart';
 
@@ -10,8 +13,15 @@ class MethodChannelLnwdPdfRenderer extends LnwdPdfRendererPlatform {
   final methodChannel = const MethodChannel('lnwd_pdf_renderer');
 
   @override
-  Future<String?> getPlatformVersion() async {
-    final version = await methodChannel.invokeMethod<String>('getPlatformVersion');
-    return version;
+  Future<PdfDocument> render(Uint8List data) async {
+    final document =
+        await methodChannel.invokeMethod<PdfDocument>('render', data);
+    if (document == null) {
+      throw PlatformException(
+        code: 'lnwd_pdf_renderer_error',
+        message: 'Failed to render PDF document.',
+      );
+    }
+    return document;
   }
 }

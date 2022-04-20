@@ -8,5 +8,6 @@ class PdfPage {
   final int height;
   final Uint8List data;
 
-  const PdfPage(this.width, this.height, this.data);
+  const PdfPage(
+      {required this.width, required this.height, required this.data});
 }

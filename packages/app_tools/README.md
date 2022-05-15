@@ -16,6 +16,7 @@ Use `app_tools -h` to see the list of available commands.
 This commands sets the version of the app.
 
 It supports the following formats:
+
 * Windows
 * AppImage (Linux)
 * Deb (Linux)

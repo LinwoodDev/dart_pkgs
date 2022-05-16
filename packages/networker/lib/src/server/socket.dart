@@ -2,12 +2,14 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-
 import '../networking.dart';
 
 class SocketServer extends NetworkingServer {
   final int port;
   HttpServer? _server;
+
+  @override
+  String get identifier => port.toString();
 
   final List<SocketServerConnection> _clients = [];
 
@@ -52,12 +54,19 @@ class SocketServer extends NetworkingServer {
       client.send(service, event, data);
     }
   }
+
+  @override
+  // TODO: implement rooms
+  List<String> get rooms => throw UnimplementedError();
 }
 
 class SocketServerConnection extends NetworkingConnection {
   final WebSocket _socket;
 
   SocketServerConnection(this._socket);
+
+  @override
+  String get identifier => _socket.hashCode.toString();
 
   @override
   bool isConnected() => _socket.readyState == WebSocket.open;

@@ -3,8 +3,10 @@ import 'dart:async';
 import 'package:collection/collection.dart';
 
 abstract class NetworkingConnection {
-  NetworkingConnection();
+  String get identifier;
+  List<String> rooms = [];
 
+  NetworkingConnection();
 
   final List<NetworkingService> _services = [];
 
@@ -33,6 +35,29 @@ abstract class NetworkingConnection {
 abstract class NetworkingServer extends NetworkingConnection {
   NetworkingServer();
   List<NetworkingConnection> get clients;
+  List<NetworkingConnection> getClientsInRoom(String room) =>
+      clients.where((client) => client.rooms.contains(room)).toList();
+
+  void broadcastAll(String service, String event, String data) {
+    clients
+        .where((client) => client.identifier != identifier)
+        .forEach((client) => client.send(service, event, data));
+  }
+
+  void broadcastRoom(String room, String event, String data) {
+    clients
+        .where((client) =>
+            client.rooms.contains(room) && client.identifier != identifier)
+        .forEach((client) => client.send(identifier, event, data));
+  }
+
+  void broadcast(String service, String event, String data) {
+    clients
+        .where((client) => client.identifier != identifier)
+        .where(
+            (client) => client.rooms.any((element) => rooms.contains(element)))
+        .forEach((client) => client.send(identifier, event, data));
+  }
 }
 
 abstract class NetworkingClient extends NetworkingConnection {

@@ -54,13 +54,9 @@ class SocketServer extends NetworkingServer {
       client.send(service, event, data);
     }
   }
-
-  @override
-  // TODO: implement rooms
-  List<String> get rooms => throw UnimplementedError();
 }
 
-class SocketServerConnection extends NetworkingConnection {
+class SocketServerConnection extends NetworkingClientConnection {
   final WebSocket _socket;
 
   SocketServerConnection(this._socket);
@@ -75,12 +71,32 @@ class SocketServerConnection extends NetworkingConnection {
   FutureOr<void> start() {}
 
   @override
-  FutureOr<void> stop() {}
+  FutureOr<void> stop() => _socket.close();
 
   @override
   FutureOr<void> send(String service, String event, String data) async {
     _socket
         .add(json.encode({'service': service, 'data': data, 'event': event}));
     await _socket.done;
+  }
+
+  @override
+  FutureOr<bool> joinRoom(String room) async {
+    final success = await super.joinRoom(room);
+    if (success) {
+      _socket
+          .add(json.encode({'service': 'room', 'data': room, 'event': 'join'}));
+    }
+    return success;
+  }
+
+  @override
+  FutureOr<bool> leaveRoom(String room) async {
+    final success = await super.leaveRoom(room);
+    if (success) {
+      _socket.add(
+          json.encode({'service': 'room', 'data': room, 'event': 'leave'}));
+    }
+    return success;
   }
 }

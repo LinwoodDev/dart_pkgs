@@ -4,8 +4,7 @@ import 'package:collection/collection.dart';
 
 abstract class NetworkingConnection {
   String get identifier;
-  List<String> rooms = [];
-
+  Set<String> get rooms;
   NetworkingConnection();
 
   final List<NetworkingService> _services = [];
@@ -30,11 +29,21 @@ abstract class NetworkingConnection {
       _services.firstWhereOrNull((service) => service.name == serviceName);
 
   FutureOr<void> send(String service, String event, String data);
+  FutureOr<bool> joinRoom(String room);
+  FutureOr<bool> leaveRoom(String room);
 }
 
 abstract class NetworkingServer extends NetworkingConnection {
   NetworkingServer();
+
   List<NetworkingConnection> get clients;
+
+  NetworkingConnection? getClient(String identifier) =>
+      clients.firstWhereOrNull((client) => client.identifier == identifier);
+
+  @override
+  Set<String> get rooms => clients.expand((client) => client.rooms).toSet();
+
   List<NetworkingConnection> getClientsInRoom(String room) =>
       clients.where((client) => client.rooms.contains(room)).toList();
 
@@ -58,11 +67,55 @@ abstract class NetworkingServer extends NetworkingConnection {
             (client) => client.rooms.any((element) => rooms.contains(element)))
         .forEach((client) => client.send(identifier, event, data));
   }
+
+  @override
+  FutureOr<bool> joinRoom(String room, [List<String>? clients]) async {
+    final currentClients = this
+        .clients
+        .where((client) => clients?.contains(client.identifier) ?? true);
+    var success = false;
+    for (var client in currentClients) {
+      if (await client.joinRoom(room)) {
+        success = true;
+      }
+    }
+    return success;
+  }
+
+  @override
+  FutureOr<bool> leaveRoom(String room, [List<String>? clients]) async {
+    final currentClients = this
+        .clients
+        .where((client) => clients?.contains(client.identifier) ?? true);
+    var success = false;
+    for (var client in currentClients) {
+      if (await client.leaveRoom(room)) {
+        success = true;
+      }
+    }
+    return success;
+  }
 }
 
 abstract class NetworkingClient extends NetworkingConnection {
   NetworkingClient();
   NetworkingConnection get server;
+}
+
+abstract class NetworkingClientConnection extends NetworkingConnection {
+  final Set<String> _rooms = {};
+  @override
+  FutureOr<bool> joinRoom(String room) {
+    return _rooms.add(room);
+  }
+
+  @override
+  FutureOr<bool> leaveRoom(String room) {
+    return _rooms.remove(room);
+  }
+
+  @override
+  Set<String> get rooms => Set.unmodifiable(_rooms);
 }
 
 class NetworkingMessage {
@@ -76,9 +129,18 @@ class NetworkingMessage {
   }
 }
 
+class RoomEvent {
+  final List<NetworkingConnection> clients;
+  final String roomName;
+
+  const RoomEvent({required this.clients, required this.roomName});
+}
+
 class NetworkingService {
   final String name;
   final Map<String, StreamController<NetworkingMessage>> _eventStreams = {};
+  final StreamController<RoomEvent> _roomOpenedController = StreamController();
+  final StreamController<RoomEvent> _roomClosedController = StreamController();
 
   NetworkingService(this.name);
 
@@ -106,4 +168,7 @@ class NetworkingService {
   void emitEvent(String eventName, NetworkingMessage message) {
     _eventStreams[eventName]?.add(message);
   }
+
+  Stream<RoomEvent> get roomOpenedStream => _roomOpenedController.stream;
+  Stream<RoomEvent> get roomClosedStream => _roomClosedController.stream;
 }

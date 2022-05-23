@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import '../networking.dart';
+import 'package:networker/networker.dart';
 
 class SocketServer extends NetworkingServer {
   final int port;
@@ -46,7 +46,7 @@ class SocketServer extends NetworkingServer {
   }
 
   @override
-  List<NetworkingConnection> get clients => List.unmodifiable(_clients);
+  List<NetworkingClientConnection> get clients => List.unmodifiable(_clients);
 
   @override
   FutureOr<void> send(String service, String event, String data) {

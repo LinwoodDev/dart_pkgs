@@ -4,10 +4,22 @@ import 'package:collection/collection.dart';
 
 abstract class NetworkingConnection {
   String get identifier;
-  Set<String> get rooms;
-  NetworkingConnection();
+  final Set<String> rooms = {};
 
   final List<NetworkingService> _services = [];
+
+  NetworkingConnection({bool registerRoomService = true}) {
+    if (registerRoomService) _registerRoomService();
+  }
+  void _registerRoomService() {
+    final roomService = NetworkingService('room');
+    roomService.registerEvent('join').listen((event) {
+      var current = this;
+      if (current is NetworkingServer) {
+        event.connection.rooms.add(event.data);
+      }
+    });
+  }
 
   List<NetworkingService> get services => List.unmodifiable(_services);
 
@@ -16,6 +28,37 @@ abstract class NetworkingConnection {
   FutureOr<void> stop();
 
   bool isConnected();
+
+  FutureOr<bool> _handleData(NetworkingConnection connection, dynamic data) {
+    if (data is! Map) {
+      return false;
+    }
+    final Map dataMap = data;
+    if (dataMap['service'] is! String ||
+        dataMap['event'] is! String ||
+        dataMap['data'] is! String) {
+      return false;
+    }
+    final serviceName = dataMap['service'] as String;
+    final event = dataMap['event'] as String;
+    final eventData = dataMap['data'] as String;
+    final networkingService = getService(serviceName);
+    var success = false;
+    if (networkingService != null) {
+      success = true;
+    }
+    final message =
+        NetworkingMessage(connection, serviceName, event, eventData);
+    networkingService?.emitEvent(event, message);
+    // Add client event
+    final connectionService = connection.getService(serviceName);
+    if (networkingService == connectionService) return success;
+    if (connectionService != null) {
+      success = true;
+    }
+    connectionService?.emitEvent(event, message);
+    return success;
+  }
 
   void registerService(NetworkingService service) {
     _services.add(service);
@@ -29,22 +72,22 @@ abstract class NetworkingConnection {
       _services.firstWhereOrNull((service) => service.name == serviceName);
 
   FutureOr<void> send(String service, String event, String data);
-  FutureOr<bool> joinRoom(String room);
-  FutureOr<bool> leaveRoom(String room);
+  FutureOr<void> joinRoom(String room);
+  FutureOr<void> leaveRoom(String room);
 }
 
 abstract class NetworkingServer extends NetworkingConnection {
   NetworkingServer();
 
-  List<NetworkingConnection> get clients;
+  List<NetworkingClientConnection> get clients;
 
-  NetworkingConnection? getClient(String identifier) =>
+  NetworkingClientConnection? getClient(String identifier) =>
       clients.firstWhereOrNull((client) => client.identifier == identifier);
 
   @override
   Set<String> get rooms => clients.expand((client) => client.rooms).toSet();
 
-  List<NetworkingConnection> getClientsInRoom(String room) =>
+  List<NetworkingClientConnection> getClientsInRoom(String room) =>
       clients.where((client) => client.rooms.contains(room)).toList();
 
   void broadcastAll(String service, String event, String data) {
@@ -82,6 +125,14 @@ abstract class NetworkingServer extends NetworkingConnection {
     return success;
   }
 
+  FutureOr<bool> handleData(String client, dynamic data) {
+    final connection = getClient(client);
+    if (connection == null) {
+      return false;
+    }
+    return _handleData(connection, data);
+  }
+
   @override
   FutureOr<bool> leaveRoom(String room, [List<String>? clients]) async {
     final currentClients = this
@@ -99,7 +150,14 @@ abstract class NetworkingServer extends NetworkingConnection {
 
 abstract class NetworkingClient extends NetworkingConnection {
   NetworkingClient();
-  NetworkingConnection get server;
+
+  FutureOr<bool> handle(dynamic data) => _handleData(this, data);
+
+  @override
+  FutureOr<void> joinRoom(String room) => send('room', 'join', room);
+
+  @override
+  FutureOr<void> leaveRoom(String room) => send('room', 'leave', room);
 }
 
 abstract class NetworkingClientConnection extends NetworkingConnection {
@@ -165,8 +223,12 @@ class NetworkingService {
     _eventStreams.remove(eventName);
   }
 
-  void emitEvent(String eventName, NetworkingMessage message) {
-    _eventStreams[eventName]?.add(message);
+  bool emitEvent(String eventName, NetworkingMessage message) {
+    if (_eventStreams.containsKey(eventName)) {
+      _eventStreams[eventName]!.add(message);
+      return true;
+    }
+    return false;
   }
 
   Stream<RoomEvent> get roomOpenedStream => _roomOpenedController.stream;

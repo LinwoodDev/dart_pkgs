@@ -20,7 +20,7 @@ class SocketServer extends NetworkingServer {
     _server = await HttpServer.bind(InternetAddress.loopbackIPv4, port);
     _server?.listen((request) {
       WebSocketTransformer.upgrade(request).then((ws) {
-        _clients.add(SocketServerConnection(ws));
+        _clients.add(SocketServerConnection(this, ws));
         ws.listen((data) {
           final message = json.decode(data);
           if (message is! Map) {
@@ -59,7 +59,7 @@ class SocketServer extends NetworkingServer {
 class SocketServerConnection extends NetworkingClientConnection {
   final WebSocket _socket;
 
-  SocketServerConnection(this._socket);
+  SocketServerConnection(super.server, this._socket);
 
   @override
   String get identifier => _socket.hashCode.toString();

@@ -16,6 +16,8 @@ typedef _FcPatternGetStringNative = ffi.Int32 Function(
 );
 typedef _FcPatternGetStringDart = int Function(ffi.Pointer pattern,
     ffi.Pointer<Utf8> object, int n, ffi.Pointer<ffi.Pointer<ffi.Int8>> value);
+typedef _FcFontSetDestroyNative = ffi.Void Function(ffi.Pointer fontSet);
+typedef _FcFontSetDestroyDart = void Function(ffi.Pointer fontSet);
 
 // typedef struct _FcFontSet {
 //         int nfont;
@@ -44,6 +46,7 @@ class SysInfoLinux extends SysInfoPlatform {
   late final _FcObjectSetBuildNative _fcObjectSetBuild;
   late final _FcFontListNative _fcFontList;
   late final _FcPatternGetStringDart _fcPatternGetString;
+  late final _FcFontSetDestroyDart _fcFontSetDestroy;
 
   SysInfoLinux() : _dylib = ffi.DynamicLibrary.open(_libPath) {
     _fcInitLoadConfigAndFonts = _dylib.lookupFunction<
@@ -59,6 +62,9 @@ class SysInfoLinux extends SysInfoPlatform {
         .lookupFunction<_FcFontListNative, _FcFontListNative>('FcFontList');
     _fcPatternGetString = _dylib.lookupFunction<_FcPatternGetStringNative,
         _FcPatternGetStringDart>('FcPatternGetString');
+    _fcFontSetDestroy =
+        _dylib.lookupFunction<_FcFontSetDestroyNative, _FcFontSetDestroyDart>(
+            'FcFontSetDestroy');
   }
 
   @override
@@ -77,7 +83,9 @@ class SysInfoLinux extends SysInfoPlatform {
       if (result == 0) {
         fonts.add(fontName.value.cast<Utf8>().toDartString());
       }
+      calloc.free(fontName);
     }
+    _fcFontSetDestroy(fontList);
     return fonts.toList();
   }
 }

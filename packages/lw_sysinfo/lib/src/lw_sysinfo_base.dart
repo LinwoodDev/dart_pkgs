@@ -17,6 +17,11 @@ class SysInfoBase implements SysInfoPlatform {
 
 SysInfoPlatform _instance = createInstance();
 
+/// Base class for getting system information
 class SysInfo {
+  ///Get all system fonts
+  ///Available on Windows, Linux and Web
+  ///
+  ///Returns null on error
   static FutureOr<List<String>?> getFonts() => _instance.getFonts();
 }

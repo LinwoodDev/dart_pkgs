@@ -29,7 +29,8 @@ class _MyAppState extends State<MyApp> {
                     future: Future.value(SysInfo.getFonts()),
                     builder: (context, snapshot) {
                       if (snapshot.hasData) {
-                        return Text(snapshot.data!.join(', '));
+                        return Text(
+                            "(${snapshot.data!.length}) ${snapshot.data!.join(', ')}");
                       } else {
                         return const Text('Loading...');
                       }

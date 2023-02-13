@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:lw_sysinfo/lw_sysinfo.dart';
+import 'fonts.dart';
 
 void main() {
   runApp(const MyApp());
@@ -21,23 +21,17 @@ class _MyAppState extends State<MyApp> {
           appBar: AppBar(
             title: const Text('Plugin example app'),
           ),
-          body: ListView(
-            children: [
-              ListTile(
-                title: const Text('Fonts'),
-                subtitle: FutureBuilder<List<String>?>(
-                    future: Future.value(SysInfo.getFonts()),
-                    builder: (context, snapshot) {
-                      if (snapshot.hasData) {
-                        return Text(
-                            "(${snapshot.data!.length}) ${snapshot.data!.join(', ')}");
-                      } else {
-                        return const Text('Loading...');
-                      }
-                    }),
-              ),
-            ],
-          )),
+          body: Builder(builder: (context) {
+            return ListView(
+              children: [
+                ListTile(
+                  title: const Text('Fonts'),
+                  onTap: () => Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => const FontsPage())),
+                ),
+              ],
+            );
+          })),
     );
   }
 }

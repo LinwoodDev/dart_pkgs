@@ -1,8 +1,8 @@
 {
-    "color": "Color",
+    "color": "Farbe",
     "pin": "Pin",
-    "delete": "Delete",
-    "red": "Red",
-    "green": "Green",
-    "blue": "Blue"
+    "delete": "Löschen",
+    "red": "Rot",
+    "green": "Grün",
+    "blue": "Blau"
 }

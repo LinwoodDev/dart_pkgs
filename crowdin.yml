@@ -1,0 +1,4 @@
+commit_message: '[ci skip]'
+files:
+  - source: /packages/material_leap/lib/l10n/leap_en.arb
+    translation: /app/lib/l10n/leap_%osx_locale%.arb

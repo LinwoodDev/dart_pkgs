@@ -1,8 +1,8 @@
 {
-    "color": "Color",
-    "pin": "Pin",
-    "delete": "Delete",
-    "red": "Red",
-    "green": "Green",
-    "blue": "Blue"
+    "color": "色",
+    "pin": "ピン留めする",
+    "delete": "削除",
+    "red": "赤",
+    "green": "緑",
+    "blue": "青"
 }

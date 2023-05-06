@@ -5,7 +5,34 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/intl.dart' as intl;
 
+import 'leap_localizations_af.dart';
+import 'leap_localizations_ar.dart';
+import 'leap_localizations_ca.dart';
+import 'leap_localizations_cs.dart';
+import 'leap_localizations_da.dart';
+import 'leap_localizations_de.dart';
+import 'leap_localizations_el.dart';
 import 'leap_localizations_en.dart';
+import 'leap_localizations_es.dart';
+import 'leap_localizations_fi.dart';
+import 'leap_localizations_fr.dart';
+import 'leap_localizations_he.dart';
+import 'leap_localizations_hu.dart';
+import 'leap_localizations_it.dart';
+import 'leap_localizations_ja.dart';
+import 'leap_localizations_ko.dart';
+import 'leap_localizations_nl.dart';
+import 'leap_localizations_no.dart';
+import 'leap_localizations_pl.dart';
+import 'leap_localizations_pt.dart';
+import 'leap_localizations_ro.dart';
+import 'leap_localizations_ru.dart';
+import 'leap_localizations_sr.dart';
+import 'leap_localizations_sv.dart';
+import 'leap_localizations_tr.dart';
+import 'leap_localizations_uk.dart';
+import 'leap_localizations_vi.dart';
+import 'leap_localizations_zh.dart';
 
 /// Callers can lookup localized strings with an instance of LeapLocalizations
 /// returned by `LeapLocalizations.of(context)`.
@@ -90,7 +117,38 @@ abstract class LeapLocalizations {
   ];
 
   /// A list of this localizations delegate's supported locales.
-  static const List<Locale> supportedLocales = <Locale>[Locale('en')];
+  static const List<Locale> supportedLocales = <Locale>[
+    Locale('af'),
+    Locale('ar'),
+    Locale('ca'),
+    Locale('cs'),
+    Locale('da'),
+    Locale('de'),
+    Locale('el'),
+    Locale('en'),
+    Locale('es'),
+    Locale('fi'),
+    Locale('fr'),
+    Locale('he'),
+    Locale('hu'),
+    Locale('it'),
+    Locale('ja'),
+    Locale('ko'),
+    Locale('nl'),
+    Locale('no'),
+    Locale('pl'),
+    Locale('pt'),
+    Locale('pt', 'BR'),
+    Locale('ro'),
+    Locale('ru'),
+    Locale('sr'),
+    Locale('sv'),
+    Locale('tr'),
+    Locale('uk'),
+    Locale('vi'),
+    Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hant'),
+    Locale('zh')
+  ];
 
   /// No description provided for @color.
   ///
@@ -140,18 +198,124 @@ class _LeapLocalizationsDelegate
   }
 
   @override
-  bool isSupported(Locale locale) =>
-      <String>['en'].contains(locale.languageCode);
+  bool isSupported(Locale locale) => <String>[
+        'af',
+        'ar',
+        'ca',
+        'cs',
+        'da',
+        'de',
+        'el',
+        'en',
+        'es',
+        'fi',
+        'fr',
+        'he',
+        'hu',
+        'it',
+        'ja',
+        'ko',
+        'nl',
+        'no',
+        'pl',
+        'pt',
+        'ro',
+        'ru',
+        'sr',
+        'sv',
+        'tr',
+        'uk',
+        'vi',
+        'zh'
+      ].contains(locale.languageCode);
 
   @override
   bool shouldReload(_LeapLocalizationsDelegate old) => false;
 }
 
 LeapLocalizations lookupLeapLocalizations(Locale locale) {
+  // Lookup logic when language+script codes are specified.
+  switch (locale.languageCode) {
+    case 'zh':
+      {
+        switch (locale.scriptCode) {
+          case 'Hant':
+            return LeapLocalizationsZhHant();
+        }
+        break;
+      }
+  }
+
+  // Lookup logic when language+country codes are specified.
+  switch (locale.languageCode) {
+    case 'pt':
+      {
+        switch (locale.countryCode) {
+          case 'BR':
+            return LeapLocalizationsPtBr();
+        }
+        break;
+      }
+  }
+
   // Lookup logic when only language code is specified.
   switch (locale.languageCode) {
+    case 'af':
+      return LeapLocalizationsAf();
+    case 'ar':
+      return LeapLocalizationsAr();
+    case 'ca':
+      return LeapLocalizationsCa();
+    case 'cs':
+      return LeapLocalizationsCs();
+    case 'da':
+      return LeapLocalizationsDa();
+    case 'de':
+      return LeapLocalizationsDe();
+    case 'el':
+      return LeapLocalizationsEl();
     case 'en':
       return LeapLocalizationsEn();
+    case 'es':
+      return LeapLocalizationsEs();
+    case 'fi':
+      return LeapLocalizationsFi();
+    case 'fr':
+      return LeapLocalizationsFr();
+    case 'he':
+      return LeapLocalizationsHe();
+    case 'hu':
+      return LeapLocalizationsHu();
+    case 'it':
+      return LeapLocalizationsIt();
+    case 'ja':
+      return LeapLocalizationsJa();
+    case 'ko':
+      return LeapLocalizationsKo();
+    case 'nl':
+      return LeapLocalizationsNl();
+    case 'no':
+      return LeapLocalizationsNo();
+    case 'pl':
+      return LeapLocalizationsPl();
+    case 'pt':
+      return LeapLocalizationsPt();
+    case 'ro':
+      return LeapLocalizationsRo();
+    case 'ru':
+      return LeapLocalizationsRu();
+    case 'sr':
+      return LeapLocalizationsSr();
+    case 'sv':
+      return LeapLocalizationsSv();
+    case 'tr':
+      return LeapLocalizationsTr();
+    case 'uk':
+      return LeapLocalizationsUk();
+    case 'vi':
+      return LeapLocalizationsVi();
+    case 'zh':
+      return LeapLocalizationsZh();
   }
 
   throw FlutterError(

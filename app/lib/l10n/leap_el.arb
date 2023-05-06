@@ -1,8 +1,8 @@
 {
-    "color": "Color",
-    "pin": "Pin",
-    "delete": "Delete",
-    "red": "Red",
-    "green": "Green",
-    "blue": "Blue"
+    "color": "Χρώμα",
+    "pin": "Καρφίτσα",
+    "delete": "Διαγραφή",
+    "red": "Κόκκινο",
+    "green": "Πράσινο",
+    "blue": "Μπλε"
 }

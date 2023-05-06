@@ -1,8 +1,8 @@
 {
-    "color": "Color",
-    "pin": "Pin",
-    "delete": "Delete",
-    "red": "Red",
+    "color": "颜色",
+    "pin": "置顶",
+    "delete": "删除",
+    "red": "红色的",
     "green": "Green",
-    "blue": "Blue"
+    "blue": "蓝色"
 }

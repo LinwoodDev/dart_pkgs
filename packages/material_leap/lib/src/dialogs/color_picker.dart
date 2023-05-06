@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/leap_localizations.dart';
-import 'package:material_leap/helpers/color.dart';
+import 'package:material_leap/src/helpers/color.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../widgets/exact_slider.dart';

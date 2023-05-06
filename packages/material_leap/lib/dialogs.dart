@@ -1,3 +1,3 @@
 library material_leap;
 
-export 'dialogs/color_picker.dart';
+export 'src/dialogs/color_picker.dart';

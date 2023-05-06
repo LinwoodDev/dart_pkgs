@@ -1,4 +1,4 @@
 library material_leap;
 
-export 'helpers/color.dart';
-export 'helpers/date_time.dart';
+export 'src/helpers/color.dart';
+export 'src/helpers/date_time.dart';

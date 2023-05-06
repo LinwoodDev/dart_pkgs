@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:material_leap/helpers/date_time.dart';
+import 'package:material_leap/src/helpers/date_time.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class DateTimeField extends StatefulWidget {

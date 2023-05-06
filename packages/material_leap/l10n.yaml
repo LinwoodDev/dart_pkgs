@@ -1,0 +1,5 @@
+arb-dir: lib/l10n
+template-arb-file: leap_en.arb
+output-localization-file: leap_localizations.dart
+output-class: LeapLocalizations
+nullable-getter: false

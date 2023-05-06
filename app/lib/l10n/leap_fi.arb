@@ -1,8 +1,8 @@
 {
-    "color": "Color",
-    "pin": "Pin",
-    "delete": "Delete",
-    "red": "Red",
-    "green": "Green",
-    "blue": "Blue"
+    "color": "Väri",
+    "pin": "Kiinnitä",
+    "delete": "Poista",
+    "red": "Punainen",
+    "green": "Vihreä",
+    "blue": "Sininen"
 }

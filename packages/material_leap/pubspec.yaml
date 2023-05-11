@@ -9,7 +9,7 @@ environment:
   flutter: ">=1.17.0"
 
 dependencies:
-  intl: ^0.17.0
+  intl: ^0.18.0
   flutter_localizations:
     sdk: flutter
   phosphor_flutter:

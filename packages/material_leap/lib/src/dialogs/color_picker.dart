@@ -17,10 +17,12 @@ class ColorPickerResponse {
 
 class ColorPicker extends StatefulWidget {
   final Color defaultColor;
+  final Color? value;
   final bool pinOption, deleteOption;
 
   const ColorPicker(
       {super.key,
+      this.value,
       this.defaultColor = Colors.white,
       this.pinOption = false,
       this.deleteOption = false});
@@ -35,7 +37,7 @@ class _ColorPickerState extends State<ColorPicker> {
 
   @override
   void initState() {
-    color = widget.defaultColor;
+    color = widget.value ?? widget.defaultColor;
     _hexController =
         TextEditingController(text: color.value.toHexColor(alpha: false));
     super.initState();

@@ -3,17 +3,17 @@ import 'dart:ffi' as ffi;
 import 'package:ffi/ffi.dart';
 import 'package:lw_sysinfo/src/lw_sysinfo_base.dart';
 
-typedef _FcInitLoadConfigAndFontsNative = ffi.Pointer Function();
-typedef _FcConfigDestroyNative = ffi.Void Function(ffi.Pointer config);
-typedef _FcConfigDestroyDart = void Function(ffi.Pointer config);
+typedef _FcInitNative = ffi.Void Function();
+typedef _FcInitDart = void Function();
 typedef _FcPatternCreateNative = ffi.Pointer Function();
-typedef _FcPatternDestroyNative = ffi.Void Function(ffi.Pointer pattern);
-typedef _FcPatternDestroyDart = void Function(ffi.Pointer pattern);
 typedef _FcObjectSetBuildNative = ffi.Pointer Function(
   ffi.Pointer<Utf8> object,
+  ffi.Int32 first,
 );
-typedef _FcObjectSetDestroyNative = ffi.Void Function(ffi.Pointer fontSet);
-typedef _FcObjectSetDestroyDart = void Function(ffi.Pointer fontSet);
+typedef _FcObjectSetBuildDart = ffi.Pointer Function(
+  ffi.Pointer<Utf8> object,
+  int first,
+);
 typedef _FcPatternGetStringNative = ffi.Int32 Function(
   ffi.Pointer pattern,
   ffi.Pointer<Utf8> object,
@@ -47,34 +47,21 @@ typedef _FcFontListNative = ffi.Pointer<_FcFontSet> Function(
 class SysInfoLinux extends SysInfoPlatform {
   static const String _libPath = 'libfontconfig.so.1';
   final ffi.DynamicLibrary _dylib;
-  late final _FcInitLoadConfigAndFontsNative _fcInitLoadConfigAndFonts;
-  late final _FcConfigDestroyDart _fcConfigDestroy;
+  late final _FcInitDart _fcInit;
   late final _FcPatternCreateNative _fcPatternCreate;
-  late final _FcPatternDestroyDart _fcPatternDestroy;
-  late final _FcObjectSetBuildNative _fcObjectSetBuild;
-  late final _FcObjectSetDestroyDart _fcObjectSetDestroy;
+  late final _FcObjectSetBuildDart _fcObjectSetBuild;
   late final _FcFontListNative _fcFontList;
   late final _FcPatternGetStringDart _fcPatternGetString;
   late final _FcFontSetDestroyDart _fcFontSetDestroy;
 
   SysInfoLinux() : _dylib = ffi.DynamicLibrary.open(_libPath) {
-    _fcInitLoadConfigAndFonts = _dylib.lookupFunction<
-        _FcInitLoadConfigAndFontsNative,
-        _FcInitLoadConfigAndFontsNative>('FcInitLoadConfigAndFonts');
-    _fcConfigDestroy =
-        _dylib.lookupFunction<_FcConfigDestroyNative, _FcConfigDestroyDart>(
-            'FcConfigDestroy');
+    _fcInit = _dylib.lookupFunction<_FcInitNative, _FcInitDart>('FcInit');
     _fcPatternCreate =
         _dylib.lookupFunction<_FcPatternCreateNative, _FcPatternCreateNative>(
             'FcPatternCreate');
-    _fcPatternDestroy =
-        _dylib.lookupFunction<_FcPatternDestroyNative, _FcPatternDestroyDart>(
-            'FcPatternDestroy');
     _fcObjectSetBuild =
-        _dylib.lookupFunction<_FcObjectSetBuildNative, _FcObjectSetBuildNative>(
+        _dylib.lookupFunction<_FcObjectSetBuildNative, _FcObjectSetBuildDart>(
             'FcObjectSetBuild');
-    _fcObjectSetDestroy = _dylib.lookupFunction<_FcObjectSetDestroyNative,
-        _FcObjectSetDestroyDart>('FcObjectSetDestroy');
     _fcFontList = _dylib
         .lookupFunction<_FcFontListNative, _FcFontListNative>('FcFontList');
     _fcPatternGetString = _dylib.lookupFunction<_FcPatternGetStringNative,
@@ -87,25 +74,24 @@ class SysInfoLinux extends SysInfoPlatform {
   @override
   List<String> getFonts() {
     final fcFamily = 'family'.toNativeUtf8();
-    final config = _fcInitLoadConfigAndFonts();
+    _fcInit();
     final pattern = _fcPatternCreate();
-    final objectSet = _fcObjectSetBuild(fcFamily);
-    final fontList = _fcFontList(config, pattern, objectSet);
+    final objectSet = _fcObjectSetBuild(fcFamily, 0);
+    final fontList = _fcFontList(ffi.nullptr, pattern, objectSet);
+    if (fontList == ffi.nullptr) {
+      return [];
+    }
     final count = fontList.ref.nfont;
     final fonts = <String>{};
     for (var i = 0; i < count; i++) {
       final font = fontList.ref.fonts[i];
       final fontName = calloc<ffi.Pointer<ffi.Int8>>();
       final result = _fcPatternGetString(font, fcFamily, 0, fontName);
-      if (result == 0) {
+      if (result == 0 && fontName.value != ffi.nullptr) {
         fonts.add(fontName.value.cast<Utf8>().toDartString());
       }
-      calloc.free(fontName);
     }
     _fcFontSetDestroy(fontList);
-    _fcObjectSetDestroy(objectSet);
-    _fcPatternDestroy(pattern);
-    _fcConfigDestroy(config);
     calloc.free(fcFamily);
 
     return fonts.toList();

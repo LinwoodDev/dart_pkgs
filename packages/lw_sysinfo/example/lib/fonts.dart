@@ -19,6 +19,12 @@ class _FontsPageState extends State<FontsPage> {
       body: FutureBuilder<List<String>?>(
         future: Future.value(SysInfo.getFonts()),
         builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            return Text('Error: ${snapshot.error}');
+          }
+          if (snapshot.connectionState != ConnectionState.done) {
+            return const Text('Loading...');
+          }
           if (snapshot.hasData) {
             final fonts = List<String>.from(snapshot.data!);
             fonts.sort();
@@ -30,7 +36,7 @@ class _FontsPageState extends State<FontsPage> {
                   );
                 });
           } else {
-            return const Text('Loading...');
+            return const Text('No data');
           }
         },
       ),

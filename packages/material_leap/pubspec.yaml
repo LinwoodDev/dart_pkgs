@@ -18,6 +18,8 @@ dependencies:
       ref: f370dd2c25d3ea51ffb8f1c7c183bc9f33889c82
   flutter:
     sdk: flutter
+  dart_leap:
+    path: ../dart_leap
 
 dev_dependencies:
   flutter_test:

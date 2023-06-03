@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:material_leap/src/helpers/color.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../l10n/leap_localizations.dart';
 import '../widgets/exact_slider.dart';
 import '../widgets/header.dart';
+import '../helpers/color.dart';
 
 class ColorPickerResponse {
   final int color;

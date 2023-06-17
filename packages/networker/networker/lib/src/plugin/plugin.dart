@@ -12,6 +12,9 @@ abstract class NetworkerPlugin<I, O> {
   final StreamController<MessageDetails<I>> _writeController =
       StreamController<MessageDetails<I>>.broadcast();
 
+  Stream<MessageDetails<O>> get read => _readController.stream;
+  Stream<MessageDetails<I>> get write => _writeController.stream;
+
   O decode(I data);
   I encode(O data);
 

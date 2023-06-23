@@ -9,3 +9,7 @@ class JsonNetworkerPlugin extends NetworkerPlugin<String, dynamic> {
   @override
   String encode(data) => jsonEncode(data);
 }
+
+class JsonRawNetworkerPlugin extends NetworkerPlugin<RawData, dynamic> {
+  
+}

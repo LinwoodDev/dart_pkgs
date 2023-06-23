@@ -11,7 +11,7 @@ part 'server.dart';
 typedef ConnectionId = int;
 typedef RawData = Uint8List;
 
-sealed class NetworkerConnection extends NetworkerMessenger<RawData> {
+abstract class NetworkerConnection extends NetworkerMessenger<RawData> {
   NetworkerConnection() {
     write.listen((data) {
       if (isClosed) {

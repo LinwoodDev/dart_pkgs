@@ -5,7 +5,7 @@ import 'package:networker/networker.dart';
 class NetworkerSocketServer extends NetworkerServer {
   final HttpServer server;
   bool _isClosed = false;
-  final List<WebSocket> _sockets = [];
+  final Map<ConnectionId, WebSocket> _sockets = {};
   bool Function(HttpRequest event)? filterConnections;
 
   NetworkerSocketServer(this.server, [this.filterConnections]) {
@@ -22,8 +22,9 @@ class NetworkerSocketServer extends NetworkerServer {
   bool get isClosed => _isClosed;
 
   @override
-  Future<void> send(ConnectionId id, RawData data) {
-    final socket = _sockets.firstWhere((e) => e.hashCode == id.hashCode);
+  Future<void> sendMessage(ConnectionId id, RawData data) {
+    final socket = _sockets[id];
+    if (socket == null) return Future.value();
     socket.add(data);
     return socket.done;
   }
@@ -31,17 +32,8 @@ class NetworkerSocketServer extends NetworkerServer {
   Future<void> waitForConnections() async {
     await for (var request in server.where(filterConnections ?? (e) => true)) {
       final socket = await WebSocketTransformer.upgrade(request);
-      _sockets.add(socket);
-      socket.listen((event) {
-        onMessage(socket.hashCode, event);
-      }, onDone: () {
-        _sockets.remove(socket);
-      });
+      _sockets[socket.hashCode] = socket;
     }
     _isClosed = true;
   }
-
-  @override
-  List<ConnectionId> get connections =>
-      _sockets.map((e) => e.hashCode).toList();
 }

@@ -1,4 +1,7 @@
+import 'dart:async';
 import 'dart:typed_data';
+
+import 'package:meta/meta.dart';
 
 import 'plugin/plugin.dart';
 
@@ -7,7 +10,6 @@ part 'server.dart';
 
 typedef ConnectionId = int;
 typedef RawData = Uint8List;
-typedef MessageDetails<T> = (ConnectionId, T data);
 
 sealed class NetworkerConnection extends NetworkerMessenger<RawData> {
   NetworkerConnection() {
@@ -15,10 +17,10 @@ sealed class NetworkerConnection extends NetworkerMessenger<RawData> {
       if (isClosed) {
         throw StateError('Connection is closed');
       }
-      send(data.$1, data.$2);
+      _send(data);
     });
   }
   bool get isClosed;
   void close();
-  Future<void> send(ConnectionId id, RawData data);
+  Future<void> _send(RawData data);
 }

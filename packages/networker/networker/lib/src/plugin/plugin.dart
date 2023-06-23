@@ -5,21 +5,18 @@ import 'package:networker/src/connection.dart';
 typedef BaseNetworkerPlugin = NetworkerPlugin<RawData, RawData>;
 
 abstract class NetworkerPlugin<I, O> {
-  final Map<NetworkerPlugin<O, dynamic>, StreamSubscription<MessageDetails<O>>>
-      _plugins = {};
-  final StreamController<MessageDetails<O>> _readController =
-      StreamController<MessageDetails<O>>.broadcast();
-  final StreamController<MessageDetails<I>> _writeController =
-      StreamController<MessageDetails<I>>.broadcast();
+  final Map<NetworkerPlugin<O, dynamic>, StreamSubscription<O>> _plugins = {};
+  final StreamController<O> _readController = StreamController<O>.broadcast();
+  final StreamController<I> _writeController = StreamController<I>.broadcast();
 
-  Stream<MessageDetails<O>> get read => _readController.stream;
-  Stream<MessageDetails<I>> get write => _writeController.stream;
+  Stream<O> get read => _readController.stream;
+  Stream<I> get write => _writeController.stream;
 
   O decode(I data);
   I encode(O data);
 
-  void _onPluginMessage(MessageDetails data) {
-    _writeController.add((data.$1, encode(data.$2)));
+  void _onPluginMessage(O data) {
+    _writeController.add(encode(data));
   }
 
   void addPlugin(NetworkerPlugin<O, dynamic> plugin) {
@@ -30,19 +27,19 @@ abstract class NetworkerPlugin<I, O> {
     _plugins.remove(plugin)?.cancel();
   }
 
-  void onMessage(ConnectionId id, I data) {
+  void onMessage(I data) {
     final rawData = decode(data);
-    _readController.add((id, rawData));
+    _readController.add(rawData);
     for (final plugin in _plugins.keys) {
-      plugin.onMessage(id, rawData);
+      plugin.onMessage(rawData);
     }
   }
 
-  void sendMessage(ConnectionId id, O data) {
+  void sendMessage(O data) {
     final rawData = encode(data);
-    _writeController.add((id, rawData));
+    _writeController.add(rawData);
     for (final plugin in _plugins.keys) {
-      plugin.sendMessage(id, rawData);
+      plugin.sendMessage(rawData);
     }
   }
 }

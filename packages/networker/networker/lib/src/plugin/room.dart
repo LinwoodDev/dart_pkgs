@@ -1,15 +1,13 @@
-import 'package:networker/src/connection.dart';
-
 import 'plugin.dart';
 
 class RoomNetworkerPlugin<T> extends NetworkerMessenger {
   final Map<String, NetworkerMessenger<T>> _rooms = {};
   @override
-  void onMessage(ConnectionId id, data) {
-    super.onMessage(id, data);
+  void onMessage(data) {
+    super.onMessage(data);
     final room = data['room'] as String?;
     final roomData = data['data'] as T;
-    _rooms[room]?.onMessage(id, roomData);
+    _rooms[room]?.onMessage(roomData);
   }
 
   void addRoom(String room) {

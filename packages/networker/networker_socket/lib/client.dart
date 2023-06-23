@@ -18,7 +18,7 @@ class NetworkerSocketClient extends NetworkerClient {
   bool get isClosed => channel.closeReason == null;
 
   @override
-  Future<void> send(ConnectionId id, RawData data) {
+  Future<void> send(RawData data) {
     channel.sink.add(data);
     return channel.sink.done;
   }

@@ -17,10 +17,10 @@ sealed class NetworkerConnection extends NetworkerMessenger<RawData> {
       if (isClosed) {
         throw StateError('Connection is closed');
       }
-      _send(data);
+      send(data);
     });
   }
   bool get isClosed;
   void close();
-  Future<void> _send(RawData data);
+  Future<void> send(RawData data);
 }

@@ -38,9 +38,6 @@ abstract class NetworkerPlugin<I, O> {
   void sendMessage(O data) {
     final rawData = encode(data);
     _writeController.add(rawData);
-    for (final plugin in _plugins.keys) {
-      plugin.sendMessage(rawData);
-    }
   }
 }
 

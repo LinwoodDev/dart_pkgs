@@ -1,5 +1,7 @@
 import 'dart:convert';
+import 'dart:typed_data';
 
+import '../connection.dart';
 import 'plugin.dart';
 
 class JsonNetworkerPlugin extends NetworkerPlugin<String, dynamic> {
@@ -11,5 +13,9 @@ class JsonNetworkerPlugin extends NetworkerPlugin<String, dynamic> {
 }
 
 class JsonRawNetworkerPlugin extends NetworkerPlugin<RawData, dynamic> {
-  
+  @override
+  decode(RawData data) => jsonDecode(utf8.decode(data));
+
+  @override
+  RawData encode(data) => Uint8List.fromList(utf8.encode(jsonEncode(data)));
 }

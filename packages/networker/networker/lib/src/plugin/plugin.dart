@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:networker/src/connection.dart';
+import '../connection.dart';
 
 typedef BaseNetworkerPlugin = NetworkerPlugin<RawData, RawData>;
 

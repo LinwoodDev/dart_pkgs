@@ -1,7 +1,8 @@
-# Localizer
+# Flutter Localizer
 
 ![Pub Version](https://img.shields.io/pub/v/localizer?style=for-the-badge)
 
+Flutter port of [localizer](https://github.com/LinwoodDev/dart_pkgs/tree/main/packages/localizer).
 Simple to use dart package to localize your app.
 
 ## Features
@@ -19,7 +20,7 @@ Add the package to your project.
   
   ```yaml
     dependencies:
-        localizer: latest
+        flutter_localizer: latest
   ```
 
   Replace latest with the latest version
@@ -29,11 +30,8 @@ Add the package to your project.
 Create a new localizer instance, add your localization to it and get them.
 
 ```dart
-var localizer = Localizer();
-localizer.loadMap("en", {"hello-world": "Hello world!"});
-localizer.loadMap("es", {"hello-world": "Hola mundo!"});
-localizer.loadMap("fr", {"hello-world": "Bonjour le monde!"});
-localizer.loadMap("de", {"hello-world": "Hallo Welt!"});
+// Uses file l10n/en.json as default
+var localizer = Localizer.fromAsset();
 
 print("EN: ${localizer.get("en", "hello-world")}");
 print("ES: ${localizer.get("es", "hello-world")}");

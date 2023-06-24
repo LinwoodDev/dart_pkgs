@@ -1,6 +1,4 @@
 import 'package:jaspr/components.dart';
-import 'package:web_leap/components/theme.dart';
-import 'package:web_leap/theme.dart';
 
 class ButtonComponent extends StatelessComponent {
   final VoidCallback? onPressed;
@@ -13,7 +11,6 @@ class ButtonComponent extends StatelessComponent {
     yield DomComponent(
       tag: 'button',
       child: Text(label),
-      styles: Styles.,
     );
   }
 }

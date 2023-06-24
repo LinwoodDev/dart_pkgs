@@ -30,8 +30,8 @@ abstract class NetworkerServer<T extends NetworkerConnection> {
   @protected
   bool removeConnection(ConnectionId id, T connection) {
     if (_connections.containsKey(id)) return false;
-    _connections.remove(id)?.$2.cancel();
     _disconnectController.add(id);
+    _connections.remove(id)?.$2.cancel();
     return true;
   }
 

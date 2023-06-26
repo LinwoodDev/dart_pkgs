@@ -48,3 +48,8 @@ class NetworkerMessenger<T> extends NetworkerPlugin<T, T> {
   @override
   T encode(T data) => data;
 }
+
+abstract class NetworkerServerPlugin {
+  void init(NetworkerServer server) {}
+  void dispose(NetworkerServer server) {}
+}

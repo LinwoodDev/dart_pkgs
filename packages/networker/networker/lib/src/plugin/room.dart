@@ -1,13 +1,23 @@
+import 'json.dart';
 import 'plugin.dart';
 
-class RoomNetworkerPlugin<T> extends NetworkerMessenger {
+final class RoomMessage<T> {
+  final Map<String, dynamic> data;
+
+  const RoomMessage(this.data);
+
+  String get room => data['room'];
+  T get message => data['message'];
+  dynamic getAttribute(String key) => data[key];
+}
+
+final class RoomNetworkerPlugin<T> extends NetworkerMessenger {
   final Map<String, NetworkerMessenger<T>> _rooms = {};
   @override
   void onMessage(data) {
     super.onMessage(data);
-    final room = data['room'] as String?;
-    final roomData = data['data'] as T;
-    _rooms[room]?.onMessage(roomData);
+    final message = RoomMessage(data);
+    _rooms[message.room]?.onMessage(message.message);
   }
 
   void addRoom(String room) {

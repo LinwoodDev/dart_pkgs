@@ -13,8 +13,8 @@ class BoxTile extends StatelessWidget {
     this.onTap,
     this.size = 100,
     this.selected = false,
-    this.selectionWidth = 5,
-    this.selectionRadius = 4,
+    this.selectionWidth = 4,
+    this.selectionRadius = 12,
   });
 
   @override
@@ -24,17 +24,18 @@ class BoxTile extends StatelessWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(selectionRadius),
       ),
-      child: Container(
-        decoration: BoxDecoration(
-          border: Border.all(
-              width: selectionWidth,
-              color: selected
-                  ? Theme.of(context).colorScheme.primary
-                  : Colors.transparent),
-          borderRadius: BorderRadius.circular(selectionRadius),
-        ),
-        child: InkWell(
-          onTap: onTap,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(selectionRadius),
+        child: Container(
+          decoration: BoxDecoration(
+            border: Border.all(
+                width: selectionWidth,
+                color: selected
+                    ? Theme.of(context).colorScheme.primary
+                    : Colors.transparent),
+            borderRadius: BorderRadius.circular(selectionRadius),
+          ),
           child: SizedBox.square(
             dimension: size,
             child: Column(

@@ -1,4 +1,3 @@
-import 'json.dart';
 import 'plugin.dart';
 
 final class RoomMessage<T> {

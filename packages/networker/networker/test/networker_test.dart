@@ -15,6 +15,13 @@ const secondPluginPrefix = 'secondPlugin';
     }
     return data;
   });
+  final simple = SimpleNetworkerPlugin<Map<String, dynamic>, ClientEvents>(
+    ClientEvents.fromJson,
+    (data) => data.toJson(),
+  );
+  final json = JsonNetworkerPlugin();
+  json.addPlugin(simple);
+  plugin.addPlugin(json);
   messenger.addPlugin(plugin);
   plugin.addPlugin(secondTranslator);
   return (messenger, plugin, secondTranslator);
@@ -49,4 +56,10 @@ void main() {
     }));
     secondPlugin.sendMessage('${secondPluginPrefix}test');
   });
+}
+
+class ClientEvents {
+  ClientEvents.fromJson(Map<String, dynamic> json);
+
+  Map<String, dynamic> toJson() => {};
 }

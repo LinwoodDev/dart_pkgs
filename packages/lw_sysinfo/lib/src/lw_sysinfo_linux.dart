@@ -31,7 +31,7 @@ typedef _FcFontSetDestroyDart = void Function(ffi.Pointer fontSet);
 //         FcPattern **fonts;
 // } FcFontSet;
 
-class _FcFontSet extends ffi.Struct {
+final class _FcFontSet extends ffi.Struct {
   @ffi.Int32()
   external int nfont;
 

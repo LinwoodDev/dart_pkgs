@@ -11,6 +11,7 @@ class ButtonComponent extends StatelessComponent {
     yield DomComponent(
       tag: 'button',
       child: Text(label),
+      classes: ['btn'],
     );
   }
 }

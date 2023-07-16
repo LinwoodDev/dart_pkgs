@@ -3,6 +3,7 @@
 /// More dartdocs go here.
 library lw_sysinfo;
 
-export 'src/lw_sysinfo_base.dart' show SysInfo;
+export 'src/lw_sysinfo_base.dart'
+    show SysInfo, ClipboardManager, ClipboardContent;
 
 // TODO: Export any libraries intended for clients of this package.

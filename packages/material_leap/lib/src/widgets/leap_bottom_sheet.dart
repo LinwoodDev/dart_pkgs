@@ -6,14 +6,18 @@ Future<T?> showLeapBottomSheet<T>({
   String title = '',
   List<Widget> Function(BuildContext)? actionsBuilder,
   List<Widget> Function(BuildContext)? childrenBuilder,
+  bool isDismissible = true,
 }) =>
     showModalBottomSheet<T>(
       constraints: const BoxConstraints(maxWidth: 640),
       context: context,
+      showDragHandle: true,
+      isDismissible: isDismissible,
+      isScrollControlled: true,
       builder: (ctx) => Container(
         margin: const EdgeInsets.only(bottom: 20),
-        child: ListView(
-          shrinkWrap: true,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),

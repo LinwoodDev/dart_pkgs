@@ -16,8 +16,8 @@ Future<T?> showLeapBottomSheet<T>({
       isScrollControlled: true,
       builder: (ctx) => Container(
         margin: const EdgeInsets.only(bottom: 20),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
+        child: ListView(
+          shrinkWrap: true,
           children: [
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),

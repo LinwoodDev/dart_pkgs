@@ -9,10 +9,7 @@ abstract class SysInfoPlatform {
   FutureOr<List<String>?> getFonts();
 }
 
-typedef ClipboardContent = ({
-  String type,
-  Uint8List data
-});
+typedef ClipboardContent = ({String type, Uint8List data});
 
 abstract class ClipboardManager {
   ClipboardContent? getContent();
@@ -28,7 +25,7 @@ class SysInfoBase implements SysInfoPlatform {
 
 class InternalClipboardManager implements ClipboardManager {
   ClipboardContent? _content;
-  
+
   @override
   ClipboardContent? getContent() => _content;
 
@@ -46,5 +43,7 @@ class SysInfo {
   ///Returns null on error
   static FutureOr<List<String>?> getFonts() => _instance.getFonts();
 
-  static FutureOr<ClipboardManager> getClipboardManager({bool internal = false}) => InternalClipboardManager();
+  static FutureOr<ClipboardManager> getClipboardManager(
+          {bool internal = false}) =>
+      InternalClipboardManager();
 }

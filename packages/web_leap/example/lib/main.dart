@@ -7,10 +7,12 @@ void main() {
     styles: [
       StyleRule.import('https://fonts.googleapis.com/css?family=Roboto'),
       StyleRule(
-        selector: const Selector.list([Selector.tag('html'), Selector.tag('body')]),
+        selector:
+            const Selector.list([Selector.tag('html'), Selector.tag('body')]),
         styles: Styles.combine([
           const Styles.text(
-            fontFamily: FontFamily.list([FontFamily('Roboto'), FontFamilies.sansSerif]),
+            fontFamily:
+                FontFamily.list([FontFamily('Roboto'), FontFamilies.sansSerif]),
           ),
           Styles.box(
             width: 100.percent,

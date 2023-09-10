@@ -172,9 +172,9 @@ class _ColorPickerState extends State<ColorPicker> {
     value = value.trim();
     if (value.startsWith('#')) value = value.substring(1);
     if (value.length == 3) {
-      value = 'f$value';
+      value = '${value}f';
     } else if (value.length == 6) {
-      value = 'ff$value';
+      value = '${value}ff';
     }
     if (value.length == 4) {
       value = value[0] +
@@ -186,6 +186,11 @@ class _ColorPickerState extends State<ColorPicker> {
           value[3] +
           value[3];
     }
+    if (value.length != 8) {
+      return null;
+    }
+    // RGBA to ARGB
+    value = value[6] + value[7] + value.substring(2, 6) + value[0] + value[1];
     value = value.trim();
     return int.tryParse(value, radix: 16);
   }

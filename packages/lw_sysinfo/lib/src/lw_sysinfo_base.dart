@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:typed_data';
 
 import 'lw_sysinfo_stub.dart'
     if (dart.library.io) 'lw_sysinfo_io.dart'
@@ -6,6 +7,10 @@ import 'lw_sysinfo_stub.dart'
 
 abstract class SysInfoPlatform {
   FutureOr<List<String>?> getFonts();
+}
+
+abstract class ClipboardManagerPlatform {
+  FutureOr<Uint8List?> read();
 }
 
 class SysInfoBase implements SysInfoPlatform {

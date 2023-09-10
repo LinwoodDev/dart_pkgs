@@ -7,7 +7,7 @@ class EchoNetworkerPlugin extends NetworkerMessenger<RawData> {
   final NetworkerServer server;
   StreamSubscription<ConnectionId>? _connectSub;
 
-  EchoNetworkerPlugin._(this.server) {
+  EchoNetworkerPlugin._add(this.server) {
     register();
   }
 
@@ -16,9 +16,11 @@ class EchoNetworkerPlugin extends NetworkerMessenger<RawData> {
     super.onMessage(data);
 
     for (final connection in server.connectionIds) {
-      server.sendMessage(connection, data);
+      server.sendMessage(connection, _buildData(connection, data));
     }
   }
+
+  RawData _buildData(ConnectionId connection, RawData data) => data;
 
   void register() {
     if (_connectSub != null) return;
@@ -33,6 +35,14 @@ class EchoNetworkerPlugin extends NetworkerMessenger<RawData> {
   }
 
   static EchoNetworkerPlugin add(NetworkerServer server) {
-    return EchoNetworkerPlugin._(server);
+    return EchoNetworkerPlugin._add(server);
+  }
+}
+
+class JsonEchoNetworkerPlugin extends EchoNetworkerPlugin {
+  JsonEchoNetworkerPlugin._add(NetworkerServer server) : super._add(server);
+
+  static JsonEchoNetworkerPlugin add(NetworkerServer server) {
+    return JsonEchoNetworkerPlugin._add(server);
   }
 }

@@ -3,7 +3,7 @@ import 'dart:typed_data';
 import '../connection.dart';
 import 'plugin.dart';
 
-class StringNetworkerPlugin extends NetworkerPlugin<RawData, String> {
+final class StringNetworkerPlugin extends NetworkerPlugin<RawData, String> {
   @override
   String decode(RawData data) => String.fromCharCodes(data);
 

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 class BoxTile extends StatelessWidget {
   final Widget title, icon;
+  final Widget? subtitle;
   final double size, selectionWidth, selectionRadius;
   final bool selected;
   final GestureTapCallback? onTap;
@@ -9,6 +10,7 @@ class BoxTile extends StatelessWidget {
   const BoxTile({
     super.key,
     required this.title,
+    this.subtitle,
     required this.icon,
     this.onTap,
     this.size = 100,
@@ -48,6 +50,10 @@ class BoxTile extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 16),
+                DefaultTextStyle(
+                  style: Theme.of(context).textTheme.caption!,
+                  child: subtitle ?? const SizedBox(),
+                ),
                 title,
               ],
             ),

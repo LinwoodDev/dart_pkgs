@@ -12,7 +12,7 @@ dependencies:
     git:
       url: https://github.com/LinwoodDev/dart_pkgs.git
       path: packages/networker/networker
-      ref: 891bc4c4e7c3eb764a7f591f879718e6288b776a
+      ref: 058c6f98e54b9f33361c2b4ca834d87e68fd20b9
 
 dev_dependencies:
   lints: ^2.0.0

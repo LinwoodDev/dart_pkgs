@@ -16,7 +16,7 @@ class NetworkerRtcServerConnection extends NetworkerConnection {
   bool get isClosed => false;
 
   @override
-  Future<void> send(RawData data) {}
+  Future<void> send(RawData data) => throw UnimplementedError();
 }
 
 class NetworkerSocketServer

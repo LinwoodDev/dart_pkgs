@@ -6,7 +6,7 @@ typedef OnValueChanged = void Function(double value);
 class ExactSlider extends StatefulWidget {
   final String? label;
   final int fractionDigits;
-  final Widget? header, leading, trailing;
+  final Widget? header, leading, bottom;
   final double defaultValue, min, max;
   final double? value;
   final OnValueChanged? onChanged, onChangeEnd;
@@ -16,7 +16,7 @@ class ExactSlider extends StatefulWidget {
       {super.key,
       this.label,
       this.leading,
-      this.trailing,
+      this.bottom,
       this.fractionDigits = 2,
       this.defaultValue = 1,
       this.min = 0,
@@ -108,11 +108,6 @@ class _ExactSliderState extends State<ExactSlider> {
                   icon: const PhosphorIcon(
                       PhosphorIconsLight.clockCounterClockwise));
               final width = constraints.maxWidth;
-              final trailing = DefaultTextStyle(
-                style:
-                    Theme.of(context).textTheme.bodySmall ?? const TextStyle(),
-                child: widget.trailing ?? const SizedBox(),
-              );
               if (width < 300) {
                 return Column(
                   children: [
@@ -128,7 +123,6 @@ class _ExactSliderState extends State<ExactSlider> {
                           resetButton,
                         ]),
                     slider,
-                    trailing
                   ],
                 );
               }
@@ -145,7 +139,6 @@ class _ExactSliderState extends State<ExactSlider> {
                       Expanded(child: slider),
                       resetButton,
                     ]),
-                    trailing,
                   ],
                 );
               }
@@ -161,10 +154,13 @@ class _ExactSliderState extends State<ExactSlider> {
                   const SizedBox(width: 8),
                   Expanded(child: slider),
                   resetButton,
-                  trailing,
                 ],
               );
             }),
+            DefaultTextStyle(
+              style: Theme.of(context).textTheme.bodySmall ?? const TextStyle(),
+              child: widget.bottom ?? const SizedBox(),
+            ),
           ],
         ));
   }

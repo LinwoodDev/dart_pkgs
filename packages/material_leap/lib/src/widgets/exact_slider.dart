@@ -145,7 +145,10 @@ class _ExactSliderState extends State<ExactSlider> {
               return Row(
                 children: [
                   if (widget.leading != null) widget.leading!,
-                  header,
+                  SizedBox(
+                    width: 160,
+                    child: header,
+                  ),
                   const SizedBox(width: 8),
                   ConstrainedBox(
                     constraints: const BoxConstraints(maxWidth: 75),

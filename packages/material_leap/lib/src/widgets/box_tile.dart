@@ -51,7 +51,7 @@ class BoxTile extends StatelessWidget {
                 ),
                 const SizedBox(height: 16),
                 DefaultTextStyle(
-                  style: Theme.of(context).textTheme.caption!,
+                  style: Theme.of(context).textTheme.bodySmall!,
                   child: subtitle ?? const SizedBox(),
                 ),
                 title,

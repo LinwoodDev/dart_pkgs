@@ -70,85 +70,101 @@ class _ExactSliderState extends State<ExactSlider> {
   Widget build(BuildContext context) {
     return Align(
         alignment: Alignment.topCenter,
-        child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 1000),
-            child: Column(
-              children: [
-                if (widget.header != null)
-                  Padding(
-                      padding: const EdgeInsets.all(8),
-                      child: DefaultTextStyle(
-                          style: Theme.of(context).textTheme.titleMedium!,
-                          child: widget.header!)),
-                LayoutBuilder(builder: (context, constraints) {
-                  final textField = TextFormField(
-                      decoration: InputDecoration(
-                          filled: true,
-                          labelText: widget.label,
-                          floatingLabelAlignment:
-                              FloatingLabelAlignment.center),
-                      textAlign: TextAlign.center,
-                      controller: _controller,
-                      onEditingComplete: () => widget.onChangeEnd?.call(_value),
-                      onChanged: (value) =>
-                          _changeValue(double.tryParse(value) ?? _value));
-                  final slider = Slider(
-                    value: _value.clamp(widget.min, widget.max),
-                    min: widget.min,
-                    max: widget.max,
-                    activeColor: widget.color,
-                    onChangeEnd: widget.onChangeEnd,
-                    onChanged: (value) {
-                      _changeValue(value);
-                    },
-                  );
-                  final resetButton = IconButton(
-                      onPressed: () {
-                        _changeValue(widget.defaultValue);
-                        widget.onChangeEnd?.call(widget.defaultValue);
-                      },
-                      icon: const PhosphorIcon(
-                          PhosphorIconsLight.clockCounterClockwise));
-                  final width = constraints.maxWidth;
-                  final bottom = DefaultTextStyle(
-                    style: Theme.of(context).textTheme.bodySmall ??
-                        const TextStyle(),
-                    child: widget.bottom ?? const SizedBox(),
-                  );
-                  if (width < 300) {
-                    return Column(
-                      children: [
-                        Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            mainAxisSize: MainAxisSize.max,
-                            children: [
-                              if (widget.leading != null) widget.leading!,
-                              Flexible(child: textField),
-                              const SizedBox(width: 8),
-                              resetButton,
-                            ]),
-                        slider,
-                        bottom
-                      ],
-                    );
-                  }
-                  return Column(
-                    children: [
-                      Row(children: [
-                        if (widget.leading != null) widget.leading!,
-                        ConstrainedBox(
-                          constraints: const BoxConstraints(maxWidth: 75),
-                          child: textField,
-                        ),
-                        Expanded(child: slider),
-                        resetButton,
-                      ]),
-                      bottom,
-                    ],
-                  );
-                }),
-              ],
-            )));
+        child: Column(
+          children: [
+            LayoutBuilder(builder: (context, constraints) {
+              final textField = TextFormField(
+                  decoration: InputDecoration(
+                      filled: true,
+                      labelText: widget.label,
+                      floatingLabelAlignment: FloatingLabelAlignment.center),
+                  textAlign: TextAlign.center,
+                  controller: _controller,
+                  onEditingComplete: () => widget.onChangeEnd?.call(_value),
+                  onChanged: (value) =>
+                      _changeValue(double.tryParse(value) ?? _value));
+              final slider = Slider(
+                value: _value.clamp(widget.min, widget.max),
+                min: widget.min,
+                max: widget.max,
+                activeColor: widget.color,
+                onChangeEnd: widget.onChangeEnd,
+                onChanged: (value) {
+                  _changeValue(value);
+                },
+              );
+              final header = Padding(
+                padding: const EdgeInsets.all(8),
+                child: DefaultTextStyle(
+                  style: Theme.of(context).textTheme.titleMedium!,
+                  child: widget.header!,
+                ),
+              );
+              final resetButton = IconButton(
+                  onPressed: () {
+                    _changeValue(widget.defaultValue);
+                    widget.onChangeEnd?.call(widget.defaultValue);
+                  },
+                  icon: const PhosphorIcon(
+                      PhosphorIconsLight.clockCounterClockwise));
+              final width = constraints.maxWidth;
+              if (width < 300) {
+                return Column(
+                  children: [
+                    header,
+                    Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisSize: MainAxisSize.max,
+                        children: [
+                          if (widget.leading != null) widget.leading!,
+                          Flexible(child: textField),
+                          const SizedBox(width: 8),
+                          resetButton,
+                        ]),
+                    slider,
+                  ],
+                );
+              }
+              if (width < 500) {
+                return Column(
+                  children: [
+                    header,
+                    Row(children: [
+                      if (widget.leading != null) widget.leading!,
+                      ConstrainedBox(
+                        constraints: const BoxConstraints(maxWidth: 75),
+                        child: textField,
+                      ),
+                      Expanded(child: slider),
+                      resetButton,
+                    ]),
+                  ],
+                );
+              }
+              return Row(
+                children: [
+                  if (widget.leading != null) widget.leading!,
+                  SizedBox(
+                    width: 160,
+                    child: header,
+                  ),
+                  const SizedBox(width: 8),
+                  ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 75),
+                    child: textField,
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(child: slider),
+                  resetButton,
+                ],
+              );
+            }),
+            DefaultTextStyle(
+              style: Theme.of(context).textTheme.bodySmall ?? const TextStyle(),
+              child: widget.bottom ?? const SizedBox(),
+            ),
+          ],
+        ));
   }
 }

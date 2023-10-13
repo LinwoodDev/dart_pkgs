@@ -131,10 +131,12 @@ class _ExactSliderState extends State<ExactSlider> {
                   children: [
                     header,
                     Row(children: [
-                      if (widget.leading != null) widget.leading!,
                       ConstrainedBox(
                         constraints: const BoxConstraints(maxWidth: 75),
-                        child: textField,
+                        child: Row(children: [
+                          if (widget.leading != null) widget.leading!,
+                          Expanded(child: textField),
+                        ]),
                       ),
                       Expanded(child: slider),
                       resetButton,

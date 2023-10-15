@@ -211,10 +211,10 @@ packages:
     dependency: transitive
     description:
       name: web
-      sha256: ccbbfbf29732ee1b391c4c6d13e7032d851f675f47365e81904e4c6fd669c854
+      sha256: "14f1f70c51119012600c5f1f60ca68efda5a9b6077748163c6af2893ec5df8fc"
       url: "https://pub.dev"
     source: hosted
-    version: "0.2.2-beta"
+    version: "0.2.1-beta"
   win32:
     dependency: transitive
     description:
@@ -224,4 +224,4 @@ packages:
     source: hosted
     version: "5.0.8"
 sdks:
-  dart: ">=3.2.0-194.0.dev <4.0.0"
+  dart: ">=3.2.0-157.0.dev <4.0.0"

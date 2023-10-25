@@ -41,10 +41,10 @@ class _DateTimeFieldState extends State<DateTimeField> {
 
   void setup() {
     _locale = Localizations.localeOf(context).languageCode;
-    _controller.text = _value == null ? '' : _format(_value!);
     initializeDateFormatting(_locale);
     _dateFormat = DateFormat.yMd(_locale);
     _timeFormat = DateFormat.Hm(_locale);
+    _controller.text = _value == null ? '' : _format(_value!);
   }
 
   void _change(DateTime? value) {

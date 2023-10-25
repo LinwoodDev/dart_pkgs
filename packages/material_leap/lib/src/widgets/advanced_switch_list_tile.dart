@@ -11,15 +11,14 @@ class AdvancedSwitchListTile extends StatelessWidget {
   final ValueChanged<bool>? onChanged;
 
   const AdvancedSwitchListTile(
-      {Key? key,
+      {super.key,
       this.leading,
       this.title,
       this.subtitle,
       required this.value,
       this.onTap,
       this.onLongPress,
-      this.onChanged})
-      : super(key: key);
+      this.onChanged});
 
   @override
   Widget build(BuildContext context) {

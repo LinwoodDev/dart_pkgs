@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:dart_leap/dart_leap.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
@@ -24,34 +25,63 @@ class DateTimeField extends StatefulWidget {
 }
 
 class _DateTimeFieldState extends State<DateTimeField> {
-  late DateTime? _value;
+  DateTime? _value;
   final TextEditingController _controller = TextEditingController();
+  String? _locale;
+  late final DateFormat _dateFormat, _timeFormat;
 
   @override
   void initState() {
     super.initState();
+
     _value = widget.initialValue;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) => setup());
+  }
+
+  void setup() {
+    _locale = Localizations.localeOf(context).languageCode;
+    _controller.text = _value == null ? '' : _format(_value!);
+    initializeDateFormatting(_locale);
+    _dateFormat = DateFormat.yMd(_locale);
+    _timeFormat = DateFormat.Hm(_locale);
   }
 
   void _change(DateTime? value) {
     setState(() {
       _value = value;
     });
+    _controller.text = _value == null ? '' : _format(_value!);
     widget.onChanged(value);
   }
 
-  String _format(DateTime value) {
-    String locale = Localizations.localeOf(context).languageCode;
-    return '${DateFormat.yMd(locale).format(value)} ${DateFormat.Hm().format(value)}';
+  String _format(DateTime value) =>
+      '${_dateFormat.format(value)} ${_timeFormat.format(value)}';
+
+  void _onChanged() {
+    try {
+      final text = _controller.text.trim().split(' ');
+      if (text.length != 2) {
+        _change(null);
+      } else {
+        final date = _dateFormat.parse(text[0]);
+        final time = _timeFormat.parse(text[1]);
+        _change(
+            DateTime(date.year, date.month, date.day, time.hour, time.minute));
+      }
+    } catch (_) {
+      _change(null);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final useValue = _value ?? DateTime.now();
-    _controller.text = _value == null ? '' : _format(useValue);
     return TextFormField(
       controller: _controller,
-      readOnly: true,
+      onFieldSubmitted: (_) => _onChanged(),
+      onTapOutside: (_) => _onChanged(),
+      onEditingComplete: _onChanged,
       decoration: InputDecoration(
         labelText: widget.label,
         icon: widget.icon ?? const PhosphorIcon(PhosphorIconsLight.calendar),

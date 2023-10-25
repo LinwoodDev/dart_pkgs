@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:material_leap/material_leap.dart';
 
@@ -14,6 +15,17 @@ class WidgetsView extends StatelessWidget {
         const SizedBox(height: 8),
         const ExactSlider(
           header: Text("Slider Header"),
+        ),
+        Text("Date time field",
+            style: Theme.of(context).textTheme.headlineSmall),
+        const SizedBox(height: 8),
+        DateTimeField(
+          label: 'Date Time Field Label',
+          onChanged: (value) {
+            if (kDebugMode) {
+              print(value);
+            }
+          },
         ),
       ],
     );

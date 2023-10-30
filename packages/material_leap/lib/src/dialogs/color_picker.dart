@@ -6,32 +6,33 @@ import '../widgets/exact_slider.dart';
 import '../widgets/header.dart';
 import '../helpers/color.dart';
 
-class ColorPickerResponse {
+class ColorPickerResponse<T> {
   final int color;
-  final bool pin;
-  final bool delete;
+  final T? action;
 
-  const ColorPickerResponse(this.color,
-      [this.pin = false, this.delete = false]);
+  const ColorPickerResponse(this.color, [this.action]);
 }
 
-class ColorPicker extends StatefulWidget {
+typedef ActionsBuilder<T> = List<Widget> Function(void Function(T?) close);
+
+class ColorPicker<T> extends StatefulWidget {
   final Color defaultColor;
   final Color? value;
-  final bool pinOption, deleteOption;
+  final ActionsBuilder<T>? primaryActions, secondaryActions;
 
-  const ColorPicker(
-      {super.key,
-      this.value,
-      this.defaultColor = Colors.white,
-      this.pinOption = false,
-      this.deleteOption = false});
+  const ColorPicker({
+    super.key,
+    this.value,
+    this.defaultColor = Colors.white,
+    this.primaryActions,
+    this.secondaryActions,
+  });
 
   @override
-  _ColorPickerState createState() => _ColorPickerState();
+  _ColorPickerState<T> createState() => _ColorPickerState<T>();
 }
 
-class _ColorPickerState extends State<ColorPicker> {
+class _ColorPickerState<T> extends State<ColorPicker<T>> {
   late Color color;
   late final TextEditingController _hexController;
 
@@ -47,6 +48,9 @@ class _ColorPickerState extends State<ColorPicker> {
         color = Color.fromARGB(
             255, red ?? color.red, green ?? color.green, blue ?? color.blue);
       });
+
+  void _close([T? action]) =>
+      Navigator.of(context).pop(ColorPickerResponse(color.value, action));
 
   @override
   Widget build(BuildContext context) {
@@ -90,43 +94,24 @@ class _ColorPickerState extends State<ColorPicker> {
                                           child: _buildProperties()))
                                 ])),
                       const Divider(),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      OverflowBar(
+                        alignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          if (widget.deleteOption) ...[
-                            MaterialButton(
-                                onPressed: () => Navigator.of(context).pop(
-                                    ColorPickerResponse(
-                                        color.value, false, true)),
-                                child:
-                                    Text(LeapLocalizations.of(context).delete)),
-                          ] else ...[
-                            Container(),
-                          ],
-                          Row(children: [
+                          OverflowBar(
+                              children:
+                                  widget.secondaryActions?.call(_close) ?? []),
+                          OverflowBar(children: [
                             TextButton(
                                 child: Text(MaterialLocalizations.of(context)
                                     .cancelButtonLabel),
                                 onPressed: () => Navigator.of(context).pop()),
                             const SizedBox(width: 8),
-                            if (widget.pinOption) ...[
-                              OutlinedButton(
-                                  child: Text(MaterialLocalizations.of(context)
-                                      .okButtonLabel),
-                                  onPressed: () => Navigator.of(context).pop(
-                                      ColorPickerResponse(color.value, false))),
-                              const SizedBox(width: 8),
-                              ElevatedButton(
-                                  child:
-                                      Text(LeapLocalizations.of(context).pin),
-                                  onPressed: () => Navigator.of(context).pop(
-                                      ColorPickerResponse(color.value, true))),
-                            ] else
-                              ElevatedButton(
-                                  child: Text(MaterialLocalizations.of(context)
-                                      .okButtonLabel),
-                                  onPressed: () => Navigator.of(context).pop(
-                                      ColorPickerResponse(color.value, false))),
+                            ...widget.primaryActions?.call(_close) ?? [],
+                            OutlinedButton(
+                              onPressed: _close,
+                              child: Text(MaterialLocalizations.of(context)
+                                  .okButtonLabel),
+                            ),
                           ]),
                         ],
                       )

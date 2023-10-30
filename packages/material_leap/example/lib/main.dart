@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:material_leap/l10n/leap_localizations.dart';
 
+import 'dialogs.dart';
 import 'widgets.dart';
 
 void main() {
@@ -47,6 +49,10 @@ class _MyAppState extends State<MyApp> {
         useMaterial3: true,
       ),
       themeMode: _themeMode,
+      localizationsDelegates: const [
+        LeapLocalizations.delegate,
+      ],
+      supportedLocales: LeapLocalizations.supportedLocales,
       home: Scaffold(
         appBar: AppBar(
           title: const Text('Material Leap Demo'),
@@ -63,6 +69,7 @@ class _MyAppState extends State<MyApp> {
         ),
         body: ListView(
           children: const [
+            DialogsView(),
             WidgetsView(),
           ],
         ),

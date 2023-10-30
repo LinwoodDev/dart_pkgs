@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:material_leap/src/widgets/color_button.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../l10n/leap_localizations.dart';
@@ -17,6 +18,7 @@ typedef ActionsBuilder<T> = List<Widget> Function(void Function(T?) close);
 
 class ColorPicker<T> extends StatefulWidget {
   final Color defaultColor;
+  final List<Color> suggested;
   final Color? value;
   final ActionsBuilder<T>? primaryActions, secondaryActions;
 
@@ -26,6 +28,7 @@ class ColorPicker<T> extends StatefulWidget {
     this.defaultColor = Colors.white,
     this.primaryActions,
     this.secondaryActions,
+    this.suggested = const [],
   });
 
   @override
@@ -86,13 +89,21 @@ class _ColorPickerState<T> extends State<ColorPicker<T>> {
                                     ],
                                   ),
                                 )
-                              : Row(children: [
-                                  Expanded(flex: 2, child: _buildPreview()),
-                                  Expanded(
-                                      flex: 3,
-                                      child: SingleChildScrollView(
-                                          child: _buildProperties()))
-                                ])),
+                              : Row(
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.stretch,
+                                  children: [
+                                      Expanded(
+                                          flex: 2,
+                                          child: SingleChildScrollView(
+                                            child: _buildPreview(),
+                                          )),
+                                      Expanded(
+                                          flex: 3,
+                                          child: SingleChildScrollView(
+                                            child: _buildProperties(),
+                                          ))
+                                    ])),
                       const Divider(),
                       OverflowBar(
                         alignment: MainAxisAlignment.spaceBetween,
@@ -107,6 +118,7 @@ class _ColorPickerState<T> extends State<ColorPicker<T>> {
                                 onPressed: () => Navigator.of(context).pop()),
                             const SizedBox(width: 8),
                             ...widget.primaryActions?.call(_close) ?? [],
+                            const SizedBox(width: 8),
                             OutlinedButton(
                               onPressed: _close,
                               child: Text(MaterialLocalizations.of(context)
@@ -127,14 +139,16 @@ class _ColorPickerState<T> extends State<ColorPicker<T>> {
   }
 
   Widget _buildPreview() => Column(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Container(
-                constraints:
-                    const BoxConstraints(maxHeight: 200, maxWidth: 200),
-                color: color),
+          Align(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Container(
+                width: 200,
+                height: 200,
+                color: color,
+              ),
+            ),
           ),
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
@@ -211,5 +225,20 @@ class _ColorPickerState<T> extends State<ColorPicker<T>> {
           value: color.blue.toDouble(),
           onChanged: (value) => _changeColor(blue: value.toInt()),
         ),
+        if (widget.suggested.isNotEmpty) ...[
+          const SizedBox(height: 16),
+          Wrap(
+            children: widget.suggested
+                .map((e) => SizedBox(
+                      height: 64,
+                      width: 64,
+                      child: ColorButton(
+                        color: e,
+                        onTap: () => setState(() => color = e),
+                      ),
+                    ))
+                .toList(),
+          ),
+        ],
       ]);
 }

@@ -119,7 +119,7 @@ class _ColorPickerState<T> extends State<ColorPicker<T>> {
                             const SizedBox(width: 8),
                             ...widget.primaryActions?.call(_close) ?? [],
                             const SizedBox(width: 8),
-                            OutlinedButton(
+                            ElevatedButton(
                               onPressed: _close,
                               child: Text(MaterialLocalizations.of(context)
                                   .okButtonLabel),

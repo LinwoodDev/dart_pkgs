@@ -7,7 +7,14 @@ import '../../networker.dart';
 final class RpcRequest {
   final Map<String, dynamic> data;
 
-  RpcRequest(this.data);
+  RpcRequest(ConnectionId receiver, String function, dynamic message)
+      : data = {
+          'receiver': receiver,
+          'function': function,
+          'message': message,
+        };
+
+  RpcRequest.fromData(this.data);
 
   dynamic get message => data['message'];
   String get function => data['function'];
@@ -15,7 +22,7 @@ final class RpcRequest {
 }
 
 final class RpcMessage extends RpcRequest {
-  RpcMessage(super.data);
+  RpcMessage(super.data) : super.fromData();
 
   ConnectionId get client => data['client'];
 }
@@ -105,12 +112,17 @@ class RpcNetworkerServerPlugin extends NetworkerServerPlugin with RpcPlugin {
   }
 }
 
-class RpcNetworkerPlugin extends NetworkerMessenger<Map<String, dynamic>>
-    with RpcPlugin {
+class RpcNetworkerPlugin
+    extends NetworkerPlugin<Map<String, dynamic>, RpcRequest> with RpcPlugin {
   @override
   void onMessage(data) {
     super.onMessage(data);
-    final message = decode(data);
-    runFunction(RpcMessage(message));
+    runFunction(RpcMessage(data));
   }
+
+  @override
+  RpcRequest decode(Map<String, dynamic> data) => RpcRequest.fromData(data);
+
+  @override
+  Map<String, dynamic> encode(RpcRequest data) => data.data;
 }

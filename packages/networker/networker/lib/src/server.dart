@@ -18,10 +18,12 @@ abstract class NetworkerServer<T extends NetworkerConnection>
 
   void addPlugin(NetworkerServerPlugin plugin) {
     _plugins.add(plugin);
+    plugin.onAdd(this);
   }
 
   void removePlugin(NetworkerServerPlugin plugin) {
     _plugins.remove(plugin);
+    plugin.onRemove(this);
   }
 
   @protected

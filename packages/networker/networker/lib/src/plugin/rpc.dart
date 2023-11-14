@@ -50,6 +50,8 @@ final class RpcFunction {
 mixin RpcPlugin {
   final Map<String, RpcFunction> _functions = {};
 
+  void sendMessage(RpcRequest request);
+
   void addFunction(String name, RpcFunction function) {
     _functions[name] = function;
   }
@@ -71,6 +73,7 @@ mixin RpcPlugin {
 class RpcNetworkerServerPlugin extends NetworkerServerPlugin with RpcPlugin {
   final Map<(NetworkerServer server, ConnectionId connection),
       StreamSubscription> _subscriptions = {};
+  final Set<NetworkerServer> _servers = {};
 
   RpcMessage Function(RpcMessage request)? _onRequest;
 
@@ -78,9 +81,11 @@ class RpcNetworkerServerPlugin extends NetworkerServerPlugin with RpcPlugin {
     _onRequest = onRequest;
   }
 
-  void send(NetworkerServer server, ConnectionId id, String function,
-      dynamic message) {
-    _send(server, id, RpcRequest(id, function, message).data);
+  @override
+  void sendMessage(RpcRequest request) {
+    for (final server in _servers) {
+      _send(server, kNetworkerConnectionIdAuthority, request.data);
+    }
   }
 
   void _send(
@@ -103,6 +108,16 @@ class RpcNetworkerServerPlugin extends NetworkerServerPlugin with RpcPlugin {
         server.getConnection(id)?.sendMessage(data);
         break;
     }
+  }
+
+  @override
+  void onAdd(NetworkerServer<NetworkerConnection> server) {
+    _servers.add(server);
+  }
+
+  @override
+  void onRemove(NetworkerServer<NetworkerConnection> server) {
+    _servers.remove(server);
   }
 
   @override

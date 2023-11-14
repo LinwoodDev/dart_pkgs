@@ -50,6 +50,8 @@ class NetworkerMessenger<T> extends NetworkerPlugin<T, T> {
 }
 
 abstract class NetworkerServerPlugin {
+  void onAdd(NetworkerServer server) {}
+  void onRemove(NetworkerServer server) {}
   void onConnect(NetworkerServer server, ConnectionId id) {}
   void onDisconnect(NetworkerServer server, ConnectionId id) {}
 }

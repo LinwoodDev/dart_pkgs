@@ -93,13 +93,15 @@ class _ExactSliderState extends State<ExactSlider> {
                   _changeValue(value);
                 },
               );
-              final header = Padding(
-                padding: const EdgeInsets.all(8),
-                child: DefaultTextStyle(
-                  style: Theme.of(context).textTheme.titleMedium!,
-                  child: widget.header!,
-                ),
-              );
+              final header = widget.header == null
+                  ? null
+                  : Padding(
+                      padding: const EdgeInsets.all(8),
+                      child: DefaultTextStyle(
+                        style: Theme.of(context).textTheme.titleMedium!,
+                        child: widget.header!,
+                      ),
+                    );
               final resetButton = IconButton(
                   onPressed: () {
                     _changeValue(widget.defaultValue);
@@ -111,7 +113,7 @@ class _ExactSliderState extends State<ExactSlider> {
               if (width < 300) {
                 return Column(
                   children: [
-                    header,
+                    if (header != null) header,
                     Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.center,
@@ -129,7 +131,7 @@ class _ExactSliderState extends State<ExactSlider> {
               if (width < 500) {
                 return Column(
                   children: [
-                    header,
+                    if (header != null) header,
                     Row(children: [
                       if (widget.leading != null) widget.leading!,
                       ConstrainedBox(
@@ -144,15 +146,16 @@ class _ExactSliderState extends State<ExactSlider> {
               }
               return Row(
                 children: [
-                  SizedBox(
-                    width: 160,
-                    child: Row(
-                      children: [
-                        if (widget.leading != null) widget.leading!,
-                        Expanded(child: header),
-                      ],
+                  if (widget.header != null || widget.leading != null)
+                    SizedBox(
+                      width: 160,
+                      child: Row(
+                        children: [
+                          if (widget.leading != null) widget.leading!,
+                          if (widget.header != null) Expanded(child: header!),
+                        ],
+                      ),
                     ),
-                  ),
                   const SizedBox(width: 8),
                   ConstrainedBox(
                     constraints: const BoxConstraints(maxWidth: 75),

@@ -12,6 +12,14 @@ part 'server.dart';
 typedef ConnectionId = int;
 typedef RawData = Uint8List;
 
+const kNetworkerConnectionIdAuthority = -1;
+const kNetworkerConnectionIdAny = -2;
+
+extension NetworkerConnectionId on ConnectionId {
+  bool get isServer => this == kNetworkerConnectionIdAny;
+  bool get isAuthority => this == kNetworkerConnectionIdAuthority;
+}
+
 abstract class NetworkerConnection extends NetworkerMessenger<RawData>
     implements NetworkerBase {
   NetworkerConnection() {

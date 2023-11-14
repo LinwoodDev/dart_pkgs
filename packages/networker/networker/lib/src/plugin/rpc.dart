@@ -4,77 +4,112 @@ import 'dart:typed_data';
 
 import '../../networker.dart';
 
-final class RpcMessage<T> {
+final class RpcRequest {
   final Map<String, dynamic> data;
 
-  RpcMessage.fromData(ConnectionId client, T message)
-      : data = {'client': client, 'message': message};
-  const RpcMessage(this.data);
+  RpcRequest(this.data);
+
+  dynamic get message => data['message'];
+  String get function => data['function'];
+  ConnectionId get receiver => data['receiver'];
+}
+
+final class RpcMessage extends RpcRequest {
+  RpcMessage(super.data);
 
   ConnectionId get client => data['client'];
-  T get message => data['message'];
 }
 
 enum RpcType { authority, any, disabled }
 
 final class RpcFunction {
-  final String client;
   final RpcType type;
   final void Function(RpcMessage message) onMessage;
 
-  RpcFunction(this.client, this.type, this.onMessage);
+  RpcFunction(this.type, this.onMessage);
+
+  bool shouldRun(ConnectionId id) {
+    switch (type) {
+      case RpcType.authority:
+        return id.isAuthority;
+      case RpcType.any:
+        return true;
+      case RpcType.disabled:
+        return false;
+    }
+  }
 }
 
-class RpcNetworkerServerPlugin extends NetworkerServerPlugin {
+mixin RpcPlugin {
+  final Map<String, RpcFunction> _functions = {};
+
+  void addFunction(String name, RpcFunction function) {
+    _functions[name] = function;
+  }
+
+  void containsFunction(String name) => _functions.containsKey(name);
+
+  void removeFunction(String name) {
+    _functions.remove(name);
+  }
+
+  void runFunction(RpcMessage message) {
+    final function = _functions[message.function];
+    if (function != null && function.shouldRun(message.client)) {
+      function.onMessage(message);
+    }
+  }
+}
+
+class RpcNetworkerServerPlugin extends NetworkerServerPlugin with RpcPlugin {
   final Map<(NetworkerServer server, ConnectionId connection),
-      StreamSubscription> _functions = {};
+      StreamSubscription> _subscriptions = {};
+
+  RpcMessage Function(RpcMessage request)? _onRequest;
+
+  set onRequest(RpcMessage Function(RpcMessage request) onRequest) {
+    _onRequest = onRequest;
+  }
 
   @override
   void onConnect(NetworkerServer server, ConnectionId id) {
     final sub = server.getConnection(id)?.read.listen((event) {
-      for (final element in server.connectionIds) {
-        server.getConnection(element)?.sendMessage(
-                Uint8List.fromList(utf8.encode(jsonEncode(RpcMessage.fromData(
-              id,
-              event,
-            )))));
+      var message =
+          RpcMessage({...jsonDecode(utf8.decode(event)), 'client': id});
+      message = _onRequest?.call(message) ?? message;
+      final receiver = message.receiver;
+      final data = Uint8List.fromList(utf8.encode(jsonEncode(message.data)));
+      switch (receiver) {
+        case kNetworkerConnectionIdAny:
+          for (final element in server.connectionIds) {
+            server.getConnection(element)?.sendMessage(data);
+          }
+          break;
+        case kNetworkerConnectionIdAuthority:
+          runFunction(message);
+          break;
+        default:
+          server.getConnection(id)?.sendMessage(data);
+          break;
       }
     });
     if (sub != null) {
-      _functions[(server, id)] = sub;
+      _subscriptions[(server, id)] = sub;
     }
   }
 
   @override
   void onDisconnect(NetworkerServer server, ConnectionId id) {
-    _functions.remove((server, id))?.cancel();
+    _subscriptions.remove((server, id))?.cancel();
   }
 }
 
-class RpcNetworkerPlugin
-    extends NetworkerPlugin<Map<String, dynamic>, RpcMessage> {
-  final Map<String, RpcFunction> _functions = {};
-
+class RpcNetworkerPlugin extends NetworkerMessenger<Map<String, dynamic>>
+    with RpcPlugin {
   @override
   void onMessage(data) {
     super.onMessage(data);
     final message = decode(data);
-    _functions[message.client]?.onMessage(message);
+    runFunction(RpcMessage(message));
   }
-
-  void addFunction(String client, RpcFunction function) {
-    _functions[client] = function;
-  }
-
-  void containsFunction(String client) => _functions.containsKey(client);
-
-  void removeFunction(String client) {
-    _functions.remove(client);
-  }
-
-  @override
-  RpcMessage decode(data) => RpcMessage(data);
-
-  @override
-  encode(RpcMessage data) => data.data;
 }

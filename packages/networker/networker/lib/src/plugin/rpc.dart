@@ -32,7 +32,7 @@ class RpcNetworkerServerPlugin extends NetworkerServerPlugin {
   @override
   void onConnect(NetworkerServer server, ConnectionId id) {
     final sub = server.getConnection(id)?.read.listen((event) {
-      for (var element in server.connectionIds) {
+      for (final element in server.connectionIds) {
         server.getConnection(element)?.sendMessage(
                 Uint8List.fromList(utf8.encode(jsonEncode(RpcMessage.fromData(
               id,
@@ -51,7 +51,8 @@ class RpcNetworkerServerPlugin extends NetworkerServerPlugin {
   }
 }
 
-class RpcNetworkerPlugin extends NetworkerPlugin<dynamic, RpcMessage> {
+class RpcNetworkerPlugin
+    extends NetworkerPlugin<Map<String, dynamic>, RpcMessage> {
   final Map<String, RpcFunction> _functions = {};
 
   @override

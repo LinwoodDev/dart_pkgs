@@ -1,6 +1,8 @@
 part of 'connection.dart';
 
-abstract class NetworkerServer<T extends NetworkerConnection> {
+abstract class NetworkerServer<T extends NetworkerConnection>
+    extends NetworkerBase {
+  final Set<NetworkerServerPlugin> _plugins = {};
   final Map<ConnectionId, (T, StreamSubscription<RawData>)> _connections = {};
   final StreamController<ConnectionId> _connectController =
       StreamController.broadcast();
@@ -14,6 +16,14 @@ abstract class NetworkerServer<T extends NetworkerConnection> {
 
   T? getConnection(ConnectionId id) => _connections[id]?.$1;
 
+  void addPlugin(NetworkerServerPlugin plugin) {
+    _plugins.add(plugin);
+  }
+
+  void removePlugin(NetworkerServerPlugin plugin) {
+    _plugins.remove(plugin);
+  }
+
   @protected
   bool addConnection(ConnectionId id, T connection) {
     if (_connections.containsKey(id)) return false;
@@ -23,6 +33,9 @@ abstract class NetworkerServer<T extends NetworkerConnection> {
         sendMessage(id, data);
       })
     );
+    for (final element in _plugins) {
+      element.onConnect(this, id);
+    }
     _connectController.add(id);
     return true;
   }
@@ -30,6 +43,9 @@ abstract class NetworkerServer<T extends NetworkerConnection> {
   @protected
   bool removeConnection(ConnectionId id, T connection) {
     if (_connections.containsKey(id)) return false;
+    for (final element in _plugins) {
+      element.onDisconnect(this, id);
+    }
     _disconnectController.add(id);
     _connections.remove(id)?.$2.cancel();
     return true;
@@ -42,7 +58,4 @@ abstract class NetworkerServer<T extends NetworkerConnection> {
   void sendMessage(ConnectionId id, RawData data) {
     getConnection(id)?.sendMessage(data);
   }
-
-  bool get isClosed;
-  void close();
 }

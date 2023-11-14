@@ -50,20 +50,6 @@ class NetworkerMessenger<T> extends NetworkerPlugin<T, T> {
 }
 
 abstract class NetworkerServerPlugin {
-  final Map<NetworkerServer, StreamSubscription<ConnectionId>>
-      _connectListeners = {}, _disconnectListeners = {};
-  void init(NetworkerServer server) {
-    _connectListeners[server] =
-        server.connect.listen((event) => onConnect(server, event));
-    _disconnectListeners[server] =
-        server.disconnect.listen((event) => onDisconnect(server, event));
-  }
-
-  void dispose(NetworkerServer server) {
-    _connectListeners.remove(server)?.cancel();
-    _disconnectListeners.remove(server)?.cancel();
-  }
-
   void onConnect(NetworkerServer server, ConnectionId id) {}
   void onDisconnect(NetworkerServer server, ConnectionId id) {}
 }

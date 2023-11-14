@@ -78,29 +78,39 @@ class RpcNetworkerServerPlugin extends NetworkerServerPlugin with RpcPlugin {
     _onRequest = onRequest;
   }
 
+  void send(NetworkerServer server, ConnectionId id, String function,
+      dynamic message) {
+    _send(server, id, RpcRequest(id, function, message).data);
+  }
+
+  void _send(
+      NetworkerServer server, ConnectionId id, Map<String, dynamic> event) {
+    var message = RpcMessage({...event, 'client': id});
+    message = _onRequest?.call(message) ?? message;
+    final receiver = message.receiver;
+    final data = Uint8List.fromList(utf8.encode(jsonEncode(message.data)));
+    switch (receiver) {
+      case kNetworkerConnectionIdAny:
+        for (final element in server.connectionIds) {
+          server.getConnection(element)?.sendMessage(data);
+        }
+        runFunction(message);
+        break;
+      case kNetworkerConnectionIdAuthority:
+        runFunction(message);
+        break;
+      default:
+        server.getConnection(id)?.sendMessage(data);
+        break;
+    }
+  }
+
   @override
   void onConnect(NetworkerServer server, ConnectionId id) {
-    final sub = server.getConnection(id)?.read.listen((event) {
-      var message =
-          RpcMessage({...jsonDecode(utf8.decode(event)), 'client': id});
-      message = _onRequest?.call(message) ?? message;
-      final receiver = message.receiver;
-      final data = Uint8List.fromList(utf8.encode(jsonEncode(message.data)));
-      switch (receiver) {
-        case kNetworkerConnectionIdAny:
-          for (final element in server.connectionIds) {
-            server.getConnection(element)?.sendMessage(data);
-          }
-          runFunction(message);
-          break;
-        case kNetworkerConnectionIdAuthority:
-          runFunction(message);
-          break;
-        default:
-          server.getConnection(id)?.sendMessage(data);
-          break;
-      }
-    });
+    final sub = server
+        .getConnection(id)
+        ?.read
+        .listen((event) => _send(server, id, jsonDecode(utf8.decode(event))));
     if (sub != null) {
       _subscriptions[(server, id)] = sub;
     }

@@ -84,6 +84,7 @@ class RpcNetworkerServerPlugin extends NetworkerServerPlugin with RpcPlugin {
           for (final element in server.connectionIds) {
             server.getConnection(element)?.sendMessage(data);
           }
+          runFunction(message);
           break;
         case kNetworkerConnectionIdAuthority:
           runFunction(message);

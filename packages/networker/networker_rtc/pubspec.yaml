@@ -15,5 +15,5 @@ dependencies:
       ref: dbdf194a324d1826a7977aac5bfe23d71f42abe2
 
 dev_dependencies:
-  lints: ^2.0.0
+  lints: ^3.0.0
   test: ^1.16.0

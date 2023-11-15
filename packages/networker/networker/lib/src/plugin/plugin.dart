@@ -15,12 +15,8 @@ abstract class NetworkerPlugin<I, O> {
   O decode(I data);
   I encode(O data);
 
-  void _onPluginMessage(O data) {
-    _writeController.add(encode(data));
-  }
-
   void addPlugin(NetworkerPlugin<O, dynamic> plugin) {
-    _plugins[plugin] = plugin._writeController.stream.listen(_onPluginMessage);
+    _plugins[plugin] = plugin._writeController.stream.listen(sendMessage);
   }
 
   void removePlugin(NetworkerPlugin<O, dynamic> plugin) {

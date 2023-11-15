@@ -14,12 +14,6 @@ class NetworkerSocketServerConnection extends NetworkerConnection {
 
   @override
   bool get isClosed => socket.closeReason != null;
-
-  @override
-  Future<void> send(RawData data) {
-    socket.add(data);
-    return socket.done;
-  }
 }
 
 class NetworkerSocketServer
@@ -54,5 +48,10 @@ class NetworkerSocketServer
       } catch (_) {}
     }
     _isClosed = true;
+  }
+
+  @override
+  void sendMessage(ConnectionId id, RawData data) {
+    getConnection(id)?.socket.add(data);
   }
 }

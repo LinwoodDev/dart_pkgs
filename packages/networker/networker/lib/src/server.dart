@@ -57,7 +57,5 @@ abstract class NetworkerServer<T extends NetworkerConnection>
     getConnection(id)?.onMessage(data);
   }
 
-  void sendMessage(ConnectionId id, RawData data) {
-    getConnection(id)?.sendMessage(data);
-  }
+  void sendMessage(ConnectionId id, RawData data);
 }

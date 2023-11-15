@@ -21,14 +21,4 @@ extension NetworkerConnectionId on ConnectionId {
 }
 
 abstract class NetworkerConnection extends NetworkerMessenger<RawData>
-    implements NetworkerBase {
-  NetworkerConnection() {
-    write.listen((data) {
-      if (isClosed) {
-        throw StateError('Connection is closed');
-      }
-      send(data);
-    });
-  }
-  Future<void> send(RawData data);
-}
+    implements NetworkerBase {}

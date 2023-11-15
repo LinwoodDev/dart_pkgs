@@ -105,7 +105,7 @@ class RpcNetworkerServerPlugin extends NetworkerServerPlugin with RpcPlugin {
         runFunction(message);
         break;
       default:
-        server.getConnection(id)?.sendMessage(data);
+        server.getConnection(receiver)?.sendMessage(data);
         break;
     }
   }

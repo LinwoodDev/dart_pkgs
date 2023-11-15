@@ -1,9 +1,9 @@
+/*
 import 'dart:io';
 
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:networker/networker.dart';
 import 'package:networker_rtc/config.dart';
-
 class NetworkerRtcServerConnection extends NetworkerConnection {
   final String id;
 
@@ -49,3 +49,4 @@ class NetworkerSocketServer
     _isClosed = true;
   }
 }
+*/

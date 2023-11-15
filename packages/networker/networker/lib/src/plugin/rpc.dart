@@ -25,6 +25,7 @@ final class RpcMessage extends RpcRequest {
   RpcMessage(super.data) : super.fromData();
 
   ConnectionId get client => data['client'];
+  ConnectionId get you => data['you'];
 }
 
 enum RpcType { authority, any, disabled }
@@ -32,10 +33,12 @@ enum RpcType { authority, any, disabled }
 final class RpcFunction {
   final RpcType type;
   final void Function(RpcMessage message) onMessage;
+  final bool canCallLocally;
 
-  RpcFunction(this.type, this.onMessage);
+  RpcFunction(this.type, this.onMessage, [this.canCallLocally = false]);
 
-  bool shouldRun(ConnectionId id) {
+  bool shouldRun(ConnectionId id, ConnectionId you, [bool forceLocal = false]) {
+    if (!forceLocal && !canCallLocally && id == you) return false;
     switch (type) {
       case RpcType.authority:
         return id.isAuthority;
@@ -62,9 +65,10 @@ mixin RpcPlugin {
     _functions.remove(name);
   }
 
-  void runFunction(RpcMessage message) {
+  void runFunction(RpcMessage message, [bool forceLocal = false]) {
     final function = _functions[message.function];
-    if (function != null && function.shouldRun(message.client)) {
+    if (function != null &&
+        function.shouldRun(message.client, message.you, forceLocal)) {
       function.onMessage(message);
     }
   }
@@ -90,14 +94,21 @@ class RpcNetworkerServerPlugin extends NetworkerServerPlugin with RpcPlugin {
 
   void _send(
       NetworkerServer server, ConnectionId id, Map<String, dynamic> event) {
-    var message = RpcMessage({...event, 'client': id});
+    var message = RpcMessage(
+        {...event, 'client': id, 'you': kNetworkerConnectionIdAuthority});
     message = _onRequest?.call(message) ?? message;
+    Uint8List getData(ConnectionId you) {
+      var newMessage = RpcMessage({...message.data, 'you': you});
+      final data = Uint8List.fromList(utf8.encode(jsonEncode(newMessage.data)));
+      return data;
+    }
+
     final receiver = message.receiver;
-    final data = Uint8List.fromList(utf8.encode(jsonEncode(message.data)));
+
     switch (receiver) {
       case kNetworkerConnectionIdAny:
         for (final element in server.connectionIds) {
-          server.getConnection(element)?.sendMessage(data);
+          server.getConnection(element)?.sendMessage(getData(element));
         }
         runFunction(message);
         break;
@@ -105,7 +116,7 @@ class RpcNetworkerServerPlugin extends NetworkerServerPlugin with RpcPlugin {
         runFunction(message);
         break;
       default:
-        server.getConnection(receiver)?.sendMessage(data);
+        server.getConnection(receiver)?.sendMessage(getData(receiver));
         break;
     }
   }

@@ -13,7 +13,7 @@ class NetworkerSocketServerConnection extends NetworkerConnection {
   }
 
   @override
-  bool get isClosed => socket.closeReason == null;
+  bool get isClosed => socket.closeReason != null;
 
   @override
   Future<void> send(RawData data) {
@@ -46,6 +46,11 @@ class NetworkerSocketServer
       try {
         final socket = await WebSocketTransformer.upgrade(request);
         addConnection(socket.hashCode, NetworkerSocketServerConnection(socket));
+        socket.listen((event) {
+          onMessage(socket.hashCode, event);
+        }, onDone: () {
+          removeConnection(socket.hashCode);
+        });
       } catch (_) {}
     }
     _isClosed = true;

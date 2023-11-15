@@ -40,7 +40,7 @@ class EchoNetworkerPlugin extends NetworkerMessenger<RawData> {
 }
 
 class JsonEchoNetworkerPlugin extends EchoNetworkerPlugin {
-  JsonEchoNetworkerPlugin._add(NetworkerServer server) : super._add(server);
+  JsonEchoNetworkerPlugin._add(super.server) : super._add();
 
   static JsonEchoNetworkerPlugin add(NetworkerServer server) {
     return JsonEchoNetworkerPlugin._add(server);

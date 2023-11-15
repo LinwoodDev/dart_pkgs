@@ -43,8 +43,10 @@ class NetworkerSocketServer
 
   Future<void> waitForConnections() async {
     await for (var request in server.where(filterConnections ?? (e) => true)) {
-      final socket = await WebSocketTransformer.upgrade(request);
-      addConnection(socket.hashCode, NetworkerSocketServerConnection(socket));
+      try {
+        final socket = await WebSocketTransformer.upgrade(request);
+        addConnection(socket.hashCode, NetworkerSocketServerConnection(socket));
+      } catch (_) {}
     }
     _isClosed = true;
   }

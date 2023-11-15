@@ -7,7 +7,11 @@ class NetworkerSocketClient extends NetworkerClient {
   NetworkerSocketClient(Uri url, {Iterable<String>? protocols})
       : this.fromChannel(WebSocketChannel.connect(url, protocols: protocols));
 
-  NetworkerSocketClient.fromChannel(this.channel);
+  NetworkerSocketClient.fromChannel(this.channel) {
+    channel.stream.listen((event) {
+      onMessage(event);
+    });
+  }
 
   @override
   void close() {

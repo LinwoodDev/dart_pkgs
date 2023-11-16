@@ -44,7 +44,7 @@ abstract class NetworkerServer<T extends NetworkerConnection>
 
   @protected
   bool removeConnection(ConnectionId id) {
-    if (_connections.containsKey(id)) return false;
+    if (!_connections.containsKey(id)) return false;
     for (final element in _plugins) {
       element.onDisconnect(this, id);
     }

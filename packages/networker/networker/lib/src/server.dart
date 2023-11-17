@@ -14,8 +14,6 @@ abstract class NetworkerServer<T extends NetworkerConnection>
 
   List<ConnectionId> get connectionIds => _connections.keys.toList();
 
-  String get address;
-
   T? getConnection(ConnectionId id) => _connections[id]?.$1;
 
   void addPlugin(NetworkerServerPlugin plugin) {

@@ -4,8 +4,9 @@ import 'package:networker/networker.dart';
 
 class NetworkerSocketServerConnection extends NetworkerConnection {
   final WebSocket socket;
+  final Uri address;
 
-  NetworkerSocketServerConnection(this.socket);
+  NetworkerSocketServerConnection(this.socket, this.address);
 
   @override
   void close() {
@@ -36,13 +37,18 @@ class NetworkerSocketServer
   bool get isClosed => _isClosed;
 
   @override
-  String get address => "ws://${server.address.host}:${server.port}";
+  Uri get address => Uri(
+        scheme: 'ws',
+        host: server.address.host,
+        port: server.port,
+      );
 
   Future<void> waitForConnections() async {
     await for (var request in server.where(filterConnections ?? (e) => true)) {
       try {
         final socket = await WebSocketTransformer.upgrade(request);
-        addConnection(socket.hashCode, NetworkerSocketServerConnection(socket));
+        addConnection(socket.hashCode,
+            NetworkerSocketServerConnection(socket, request.requestedUri));
         socket.listen((event) {
           onMessage(socket.hashCode, event);
         }, onDone: () {

@@ -3,11 +3,14 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 
 class NetworkerSocketClient extends NetworkerClient {
   final WebSocketChannel channel;
+  @override
+  final Uri address;
 
-  NetworkerSocketClient(Uri url, {Iterable<String>? protocols})
-      : this.fromChannel(WebSocketChannel.connect(url, protocols: protocols));
+  NetworkerSocketClient(Uri address, {Iterable<String>? protocols})
+      : this.fromChannel(
+            address, WebSocketChannel.connect(address, protocols: protocols));
 
-  NetworkerSocketClient.fromChannel(this.channel) {
+  NetworkerSocketClient.fromChannel(this.address, this.channel) {
     channel.stream.listen((event) {
       onMessage(event);
     });

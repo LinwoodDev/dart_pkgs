@@ -57,7 +57,7 @@ class _ColorPickerState<T> extends State<ColorPicker<T>> {
 
   @override
   Widget build(BuildContext context) {
-    if (_getColorValueFromHexString(_hexController.text) != color.value) {
+    if (_hexController.text.toColorValue() != color.value) {
       _hexController.text = color.value.toHexColor(alpha: false);
     }
     return Dialog(
@@ -156,7 +156,7 @@ class _ColorPickerState<T> extends State<ColorPicker<T>> {
               controller: _hexController,
               decoration: const InputDecoration(filled: true),
               onSubmitted: (value) {
-                final valueNumber = _getColorValueFromHexString(value);
+                final valueNumber = value.toColorValue();
                 if (valueNumber == null) return;
                 setState(() {
                   color = Color(valueNumber).withAlpha(255);
@@ -166,33 +166,6 @@ class _ColorPickerState<T> extends State<ColorPicker<T>> {
           ),
         ],
       );
-
-  int? _getColorValueFromHexString(String value) {
-    value = value.trim();
-    if (value.startsWith('#')) value = value.substring(1);
-    if (value.length == 3) {
-      value = '${value}f';
-    } else if (value.length == 6) {
-      value = '${value}ff';
-    }
-    if (value.length == 4) {
-      value = value[0] +
-          value[0] +
-          value[1] +
-          value[1] +
-          value[2] +
-          value[2] +
-          value[3] +
-          value[3];
-    }
-    if (value.length != 8) {
-      return null;
-    }
-    // RGBA to ARGB
-    value = value[6] + value[7] + value.substring(2, 6) + value[0] + value[1];
-    value = value.trim();
-    return int.tryParse(value, radix: 16);
-  }
 
   Widget _buildProperties() => Column(children: [
         ExactSlider(

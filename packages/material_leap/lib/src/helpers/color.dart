@@ -31,3 +31,31 @@ extension ColorHelper on Color {
   String toHexColor({bool leadingHash = true, bool alpha = true}) =>
       value.toHexColor(leadingHash: leadingHash, alpha: alpha);
 }
+
+extension StringColorHelper on String {
+  int? toColorValue() {
+    var value = trim();
+    if (value.startsWith('#')) value = value.substring(1);
+    if (value.length == 3) {
+      value = '${value}f';
+    } else if (value.length == 6) {
+      value = '${value}ff';
+    }
+    if (value.length == 4) {
+      value = value[0] +
+          value[0] +
+          value[1] +
+          value[1] +
+          value[2] +
+          value[2] +
+          value[3] +
+          value[3];
+    }
+    if (value.length != 8) {
+      return null;
+    }
+    // RGBA to ARGB
+    value = value.substring(6) + value.substring(0, 6);
+    return int.tryParse(value, radix: 16);
+  }
+}

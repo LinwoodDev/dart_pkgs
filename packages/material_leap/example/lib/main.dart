@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:material_leap/l10n/leap_localizations.dart';
 
 import 'dialogs.dart';
@@ -50,6 +51,8 @@ class _MyAppState extends State<MyApp> {
       ),
       themeMode: _themeMode,
       localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
         LeapLocalizations.delegate,
       ],
       supportedLocales: LeapLocalizations.supportedLocales,

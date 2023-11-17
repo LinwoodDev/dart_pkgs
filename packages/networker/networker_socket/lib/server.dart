@@ -35,6 +35,9 @@ class NetworkerSocketServer
   @override
   bool get isClosed => _isClosed;
 
+  @override
+  String get address => "ws://${server.address.host}:${server.port}";
+
   Future<void> waitForConnections() async {
     await for (var request in server.where(filterConnections ?? (e) => true)) {
       try {

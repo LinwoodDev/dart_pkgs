@@ -27,7 +27,9 @@ abstract class NetworkerPlugin<I, O> {
     final rawData = decode(data);
     _readController.add(rawData);
     for (final plugin in _plugins.keys) {
-      plugin.onMessage(rawData);
+      try {
+        plugin.onMessage(rawData);
+      } catch (_) {}
     }
   }
 

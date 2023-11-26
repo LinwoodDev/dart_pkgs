@@ -9,3 +9,4 @@ This is a collection of useful flutter plugins.
 ### Internal
 
 * [lw_sysinfo](packages/lw_sysinfo) - Get system information
+* [networker](packages/networker) - Universal Networking library for dart/flutter

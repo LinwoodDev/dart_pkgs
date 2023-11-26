@@ -185,6 +185,12 @@ abstract class LeapLocalizations {
   /// In en, this message translates to:
   /// **'Blue'**
   String get blue;
+
+  /// No description provided for @more.
+  ///
+  /// In en, this message translates to:
+  /// **'More'**
+  String get more;
 }
 
 class _LeapLocalizationsDelegate

@@ -21,4 +21,7 @@ class LeapLocalizationsFi extends LeapLocalizations {
 
   @override
   String get blue => 'Sininen';
+
+  @override
+  String get more => 'More';
 }

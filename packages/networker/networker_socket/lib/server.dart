@@ -4,6 +4,7 @@ import 'package:networker/networker.dart';
 
 class NetworkerSocketServerConnection extends NetworkerConnection {
   final WebSocket socket;
+  @override
   final Uri address;
 
   NetworkerSocketServerConnection(this.socket, this.address);

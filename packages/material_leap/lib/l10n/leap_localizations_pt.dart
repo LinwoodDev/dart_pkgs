@@ -21,6 +21,9 @@ class LeapLocalizationsPt extends LeapLocalizations {
 
   @override
   String get blue => 'azul';
+
+  @override
+  String get more => 'More';
 }
 
 /// The translations for Portuguese, as used in Brazil (`pt_BR`).

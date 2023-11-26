@@ -21,4 +21,7 @@ class LeapLocalizationsEs extends LeapLocalizations {
 
   @override
   String get blue => 'Azul';
+
+  @override
+  String get more => 'More';
 }

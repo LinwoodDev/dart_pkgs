@@ -21,4 +21,7 @@ class LeapLocalizationsRu extends LeapLocalizations {
 
   @override
   String get blue => 'Синий';
+
+  @override
+  String get more => 'More';
 }

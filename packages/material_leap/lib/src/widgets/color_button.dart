@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class ColorButton extends StatelessWidget {
   final Color color;
   final bool selected;
-  final VoidCallback? onTap, onLongPress;
+  final VoidCallback? onTap, onLongPress, onSecondaryTap;
   final double size;
 
   const ColorButton({
@@ -12,6 +12,7 @@ class ColorButton extends StatelessWidget {
     this.selected = false,
     this.onTap,
     this.onLongPress,
+    this.onSecondaryTap,
     this.size = 8,
   });
 
@@ -22,6 +23,7 @@ class ColorButton extends StatelessWidget {
       child: InkWell(
         onTap: onTap,
         onLongPress: onLongPress,
+        onSecondaryTap: onSecondaryTap,
         borderRadius: BorderRadius.circular(12),
         child: AspectRatio(
           aspectRatio: 1,

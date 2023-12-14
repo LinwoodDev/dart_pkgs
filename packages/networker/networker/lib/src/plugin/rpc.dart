@@ -79,9 +79,9 @@ class RpcNetworkerServerPlugin extends NetworkerServerPlugin with RpcPlugin {
       StreamSubscription> _subscriptions = {};
   final Set<NetworkerServer> _servers = {};
 
-  RpcMessage Function(RpcMessage request)? _onRequest;
+  RpcMessage? Function(RpcMessage request)? _onRequest;
 
-  set onRequest(RpcMessage Function(RpcMessage request) onRequest) {
+  set onRequest(RpcMessage Function(RpcMessage? request) onRequest) {
     _onRequest = onRequest;
   }
 
@@ -96,7 +96,9 @@ class RpcNetworkerServerPlugin extends NetworkerServerPlugin with RpcPlugin {
       NetworkerServer server, ConnectionId id, Map<String, dynamic> event) {
     var message = RpcMessage(
         {...event, 'client': id, 'you': kNetworkerConnectionIdAuthority});
-    message = _onRequest?.call(message) ?? message;
+    final modified = _onRequest?.call(message);
+    if (modified == null && _onRequest != null) return;
+    message = modified ?? message;
     Uint8List getData(ConnectionId you) {
       var newMessage = RpcMessage({...message.data, 'you': you});
       final data = Uint8List.fromList(utf8.encode(jsonEncode(newMessage.data)));

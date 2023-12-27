@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
+extension MenuControllerToggleExtension on MenuController {
+  void toggle({Offset? position}) =>
+      isOpen ? close() : open(position: position);
+}
+
 MenuAnchorChildBuilder defaultMenuButton({
   Widget? icon,
   bool enabled = true,
@@ -12,9 +17,7 @@ MenuAnchorChildBuilder defaultMenuButton({
               icon ?? const PhosphorIcon(PhosphorIconsLight.dotsThreeVertical),
           tooltip: tooltip,
           isSelected: isSelected,
-          onPressed: enabled
-              ? () => controller.isOpen ? controller.close() : controller.open()
-              : null,
+          onPressed: enabled ? controller.toggle : null,
         );
 
 MenuAnchorChildBuilder defaultFilledMenuButton({
@@ -28,9 +31,7 @@ MenuAnchorChildBuilder defaultFilledMenuButton({
               icon ?? const PhosphorIcon(PhosphorIconsLight.dotsThreeVertical),
           tooltip: tooltip,
           isSelected: isSelected,
-          onPressed: enabled
-              ? () => controller.isOpen ? controller.close() : controller.open()
-              : null,
+          onPressed: enabled ? controller.toggle : null,
         );
 
 MenuAnchorChildBuilder defaultFilledTonalMenuButton({
@@ -44,9 +45,7 @@ MenuAnchorChildBuilder defaultFilledTonalMenuButton({
               icon ?? const PhosphorIcon(PhosphorIconsLight.dotsThreeVertical),
           tooltip: tooltip,
           isSelected: isSelected,
-          onPressed: enabled
-              ? () => controller.isOpen ? controller.close() : controller.open()
-              : null,
+          onPressed: enabled ? controller.toggle : null,
         );
 
 MenuAnchorChildBuilder defaultOutlinedMenuButton({
@@ -60,7 +59,5 @@ MenuAnchorChildBuilder defaultOutlinedMenuButton({
               icon ?? const PhosphorIcon(PhosphorIconsLight.dotsThreeVertical),
           tooltip: tooltip,
           isSelected: isSelected,
-          onPressed: enabled
-              ? () => controller.isOpen ? controller.close() : controller.open()
-              : null,
+          onPressed: enabled ? controller.toggle : null,
         );

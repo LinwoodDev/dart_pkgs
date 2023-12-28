@@ -8,13 +8,15 @@ extension MenuControllerToggleExtension on MenuController {
 
 MenuAnchorChildBuilder defaultMenuButton({
   Widget? icon,
+  MenuAnchorChildBuilder? iconBuilder,
   bool enabled = true,
   bool? isSelected,
   String? tooltip,
 }) =>
     (context, controller, child) => IconButton(
-          icon:
-              icon ?? const PhosphorIcon(PhosphorIconsLight.dotsThreeVertical),
+          icon: iconBuilder?.call(context, controller, child) ??
+              icon ??
+              const PhosphorIcon(PhosphorIconsLight.dotsThreeVertical),
           tooltip: tooltip,
           isSelected: isSelected,
           onPressed: enabled ? controller.toggle : null,
@@ -22,13 +24,15 @@ MenuAnchorChildBuilder defaultMenuButton({
 
 MenuAnchorChildBuilder defaultFilledMenuButton({
   Widget? icon,
+  MenuAnchorChildBuilder? iconBuilder,
   bool enabled = true,
   bool? isSelected,
   String? tooltip,
 }) =>
     (context, controller, child) => IconButton.filled(
-          icon:
-              icon ?? const PhosphorIcon(PhosphorIconsLight.dotsThreeVertical),
+          icon: iconBuilder?.call(context, controller, child) ??
+              icon ??
+              const PhosphorIcon(PhosphorIconsLight.dotsThreeVertical),
           tooltip: tooltip,
           isSelected: isSelected,
           onPressed: enabled ? controller.toggle : null,
@@ -36,13 +40,15 @@ MenuAnchorChildBuilder defaultFilledMenuButton({
 
 MenuAnchorChildBuilder defaultFilledTonalMenuButton({
   Widget? icon,
+  MenuAnchorChildBuilder? iconBuilder,
   bool enabled = true,
   bool? isSelected,
   String? tooltip,
 }) =>
     (context, controller, child) => IconButton.filledTonal(
-          icon:
-              icon ?? const PhosphorIcon(PhosphorIconsLight.dotsThreeVertical),
+          icon: iconBuilder?.call(context, controller, child) ??
+              icon ??
+              const PhosphorIcon(PhosphorIconsLight.dotsThreeVertical),
           tooltip: tooltip,
           isSelected: isSelected,
           onPressed: enabled ? controller.toggle : null,
@@ -50,13 +56,15 @@ MenuAnchorChildBuilder defaultFilledTonalMenuButton({
 
 MenuAnchorChildBuilder defaultOutlinedMenuButton({
   Widget? icon,
+  MenuAnchorChildBuilder? iconBuilder,
   bool enabled = true,
   bool? isSelected,
   String? tooltip,
 }) =>
     (context, controller, child) => IconButton.outlined(
-          icon:
-              icon ?? const PhosphorIcon(PhosphorIconsLight.dotsThreeVertical),
+          icon: iconBuilder?.call(context, controller, child) ??
+              icon ??
+              const PhosphorIcon(PhosphorIconsLight.dotsThreeVertical),
           tooltip: tooltip,
           isSelected: isSelected,
           onPressed: enabled ? controller.toggle : null,

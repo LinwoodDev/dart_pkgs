@@ -11,6 +11,7 @@ MenuAnchorChildBuilder defaultMenuButton({
   MenuAnchorChildBuilder? iconBuilder,
   bool enabled = true,
   bool? isSelected,
+  bool selectedOnOpen = true,
   String? tooltip,
 }) =>
     (context, controller, child) => IconButton(
@@ -18,7 +19,7 @@ MenuAnchorChildBuilder defaultMenuButton({
               icon ??
               const PhosphorIcon(PhosphorIconsLight.dotsThreeVertical),
           tooltip: tooltip,
-          isSelected: isSelected,
+          isSelected: (selectedOnOpen && controller.isOpen) ? true : isSelected,
           onPressed: enabled ? controller.toggle : null,
         );
 
@@ -27,6 +28,7 @@ MenuAnchorChildBuilder defaultFilledMenuButton({
   MenuAnchorChildBuilder? iconBuilder,
   bool enabled = true,
   bool? isSelected,
+  bool selectedOnOpen = true,
   String? tooltip,
 }) =>
     (context, controller, child) => IconButton.filled(
@@ -34,7 +36,7 @@ MenuAnchorChildBuilder defaultFilledMenuButton({
               icon ??
               const PhosphorIcon(PhosphorIconsLight.dotsThreeVertical),
           tooltip: tooltip,
-          isSelected: isSelected,
+          isSelected: (selectedOnOpen && controller.isOpen) ? true : isSelected,
           onPressed: enabled ? controller.toggle : null,
         );
 
@@ -43,6 +45,7 @@ MenuAnchorChildBuilder defaultFilledTonalMenuButton({
   MenuAnchorChildBuilder? iconBuilder,
   bool enabled = true,
   bool? isSelected,
+  bool selectedOnOpen = true,
   String? tooltip,
 }) =>
     (context, controller, child) => IconButton.filledTonal(
@@ -50,7 +53,7 @@ MenuAnchorChildBuilder defaultFilledTonalMenuButton({
               icon ??
               const PhosphorIcon(PhosphorIconsLight.dotsThreeVertical),
           tooltip: tooltip,
-          isSelected: isSelected,
+          isSelected: (selectedOnOpen && controller.isOpen) ? true : isSelected,
           onPressed: enabled ? controller.toggle : null,
         );
 
@@ -59,6 +62,7 @@ MenuAnchorChildBuilder defaultOutlinedMenuButton({
   MenuAnchorChildBuilder? iconBuilder,
   bool enabled = true,
   bool? isSelected,
+  bool selectedOnOpen = true,
   String? tooltip,
 }) =>
     (context, controller, child) => IconButton.outlined(
@@ -66,6 +70,6 @@ MenuAnchorChildBuilder defaultOutlinedMenuButton({
               icon ??
               const PhosphorIcon(PhosphorIconsLight.dotsThreeVertical),
           tooltip: tooltip,
-          isSelected: isSelected,
+          isSelected: (selectedOnOpen && controller.isOpen) ? true : isSelected,
           onPressed: enabled ? controller.toggle : null,
         );

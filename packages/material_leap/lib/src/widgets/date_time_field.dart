@@ -60,12 +60,15 @@ class _DateTimeFieldState extends State<DateTimeField> {
 
   void _onChanged() {
     try {
-      final text = _controller.text.trim().split(' ');
-      if (text.length != 2) {
+      final text = _controller.text;
+      if ((text.isEmpty && _value == null) ||
+          (_value != null && text == _format(_value!))) return;
+      final splitted = text.trim().split(' ');
+      if (splitted.length != 2) {
         _change(null);
       } else {
-        final date = _dateFormat.parse(text[0]);
-        final time = _timeFormat.parse(text[1]);
+        final date = _dateFormat.parse(splitted[0]);
+        final time = _timeFormat.parse(splitted[1]);
         _change(
             DateTime(date.year, date.month, date.day, time.hour, time.minute));
       }

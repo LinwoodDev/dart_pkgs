@@ -31,15 +31,17 @@ class AdvancedSwitchListTile extends StatelessWidget {
     final child =
         Row(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
       Expanded(
-          child: ListTile(
-        title: title,
-        subtitle: subtitle,
-        onTap: onTap,
-        onLongPress: onLongPress,
-        leading: leading,
-        trailing: trailing,
-        selected: selected ?? value,
-      )),
+        child: Align(
+            child: ListTile(
+          title: title,
+          subtitle: subtitle,
+          onTap: onTap,
+          onLongPress: onLongPress,
+          leading: leading,
+          trailing: trailing,
+          selected: selected ?? value,
+        )),
+      ),
       const VerticalDivider(),
       Switch(value: value, onChanged: onChanged)
     ]);

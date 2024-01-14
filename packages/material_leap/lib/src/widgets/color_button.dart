@@ -4,7 +4,7 @@ class ColorButton extends StatelessWidget {
   final Color color;
   final bool selected;
   final VoidCallback? onTap, onLongPress, onSecondaryTap;
-  final double size;
+  final double? size;
 
   const ColorButton({
     super.key,
@@ -13,11 +13,29 @@ class ColorButton extends StatelessWidget {
     this.onTap,
     this.onLongPress,
     this.onSecondaryTap,
-    this.size = 8,
+    this.size,
   });
 
   @override
   Widget build(BuildContext context) {
+    Widget child = AnimatedContainer(
+      height: size,
+      width: size,
+      duration: const Duration(milliseconds: 200),
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: selected
+              ? Theme.of(context).colorScheme.primary
+              : Colors.transparent,
+          width: 4,
+        ),
+      ),
+    );
+    if (size == null) {
+      child = AspectRatio(aspectRatio: 1, child: child);
+    }
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: InkWell(
@@ -25,22 +43,7 @@ class ColorButton extends StatelessWidget {
         onLongPress: onLongPress,
         onSecondaryTap: onSecondaryTap,
         borderRadius: BorderRadius.circular(12),
-        child: AspectRatio(
-          aspectRatio: 1,
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 200),
-            decoration: BoxDecoration(
-              color: color,
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: selected
-                    ? Theme.of(context).colorScheme.primary
-                    : Colors.transparent,
-                width: 4,
-              ),
-            ),
-          ),
-        ),
+        child: child,
       ),
     );
   }

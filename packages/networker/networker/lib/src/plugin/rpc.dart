@@ -24,8 +24,8 @@ final class RpcRequest {
 final class RpcMessage extends RpcRequest {
   RpcMessage(super.data) : super.fromData();
 
-  ConnectionId get client => data['client'];
-  ConnectionId get you => data['you'];
+  ConnectionId? get client => data['client'];
+  ConnectionId? get you => data['you'];
 }
 
 enum RpcType { authority, any, disabled }
@@ -68,7 +68,9 @@ mixin RpcPlugin {
   void runFunction(RpcMessage message, [bool forceLocal = false]) {
     final function = _functions[message.function];
     if (function != null &&
-        function.shouldRun(message.client, message.you, forceLocal)) {
+        (message.client == null ||
+            message.you == null ||
+            function.shouldRun(message.client!, message.you!, forceLocal))) {
       function.onMessage(message);
     }
   }

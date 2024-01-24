@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:networker/networker.dart';
@@ -16,6 +17,9 @@ class NetworkerSocketServerConnection extends NetworkerConnection {
 
   @override
   bool get isClosed => socket.closeReason != null;
+
+  @override
+  FutureOr<void> init() {}
 }
 
 class NetworkerSocketServer
@@ -42,6 +46,7 @@ class NetworkerSocketServer
         port: server.port,
       );
 
+  @override
   Future<void> init() async {
     await for (var request in server.where(filterConnections ?? (e) => true)) {
       try {

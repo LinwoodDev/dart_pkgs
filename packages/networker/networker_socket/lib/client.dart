@@ -10,7 +10,10 @@ class NetworkerSocketClient extends NetworkerClient {
       : this.fromChannel(
             address, WebSocketChannel.connect(address, protocols: protocols));
 
-  NetworkerSocketClient.fromChannel(this.address, this.channel) {
+  NetworkerSocketClient.fromChannel(this.address, this.channel);
+
+  @override
+  void init() {
     channel.stream.listen((event) {
       onMessage(event);
     });

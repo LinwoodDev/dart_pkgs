@@ -1,4 +1,4 @@
-name: networker_rtc
+name: networker_socket
 description: A starting point for Dart libraries or applications.
 version: 1.0.0
 publish_to: none
@@ -7,12 +7,19 @@ publish_to: none
 environment:
   sdk: '>=2.17.1 <3.0.0'
 dependencies: 
-  flutter_webrtc: ^0.9.42+hotfix.1
   networker:
     git:
       url: https://github.com/LinwoodDev/dart_pkgs.git
       path: packages/networker/networker
       ref: ddfa23873066c8f45a56e6e26358c210669b2f44
+  lib5:
+    git: https://github.com/s5-dev/lib5
+  lib5_crypto_implementation_dart: ^0.1.0
+  hive: ^2.2.3
+  http: ^1.2.0
+dependency_overrides: 
+  lib5:
+    git: https://github.com/s5-dev/lib5
 
 dev_dependencies:
   lints: ^3.0.0

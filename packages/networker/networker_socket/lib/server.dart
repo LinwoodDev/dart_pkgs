@@ -24,9 +24,7 @@ class NetworkerSocketServer
   bool _isClosed = false;
   bool Function(HttpRequest event)? filterConnections;
 
-  NetworkerSocketServer(this.server, [this.filterConnections]) {
-    waitForConnections();
-  }
+  NetworkerSocketServer(this.server, [this.filterConnections]);
 
   @override
   void close() {
@@ -44,7 +42,7 @@ class NetworkerSocketServer
         port: server.port,
       );
 
-  Future<void> waitForConnections() async {
+  Future<void> init() async {
     await for (var request in server.where(filterConnections ?? (e) => true)) {
       try {
         final socket = await WebSocketTransformer.upgrade(request);

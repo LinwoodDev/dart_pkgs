@@ -84,7 +84,9 @@ class NetworkerS5 extends NetworkerClient {
     super.sendMessage(data);
     final msg = await SignedStreamMessage.create(
       kp: kp,
-      data: await encryptMutableBytes(data, secret, crypto: node.crypto),
+      data: encrypted
+          ? await encryptMutableBytes(data, secret, crypto: node.crypto)
+          : data,
       ts: DateTime.now().millisecondsSinceEpoch,
       crypto: node.crypto,
     );

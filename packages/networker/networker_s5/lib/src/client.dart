@@ -11,7 +11,7 @@ import 'package:lib5/src/stream/message.dart';
 import 'package:lib5/src/crypto/encryption/mutable.dart';
 import 'package:lib5_crypto_implementation_dart/lib5_crypto_implementation_dart.dart';
 import 'package:networker/networker.dart';
-import 'package:networker_socket/src/util.dart';
+import 'package:networker_s5/src/util.dart';
 
 class NetworkerS5 extends NetworkerClient {
   final Uint8List secret;

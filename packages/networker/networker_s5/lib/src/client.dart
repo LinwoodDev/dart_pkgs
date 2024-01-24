@@ -60,6 +60,9 @@ class NetworkerS5 extends NetworkerClient {
     );
     // TODO: Derive transport and encryption secret to use for the stream
     kp = await crypto.newKeyPairEd25519(seed: secret);
+    while (node.p2p.peers.isEmpty || !node.p2p.peers.values.first.isConnected) {
+      await Future.delayed(Duration(milliseconds: 100));
+    }
     subscription = s5.streamSubscribe(kp.publicKey).listen((event) async {
       onMessage(encrypted
           ? await decryptMutableBytes(event.data, secret, crypto: crypto)

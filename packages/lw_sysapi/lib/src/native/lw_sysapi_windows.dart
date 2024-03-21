@@ -24,8 +24,7 @@ class SysAPIWindows extends SysAPIPlatform {
   List<String> getFonts() {
     final hDC = GetDC(NULL);
     final searchFont = calloc<LOGFONT>()..ref.lfCharSet = DEFAULT_CHARSET;
-    final callback =
-        Pointer.fromFunction<EnumFontFamExProc>(_enumerateFonts, 0);
+    final callback = Pointer.fromFunction<FONTENUMPROC>(_enumerateFonts, 0);
 
     EnumFontFamiliesEx(hDC, searchFont, callback, 0, 0);
     free(searchFont);

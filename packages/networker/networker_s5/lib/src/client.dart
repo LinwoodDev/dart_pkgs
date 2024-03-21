@@ -3,22 +3,18 @@
 import 'dart:async';
 import 'dart:typed_data';
 
-import 'package:hive/hive.dart';
-import 'package:lib5/node.dart';
-import 'package:lib5/src/crypto/base.dart';
-import 'package:lib5/util.dart';
-import 'package:lib5/src/stream/message.dart';
-import 'package:lib5/src/crypto/encryption/mutable.dart';
-import 'package:lib5_crypto_implementation_dart/lib5_crypto_implementation_dart.dart';
 import 'package:networker/networker.dart';
-import 'package:networker_s5/src/util.dart';
+import 'package:s5/s5.dart';
+// ignore: depend_on_referenced_packages
+import 'package:lib5/util.dart';
+// ignore: depend_on_referenced_packages
+import 'package:lib5/encryption.dart';
 
 class NetworkerS5 extends NetworkerClient {
   final Uint8List secret;
   final bool encrypted;
   final Map<String, dynamic> config;
-  late final S5NodeBase node;
-  late final MyS5NodeAPIProviderWithRemoteUpload s5;
+  late final S5 s5;
   late final KeyPairEd25519 kp;
   StreamSubscription<SignedStreamMessage>? subscription;
 
@@ -37,35 +33,11 @@ class NetworkerS5 extends NetworkerClient {
 
   @override
   Future<void> init() async {
-    final crypto = DartCryptoImplementation();
-    node = S5NodeBase(
-      config: config,
-      logger: SimpleLogger(
-        prefix: '[Networker-S5] ',
-        format: false,
-      ),
-      crypto: crypto,
-    );
-    await node.init(
-      blobDB: await openDB('blob'),
-      registryDB: await openDB('registry'),
-      streamDB: await openDB('stream'),
-      nodesDB: await openDB('nodes'),
-    );
-
-    node.start();
-    s5 = MyS5NodeAPIProviderWithRemoteUpload(
-      node,
-      deletedCIDs: await Hive.openBox('s5-deleted-cids'),
-    );
-    // TODO: Derive transport and encryption secret to use for the stream
-    kp = await crypto.newKeyPairEd25519(seed: secret);
-    while (node.p2p.peers.isEmpty || !node.p2p.peers.values.first.isConnected) {
-      await Future.delayed(Duration(milliseconds: 100));
-    }
-    subscription = s5.streamSubscribe(kp.publicKey).listen((event) async {
+    s5 = await S5.create();
+    kp = await s5.crypto.newKeyPairEd25519(seed: secret);
+    subscription = s5.api.streamSubscribe(kp.publicKey).listen((event) async {
       onMessage(encrypted
-          ? await decryptMutableBytes(event.data, secret, crypto: crypto)
+          ? await decryptMutableBytes(event.data, secret, crypto: s5.crypto)
           : event.data);
     });
   }
@@ -85,12 +57,12 @@ class NetworkerS5 extends NetworkerClient {
     final msg = await SignedStreamMessage.create(
       kp: kp,
       data: encrypted
-          ? await encryptMutableBytes(data, secret, crypto: node.crypto)
+          ? await encryptMutableBytes(data, secret, crypto: s5.crypto)
           : data,
       ts: DateTime.now().millisecondsSinceEpoch,
-      crypto: node.crypto,
+      crypto: s5.crypto,
     );
 
-    await s5.streamPublish(msg);
+    await s5.api.streamPublish(msg);
   }
 }

@@ -18,17 +18,16 @@ extension DateTimeHelper on DateTime {
   // If startOfWeek is Monday, 2024-01-01 will be in week 1
   // Start with 1
   int getWeek(int startOfWeek) {
-    final nextStart = getNextStartOfWeek(startOfWeek);
-    final firstStart = DateTime(year, 1, 1).getNextStartOfWeek(startOfWeek);
-    final diff = nextStart.difference(firstStart).inDays;
+    final currentStart = getStartOfWeek(startOfWeek);
+    final firstStart = DateTime(year, 1, 1).getStartOfWeek(startOfWeek);
+    final diff = currentStart.difference(firstStart).inDays;
     return (diff / 7).ceil() + 1;
   }
 
-  DateTime get nextStartOfWeek => getNextStartOfWeek(DateTime.monday);
+  DateTime get startOfWeek => getStartOfWeek(DateTime.monday);
 
-  DateTime getNextStartOfWeek(int startOfWeek) {
-    var date = DateTime(year, month, day);
-    return date.addDays(7 - date.weekday + startOfWeek);
+  DateTime getStartOfWeek(int startOfWeek) {
+    return subtract(Duration(days: (7 + weekday - startOfWeek) % 7));
   }
 
   int getDaysInMonth() {
@@ -47,4 +46,19 @@ extension DateTimeHelper on DateTime {
   static DateTime fromSecondsSinceEpoch(int seconds) {
     return DateTime.fromMillisecondsSinceEpoch(seconds * 1000);
   }
+}
+
+void main() {
+  print(DateTime(24, 1, 1).getStartOfWeek(DateTime.monday));
+  print(DateTime.now().getStartOfWeek(DateTime.monday));
+  print(DateTime.now().getStartOfWeek(DateTime.saturday));
+  print(DateTime.now().getWeek(DateTime.saturday));
+  print(DateTime(2024, 01, 01).getWeek(DateTime.saturday));
+  print(DateTime(2024, 01, 02).getWeek(DateTime.saturday));
+  print(DateTime(2024, 01, 03).getWeek(DateTime.saturday));
+  print(DateTime(2024, 01, 04).getWeek(DateTime.saturday));
+  print(DateTime(2024, 01, 05).getWeek(DateTime.saturday));
+  print(DateTime(2024, 01, 06).getWeek(DateTime.saturday));
+  print(DateTime(2024, 01, 07).getWeek(DateTime.saturday));
+  print(DateTime(2024, 01, 08).getWeek(DateTime.saturday));
 }

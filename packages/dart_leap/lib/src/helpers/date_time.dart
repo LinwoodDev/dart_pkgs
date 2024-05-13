@@ -12,16 +12,23 @@ extension DateTimeHelper on DateTime {
     return DateTime(year, month, day + days, hour, minute, second, millisecond);
   }
 
-  int get week {
-    final date = DateTime(year, month, day);
-    final firstDay = DateTime(date.year - 1, 12, 31);
-    final days = date.difference(firstDay).inDays;
-    return (days / 7).ceil();
+  int get week => getWeek(DateTime.monday);
+
+  // Get the week number of the year
+  // If startOfWeek is Monday, 2024-01-01 will be in week 1
+  // Start with 1
+  int getWeek(int startOfWeek) {
+    final nextStart = getNextStartOfWeek(startOfWeek);
+    final firstStart = DateTime(year, 1, 1).getNextStartOfWeek(startOfWeek);
+    final diff = nextStart.difference(firstStart).inDays;
+    return (diff / 7).ceil() + 1;
   }
 
-  DateTime get nextStartOfWeek {
+  DateTime get nextStartOfWeek => getNextStartOfWeek(DateTime.monday);
+
+  DateTime getNextStartOfWeek(int startOfWeek) {
     var date = DateTime(year, month, day);
-    return date.addDays(7 - date.weekday + 1);
+    return date.addDays(7 - date.weekday + startOfWeek);
   }
 
   int getDaysInMonth() {

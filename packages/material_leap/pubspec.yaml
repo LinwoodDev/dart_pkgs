@@ -9,20 +9,17 @@ environment:
   flutter: ">=1.17.0"
 
 dependencies:
-  intl: ^0.18.0
   flutter_localizations:
     sdk: flutter
-  phosphor_flutter:
-    git:
-      url: https://github.com/CodeDoctorDE/phosphor-flutter
-      ref: f370dd2c25d3ea51ffb8f1c7c183bc9f33889c82
   flutter:
     sdk: flutter
+  intl: ">=0.18.0 <0.20.0"
+  phosphor_flutter: ^2.1.0
   dart_leap:
     git:
       url: https://github.com/LinwoodDev/dart_pkgs
       path: packages/dart_leap
-      ref: 992f8062618ef1e78ee92efc7a709eb0d476e1d0
+      ref: f80aea0ab6cdc6df7c8e6ef54d6f3ed1efd1704d
 
 dev_dependencies:
   flutter_test:

@@ -4,11 +4,13 @@ import 'package:material_leap/material_leap.dart';
 class ResponsiveDialog extends StatelessWidget {
   final int breakpoint;
   final Widget child;
+  final BoxConstraints? constraints;
 
   const ResponsiveDialog({
     super.key,
     required this.child,
     this.breakpoint = LeapBreakpoints.compact,
+    this.constraints,
   });
 
   @override
@@ -20,24 +22,13 @@ class ResponsiveDialog extends StatelessWidget {
       );
     } else {
       return Dialog(
-        child: child,
+        child: constraints == null
+            ? child
+            : ConstrainedBox(
+                constraints: constraints!,
+                child: child,
+              ),
       );
     }
   }
-}
-
-Future<void> showResponsiveDialog({
-  required BuildContext context,
-  required Widget child,
-  int breakpoint = LeapBreakpoints.compact,
-}) {
-  return showDialog(
-    context: context,
-    builder: (context) {
-      return ResponsiveDialog(
-        breakpoint: breakpoint,
-        child: child,
-      );
-    },
-  );
 }

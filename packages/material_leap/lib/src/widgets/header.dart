@@ -3,14 +3,13 @@ import 'package:flutter/material.dart';
 class Header extends StatelessWidget {
   final Widget? leading;
   final Widget title;
-  final List<String>? help;
   final List<Widget> actions;
-  const Header(
-      {super.key,
-      this.leading,
-      required this.title,
-      this.help,
-      this.actions = const []});
+  const Header({
+    super.key,
+    this.leading,
+    required this.title,
+    this.actions = const [],
+  });
 
   @override
   Widget build(BuildContext context) {

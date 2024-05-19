@@ -35,20 +35,20 @@ class ResponsiveDialog extends StatelessWidget {
 
 class ResponsiveAlertDialog extends StatelessWidget {
   final int breakpoint;
-  final Widget title, child;
+  final Widget title, content;
   final Widget? leading;
   final BoxConstraints? constraints;
   final List<Widget>? actions, headerActions;
   final MainAxisAlignment? actionsAlignment;
   final OverflowBarAlignment? actionsOverflowAlignment;
   final double? actionsOverflowButtonSpacing;
-  final EdgeInsets? actionsPadding;
+  final EdgeInsets? actionsPadding, contentPadding;
   final VerticalDirection? actionsOverflowDirection;
   final EdgeInsetsGeometry? buttonPadding;
 
   const ResponsiveAlertDialog({
     super.key,
-    required this.child,
+    required this.content,
     this.breakpoint = LeapBreakpoints.compact,
     this.constraints,
     this.actions,
@@ -61,6 +61,7 @@ class ResponsiveAlertDialog extends StatelessWidget {
     this.headerActions,
     this.leading,
     required this.title,
+    this.contentPadding,
   });
 
   @override
@@ -83,7 +84,11 @@ class ResponsiveAlertDialog extends StatelessWidget {
                   actions: headerActions ?? [],
                   leading: leading,
                 ),
-                Flexible(child: child),
+                Flexible(
+                    child: Padding(
+                  padding: contentPadding ?? const EdgeInsets.all(16.0),
+                  child: content,
+                )),
               ],
             ),
           ),

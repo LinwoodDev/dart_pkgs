@@ -4,5 +4,6 @@
     "delete": "Slet",
     "red": "Rød",
     "green": "Grøn",
-    "blue": "Blå"
+    "blue": "Blå",
+    "copyMessage": "Kopieret til udklipsholder"
 }

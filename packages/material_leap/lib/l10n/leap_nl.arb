@@ -5,5 +5,13 @@
     "red": "Rood",
     "green": "Groen",
     "blue": "Blauw",
+    "minimize": "Minimize",
+    "maximize": "Maximize",
+    "close": "Afsluiten",
+    "exitAlwaysOnTop": "Exit Always On Top",
+    "alwaysOnTop": "Always On Top",
+    "exitFullScreen": "Exit Full Screen",
+    "fullScreen": "Full Screen",
+    "restore": "Herstellen",
     "copyMessage": "Gekopieerd naar klembord"
 }

@@ -8,10 +8,10 @@
     "minimize": "Свернуть",
     "maximize": "Развернуть",
     "close": "Закрыть",
-    "exitAlwaysOnTop": "Exit Always On Top",
-    "alwaysOnTop": "Always On Top",
-    "exitFullScreen": "Exit Full Screen",
-    "fullScreen": "Full Screen",
+    "exitAlwaysOnTop": "Выйти всегда сверху",
+    "alwaysOnTop": "Поверх всех окон",
+    "exitFullScreen": "Выйти из полноэкранного режима",
+    "fullScreen": "Во весь экран",
     "restore": "Восстановить",
     "copyMessage": "Скопировано в буфер обмена"
 }

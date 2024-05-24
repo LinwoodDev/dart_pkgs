@@ -23,7 +23,28 @@ class LeapLocalizationsPt extends LeapLocalizations {
   String get blue => 'azul';
 
   @override
-  String get more => 'More';
+  String get minimize => 'Minimize';
+
+  @override
+  String get maximize => 'Maximize';
+
+  @override
+  String get close => 'Close';
+
+  @override
+  String get exitAlwaysOnTop => 'Exit Always On Top';
+
+  @override
+  String get alwaysOnTop => 'Always On Top';
+
+  @override
+  String get exitFullScreen => 'Exit Full Screen';
+
+  @override
+  String get fullScreen => 'Full Screen';
+
+  @override
+  String get restore => 'Restore';
 }
 
 /// The translations for Portuguese, as used in Brazil (`pt_BR`).

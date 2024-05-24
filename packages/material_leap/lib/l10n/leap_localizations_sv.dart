@@ -23,5 +23,26 @@ class LeapLocalizationsSv extends LeapLocalizations {
   String get blue => 'Blå';
 
   @override
-  String get more => 'More';
+  String get minimize => 'Minimize';
+
+  @override
+  String get maximize => 'Maximize';
+
+  @override
+  String get close => 'Close';
+
+  @override
+  String get exitAlwaysOnTop => 'Exit Always On Top';
+
+  @override
+  String get alwaysOnTop => 'Always On Top';
+
+  @override
+  String get exitFullScreen => 'Exit Full Screen';
+
+  @override
+  String get fullScreen => 'Full Screen';
+
+  @override
+  String get restore => 'Restore';
 }

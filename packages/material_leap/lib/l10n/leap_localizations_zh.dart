@@ -23,7 +23,28 @@ class LeapLocalizationsZh extends LeapLocalizations {
   String get blue => '蓝色';
 
   @override
-  String get more => 'More';
+  String get minimize => 'Minimize';
+
+  @override
+  String get maximize => 'Maximize';
+
+  @override
+  String get close => 'Close';
+
+  @override
+  String get exitAlwaysOnTop => 'Exit Always On Top';
+
+  @override
+  String get alwaysOnTop => 'Always On Top';
+
+  @override
+  String get exitFullScreen => 'Exit Full Screen';
+
+  @override
+  String get fullScreen => 'Full Screen';
+
+  @override
+  String get restore => 'Restore';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).

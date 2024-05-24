@@ -186,11 +186,53 @@ abstract class LeapLocalizations {
   /// **'Blue'**
   String get blue;
 
-  /// No description provided for @more.
+  /// No description provided for @minimize.
   ///
   /// In en, this message translates to:
-  /// **'More'**
-  String get more;
+  /// **'Minimize'**
+  String get minimize;
+
+  /// No description provided for @maximize.
+  ///
+  /// In en, this message translates to:
+  /// **'Maximize'**
+  String get maximize;
+
+  /// No description provided for @close.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get close;
+
+  /// No description provided for @exitAlwaysOnTop.
+  ///
+  /// In en, this message translates to:
+  /// **'Exit Always On Top'**
+  String get exitAlwaysOnTop;
+
+  /// No description provided for @alwaysOnTop.
+  ///
+  /// In en, this message translates to:
+  /// **'Always On Top'**
+  String get alwaysOnTop;
+
+  /// No description provided for @exitFullScreen.
+  ///
+  /// In en, this message translates to:
+  /// **'Exit Full Screen'**
+  String get exitFullScreen;
+
+  /// No description provided for @fullScreen.
+  ///
+  /// In en, this message translates to:
+  /// **'Full Screen'**
+  String get fullScreen;
+
+  /// No description provided for @restore.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore'**
+  String get restore;
 }
 
 class _LeapLocalizationsDelegate

@@ -4,5 +4,6 @@
     "delete": "Verwijderen",
     "red": "Rood",
     "green": "Groen",
-    "blue": "Blauw"
+    "blue": "Blauw",
+    "copyMessage": "Gekopieerd naar klembord"
 }

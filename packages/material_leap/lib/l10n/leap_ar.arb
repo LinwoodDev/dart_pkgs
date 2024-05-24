@@ -8,10 +8,10 @@
     "minimize": "Minimize",
     "maximize": "Maximize",
     "close": "أغلق",
-    "exitAlwaysOnTop": "Exit Always On Top",
-    "alwaysOnTop": "Always On Top",
-    "exitFullScreen": "Exit Full Screen",
-    "fullScreen": "Full Screen",
+    "exitAlwaysOnTop": "الخروج دائما في الأعلى",
+    "alwaysOnTop": "دائما في الأعلى",
+    "exitFullScreen": "الخروج من ملء الشاشة",
+    "fullScreen": "ملء الشاشة",
     "restore": "إستعادة",
     "copyMessage": "نسخ إلى الحافظة"
 }

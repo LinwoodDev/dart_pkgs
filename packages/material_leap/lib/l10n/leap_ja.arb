@@ -5,5 +5,13 @@
     "red": "赤",
     "green": "緑",
     "blue": "青",
+    "minimize": "Minimize",
+    "maximize": "Maximize",
+    "close": "閉じる",
+    "exitAlwaysOnTop": "Exit Always On Top",
+    "alwaysOnTop": "Always On Top",
+    "exitFullScreen": "Exit Full Screen",
+    "fullScreen": "Full Screen",
+    "restore": "復元",
     "copyMessage": "クリップボードにコピーしました"
 }

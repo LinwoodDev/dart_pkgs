@@ -5,5 +5,13 @@
     "red": "Червоний",
     "green": "Зелений",
     "blue": "Синій",
+    "minimize": "Minimize",
+    "maximize": "Maximize",
+    "close": "Закрити",
+    "exitAlwaysOnTop": "Exit Always On Top",
+    "alwaysOnTop": "Always On Top",
+    "exitFullScreen": "Exit Full Screen",
+    "fullScreen": "Full Screen",
+    "restore": "Відновити",
     "copyMessage": "Скопійовано до буферу обміну"
 }

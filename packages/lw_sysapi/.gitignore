@@ -30,3 +30,10 @@ migrate_working_dir/
 build/
 .flutter-plugins
 .flutter-plugins-dependencies
+
+# Gradle 
+**/gradle-wrapper.jar
+.gradle/
+gradle/
+gradlew
+gradlew.bat

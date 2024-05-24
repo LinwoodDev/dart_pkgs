@@ -11,3 +11,4 @@ export 'src/widgets/input_stepper.dart';
 export 'src/widgets/leap_bottom_sheet.dart';
 export 'src/widgets/menu.dart';
 export 'src/widgets/theme_box.dart';
+export 'src/widgets/window.dart';

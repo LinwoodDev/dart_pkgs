@@ -4,5 +4,6 @@
     "delete": "Elimina",
     "red": "Rosso",
     "green": "Verde",
-    "blue": "Blu"
+    "blue": "Blu",
+    "copyMessage": "Copiato negli appunti"
 }

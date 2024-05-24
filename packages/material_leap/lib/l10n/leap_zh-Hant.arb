@@ -4,5 +4,6 @@
     "delete": "刪除",
     "red": "紅",
     "green": "綠",
-    "blue": "藍"
+    "blue": "藍",
+    "copyMessage": "已複製到剪貼簿"
 }

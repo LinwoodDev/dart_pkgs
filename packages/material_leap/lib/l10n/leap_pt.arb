@@ -4,5 +4,6 @@
     "delete": "excluir",
     "red": "Vermelho",
     "green": "Verde",
-    "blue": "azul"
+    "blue": "azul",
+    "copyMessage": "Copiado para o clipboard"
 }

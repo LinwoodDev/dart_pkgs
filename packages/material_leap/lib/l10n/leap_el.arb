@@ -5,5 +5,13 @@
     "red": "Κόκκινο",
     "green": "Πράσινο",
     "blue": "Μπλε",
+    "minimize": "Minimize",
+    "maximize": "Maximize",
+    "close": "Κλείσιμο",
+    "exitAlwaysOnTop": "Exit Always On Top",
+    "alwaysOnTop": "Always On Top",
+    "exitFullScreen": "Exit Full Screen",
+    "fullScreen": "Full Screen",
+    "restore": "Επαναφορά",
     "copyMessage": "Αντιγράφηκε στο πρόχειρο"
 }

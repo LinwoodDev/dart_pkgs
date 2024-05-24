@@ -5,5 +5,13 @@
     "red": "Röd",
     "green": "Grön",
     "blue": "Blå",
+    "minimize": "Minimize",
+    "maximize": "Maximize",
+    "close": "Stäng",
+    "exitAlwaysOnTop": "Exit Always On Top",
+    "alwaysOnTop": "Always On Top",
+    "exitFullScreen": "Exit Full Screen",
+    "fullScreen": "Full Screen",
+    "restore": "Återställ",
     "copyMessage": "Kopierad till urklipp"
 }

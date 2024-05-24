@@ -8,10 +8,10 @@
     "minimize": "Minimize",
     "maximize": "Maximize",
     "close": "Afsluiten",
-    "exitAlwaysOnTop": "Exit Always On Top",
-    "alwaysOnTop": "Always On Top",
-    "exitFullScreen": "Exit Full Screen",
-    "fullScreen": "Full Screen",
+    "exitAlwaysOnTop": "Altijd bovenaan verlaten",
+    "alwaysOnTop": "Altijd bovenaan",
+    "exitFullScreen": "Volledig Scherm afsluiten",
+    "fullScreen": "Volledig scherm",
     "restore": "Herstellen",
     "copyMessage": "Gekopieerd naar klembord"
 }

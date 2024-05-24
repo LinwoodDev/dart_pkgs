@@ -8,10 +8,10 @@
     "minimize": "Minimize",
     "maximize": "Maximize",
     "close": "Inchide",
-    "exitAlwaysOnTop": "Exit Always On Top",
-    "alwaysOnTop": "Always On Top",
-    "exitFullScreen": "Exit Full Screen",
-    "fullScreen": "Full Screen",
+    "exitAlwaysOnTop": "Ieșiți întotdeauna sus",
+    "alwaysOnTop": "Întotdeauna sus",
+    "exitFullScreen": "Ieșiți din ecran complet",
+    "fullScreen": "Ecran complet",
     "restore": "Restaurează",
     "copyMessage": "Copiat în clipboard"
 }

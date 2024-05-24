@@ -8,10 +8,10 @@
     "minimize": "Minimiser",
     "maximize": "Maximiser",
     "close": "Fermer",
-    "exitAlwaysOnTop": "Exit Always On Top",
-    "alwaysOnTop": "Always On Top",
-    "exitFullScreen": "Exit Full Screen",
-    "fullScreen": "Full Screen",
+    "exitAlwaysOnTop": "Quitter toujours en haut",
+    "alwaysOnTop": "Toujours en haut",
+    "exitFullScreen": "Quitter le mode plein écran",
+    "fullScreen": "Plein écran",
     "restore": "Restaurer",
     "copyMessage": "Copié dans le presse-papiers"
 }

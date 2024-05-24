@@ -8,10 +8,10 @@
     "minimize": "Minimize",
     "maximize": "Maximize",
     "close": "Luk",
-    "exitAlwaysOnTop": "Exit Always On Top",
-    "alwaysOnTop": "Always On Top",
-    "exitFullScreen": "Exit Full Screen",
-    "fullScreen": "Full Screen",
+    "exitAlwaysOnTop": "Afslut Altid Øverst",
+    "alwaysOnTop": "Altid Øverst",
+    "exitFullScreen": "Afslut Fuld Skærm",
+    "fullScreen": "Fuld Skærm",
     "restore": "Gendan",
     "copyMessage": "Kopieret til udklipsholder"
 }

@@ -8,10 +8,10 @@
     "minimize": "Minimize",
     "maximize": "Maximize",
     "close": "閉じる",
-    "exitAlwaysOnTop": "Exit Always On Top",
-    "alwaysOnTop": "Always On Top",
-    "exitFullScreen": "Exit Full Screen",
-    "fullScreen": "Full Screen",
+    "exitAlwaysOnTop": "Always On Top",
+    "alwaysOnTop": "常に一番上に",
+    "exitFullScreen": "全画面表示を終了",
+    "fullScreen": "全画面",
     "restore": "復元",
     "copyMessage": "クリップボードにコピーしました"
 }

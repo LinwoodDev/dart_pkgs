@@ -4,5 +4,6 @@
     "delete": "Löschen",
     "red": "Rot",
     "green": "Grün",
-    "blue": "Blau"
+    "blue": "Blau",
+    "copyMessage": "In Zwischenablage kopiert"
 }

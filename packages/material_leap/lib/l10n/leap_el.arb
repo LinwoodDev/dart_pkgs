@@ -8,10 +8,10 @@
     "minimize": "Minimize",
     "maximize": "Maximize",
     "close": "Κλείσιμο",
-    "exitAlwaysOnTop": "Exit Always On Top",
-    "alwaysOnTop": "Always On Top",
-    "exitFullScreen": "Exit Full Screen",
-    "fullScreen": "Full Screen",
+    "exitAlwaysOnTop": "Έξοδος Πάντα Ανοιχτά",
+    "alwaysOnTop": "Πάντα Ανοιχτό",
+    "exitFullScreen": "Έξοδος Από Πλήρη Οθόνη",
+    "fullScreen": "Πλήρης Οθόνη",
     "restore": "Επαναφορά",
     "copyMessage": "Αντιγράφηκε στο πρόχειρο"
 }

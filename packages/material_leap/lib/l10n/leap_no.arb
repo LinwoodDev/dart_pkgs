@@ -8,10 +8,10 @@
     "minimize": "Minimize",
     "maximize": "Maximize",
     "close": "Lukk",
-    "exitAlwaysOnTop": "Exit Always On Top",
-    "alwaysOnTop": "Always On Top",
-    "exitFullScreen": "Exit Full Screen",
-    "fullScreen": "Full Screen",
+    "exitAlwaysOnTop": "Avslutt alltid øverst",
+    "alwaysOnTop": "Alltid øverst",
+    "exitFullScreen": "Avslutt fullskjerm",
+    "fullScreen": "Full skjerm",
     "restore": "Gjenopprett",
     "copyMessage": "Kopiert til utklippstavle"
 }

@@ -4,5 +4,6 @@
     "delete": "Supprimez",
     "red": "Rouge",
     "green": "Vert",
-    "blue": "Bleu"
+    "blue": "Bleu",
+    "copyMessage": "Copié dans le presse-papiers"
 }

@@ -4,5 +4,6 @@
     "delete": "Eliminar",
     "red": "Rojo",
     "green": "Verde",
-    "blue": "Azul"
+    "blue": "Azul",
+    "copyMessage": "Copiado al portapapeles"
 }

@@ -8,10 +8,10 @@
     "minimize": "Minimize",
     "maximize": "Maximize",
     "close": "Stäng",
-    "exitAlwaysOnTop": "Exit Always On Top",
-    "alwaysOnTop": "Always On Top",
-    "exitFullScreen": "Exit Full Screen",
-    "fullScreen": "Full Screen",
+    "exitAlwaysOnTop": "Avsluta alltid överst",
+    "alwaysOnTop": "Alltid överst",
+    "exitFullScreen": "Avsluta helskärm",
+    "fullScreen": "Helskärm",
     "restore": "Återställ",
     "copyMessage": "Kopierad till urklipp"
 }

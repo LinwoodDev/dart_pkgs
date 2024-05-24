@@ -8,10 +8,10 @@
     "minimize": "Minimieren",
     "maximize": "Maximieren",
     "close": "Schließen",
-    "exitAlwaysOnTop": "Exit Always On Top",
-    "alwaysOnTop": "Always On Top",
-    "exitFullScreen": "Exit Full Screen",
-    "fullScreen": "Full Screen",
+    "exitAlwaysOnTop": "Immer im Vordergrund beenden",
+    "alwaysOnTop": "Immer oben",
+    "exitFullScreen": "Vollbild beenden",
+    "fullScreen": "Vollbild",
     "restore": "Wiederherstellen",
     "copyMessage": "In Zwischenablage kopiert"
 }

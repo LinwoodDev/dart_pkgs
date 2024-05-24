@@ -23,5 +23,5 @@ class LeapLocalizationsEl extends LeapLocalizations {
   String get blue => 'Μπλε';
 
   @override
-  String get more => 'More';
+  String get copyMessage => 'Copied to clipboard';
 }

@@ -23,7 +23,7 @@ class LeapLocalizationsPt extends LeapLocalizations {
   String get blue => 'azul';
 
   @override
-  String get more => 'More';
+  String get copyMessage => 'Copied to clipboard';
 }
 
 /// The translations for Portuguese, as used in Brazil (`pt_BR`).

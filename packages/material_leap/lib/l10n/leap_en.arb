@@ -4,5 +4,6 @@
     "delete": "Delete",
     "red": "Red",
     "green": "Green",
-    "blue": "Blue"
+    "blue": "Blue",
+    "copyMessage": "Copied to clipboard"
 }

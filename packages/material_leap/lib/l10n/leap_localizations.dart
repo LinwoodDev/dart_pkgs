@@ -186,11 +186,11 @@ abstract class LeapLocalizations {
   /// **'Blue'**
   String get blue;
 
-  /// No description provided for @more.
+  /// No description provided for @copyMessage.
   ///
   /// In en, this message translates to:
-  /// **'More'**
-  String get more;
+  /// **'Copied to clipboard'**
+  String get copyMessage;
 }
 
 class _LeapLocalizationsDelegate

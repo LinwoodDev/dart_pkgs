@@ -7,10 +7,12 @@ environment:
 
 dependencies:
   ffi: ^2.0.1
+  file_selector: ^1.0.3
   flutter:
     sdk: flutter
   js: ^0.7.1
   plugin_platform_interface: ^2.0.2
+  share_plus: ^9.0.0
   win32: ^5.3.0
 
 dev_dependencies:
@@ -23,6 +25,11 @@ dev_dependencies:
 
 # The following section is specific to Flutter packages.
 flutter:
+  plugin:
+    platforms:
+      android:
+        package: dev.linwood.lwsysapi
+        pluginClass: LwSysapiPlugin
   # This section identifies this Flutter project as a plugin project.
   # The 'pluginClass' specifies the class (in Java, Kotlin, Swift, Objective-C, etc.)
   # which should be registered in the plugin registry. This is required for

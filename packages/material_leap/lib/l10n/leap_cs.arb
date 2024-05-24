@@ -8,10 +8,10 @@
     "minimize": "Minimize",
     "maximize": "Maximize",
     "close": "Zavřít",
-    "exitAlwaysOnTop": "Exit Always On Top",
-    "alwaysOnTop": "Always On Top",
-    "exitFullScreen": "Exit Full Screen",
-    "fullScreen": "Full Screen",
+    "exitAlwaysOnTop": "Ukončit vždy nahoře",
+    "alwaysOnTop": "Vždy nahoře",
+    "exitFullScreen": "Ukončit celou obrazovku",
+    "fullScreen": "Celá obrazovka",
     "restore": "Obnovit",
     "copyMessage": "Zkopírováno do schránky"
 }

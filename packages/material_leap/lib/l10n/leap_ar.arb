@@ -5,5 +5,13 @@
     "red": "أحمر",
     "green": "أخضر",
     "blue": "أزرق",
+    "minimize": "Minimize",
+    "maximize": "Maximize",
+    "close": "أغلق",
+    "exitAlwaysOnTop": "Exit Always On Top",
+    "alwaysOnTop": "Always On Top",
+    "exitFullScreen": "Exit Full Screen",
+    "fullScreen": "Full Screen",
+    "restore": "إستعادة",
     "copyMessage": "نسخ إلى الحافظة"
 }

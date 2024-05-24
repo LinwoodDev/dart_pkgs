@@ -12,5 +12,6 @@
     "alwaysOnTop": "Always On Top",
     "exitFullScreen": "Exit Full Screen",
     "fullScreen": "Full Screen",
-    "restore": "Restore"
+    "restore": "Restore",
+    "copyMessage": "Copied to clipboard"
 }

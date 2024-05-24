@@ -45,6 +45,9 @@ class LeapLocalizationsPt extends LeapLocalizations {
 
   @override
   String get restore => 'Restore';
+
+  @override
+  String get copyMessage => 'Copied to clipboard';
 }
 
 /// The translations for Portuguese, as used in Brazil (`pt_BR`).

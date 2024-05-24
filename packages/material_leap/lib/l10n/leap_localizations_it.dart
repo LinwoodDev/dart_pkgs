@@ -45,4 +45,7 @@ class LeapLocalizationsIt extends LeapLocalizations {
 
   @override
   String get restore => 'Restore';
+
+  @override
+  String get copyMessage => 'Copied to clipboard';
 }

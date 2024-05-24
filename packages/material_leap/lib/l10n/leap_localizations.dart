@@ -233,6 +233,12 @@ abstract class LeapLocalizations {
   /// In en, this message translates to:
   /// **'Restore'**
   String get restore;
+
+  /// No description provided for @copyMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Copied to clipboard'**
+  String get copyMessage;
 }
 
 class _LeapLocalizationsDelegate

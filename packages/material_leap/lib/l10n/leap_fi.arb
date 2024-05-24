@@ -8,10 +8,10 @@
     "minimize": "Minimize",
     "maximize": "Maximize",
     "close": "Sulje",
-    "exitAlwaysOnTop": "Exit Always On Top",
-    "alwaysOnTop": "Always On Top",
-    "exitFullScreen": "Exit Full Screen",
-    "fullScreen": "Full Screen",
+    "exitAlwaysOnTop": "Poistu Aina Päältä",
+    "alwaysOnTop": "Aina Ylhäällä",
+    "exitFullScreen": "Poistu Koko Näyttötilasta",
+    "fullScreen": "Koko Näyttö",
     "restore": "Palauta",
     "copyMessage": "Kopioitu leikepöydälle"
 }

@@ -4,5 +4,6 @@
     "delete": "Radera",
     "red": "Röd",
     "green": "Grön",
-    "blue": "Blå"
+    "blue": "Blå",
+    "copyMessage": "Kopierad till urklipp"
 }

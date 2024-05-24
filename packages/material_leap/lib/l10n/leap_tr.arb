@@ -4,5 +4,6 @@
     "delete": "Sil",
     "red": "Kırmızı",
     "green": "Yeşil",
-    "blue": "Mavi"
+    "blue": "Mavi",
+    "copyMessage": "Panoya kopyalandı"
 }

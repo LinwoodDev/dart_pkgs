@@ -5,5 +5,13 @@
     "red": "Rød",
     "green": "Grønn",
     "blue": "Blå",
+    "minimize": "Minimize",
+    "maximize": "Maximize",
+    "close": "Lukk",
+    "exitAlwaysOnTop": "Exit Always On Top",
+    "alwaysOnTop": "Always On Top",
+    "exitFullScreen": "Exit Full Screen",
+    "fullScreen": "Full Screen",
+    "restore": "Gjenopprett",
     "copyMessage": "Kopiert til utklippstavle"
 }

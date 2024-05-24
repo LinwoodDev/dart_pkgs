@@ -4,5 +4,6 @@
     "delete": "删除",
     "red": "红色的",
     "green": "Green",
-    "blue": "蓝色"
+    "blue": "蓝色",
+    "copyMessage": "复制到剪贴板"
 }

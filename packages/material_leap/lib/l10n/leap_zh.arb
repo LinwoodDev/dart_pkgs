@@ -5,5 +5,13 @@
     "red": "红色的",
     "green": "Green",
     "blue": "蓝色",
+    "minimize": "Minimize",
+    "maximize": "Maximize",
+    "close": "关闭",
+    "exitAlwaysOnTop": "Exit Always On Top",
+    "alwaysOnTop": "Always On Top",
+    "exitFullScreen": "Exit Full Screen",
+    "fullScreen": "Full Screen",
+    "restore": "恢复",
     "copyMessage": "复制到剪贴板"
 }

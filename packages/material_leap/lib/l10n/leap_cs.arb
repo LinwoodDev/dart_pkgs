@@ -4,5 +4,6 @@
     "delete": "Vymazat",
     "red": "Červená",
     "green": "Zelená",
-    "blue": "Modrá"
+    "blue": "Modrá",
+    "copyMessage": "Zkopírováno do schránky"
 }

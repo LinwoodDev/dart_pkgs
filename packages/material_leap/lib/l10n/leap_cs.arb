@@ -5,5 +5,13 @@
     "red": "Červená",
     "green": "Zelená",
     "blue": "Modrá",
+    "minimize": "Minimize",
+    "maximize": "Maximize",
+    "close": "Zavřít",
+    "exitAlwaysOnTop": "Exit Always On Top",
+    "alwaysOnTop": "Always On Top",
+    "exitFullScreen": "Exit Full Screen",
+    "fullScreen": "Full Screen",
+    "restore": "Obnovit",
     "copyMessage": "Zkopírováno do schránky"
 }

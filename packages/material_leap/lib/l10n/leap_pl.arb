@@ -4,5 +4,6 @@
     "delete": "Usuń",
     "red": "Czerwony",
     "green": "Zielony",
-    "blue": "Niebieski"
+    "blue": "Niebieski",
+    "copyMessage": "Skopiowano do schowka"
 }

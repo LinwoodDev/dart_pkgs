@@ -5,5 +5,13 @@
     "red": "Rojo",
     "green": "Verde",
     "blue": "Azul",
+    "minimize": "Minimize",
+    "maximize": "Maximize",
+    "close": "Cerrar",
+    "exitAlwaysOnTop": "Exit Always On Top",
+    "alwaysOnTop": "Always On Top",
+    "exitFullScreen": "Exit Full Screen",
+    "fullScreen": "Full Screen",
+    "restore": "Restaurar",
     "copyMessage": "Copiado al portapapeles"
 }

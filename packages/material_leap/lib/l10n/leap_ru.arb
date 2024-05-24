@@ -5,5 +5,13 @@
     "red": "Красный",
     "green": "Зелёный",
     "blue": "Синий",
+    "minimize": "Свернуть",
+    "maximize": "Развернуть",
+    "close": "Закрыть",
+    "exitAlwaysOnTop": "Exit Always On Top",
+    "alwaysOnTop": "Always On Top",
+    "exitFullScreen": "Exit Full Screen",
+    "fullScreen": "Full Screen",
+    "restore": "Восстановить",
     "copyMessage": "Скопировано в буфер обмена"
 }

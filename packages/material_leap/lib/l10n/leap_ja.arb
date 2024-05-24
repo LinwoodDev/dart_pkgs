@@ -4,5 +4,6 @@
     "delete": "削除",
     "red": "赤",
     "green": "緑",
-    "blue": "青"
+    "blue": "青",
+    "copyMessage": "クリップボードにコピーしました"
 }

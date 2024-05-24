@@ -4,5 +4,6 @@
     "delete": "Ștergere",
     "red": "Roșu",
     "green": "Verde",
-    "blue": "Albastru"
+    "blue": "Albastru",
+    "copyMessage": "Copiat în clipboard"
 }

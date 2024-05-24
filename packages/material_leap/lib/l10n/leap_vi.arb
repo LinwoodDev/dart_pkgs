@@ -5,5 +5,13 @@
     "red": "Red",
     "green": "Green",
     "blue": "Blue",
+    "minimize": "Minimize",
+    "maximize": "Maximize",
+    "close": "Đóng",
+    "exitAlwaysOnTop": "Exit Always On Top",
+    "alwaysOnTop": "Always On Top",
+    "exitFullScreen": "Exit Full Screen",
+    "fullScreen": "Full Screen",
+    "restore": "Khôi phục",
     "copyMessage": "Đã sao chép vào bộ nhớ tạm"
 }

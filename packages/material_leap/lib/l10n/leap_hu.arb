@@ -13,5 +13,6 @@
     "exitFullScreen": "Exit Full Screen",
     "fullScreen": "Full Screen",
     "restore": "Visszaállítás",
-    "copyMessage": "Vágólapra másolva"
+    "copyMessage": "Vágólapra másolva",
+    "reset": "Reset"
 }

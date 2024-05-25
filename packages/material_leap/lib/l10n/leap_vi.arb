@@ -13,5 +13,6 @@
     "exitFullScreen": "Exit Full Screen",
     "fullScreen": "Full Screen",
     "restore": "Khôi phục",
-    "copyMessage": "Đã sao chép vào bộ nhớ tạm"
+    "copyMessage": "Đã sao chép vào bộ nhớ tạm",
+    "reset": "Reset"
 }

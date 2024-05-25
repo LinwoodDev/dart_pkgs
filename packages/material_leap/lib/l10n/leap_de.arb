@@ -13,5 +13,6 @@
     "exitFullScreen": "Vollbild beenden",
     "fullScreen": "Vollbild",
     "restore": "Wiederherstellen",
-    "copyMessage": "In Zwischenablage kopiert"
+    "copyMessage": "In Zwischenablage kopiert",
+    "reset": "Zurücksetzen"
 }

@@ -13,5 +13,6 @@
     "exitFullScreen": "Poistu Koko Näyttötilasta",
     "fullScreen": "Koko Näyttö",
     "restore": "Palauta",
-    "copyMessage": "Kopioitu leikepöydälle"
+    "copyMessage": "Kopioitu leikepöydälle",
+    "reset": "Reset"
 }

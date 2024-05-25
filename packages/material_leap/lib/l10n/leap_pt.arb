@@ -13,5 +13,6 @@
     "exitFullScreen": "Sair de Tela Cheia",
     "fullScreen": "Tela Cheia",
     "restore": "RESTAURAR",
-    "copyMessage": "Copiado para o clipboard"
+    "copyMessage": "Copiado para o clipboard",
+    "reset": "Reset"
 }

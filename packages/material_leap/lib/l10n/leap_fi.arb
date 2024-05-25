@@ -4,5 +4,14 @@
     "delete": "Poista",
     "red": "Punainen",
     "green": "Vihreä",
-    "blue": "Sininen"
+    "blue": "Sininen",
+    "minimize": "Minimize",
+    "maximize": "Maximize",
+    "close": "Sulje",
+    "exitAlwaysOnTop": "Poistu Aina Päältä",
+    "alwaysOnTop": "Aina Ylhäällä",
+    "exitFullScreen": "Poistu Koko Näyttötilasta",
+    "fullScreen": "Koko Näyttö",
+    "restore": "Palauta",
+    "copyMessage": "Kopioitu leikepöydälle"
 }

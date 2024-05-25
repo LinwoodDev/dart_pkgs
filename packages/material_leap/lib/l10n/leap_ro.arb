@@ -4,5 +4,14 @@
     "delete": "Ștergere",
     "red": "Roșu",
     "green": "Verde",
-    "blue": "Albastru"
+    "blue": "Albastru",
+    "minimize": "Minimize",
+    "maximize": "Maximize",
+    "close": "Inchide",
+    "exitAlwaysOnTop": "Ieșiți întotdeauna sus",
+    "alwaysOnTop": "Întotdeauna sus",
+    "exitFullScreen": "Ieșiți din ecran complet",
+    "fullScreen": "Ecran complet",
+    "restore": "Restaurează",
+    "copyMessage": "Copiat în clipboard"
 }

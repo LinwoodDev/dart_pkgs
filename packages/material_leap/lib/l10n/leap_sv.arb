@@ -4,5 +4,14 @@
     "delete": "Radera",
     "red": "Röd",
     "green": "Grön",
-    "blue": "Blå"
+    "blue": "Blå",
+    "minimize": "Minimize",
+    "maximize": "Maximize",
+    "close": "Stäng",
+    "exitAlwaysOnTop": "Avsluta alltid överst",
+    "alwaysOnTop": "Alltid överst",
+    "exitFullScreen": "Avsluta helskärm",
+    "fullScreen": "Helskärm",
+    "restore": "Återställ",
+    "copyMessage": "Kopierad till urklipp"
 }

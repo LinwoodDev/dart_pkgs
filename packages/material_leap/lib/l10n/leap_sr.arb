@@ -4,5 +4,14 @@
     "delete": "Delete",
     "red": "Red",
     "green": "Green",
-    "blue": "Blue"
+    "blue": "Blue",
+    "minimize": "Minimize",
+    "maximize": "Maximize",
+    "close": "Close",
+    "exitAlwaysOnTop": "Exit Always On Top",
+    "alwaysOnTop": "Always On Top",
+    "exitFullScreen": "Exit Full Screen",
+    "fullScreen": "Full Screen",
+    "restore": "Restore",
+    "copyMessage": "Copied to clipboard"
 }

@@ -4,5 +4,14 @@
     "delete": "Usuń",
     "red": "Czerwony",
     "green": "Zielony",
-    "blue": "Niebieski"
+    "blue": "Niebieski",
+    "minimize": "Minimize",
+    "maximize": "Maximize",
+    "close": "Zamknij",
+    "exitAlwaysOnTop": "Wyjdź zawsze na wierzchu",
+    "alwaysOnTop": "Zawsze na górze",
+    "exitFullScreen": "Zamknij pełny ekran",
+    "fullScreen": "Pełny ekran",
+    "restore": "Przywróć",
+    "copyMessage": "Skopiowano do schowka"
 }

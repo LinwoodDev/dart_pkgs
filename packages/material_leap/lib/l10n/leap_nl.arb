@@ -4,5 +4,14 @@
     "delete": "Verwijderen",
     "red": "Rood",
     "green": "Groen",
-    "blue": "Blauw"
+    "blue": "Blauw",
+    "minimize": "Minimize",
+    "maximize": "Maximize",
+    "close": "Afsluiten",
+    "exitAlwaysOnTop": "Altijd bovenaan verlaten",
+    "alwaysOnTop": "Altijd bovenaan",
+    "exitFullScreen": "Volledig Scherm afsluiten",
+    "fullScreen": "Volledig scherm",
+    "restore": "Herstellen",
+    "copyMessage": "Gekopieerd naar klembord"
 }

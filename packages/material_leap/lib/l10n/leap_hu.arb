@@ -1,8 +1,17 @@
 {
-    "color": "Color",
+    "color": "Szín",
     "pin": "Pin",
-    "delete": "Delete",
+    "delete": "Törlés",
     "red": "Red",
     "green": "Green",
-    "blue": "Blue"
+    "blue": "Blue",
+    "minimize": "Kis méret",
+    "maximize": "Teljes méret",
+    "close": "Bezár",
+    "exitAlwaysOnTop": "Exit Always On Top",
+    "alwaysOnTop": "Always On Top",
+    "exitFullScreen": "Exit Full Screen",
+    "fullScreen": "Full Screen",
+    "restore": "Visszaállítás",
+    "copyMessage": "Vágólapra másolva"
 }

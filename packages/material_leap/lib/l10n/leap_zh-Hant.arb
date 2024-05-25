@@ -4,5 +4,14 @@
     "delete": "刪除",
     "red": "紅",
     "green": "綠",
-    "blue": "藍"
+    "blue": "藍",
+    "minimize": "最小化",
+    "maximize": "最大化",
+    "close": "關閉",
+    "exitAlwaysOnTop": "Exit Always On Top",
+    "alwaysOnTop": "Always On Top",
+    "exitFullScreen": "Exit Full Screen",
+    "fullScreen": "Full Screen",
+    "restore": "恢復",
+    "copyMessage": "已複製到剪貼簿"
 }

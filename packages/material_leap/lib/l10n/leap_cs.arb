@@ -4,5 +4,14 @@
     "delete": "Vymazat",
     "red": "Červená",
     "green": "Zelená",
-    "blue": "Modrá"
+    "blue": "Modrá",
+    "minimize": "Minimize",
+    "maximize": "Maximize",
+    "close": "Zavřít",
+    "exitAlwaysOnTop": "Ukončit vždy nahoře",
+    "alwaysOnTop": "Vždy nahoře",
+    "exitFullScreen": "Ukončit celou obrazovku",
+    "fullScreen": "Celá obrazovka",
+    "restore": "Obnovit",
+    "copyMessage": "Zkopírováno do schránky"
 }

@@ -4,5 +4,14 @@
     "delete": "Διαγραφή",
     "red": "Κόκκινο",
     "green": "Πράσινο",
-    "blue": "Μπλε"
+    "blue": "Μπλε",
+    "minimize": "Minimize",
+    "maximize": "Maximize",
+    "close": "Κλείσιμο",
+    "exitAlwaysOnTop": "Έξοδος Πάντα Ανοιχτά",
+    "alwaysOnTop": "Πάντα Ανοιχτό",
+    "exitFullScreen": "Έξοδος Από Πλήρη Οθόνη",
+    "fullScreen": "Πλήρης Οθόνη",
+    "restore": "Επαναφορά",
+    "copyMessage": "Αντιγράφηκε στο πρόχειρο"
 }

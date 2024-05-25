@@ -4,5 +4,14 @@
     "delete": "excluir",
     "red": "Vermelho",
     "green": "Verde",
-    "blue": "azul"
+    "blue": "azul",
+    "minimize": "Minimize",
+    "maximize": "Maximize",
+    "close": "FECHAR",
+    "exitAlwaysOnTop": "Sair Sempre no Topo",
+    "alwaysOnTop": "Sempre no Topo",
+    "exitFullScreen": "Sair de Tela Cheia",
+    "fullScreen": "Tela Cheia",
+    "restore": "RESTAURAR",
+    "copyMessage": "Copiado para o clipboard"
 }

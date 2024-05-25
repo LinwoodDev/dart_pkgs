@@ -4,5 +4,14 @@
     "delete": "Sil",
     "red": "Kırmızı",
     "green": "Yeşil",
-    "blue": "Mavi"
+    "blue": "Mavi",
+    "minimize": "Küçült",
+    "maximize": "Büyüt",
+    "close": "Kapat",
+    "exitAlwaysOnTop": "Exit Always On Top",
+    "alwaysOnTop": "Always On Top",
+    "exitFullScreen": "Exit Full Screen",
+    "fullScreen": "Full Screen",
+    "restore": "Geri Yükle",
+    "copyMessage": "Panoya kopyalandı"
 }

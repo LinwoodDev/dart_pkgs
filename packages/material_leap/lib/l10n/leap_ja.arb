@@ -4,5 +4,14 @@
     "delete": "削除",
     "red": "赤",
     "green": "緑",
-    "blue": "青"
+    "blue": "青",
+    "minimize": "Minimize",
+    "maximize": "Maximize",
+    "close": "閉じる",
+    "exitAlwaysOnTop": "Always On Top",
+    "alwaysOnTop": "常に一番上に",
+    "exitFullScreen": "全画面表示を終了",
+    "fullScreen": "全画面",
+    "restore": "復元",
+    "copyMessage": "クリップボードにコピーしました"
 }

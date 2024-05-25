@@ -4,5 +4,14 @@
     "delete": "删除",
     "red": "红色的",
     "green": "Green",
-    "blue": "蓝色"
+    "blue": "蓝色",
+    "minimize": "Minimize",
+    "maximize": "Maximize",
+    "close": "关闭",
+    "exitAlwaysOnTop": "总是在顶部退出",
+    "alwaysOnTop": "总是在顶端",
+    "exitFullScreen": "退出全屏",
+    "fullScreen": "全屏",
+    "restore": "恢复",
+    "copyMessage": "复制到剪贴板"
 }

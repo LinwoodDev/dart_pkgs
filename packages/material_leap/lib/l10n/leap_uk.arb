@@ -4,5 +4,14 @@
     "delete": "Видалити",
     "red": "Червоний",
     "green": "Зелений",
-    "blue": "Синій"
+    "blue": "Синій",
+    "minimize": "Minimize",
+    "maximize": "Maximize",
+    "close": "Закрити",
+    "exitAlwaysOnTop": "Вийти Always On вгорі",
+    "alwaysOnTop": "Завжди вгорі",
+    "exitFullScreen": "Вийти з повноекранного режиму",
+    "fullScreen": "На весь екран",
+    "restore": "Відновити",
+    "copyMessage": "Скопійовано до буферу обміну"
 }

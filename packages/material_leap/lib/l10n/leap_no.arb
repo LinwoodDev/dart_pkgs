@@ -4,5 +4,14 @@
     "delete": "Slett",
     "red": "Rød",
     "green": "Grønn",
-    "blue": "Blå"
+    "blue": "Blå",
+    "minimize": "Minimize",
+    "maximize": "Maximize",
+    "close": "Lukk",
+    "exitAlwaysOnTop": "Avslutt alltid øverst",
+    "alwaysOnTop": "Alltid øverst",
+    "exitFullScreen": "Avslutt fullskjerm",
+    "fullScreen": "Full skjerm",
+    "restore": "Gjenopprett",
+    "copyMessage": "Kopiert til utklippstavle"
 }

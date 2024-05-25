@@ -13,5 +13,6 @@
     "exitFullScreen": "Έξοδος Από Πλήρη Οθόνη",
     "fullScreen": "Πλήρης Οθόνη",
     "restore": "Επαναφορά",
-    "copyMessage": "Αντιγράφηκε στο πρόχειρο"
+    "copyMessage": "Αντιγράφηκε στο πρόχειρο",
+    "reset": "Reset"
 }

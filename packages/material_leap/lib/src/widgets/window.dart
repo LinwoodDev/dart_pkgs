@@ -193,7 +193,7 @@ class _WindowButtonsState<C extends LeapSettingsStreamableMixin<M>,
                                     FullScreenMode.enabledExitButton) ...[
                               IconButton(
                                 icon: const PhosphorIcon(
-                                    PhosphorIconsLight.arrowsOut),
+                                    PhosphorIconsLight.arrowsIn),
                                 tooltip: LeapLocalizations.of(context)
                                     .exitFullScreen,
                                 splashRadius: 20,
@@ -204,7 +204,9 @@ class _WindowButtonsState<C extends LeapSettingsStreamableMixin<M>,
                             ],
                             if (!fullScreen ||
                                 widget.fullScreenMode ==
-                                    FullScreenMode.enabled) ...[
+                                    FullScreenMode.enabled ||
+                                widget.fullScreenMode ==
+                                    FullScreenMode.disabled) ...[
                               IconButton(
                                 icon: const PhosphorIcon(
                                     PhosphorIconsLight.minus),
@@ -255,19 +257,22 @@ class _WindowButtonsState<C extends LeapSettingsStreamableMixin<M>,
                                           () => alwaysOnTop = !alwaysOnTop);
                                     },
                                   ),
-                                  MenuItemButton(
-                                    leadingIcon: PhosphorIcon(fullScreen
-                                        ? PhosphorIconsLight.arrowsIn
-                                        : PhosphorIconsLight.arrowsOut),
-                                    child: Text(fullScreen
-                                        ? LeapLocalizations.of(context)
-                                            .exitFullScreen
-                                        : LeapLocalizations.of(context)
-                                            .fullScreen),
-                                    onPressed: () async {
-                                      windowManager.setFullScreen(!fullScreen);
-                                    },
-                                  ),
+                                  if (widget.fullScreenMode ==
+                                      FullScreenMode.disabled)
+                                    MenuItemButton(
+                                      leadingIcon: PhosphorIcon(fullScreen
+                                          ? PhosphorIconsLight.arrowsIn
+                                          : PhosphorIconsLight.arrowsOut),
+                                      child: Text(fullScreen
+                                          ? LeapLocalizations.of(context)
+                                              .exitFullScreen
+                                          : LeapLocalizations.of(context)
+                                              .fullScreen),
+                                      onPressed: () async {
+                                        windowManager
+                                            .setFullScreen(!fullScreen);
+                                      },
+                                    ),
                                 ],
                               ),
                               const SizedBox(width: 8),

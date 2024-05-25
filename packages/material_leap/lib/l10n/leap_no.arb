@@ -13,5 +13,6 @@
     "exitFullScreen": "Avslutt fullskjerm",
     "fullScreen": "Full skjerm",
     "restore": "Gjenopprett",
-    "copyMessage": "Kopiert til utklippstavle"
+    "copyMessage": "Kopiert til utklippstavle",
+    "reset": "Reset"
 }

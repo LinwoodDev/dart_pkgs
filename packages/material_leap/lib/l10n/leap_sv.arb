@@ -13,5 +13,6 @@
     "exitFullScreen": "Avsluta helskärm",
     "fullScreen": "Helskärm",
     "restore": "Återställ",
-    "copyMessage": "Kopierad till urklipp"
+    "copyMessage": "Kopierad till urklipp",
+    "reset": "Reset"
 }

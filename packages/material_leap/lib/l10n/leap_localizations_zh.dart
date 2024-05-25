@@ -29,25 +29,25 @@ class LeapLocalizationsZh extends LeapLocalizations {
   String get maximize => 'Maximize';
 
   @override
-  String get close => 'Close';
+  String get close => '关闭';
 
   @override
-  String get exitAlwaysOnTop => 'Exit Always On Top';
+  String get exitAlwaysOnTop => '总是在顶部退出';
 
   @override
-  String get alwaysOnTop => 'Always On Top';
+  String get alwaysOnTop => '总是在顶端';
 
   @override
-  String get exitFullScreen => 'Exit Full Screen';
+  String get exitFullScreen => '退出全屏';
 
   @override
-  String get fullScreen => 'Full Screen';
+  String get fullScreen => '全屏';
 
   @override
-  String get restore => 'Restore';
+  String get restore => '恢复';
 
   @override
-  String get copyMessage => 'Copied to clipboard';
+  String get copyMessage => '复制到剪贴板';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -71,4 +71,31 @@ class LeapLocalizationsZhHant extends LeapLocalizationsZh {
 
   @override
   String get blue => '藍';
+
+  @override
+  String get minimize => '最小化';
+
+  @override
+  String get maximize => '最大化';
+
+  @override
+  String get close => '關閉';
+
+  @override
+  String get exitAlwaysOnTop => 'Exit Always On Top';
+
+  @override
+  String get alwaysOnTop => 'Always On Top';
+
+  @override
+  String get exitFullScreen => 'Exit Full Screen';
+
+  @override
+  String get fullScreen => 'Full Screen';
+
+  @override
+  String get restore => '恢復';
+
+  @override
+  String get copyMessage => '已複製到剪貼簿';
 }

@@ -23,29 +23,29 @@ class LeapLocalizationsDe extends LeapLocalizations {
   String get blue => 'Blau';
 
   @override
-  String get minimize => 'Minimize';
+  String get minimize => 'Minimieren';
 
   @override
-  String get maximize => 'Maximize';
+  String get maximize => 'Maximieren';
 
   @override
-  String get close => 'Close';
+  String get close => 'Schließen';
 
   @override
-  String get exitAlwaysOnTop => 'Exit Always On Top';
+  String get exitAlwaysOnTop => 'Immer im Vordergrund beenden';
 
   @override
-  String get alwaysOnTop => 'Always On Top';
+  String get alwaysOnTop => 'Immer oben';
 
   @override
-  String get exitFullScreen => 'Exit Full Screen';
+  String get exitFullScreen => 'Vollbild beenden';
 
   @override
-  String get fullScreen => 'Full Screen';
+  String get fullScreen => 'Vollbild';
 
   @override
-  String get restore => 'Restore';
+  String get restore => 'Wiederherstellen';
 
   @override
-  String get copyMessage => 'Copied to clipboard';
+  String get copyMessage => 'In Zwischenablage kopiert';
 }

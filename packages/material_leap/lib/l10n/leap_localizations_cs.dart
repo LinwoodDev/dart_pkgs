@@ -29,23 +29,23 @@ class LeapLocalizationsCs extends LeapLocalizations {
   String get maximize => 'Maximize';
 
   @override
-  String get close => 'Close';
+  String get close => 'Zavřít';
 
   @override
-  String get exitAlwaysOnTop => 'Exit Always On Top';
+  String get exitAlwaysOnTop => 'Ukončit vždy nahoře';
 
   @override
-  String get alwaysOnTop => 'Always On Top';
+  String get alwaysOnTop => 'Vždy nahoře';
 
   @override
-  String get exitFullScreen => 'Exit Full Screen';
+  String get exitFullScreen => 'Ukončit celou obrazovku';
 
   @override
-  String get fullScreen => 'Full Screen';
+  String get fullScreen => 'Celá obrazovka';
 
   @override
-  String get restore => 'Restore';
+  String get restore => 'Obnovit';
 
   @override
-  String get copyMessage => 'Copied to clipboard';
+  String get copyMessage => 'Zkopírováno do schránky';
 }

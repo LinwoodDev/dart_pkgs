@@ -29,23 +29,23 @@ class LeapLocalizationsPl extends LeapLocalizations {
   String get maximize => 'Maximize';
 
   @override
-  String get close => 'Close';
+  String get close => 'Zamknij';
 
   @override
-  String get exitAlwaysOnTop => 'Exit Always On Top';
+  String get exitAlwaysOnTop => 'Wyjdź zawsze na wierzchu';
 
   @override
-  String get alwaysOnTop => 'Always On Top';
+  String get alwaysOnTop => 'Zawsze na górze';
 
   @override
-  String get exitFullScreen => 'Exit Full Screen';
+  String get exitFullScreen => 'Zamknij pełny ekran';
 
   @override
-  String get fullScreen => 'Full Screen';
+  String get fullScreen => 'Pełny ekran';
 
   @override
-  String get restore => 'Restore';
+  String get restore => 'Przywróć';
 
   @override
-  String get copyMessage => 'Copied to clipboard';
+  String get copyMessage => 'Skopiowano do schowka';
 }

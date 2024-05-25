@@ -29,23 +29,23 @@ class LeapLocalizationsNo extends LeapLocalizations {
   String get maximize => 'Maximize';
 
   @override
-  String get close => 'Close';
+  String get close => 'Lukk';
 
   @override
-  String get exitAlwaysOnTop => 'Exit Always On Top';
+  String get exitAlwaysOnTop => 'Avslutt alltid øverst';
 
   @override
-  String get alwaysOnTop => 'Always On Top';
+  String get alwaysOnTop => 'Alltid øverst';
 
   @override
-  String get exitFullScreen => 'Exit Full Screen';
+  String get exitFullScreen => 'Avslutt fullskjerm';
 
   @override
-  String get fullScreen => 'Full Screen';
+  String get fullScreen => 'Full skjerm';
 
   @override
-  String get restore => 'Restore';
+  String get restore => 'Gjenopprett';
 
   @override
-  String get copyMessage => 'Copied to clipboard';
+  String get copyMessage => 'Kopiert til utklippstavle';
 }

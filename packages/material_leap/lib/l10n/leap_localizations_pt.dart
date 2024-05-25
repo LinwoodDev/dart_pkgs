@@ -29,25 +29,25 @@ class LeapLocalizationsPt extends LeapLocalizations {
   String get maximize => 'Maximize';
 
   @override
-  String get close => 'Close';
+  String get close => 'FECHAR';
 
   @override
-  String get exitAlwaysOnTop => 'Exit Always On Top';
+  String get exitAlwaysOnTop => 'Sair Sempre no Topo';
 
   @override
-  String get alwaysOnTop => 'Always On Top';
+  String get alwaysOnTop => 'Sempre no Topo';
 
   @override
-  String get exitFullScreen => 'Exit Full Screen';
+  String get exitFullScreen => 'Sair de Tela Cheia';
 
   @override
-  String get fullScreen => 'Full Screen';
+  String get fullScreen => 'Tela Cheia';
 
   @override
-  String get restore => 'Restore';
+  String get restore => 'RESTAURAR';
 
   @override
-  String get copyMessage => 'Copied to clipboard';
+  String get copyMessage => 'Copiado para o clipboard';
 }
 
 /// The translations for Portuguese, as used in Brazil (`pt_BR`).
@@ -71,4 +71,31 @@ class LeapLocalizationsPtBr extends LeapLocalizationsPt {
 
   @override
   String get blue => 'azul';
+
+  @override
+  String get minimize => 'Minimize';
+
+  @override
+  String get maximize => 'Maximize';
+
+  @override
+  String get close => 'Fechar';
+
+  @override
+  String get exitAlwaysOnTop => 'Sair Sempre no Topo';
+
+  @override
+  String get alwaysOnTop => 'Sempre no Topo';
+
+  @override
+  String get exitFullScreen => 'Sair de Tela Cheia';
+
+  @override
+  String get fullScreen => 'Tela Cheia';
+
+  @override
+  String get restore => 'Restaurar';
+
+  @override
+  String get copyMessage => 'Copiado para área de transferência';
 }

@@ -23,13 +23,13 @@ class LeapLocalizationsTr extends LeapLocalizations {
   String get blue => 'Mavi';
 
   @override
-  String get minimize => 'Minimize';
+  String get minimize => 'Küçült';
 
   @override
-  String get maximize => 'Maximize';
+  String get maximize => 'Büyüt';
 
   @override
-  String get close => 'Close';
+  String get close => 'Kapat';
 
   @override
   String get exitAlwaysOnTop => 'Exit Always On Top';
@@ -44,8 +44,8 @@ class LeapLocalizationsTr extends LeapLocalizations {
   String get fullScreen => 'Full Screen';
 
   @override
-  String get restore => 'Restore';
+  String get restore => 'Geri Yükle';
 
   @override
-  String get copyMessage => 'Copied to clipboard';
+  String get copyMessage => 'Panoya kopyalandı';
 }

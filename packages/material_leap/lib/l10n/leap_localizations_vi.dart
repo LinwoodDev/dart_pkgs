@@ -5,13 +5,13 @@ class LeapLocalizationsVi extends LeapLocalizations {
   LeapLocalizationsVi([String locale = 'vi']) : super(locale);
 
   @override
-  String get color => 'Color';
+  String get color => 'Màu sắc';
 
   @override
-  String get pin => 'Pin';
+  String get pin => 'Ghim';
 
   @override
-  String get delete => 'Delete';
+  String get delete => 'Xóa';
 
   @override
   String get red => 'Red';
@@ -29,7 +29,7 @@ class LeapLocalizationsVi extends LeapLocalizations {
   String get maximize => 'Maximize';
 
   @override
-  String get close => 'Close';
+  String get close => 'Đóng';
 
   @override
   String get exitAlwaysOnTop => 'Exit Always On Top';
@@ -44,8 +44,8 @@ class LeapLocalizationsVi extends LeapLocalizations {
   String get fullScreen => 'Full Screen';
 
   @override
-  String get restore => 'Restore';
+  String get restore => 'Khôi phục';
 
   @override
-  String get copyMessage => 'Copied to clipboard';
+  String get copyMessage => 'Đã sao chép vào bộ nhớ tạm';
 }

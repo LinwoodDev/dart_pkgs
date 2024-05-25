@@ -148,7 +148,7 @@ class _ExactSliderState extends State<ExactSlider> {
                 children: [
                   if (widget.header != null || widget.leading != null)
                     SizedBox(
-                      width: 160,
+                      width: 200,
                       child: Row(
                         children: [
                           if (widget.leading != null) widget.leading!,

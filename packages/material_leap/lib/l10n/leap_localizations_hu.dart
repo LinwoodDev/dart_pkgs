@@ -5,13 +5,13 @@ class LeapLocalizationsHu extends LeapLocalizations {
   LeapLocalizationsHu([String locale = 'hu']) : super(locale);
 
   @override
-  String get color => 'Color';
+  String get color => 'Szín';
 
   @override
   String get pin => 'Pin';
 
   @override
-  String get delete => 'Delete';
+  String get delete => 'Törlés';
 
   @override
   String get red => 'Red';
@@ -23,13 +23,13 @@ class LeapLocalizationsHu extends LeapLocalizations {
   String get blue => 'Blue';
 
   @override
-  String get minimize => 'Minimize';
+  String get minimize => 'Kis méret';
 
   @override
-  String get maximize => 'Maximize';
+  String get maximize => 'Teljes méret';
 
   @override
-  String get close => 'Close';
+  String get close => 'Bezár';
 
   @override
   String get exitAlwaysOnTop => 'Exit Always On Top';
@@ -44,8 +44,8 @@ class LeapLocalizationsHu extends LeapLocalizations {
   String get fullScreen => 'Full Screen';
 
   @override
-  String get restore => 'Restore';
+  String get restore => 'Visszaállítás';
 
   @override
-  String get copyMessage => 'Copied to clipboard';
+  String get copyMessage => 'Vágólapra másolva';
 }

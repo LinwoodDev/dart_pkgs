@@ -202,7 +202,7 @@ class _WindowButtonsState<C extends LeapSettingsStreamableMixin<M>,
                                         onLongPress: controller.toggle,
                                         onSecondaryTap: controller.toggle,
                                         child: IconButton(
-                                          tooltip: maximized
+                                          tooltip: maximized || fullScreen
                                               ? LeapLocalizations.of(context)
                                                   .restore
                                               : LeapLocalizations.of(context)
@@ -214,8 +214,13 @@ class _WindowButtonsState<C extends LeapSettingsStreamableMixin<M>,
                                                 .iconTheme
                                                 .color,
                                           ),
-                                          onPressed: () async =>
-                                              await windowManager.isMaximized()
+                                          onPressed: fullScreen
+                                              ? () {
+                                                  setFullScreen(false);
+                                                  setState(updateFullScreen);
+                                                }
+                                              : () async => await windowManager
+                                                      .isMaximized()
                                                   ? windowManager.unmaximize()
                                                   : windowManager.maximize(),
                                         ),
@@ -248,6 +253,7 @@ class _WindowButtonsState<C extends LeapSettingsStreamableMixin<M>,
                                                   .fullScreen),
                                           onPressed: () async {
                                             setFullScreen(!fullScreen);
+                                            setState(updateFullScreen);
                                           },
                                         ),
                                       ],

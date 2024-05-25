@@ -158,10 +158,10 @@ class _WindowButtonsState<C extends LeapSettingsStreamableMixin<M>,
   void onWindowMaximize() => setState(() => maximized = true);
 
   @override
-  void onWindowEnterFullScreen() => setFullScreen(true);
+  void onWindowEnterFullScreen() => setState(() => fullScreen = true);
 
   @override
-  void onWindowLeaveFullScreen() => setFullScreen(false);
+  void onWindowLeaveFullScreen() => setState(() => fullScreen = false);
 
   @override
   Widget build(BuildContext context) {

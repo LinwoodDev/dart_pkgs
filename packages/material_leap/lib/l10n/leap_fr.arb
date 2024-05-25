@@ -13,5 +13,6 @@
     "exitFullScreen": "Quitter le mode plein écran",
     "fullScreen": "Plein écran",
     "restore": "Restaurer",
-    "copyMessage": "Copié dans le presse-papiers"
+    "copyMessage": "Copié dans le presse-papiers",
+    "reset": "Reset"
 }

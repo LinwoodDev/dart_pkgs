@@ -13,5 +13,6 @@
     "exitFullScreen": "Exit Full Screen",
     "fullScreen": "Full Screen",
     "restore": "恢復",
-    "copyMessage": "已複製到剪貼簿"
+    "copyMessage": "已複製到剪貼簿",
+    "reset": "重設"
 }

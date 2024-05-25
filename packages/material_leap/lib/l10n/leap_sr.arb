@@ -13,5 +13,6 @@
     "exitFullScreen": "Exit Full Screen",
     "fullScreen": "Full Screen",
     "restore": "Restore",
-    "copyMessage": "Copied to clipboard"
+    "copyMessage": "Copied to clipboard",
+    "reset": "Reset"
 }

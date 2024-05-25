@@ -105,7 +105,7 @@ class WindowButtons<C extends LeapSettingsStreamableMixin<M>,
   const WindowButtons({super.key, this.divider = true});
 
   @override
-  State<WindowButtons> createState() => _WindowButtonsState();
+  State<WindowButtons<C, M>> createState() => _WindowButtonsState<C, M>();
 }
 
 class _WindowButtonsState<C extends LeapSettingsStreamableMixin<M>,

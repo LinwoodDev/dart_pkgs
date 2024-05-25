@@ -11,8 +11,9 @@ import 'package:window_manager/window_manager.dart';
 final isWindow =
     !kIsWeb && (Platform.isWindows || Platform.isLinux || Platform.isMacOS);
 
-class WindowTitleBar<C extends LeapSettingsCubit<M>, M extends LeapSettings>
-    extends StatelessWidget implements PreferredSizeWidget {
+class WindowTitleBar<C extends LeapSettingsStreamableMixin<M>,
+        M extends LeapSettings> extends StatelessWidget
+    implements PreferredSizeWidget {
   final List<Widget> actions;
   final Widget? title;
   final Widget? leading;
@@ -71,8 +72,8 @@ class WindowTitleBar<C extends LeapSettingsCubit<M>, M extends LeapSettings>
       Size.fromHeight(height + (bottom?.preferredSize.height ?? 0));
 }
 
-class WindowFreeSpace<C extends LeapSettingsCubit<M>, M extends LeapSettings>
-    extends StatelessWidget {
+class WindowFreeSpace<C extends LeapSettingsStreamableMixin<M>,
+    M extends LeapSettings> extends StatelessWidget {
   const WindowFreeSpace({super.key});
 
   @override
@@ -97,8 +98,8 @@ class WindowFreeSpace<C extends LeapSettingsCubit<M>, M extends LeapSettings>
   }
 }
 
-class WindowButtons<C extends LeapSettingsCubit<M>, M extends LeapSettings>
-    extends StatefulWidget {
+class WindowButtons<C extends LeapSettingsStreamableMixin<M>,
+    M extends LeapSettings> extends StatefulWidget {
   final bool divider;
 
   const WindowButtons({super.key, this.divider = true});
@@ -107,7 +108,7 @@ class WindowButtons<C extends LeapSettingsCubit<M>, M extends LeapSettings>
   State<WindowButtons> createState() => _WindowButtonsState();
 }
 
-class _WindowButtonsState<C extends LeapSettingsCubit<M>,
+class _WindowButtonsState<C extends LeapSettingsStreamableMixin<M>,
         M extends LeapSettings> extends State<WindowButtons<C, M>>
     with WindowListener {
   bool maximized = false, alwaysOnTop = false;

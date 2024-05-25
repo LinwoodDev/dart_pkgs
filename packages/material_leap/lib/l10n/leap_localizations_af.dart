@@ -48,4 +48,7 @@ class LeapLocalizationsAf extends LeapLocalizations {
 
   @override
   String get copyMessage => 'Copied to clipboard';
+
+  @override
+  String get reset => 'Reset';
 }

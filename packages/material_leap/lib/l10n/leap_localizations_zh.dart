@@ -48,6 +48,9 @@ class LeapLocalizationsZh extends LeapLocalizations {
 
   @override
   String get copyMessage => '复制到剪贴板';
+
+  @override
+  String get reset => 'Reset';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).

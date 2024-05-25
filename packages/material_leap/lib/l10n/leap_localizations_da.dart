@@ -48,4 +48,7 @@ class LeapLocalizationsDa extends LeapLocalizations {
 
   @override
   String get copyMessage => 'Kopieret til udklipsholder';
+
+  @override
+  String get reset => 'Reset';
 }

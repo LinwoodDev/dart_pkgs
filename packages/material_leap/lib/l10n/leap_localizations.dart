@@ -239,6 +239,12 @@ abstract class LeapLocalizations {
   /// In en, this message translates to:
   /// **'Copied to clipboard'**
   String get copyMessage;
+
+  /// No description provided for @reset.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset'**
+  String get reset;
 }
 
 class _LeapLocalizationsDelegate

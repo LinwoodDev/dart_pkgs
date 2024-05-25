@@ -48,4 +48,7 @@ class LeapLocalizationsEs extends LeapLocalizations {
 
   @override
   String get copyMessage => 'Copiado al portapapeles';
+
+  @override
+  String get reset => 'Reset';
 }

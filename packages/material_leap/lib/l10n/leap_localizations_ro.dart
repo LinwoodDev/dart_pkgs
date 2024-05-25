@@ -48,4 +48,7 @@ class LeapLocalizationsRo extends LeapLocalizations {
 
   @override
   String get copyMessage => 'Copiat în clipboard';
+
+  @override
+  String get reset => 'Reset';
 }

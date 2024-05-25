@@ -48,4 +48,7 @@ class LeapLocalizationsSv extends LeapLocalizations {
 
   @override
   String get copyMessage => 'Kopierad till urklipp';
+
+  @override
+  String get reset => 'Reset';
 }

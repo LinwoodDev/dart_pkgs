@@ -48,4 +48,7 @@ class LeapLocalizationsVi extends LeapLocalizations {
 
   @override
   String get copyMessage => 'Đã sao chép vào bộ nhớ tạm';
+
+  @override
+  String get reset => 'Reset';
 }

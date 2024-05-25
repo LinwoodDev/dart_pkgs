@@ -48,4 +48,7 @@ class LeapLocalizationsNl extends LeapLocalizations {
 
   @override
   String get copyMessage => 'Gekopieerd naar klembord';
+
+  @override
+  String get reset => 'Reset';
 }

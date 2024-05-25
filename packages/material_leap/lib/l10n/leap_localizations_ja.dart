@@ -48,4 +48,7 @@ class LeapLocalizationsJa extends LeapLocalizations {
 
   @override
   String get copyMessage => 'クリップボードにコピーしました';
+
+  @override
+  String get reset => 'Reset';
 }

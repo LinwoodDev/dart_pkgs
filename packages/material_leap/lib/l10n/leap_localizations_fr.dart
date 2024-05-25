@@ -48,4 +48,7 @@ class LeapLocalizationsFr extends LeapLocalizations {
 
   @override
   String get copyMessage => 'Copié dans le presse-papiers';
+
+  @override
+  String get reset => 'Reset';
 }

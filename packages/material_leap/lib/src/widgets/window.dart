@@ -257,7 +257,7 @@ class _WindowButtonsState<C extends LeapSettingsStreamableMixin<M>,
                                           () => alwaysOnTop = !alwaysOnTop);
                                     },
                                   ),
-                                  if (widget.fullScreenMode ==
+                                  if (widget.fullScreenMode !=
                                       FullScreenMode.disabled)
                                     MenuItemButton(
                                       leadingIcon: PhosphorIcon(fullScreen

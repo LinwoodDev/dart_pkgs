@@ -48,4 +48,7 @@ class LeapLocalizationsCs extends LeapLocalizations {
 
   @override
   String get copyMessage => 'Zkopírováno do schránky';
+
+  @override
+  String get reset => 'Reset';
 }

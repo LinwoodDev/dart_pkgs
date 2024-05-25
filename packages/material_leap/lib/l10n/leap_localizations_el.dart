@@ -48,4 +48,7 @@ class LeapLocalizationsEl extends LeapLocalizations {
 
   @override
   String get copyMessage => 'Αντιγράφηκε στο πρόχειρο';
+
+  @override
+  String get reset => 'Reset';
 }

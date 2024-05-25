@@ -48,4 +48,7 @@ class LeapLocalizationsPl extends LeapLocalizations {
 
   @override
   String get copyMessage => 'Skopiowano do schowka';
+
+  @override
+  String get reset => 'Reset';
 }

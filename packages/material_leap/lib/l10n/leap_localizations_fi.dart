@@ -48,4 +48,7 @@ class LeapLocalizationsFi extends LeapLocalizations {
 
   @override
   String get copyMessage => 'Kopioitu leikepöydälle';
+
+  @override
+  String get reset => 'Reset';
 }

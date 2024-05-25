@@ -48,4 +48,7 @@ class LeapLocalizationsAr extends LeapLocalizations {
 
   @override
   String get copyMessage => 'نسخ إلى الحافظة';
+
+  @override
+  String get reset => 'Reset';
 }

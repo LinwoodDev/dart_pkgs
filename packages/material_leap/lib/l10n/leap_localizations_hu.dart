@@ -48,4 +48,7 @@ class LeapLocalizationsHu extends LeapLocalizations {
 
   @override
   String get copyMessage => 'Vágólapra másolva';
+
+  @override
+  String get reset => 'Reset';
 }

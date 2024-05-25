@@ -1,5 +1,6 @@
 library material_leap;
 
+export 'src/widgets/advanced_text_field.dart';
 export 'src/widgets/advanced_switch_list_tile.dart';
 export 'src/widgets/box_tile.dart';
 export 'src/widgets/color_button.dart';

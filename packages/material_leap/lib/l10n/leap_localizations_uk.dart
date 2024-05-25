@@ -48,4 +48,7 @@ class LeapLocalizationsUk extends LeapLocalizations {
 
   @override
   String get copyMessage => 'Скопійовано до буферу обміну';
+
+  @override
+  String get reset => 'Reset';
 }

@@ -48,4 +48,7 @@ class LeapLocalizationsIt extends LeapLocalizations {
 
   @override
   String get copyMessage => 'Copiato negli appunti';
+
+  @override
+  String get reset => 'Reset';
 }

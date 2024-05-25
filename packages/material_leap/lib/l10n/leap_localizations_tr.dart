@@ -48,4 +48,7 @@ class LeapLocalizationsTr extends LeapLocalizations {
 
   @override
   String get copyMessage => 'Panoya kopyalandı';
+
+  @override
+  String get reset => 'Reset';
 }

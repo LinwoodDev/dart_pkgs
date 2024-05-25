@@ -48,4 +48,7 @@ class LeapLocalizationsNo extends LeapLocalizations {
 
   @override
   String get copyMessage => 'Kopiert til utklippstavle';
+
+  @override
+  String get reset => 'Reset';
 }

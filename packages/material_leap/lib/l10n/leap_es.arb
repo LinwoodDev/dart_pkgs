@@ -13,5 +13,6 @@
     "exitFullScreen": "Salir de pantalla completa",
     "fullScreen": "Pantalla completa",
     "restore": "Restaurar",
-    "copyMessage": "Copiado al portapapeles"
+    "copyMessage": "Copiado al portapapeles",
+    "reset": "Reset"
 }

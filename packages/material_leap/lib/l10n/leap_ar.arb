@@ -13,5 +13,6 @@
     "exitFullScreen": "الخروج من ملء الشاشة",
     "fullScreen": "ملء الشاشة",
     "restore": "إستعادة",
-    "copyMessage": "نسخ إلى الحافظة"
+    "copyMessage": "نسخ إلى الحافظة",
+    "reset": "Reset"
 }

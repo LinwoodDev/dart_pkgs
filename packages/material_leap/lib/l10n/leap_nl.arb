@@ -13,5 +13,6 @@
     "exitFullScreen": "Volledig Scherm afsluiten",
     "fullScreen": "Volledig scherm",
     "restore": "Herstellen",
-    "copyMessage": "Gekopieerd naar klembord"
+    "copyMessage": "Gekopieerd naar klembord",
+    "reset": "Reset"
 }

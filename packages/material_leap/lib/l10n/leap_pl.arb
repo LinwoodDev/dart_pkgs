@@ -13,5 +13,6 @@
     "exitFullScreen": "Zamknij pełny ekran",
     "fullScreen": "Pełny ekran",
     "restore": "Przywróć",
-    "copyMessage": "Skopiowano do schowka"
+    "copyMessage": "Skopiowano do schowka",
+    "reset": "Reset"
 }

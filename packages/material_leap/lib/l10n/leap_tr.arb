@@ -13,5 +13,6 @@
     "exitFullScreen": "Exit Full Screen",
     "fullScreen": "Full Screen",
     "restore": "Geri Yükle",
-    "copyMessage": "Panoya kopyalandı"
+    "copyMessage": "Panoya kopyalandı",
+    "reset": "Sıfırla"
 }

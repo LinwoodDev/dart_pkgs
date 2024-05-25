@@ -13,5 +13,6 @@
     "exitFullScreen": "Ukončit celou obrazovku",
     "fullScreen": "Celá obrazovka",
     "restore": "Obnovit",
-    "copyMessage": "Zkopírováno do schránky"
+    "copyMessage": "Zkopírováno do schránky",
+    "reset": "Reset"
 }

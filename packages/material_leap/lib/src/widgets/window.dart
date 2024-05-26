@@ -13,7 +13,51 @@ final isWindow =
 
 enum FullScreenMode { disabled, enabled, enabledExitButton, enabledHidden }
 
-class WindowTitleBar<C extends LeapSettingsStreamableMixin<M>,
+class WindowListenerWidget<C extends LeapSettingsBlocBaseMixin<M>,
+    M extends LeapSettings> extends StatefulWidget with WindowListener {
+  final Widget child;
+
+  const WindowListenerWidget({super.key, required this.child});
+
+  @override
+  State<WindowListenerWidget<C, M>> createState() =>
+      _WindowListenerWidgetState<C, M>();
+}
+
+class _WindowListenerWidgetState<C extends LeapSettingsBlocBaseMixin<M>,
+        M extends LeapSettings> extends State<WindowListenerWidget<C, M>>
+    with WindowListener {
+  @override
+  void initState() {
+    if (!kIsWeb && isWindow) {
+      windowManager.addListener(this);
+    }
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    windowManager.removeListener(this);
+    super.dispose();
+  }
+
+  @override
+  void onWindowEnterFullScreen() {
+    context.read<C>().changeFullScreen(true, false);
+  }
+
+  @override
+  void onWindowLeaveFullScreen() {
+    context.read<C>().changeFullScreen(false, false);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return widget.child;
+  }
+}
+
+class WindowTitleBar<C extends LeapSettingsBlocBaseMixin<M>,
         M extends LeapSettings> extends StatelessWidget
     implements PreferredSizeWidget {
   final List<Widget> actions;
@@ -77,7 +121,7 @@ class WindowTitleBar<C extends LeapSettingsStreamableMixin<M>,
       Size.fromHeight(height + (bottom?.preferredSize.height ?? 0));
 }
 
-class WindowFreeSpace<C extends LeapSettingsStreamableMixin<M>,
+class WindowFreeSpace<C extends LeapSettingsBlocBaseMixin<M>,
     M extends LeapSettings> extends StatelessWidget {
   const WindowFreeSpace({super.key});
 
@@ -103,14 +147,16 @@ class WindowFreeSpace<C extends LeapSettingsStreamableMixin<M>,
   }
 }
 
-class WindowButtons<C extends LeapSettingsStreamableMixin<M>,
+class WindowButtons<C extends LeapSettingsBlocBaseMixin<M>,
     M extends LeapSettings> extends StatefulWidget {
   final bool divider;
   final FullScreenMode fullScreenMode;
+  final bool updateSettings;
 
   const WindowButtons({
     super.key,
     this.divider = true,
+    this.updateSettings = true,
     this.fullScreenMode = FullScreenMode.enabledExitButton,
   });
 
@@ -118,7 +164,7 @@ class WindowButtons<C extends LeapSettingsStreamableMixin<M>,
   State<WindowButtons<C, M>> createState() => _WindowButtonsState<C, M>();
 }
 
-class _WindowButtonsState<C extends LeapSettingsStreamableMixin<M>,
+class _WindowButtonsState<C extends LeapSettingsBlocBaseMixin<M>,
         M extends LeapSettings> extends State<WindowButtons<C, M>>
     with WindowListener {
   bool maximized = false, alwaysOnTop = false, fullScreen = false;
@@ -158,10 +204,16 @@ class _WindowButtonsState<C extends LeapSettingsStreamableMixin<M>,
   void onWindowMaximize() => setState(() => maximized = true);
 
   @override
-  void onWindowEnterFullScreen() => setState(() => fullScreen = true);
+  void onWindowEnterFullScreen() {
+    if (widget.updateSettings) context.read<C>().changeFullScreen(true, false);
+    setState(() => fullScreen = true);
+  }
 
   @override
-  void onWindowLeaveFullScreen() => setState(() => fullScreen = false);
+  void onWindowLeaveFullScreen() {
+    if (widget.updateSettings) context.read<C>().changeFullScreen(true, false);
+    setState(() => fullScreen = false);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -198,7 +250,7 @@ class _WindowButtonsState<C extends LeapSettingsStreamableMixin<M>,
                                     .exitFullScreen,
                                 splashRadius: 20,
                                 onPressed: () async {
-                                  windowManager.setFullScreen(false);
+                                  context.read<C>().changeFullScreen(false);
                                 },
                               ),
                             ],
@@ -232,7 +284,9 @@ class _WindowButtonsState<C extends LeapSettingsStreamableMixin<M>,
                                     ),
                                     onPressed: fullScreen
                                         ? () {
-                                            windowManager.setFullScreen(false);
+                                            context
+                                                .read<C>()
+                                                .changeFullScreen(false);
                                           }
                                         : () async =>
                                             await windowManager.isMaximized()
@@ -268,9 +322,8 @@ class _WindowButtonsState<C extends LeapSettingsStreamableMixin<M>,
                                               .exitFullScreen
                                           : LeapLocalizations.of(context)
                                               .fullScreen),
-                                      onPressed: () async {
-                                        windowManager
-                                            .setFullScreen(!fullScreen);
+                                      onPressed: () {
+                                        context.read<C>().toggleFullScreen();
                                       },
                                     ),
                                 ],

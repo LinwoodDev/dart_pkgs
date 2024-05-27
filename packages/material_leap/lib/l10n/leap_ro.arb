@@ -13,5 +13,6 @@
     "exitFullScreen": "Ieșiți din ecran complet",
     "fullScreen": "Ecran complet",
     "restore": "Restaurează",
-    "copyMessage": "Copiat în clipboard"
+    "copyMessage": "Copiat în clipboard",
+    "reset": "Reset"
 }

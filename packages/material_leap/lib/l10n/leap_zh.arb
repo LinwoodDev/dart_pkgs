@@ -13,5 +13,6 @@
     "exitFullScreen": "退出全屏",
     "fullScreen": "全屏",
     "restore": "恢复",
-    "copyMessage": "复制到剪贴板"
+    "copyMessage": "复制到剪贴板",
+    "reset": "Reset"
 }

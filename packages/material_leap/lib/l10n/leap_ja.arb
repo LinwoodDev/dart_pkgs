@@ -13,5 +13,6 @@
     "exitFullScreen": "全画面表示を終了",
     "fullScreen": "全画面",
     "restore": "復元",
-    "copyMessage": "クリップボードにコピーしました"
+    "copyMessage": "クリップボードにコピーしました",
+    "reset": "Reset"
 }

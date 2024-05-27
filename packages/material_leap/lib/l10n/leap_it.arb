@@ -13,5 +13,6 @@
     "exitFullScreen": "Esci Da Schermo Intero",
     "fullScreen": "Schermo Intero",
     "restore": "Ripristina",
-    "copyMessage": "Copiato negli appunti"
+    "copyMessage": "Copiato negli appunti",
+    "reset": "Reset"
 }

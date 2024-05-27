@@ -4,10 +4,6 @@ import 'package:window_manager/window_manager.dart';
 
 abstract class LeapSettings {
   bool get nativeTitleBar;
-
-  LeapSettings copyWith({
-    bool nativeTitleBar,
-  });
 }
 
 mixin LeapSettingsBlocBaseMixin<T extends LeapSettings> on BlocBase<T> {}

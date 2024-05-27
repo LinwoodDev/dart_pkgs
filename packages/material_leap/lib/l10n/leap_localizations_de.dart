@@ -50,5 +50,5 @@ class LeapLocalizationsDe extends LeapLocalizations {
   String get copyMessage => 'In Zwischenablage kopiert';
 
   @override
-  String get reset => 'Reset';
+  String get reset => 'Zurücksetzen';
 }

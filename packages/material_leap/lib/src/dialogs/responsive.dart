@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:material_leap/material_leap.dart';
 
 class ResponsiveDialog extends StatelessWidget {
-  final int breakpoint;
+  final double breakpoint;
   final Widget child;
   final BoxConstraints? constraints;
 
@@ -34,7 +34,7 @@ class ResponsiveDialog extends StatelessWidget {
 }
 
 class ResponsiveAlertDialog extends StatelessWidget {
-  final int breakpoint;
+  final double breakpoint;
   final Widget title, content;
   final Widget? leading;
   final BoxConstraints? constraints;

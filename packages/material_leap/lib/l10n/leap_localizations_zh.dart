@@ -101,4 +101,7 @@ class LeapLocalizationsZhHant extends LeapLocalizationsZh {
 
   @override
   String get copyMessage => '已複製到剪貼簿';
+
+  @override
+  String get reset => '重設';
 }

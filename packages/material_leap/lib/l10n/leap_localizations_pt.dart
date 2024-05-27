@@ -101,4 +101,7 @@ class LeapLocalizationsPtBr extends LeapLocalizationsPt {
 
   @override
   String get copyMessage => 'Copiado para área de transferência';
+
+  @override
+  String get reset => 'Reset';
 }

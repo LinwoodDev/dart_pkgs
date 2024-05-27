@@ -50,5 +50,5 @@ class LeapLocalizationsTr extends LeapLocalizations {
   String get copyMessage => 'Panoya kopyalandı';
 
   @override
-  String get reset => 'Reset';
+  String get reset => 'Sıfırla';
 }

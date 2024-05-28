@@ -14,6 +14,7 @@ class HorizontalTab extends StatelessWidget {
   Widget build(BuildContext context) {
     return Tab(
       child: Row(
+        mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           if (icon != null) ...[

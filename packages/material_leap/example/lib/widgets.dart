@@ -2,8 +2,28 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:material_leap/material_leap.dart';
 
-class WidgetsView extends StatelessWidget {
+class WidgetsView extends StatefulWidget {
   const WidgetsView({super.key});
+
+  @override
+  State<WidgetsView> createState() => _WidgetsViewState();
+}
+
+class _WidgetsViewState extends State<WidgetsView>
+    with TickerProviderStateMixin {
+  late final TabController _tabController;
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 3, vsync: this);
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -50,6 +70,40 @@ class WidgetsView extends StatelessWidget {
               print('Date time changed: $value');
             }
           },
+        ),
+        const SizedBox(height: 8),
+        Text("Horizontal tab",
+            style: Theme.of(context).textTheme.headlineSmall),
+        const SizedBox(height: 8),
+        TabBar(
+          controller: _tabController,
+          indicatorSize: TabBarIndicatorSize.tab,
+          tabs: const [
+            HorizontalTab(
+              label: Text("Tab 1"),
+            ),
+            HorizontalTab(
+              label: Text("Tab 2"),
+            ),
+            HorizontalTab(
+              label: Text("Tab 3"),
+            ),
+          ],
+        ),
+        TabBar(
+          controller: _tabController,
+          indicatorSize: TabBarIndicatorSize.label,
+          tabs: const [
+            HorizontalTab(
+              label: Text("Tab 1"),
+            ),
+            HorizontalTab(
+              label: Text("Tab 2"),
+            ),
+            HorizontalTab(
+              label: Text("Tab 3"),
+            ),
+          ],
         ),
       ],
     );

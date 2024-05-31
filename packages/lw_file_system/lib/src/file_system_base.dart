@@ -1,6 +1,8 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:typed_data';
+
+import 'package:flutter/foundation.dart';
+import 'package:rxdart/rxdart.dart';
 
 import 'file_system_dav.dart';
 import 'file_system_io.dart';
@@ -9,8 +11,16 @@ import 'file_system_html_stub.dart'
 import 'models.dart';
 
 abstract class GeneralFileSystem {
-  static String? dataPath;
-  FutureOr<void> defaultFunction();
+  final FutureOr<void> Function(GeneralFileSystem fileSystem) onInit;
+  final String databaseName, directoryPath;
+
+  GeneralFileSystem({
+    this.onInit = _defaultInit,
+    required this.databaseName,
+    required this.directoryPath,
+  });
+
+  static Future<void> _defaultInit(GeneralFileSystem fileSystem) async {}
 
   RemoteStorage? get remote => null;
 
@@ -64,7 +74,10 @@ abstract class GeneralFileSystem {
   FutureOr<String> getDirectory() => '/';
 }
 
-abstract class DocumentFileSystem extends GeneralFileSystem {
+abstract class DirectoryFileSystem extends GeneralFileSystem {
+  DirectoryFileSystem(
+      {required super.databaseName, required super.directoryPath});
+
   Future<AppDocumentDirectory> getRootDirectory([bool recursive = false]) {
     return getAsset('', recursive ? null : true)
         .then((value) => value as AppDocumentDirectory);
@@ -100,12 +113,13 @@ abstract class DocumentFileSystem extends GeneralFileSystem {
       fetchAssets(Stream.fromIterable(paths), listFiles);
 
   static Stream<List<AppDocumentEntity>> fetchAssetsGlobal(
-      Stream<AssetLocation> locations, ButterflySettings settings,
+      Stream<AssetLocation> locations,
+      Map<String, DirectoryFileSystem> fileSystems,
       [bool? listFiles = true]) {
     final files = <AppDocumentEntity>[];
     final streams = locations.asyncExpand((e) async* {
-      final fileSystem =
-          DocumentFileSystem.fromPlatform(remote: settings.getRemote(e.remote));
+      final fileSystem = fileSystems[e.remote];
+      if (fileSystem == null) return;
       int? index;
       await for (final file
           in fileSystem.fetchAsset(e.path, listFiles).whereNotNull()) {
@@ -122,9 +136,10 @@ abstract class DocumentFileSystem extends GeneralFileSystem {
   }
 
   static Stream<List<AppDocumentEntity>> fetchAssetsGlobalSync(
-          Iterable<AssetLocation> locations, ButterflySettings settings,
+          Iterable<AssetLocation> locations,
+          Map<String, DirectoryFileSystem> fileSystems,
           [bool? listFiles = true]) =>
-      fetchAssetsGlobal(Stream.fromIterable(locations), settings, listFiles);
+      fetchAssetsGlobal(Stream.fromIterable(locations), fileSystems, listFiles);
 
   Future<AppDocumentEntity?> getAsset(String path, [bool? listFiles = true]) =>
       fetchAsset(path, listFiles).last;
@@ -182,7 +197,7 @@ abstract class DocumentFileSystem extends GeneralFileSystem {
     return asset;
   }
 
-  static DocumentFileSystem fromPlatform({final ExternalStorage? remote}) {
+  static DirectoryFileSystem fromPlatform({final ExternalStorage? remote}) {
     if (kIsWeb) {
       return WebDocumentFileSystem();
     } else {
@@ -214,7 +229,7 @@ abstract class DocumentFileSystem extends GeneralFileSystem {
       compute((_) => document.save(), null);
 }
 
-abstract class TemplateFileSystem extends GeneralFileSystem {
+abstract class KeyFileSystem extends GeneralFileSystem {
   Future<bool> createDefault(BuildContext context, {bool force = false});
 
   Future<NoteData?> getTemplate(String name);
@@ -282,50 +297,4 @@ Archive exportDirectory(AppDocumentDirectory directory) {
 
   addToArchive(directory);
   return archive;
-}
-
-abstract class PackFileSystem extends GeneralFileSystem {
-  Future<bool> createDefault(BuildContext context, {bool force = false});
-
-  Future<String> findAvailableName(String path) =>
-      _findAvailableName(path, hasPack);
-
-  Future<NoteData?> getPack(String name);
-
-  Future<NoteData> createPack(NoteData pack) async {
-    final metadata = pack.getMetadata();
-    if (metadata == null) return pack;
-    final newName = await findAvailableName(metadata.name);
-    pack = pack.setMetadata(metadata.copyWith(name: newName));
-    updatePack(pack);
-    return pack;
-  }
-
-  Future<bool> hasPack(String name);
-  Future<void> updatePack(NoteData pack);
-  Future<void> deletePack(String name);
-  Future<List<NoteData>> getPacks();
-
-  Future<NoteData?> renamePack(String path, String newName) async {
-    path = normalizePath(path);
-    var pack = await getPack(path);
-    final metadata = pack?.getMetadata();
-    if (pack == null || metadata == null) return null;
-    await deletePack(path);
-    pack = pack.setMetadata(metadata.copyWith(name: newName));
-    await updatePack(pack);
-    return pack;
-  }
-
-  static PackFileSystem fromPlatform({ExternalStorage? remote}) {
-    if (kIsWeb) {
-      return WebPackFileSystem();
-    } else {
-      return remote?.map(
-            dav: (e) => DavRemotePackFileSystem(e),
-            local: (e) => IOPackFileSystem(e.fullPacksPath),
-          ) ??
-          IOPackFileSystem();
-    }
-  }
 }

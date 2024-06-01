@@ -6,11 +6,11 @@ import 'package:collection/collection.dart';
 import 'package:path/path.dart' as p;
 import 'package:xml/xml.dart';
 
-import '../cubits/settings.dart';
-import '../models/defaults.dart';
+import '../../cubits/settings.dart';
+import '../../models/defaults.dart';
 import 'file_system_base.dart';
 import 'file_system_remote.dart';
-import 'models.dart';
+import '../models.dart';
 
 class DavRemoteDocumentFileSystem extends DocumentRemoteSystem {
   @override

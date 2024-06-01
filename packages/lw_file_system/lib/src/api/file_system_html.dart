@@ -9,7 +9,6 @@ import 'dart:typed_data';
 import 'package:idb_shim/idb.dart';
 import 'package:idb_shim/idb_browser.dart';
 import 'package:js/js.dart';
-import 'models.dart';
 
 import 'file_system_base.dart';
 

@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:archive/archive.dart';
 import 'package:flutter/foundation.dart';
 import 'package:lw_file_system/src/models/entity.dart';
+import 'package:lw_file_system/src/models/location.dart';
 import 'package:lw_file_system/src/models/storage.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -11,7 +12,6 @@ import 'file_system_dav.dart';
 import 'file_system_io.dart';
 import 'file_system_html_stub.dart'
     if (dart.library.js) 'file_system_html.dart';
-import '../models.dart';
 
 abstract class GeneralFileSystem {
   final FutureOr<void> Function(GeneralFileSystem fileSystem) onInit;

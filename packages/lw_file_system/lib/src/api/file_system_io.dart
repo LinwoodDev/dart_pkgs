@@ -37,7 +37,7 @@ Future<String> getButterflyDirectory([bool root = false]) async {
   return path;
 }
 
-class IODocumentFileSystem extends DocumentFileSystem {
+class IODocumentFileSystem<T> extends DirectoryFileSystem<T> {
   final String? root;
   final String remoteName;
 
@@ -178,7 +178,7 @@ class IODocumentFileSystem extends DocumentFileSystem {
   }
 }
 
-class IOTemplateFileSystem extends TemplateFileSystem {
+class IOTemplateFileSystem<T> extends KeyFileSystem<T> {
   final String? root;
 
   IOTemplateFileSystem([this.root]);

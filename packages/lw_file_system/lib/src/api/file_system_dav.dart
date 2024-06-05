@@ -12,7 +12,7 @@ import 'file_system_base.dart';
 import 'file_system_remote.dart';
 import '../models.dart';
 
-class DavRemoteDocumentFileSystem extends DocumentRemoteSystem {
+class DavRemoteDocumentFileSystem<T> extends DocumentRemoteSystem<T> {
   @override
   final DavRemoteStorage remote;
 
@@ -252,7 +252,7 @@ class DavRemoteDocumentFileSystem extends DocumentRemoteSystem {
   }
 }
 
-class DavRemoteTemplateFileSystem extends TemplateRemoteSystem {
+class DavRemoteTemplateFileSystem<T> extends TemplateRemoteSystem<T> {
   @override
   final DavRemoteStorage remote;
 

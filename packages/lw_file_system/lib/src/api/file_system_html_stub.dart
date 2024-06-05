@@ -1,11 +1,15 @@
-import 'package:butterfly_api/butterfly_api.dart';
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
+import 'package:lw_file_system/src/models/entity.dart';
 
 import 'file_system_base.dart';
 
-class WebDocumentFileSystem extends DocumentFileSystem {
+class WebDocumentFileSystem<T> extends DirectoryFileSystem<T> {
+  WebDocumentFileSystem({required super.config});
+
   @override
-  Future<AppDocumentDirectory> createDirectory(String path) {
+  Future<AppDocumentDirectory<T>> createDirectory(String path) {
     throw UnimplementedError();
   }
 
@@ -15,7 +19,8 @@ class WebDocumentFileSystem extends DocumentFileSystem {
   }
 
   @override
-  Stream<AppDocumentEntity?> fetchAsset(String path, [bool? listFiles = true]) {
+  Stream<AppDocumentEntity<T>?> fetchAsset(String path,
+      [bool? listFiles = true]) {
     throw UnimplementedError();
   }
 
@@ -25,71 +30,36 @@ class WebDocumentFileSystem extends DocumentFileSystem {
   }
 
   @override
-  Future<bool> updateFile(String path, List<int> data) {
+  Future<void> updateFile(String path, List<int> data) {
     throw UnimplementedError();
   }
 }
 
-class WebTemplateFileSystem extends TemplateFileSystem {
+class WebTemplateFileSystem<T> extends KeyFileSystem<T> {
+  WebTemplateFileSystem({required super.config});
+
   @override
-  Future<bool> createDefault(BuildContext context, {bool force = false}) {
+  Future<void> deleteFile(String key) {
     throw UnimplementedError();
   }
 
   @override
-  Future<void> deleteTemplate(String name) {
+  Future<Uint8List?> getFile(String key) {
     throw UnimplementedError();
   }
 
   @override
-  Future<NoteData?> getTemplate(String name) {
+  Future<List<AppDocumentFile<T>>> getFiles() {
     throw UnimplementedError();
   }
 
   @override
-  Future<List<NoteData>> getTemplates() {
+  Future<bool> hasKey(String name) {
     throw UnimplementedError();
   }
 
   @override
-  Future<bool> hasTemplate(String name) {
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<void> updateTemplate(NoteData template) {
-    throw UnimplementedError();
-  }
-}
-
-class WebPackFileSystem extends PackFileSystem {
-  @override
-  Future<void> deletePack(String name) {
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<NoteData?> getPack(String name) {
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<List<NoteData>> getPacks() {
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<bool> hasPack(String name) {
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<void> updatePack(NoteData pack) {
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<bool> createDefault(BuildContext context, {bool force = false}) {
+  Future<void> updateFile(String key, Uint8List data) {
     throw UnimplementedError();
   }
 }

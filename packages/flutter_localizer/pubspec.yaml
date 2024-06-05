@@ -14,4 +14,4 @@ dependencies:
     sdk: flutter
   localizer: ^1.0.2
 dev_dependencies:
-  lints: ^4.0.0
+  flutter_lints: ^4.0.0

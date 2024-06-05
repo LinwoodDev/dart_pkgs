@@ -92,7 +92,7 @@ Future<Database> _getDatabase() async {
   return _db!;
 }
 
-abstract class WebDocumentFileSystem extends DocumentFileSystem {
+abstract class WebDocumentFileSystem<T> extends DirectoryFileSystem<T> {
   @override
   Future<void> deleteAsset(String path) async {
     path = normalizePath(path);

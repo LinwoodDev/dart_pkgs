@@ -1,11 +1,8 @@
 import 'dart:async';
-import 'dart:typed_data';
 
 import 'package:archive/archive.dart';
 import 'package:flutter/foundation.dart';
-import 'package:lw_file_system/src/models/entity.dart';
-import 'package:lw_file_system/src/models/location.dart';
-import 'package:lw_file_system/src/models/storage.dart';
+import 'package:lw_file_system/lw_file_system.dart';
 import 'package:rxdart/rxdart.dart';
 
 import 'file_system_dav.dart';
@@ -13,14 +10,41 @@ import 'file_system_io.dart';
 import 'file_system_html_stub.dart'
     if (dart.library.js) 'file_system_html.dart';
 
-abstract class GeneralFileSystem {
-  final FutureOr<void> Function(GeneralFileSystem fileSystem) onInit;
-  final String databaseName, directoryPath;
+typedef FileDisplayCallback<T> = (T?, Uint8List?) Function(List<int> data);
+typedef InitFSCallback = FutureOr<void> Function(GeneralFileSystem fileSystem);
+typedef CreateFileCallback = FutureOr<Uint8List> Function(
+    String path, Uint8List data);
+typedef EncodeFileCallback<T> = FutureOr<Uint8List> Function(T);
+typedef DecodeFileCallback<T> = FutureOr<T> Function(Uint8List);
+
+Future<AppDocumentFile<T>> getAppDocumentFile<T>(
+  AssetLocation location,
+  Uint8List data, {
+  bool cached = false,
+  bool readMetadata = true,
+  FileDisplayCallback<T>? onFileDisplay,
+}) async {
+  final (metadata, thumbnail) = (readMetadata && onFileDisplay != null)
+      ? await compute(onFileDisplay, data)
+      : (null, null);
+  return AppDocumentFile(
+    location,
+    data: data,
+    metadata: metadata,
+    thumbnail: thumbnail,
+    cached: cached,
+  );
+}
+
+abstract class GeneralFileSystem<T> {
+  final InitFSCallback onInit;
+  final FileDisplayCallback? onFileDisplay;
+  final FileSystemConfig config;
 
   GeneralFileSystem({
     this.onInit = _defaultInit,
-    required this.databaseName,
-    required this.directoryPath,
+    this.onFileDisplay,
+    required this.config,
   });
 
   static Future<void> _defaultInit(GeneralFileSystem fileSystem) async {}
@@ -77,9 +101,8 @@ abstract class GeneralFileSystem {
   FutureOr<String> getDirectory() => '/';
 }
 
-abstract class DirectoryFileSystem extends GeneralFileSystem {
-  DirectoryFileSystem(
-      {required super.databaseName, required super.directoryPath});
+abstract class DirectoryFileSystem<T> extends GeneralFileSystem<T> {
+  DirectoryFileSystem({required super.config});
 
   Future<AppDocumentDirectory> getRootDirectory([bool recursive = false]) {
     return getAsset('', recursive ? null : true)
@@ -90,11 +113,12 @@ abstract class DirectoryFileSystem extends GeneralFileSystem {
   FutureOr<String> getDirectory();
 
   /// If listFiles is null, it will fetch recursively
-  Stream<AppDocumentEntity?> fetchAsset(String path, [bool? listFiles = true]);
+  Stream<AppDocumentEntity<T>?> fetchAsset(String path,
+      [bool? listFiles = true]);
 
-  Stream<List<AppDocumentEntity>> fetchAssets(Stream<String> paths,
+  Stream<List<AppDocumentEntity<T>>> fetchAssets(Stream<String> paths,
       [bool? listFiles = true]) {
-    final files = <AppDocumentEntity>[];
+    final files = <AppDocumentEntity<T>>[];
     final streams = paths.asyncExpand((e) async* {
       int? index;
       await for (final file in fetchAsset(e, listFiles)) {
@@ -111,15 +135,15 @@ abstract class DirectoryFileSystem extends GeneralFileSystem {
     return streams.map((event) => files);
   }
 
-  Stream<List<AppDocumentEntity>> fetchAssetsSync(Iterable<String> paths,
+  Stream<List<AppDocumentEntity<T>>> fetchAssetsSync(Iterable<String> paths,
           [bool? listFiles = true]) =>
       fetchAssets(Stream.fromIterable(paths), listFiles);
 
-  static Stream<List<AppDocumentEntity>> fetchAssetsGlobal(
+  static Stream<List<AppDocumentEntity<T>>> fetchAssetsGlobal<T>(
       Stream<AssetLocation> locations,
-      Map<String, DirectoryFileSystem> fileSystems,
+      Map<String, DirectoryFileSystem<T>> fileSystems,
       [bool? listFiles = true]) {
-    final files = <AppDocumentEntity>[];
+    final files = <AppDocumentEntity<T>>[];
     final streams = locations.asyncExpand((e) async* {
       final fileSystem = fileSystems[e.remote];
       if (fileSystem == null) return;
@@ -138,23 +162,24 @@ abstract class DirectoryFileSystem extends GeneralFileSystem {
     return streams.map((event) => files);
   }
 
-  static Stream<List<AppDocumentEntity>> fetchAssetsGlobalSync(
+  static Stream<List<AppDocumentEntity<T>>> fetchAssetsGlobalSync<T>(
           Iterable<AssetLocation> locations,
-          Map<String, DirectoryFileSystem> fileSystems,
+          Map<String, DirectoryFileSystem<T>> fileSystems,
           [bool? listFiles = true]) =>
       fetchAssetsGlobal(Stream.fromIterable(locations), fileSystems, listFiles);
 
-  Future<AppDocumentEntity?> getAsset(String path, [bool? listFiles = true]) =>
+  Future<AppDocumentEntity<T>?> getAsset(String path,
+          [bool? listFiles = true]) =>
       fetchAsset(path, listFiles).last;
 
-  Future<AppDocumentDirectory> createDirectory(String path);
+  Future<AppDocumentDirectory<T>> createDirectory(String path);
 
   Future<void> updateFile(String path, List<int> data);
 
   Future<String> findAvailableName(String path) =>
       _findAvailableName(path, hasAsset);
 
-  Future<AppDocumentFile?> createFile(String path, List<int> data) async {
+  Future<AppDocumentFile<T>?> createFile(String path, Uint8List data) async {
     path = normalizePath(path);
     final uniquePath = await findAvailableName(path);
     return updateFile(uniquePath, data)
@@ -165,7 +190,7 @@ abstract class DirectoryFileSystem extends GeneralFileSystem {
 
   Future<void> deleteAsset(String path);
 
-  Future<AppDocumentEntity?> renameAsset(String path, String newName) async {
+  Future<AppDocumentEntity<T>?> renameAsset(String path, String newName) async {
     path = normalizePath(path);
     if (newName.startsWith('/')) {
       newName = newName.substring(1);
@@ -176,13 +201,17 @@ abstract class DirectoryFileSystem extends GeneralFileSystem {
     return moveAsset(path, newPath);
   }
 
-  Future<AppDocumentEntity?> duplicateAsset(String path, String newPath) async {
+  Future<AppDocumentEntity<T>?> duplicateAsset(
+      String path, String newPath) async {
     path = normalizePath(path);
-    var asset = await getAsset(path);
+    final asset = await getAsset(path);
     if (asset == null) return null;
-    if (asset is AppDocumentFile) {
-      return createFile(newPath, asset.data);
-    } else if (asset is AppDocumentDirectory) {
+    if (asset is AppDocumentFile<T>) {
+      final data = asset.data;
+      if (data != null) {
+        return createFile(newPath, data);
+      }
+    } else if (asset is AppDocumentDirectory<T>) {
       var newDir = await createDirectory(newPath);
       for (var child in asset.assets) {
         await duplicateAsset(
@@ -193,23 +222,24 @@ abstract class DirectoryFileSystem extends GeneralFileSystem {
     return null;
   }
 
-  Future<AppDocumentEntity?> moveAsset(String path, String newPath) async {
+  Future<AppDocumentEntity<T>?> moveAsset(String path, String newPath) async {
     var asset = await duplicateAsset(path, newPath);
     if (asset == null) return null;
     if (path != newPath) await deleteAsset(path);
     return asset;
   }
 
-  static DirectoryFileSystem fromPlatform({final ExternalStorage? remote}) {
+  static DirectoryFileSystem<T> fromPlatform<T>(FileSystemConfig config,
+      {final ExternalStorage? remote}) {
     if (kIsWeb) {
-      return WebDocumentFileSystem();
+      return WebDocumentFileSystem(config: config);
     } else {
-      return remote?.map(
-            dav: (e) => DavRemoteDocumentFileSystem(e),
-            local: (e) =>
-                IODocumentFileSystem(e.fullDocumentsPath, remote.identifier),
-          ) ??
-          IODocumentFileSystem();
+      return switch (remote) {
+        DavRemoteStorage e => DavRemoteDocumentFileSystem<T>(e),
+        LocalStorage e =>
+          IODocumentFileSystem<T>(e.getBasePath(), remote.identifier),
+        _ => IODocumentFileSystem<T>(),
+      };
     }
   }
 
@@ -219,65 +249,60 @@ abstract class DirectoryFileSystem extends GeneralFileSystem {
   Future<Uint8List?> loadAbsolute(String path) => Future.value(null);
 
   Future<void> saveAbsolute(String path, Uint8List bytes) => Future.value();
-
-  Future<void> updateDocument(String path, NoteData document) async =>
-      updateFile(path, await _exportDocument(document));
-
-  Future<AppDocumentFile?> importDocument(NoteData document,
-          {String path = '/'}) async =>
-      createFile('$path/${convertNameToFile(document.name ?? '')}.bfly',
-          await _exportDocument(document));
-
-  Future<List<int>> _exportDocument(NoteData document) =>
-      compute((_) => document.save(), null);
 }
 
-abstract class KeyFileSystem extends GeneralFileSystem {
-  Future<bool> createDefault(BuildContext context, {bool force = false});
+abstract class KeyFileSystem<T> extends GeneralFileSystem<T> {
+  KeyFileSystem({
+    required super.config,
+    super.onFileDisplay,
+    super.onInit,
+  });
 
-  Future<NoteData?> getTemplate(String name);
-  Future<NoteData?> getDefaultTemplate(String name) async =>
-      await getTemplate(name) ??
-      await getTemplates().then((value) => value.firstOrNull);
+  Future<Uint8List?> getFile(String key);
 
-  Future<String> findAvailableName(String path) =>
-      _findAvailableName(path, hasTemplate);
+  Future<Uint8List?> getDefaultFile(String key) async =>
+      await getFile(key) ??
+      await getFiles().then((value) => value.firstOrNull?.data);
 
-  Future<NoteData> createTemplate(NoteData template) async {
-    final metadata = template.getMetadata();
-    if (metadata == null) return template;
-    final name = await findAvailableName(metadata.name);
-    template = template.setMetadata(metadata.copyWith(name: name));
-    await updateTemplate(template);
-    return template;
+  Future<String> findAvailableKey(String path) =>
+      _findAvailableName(path, hasKey);
+
+  Future<String> createFile(String key, Uint8List data) async {
+    key = normalizePath(key);
+    final name = findAvailableKey(key);
+    await updateFile(key, data);
+    return name;
   }
 
-  Future<bool> hasTemplate(String name);
-  Future<void> updateTemplate(NoteData template);
-  Future<void> deleteTemplate(String name);
-  Future<List<NoteData>> getTemplates();
+  Future<bool> hasKey(String name);
+  Future<void> updateFile(String key, Uint8List data);
+  Future<void> deleteFile(String key);
+  Future<List<AppDocumentFile<T>>> getFiles();
 
-  Future<NoteData?> renameTemplate(String path, String newName) async {
-    path = normalizePath(path);
-    var template = await getTemplate(path);
-    if (template == null) return null;
-    final metadata = template.getMetadata()?.copyWith(name: newName);
-    if (metadata == null) return null;
-    template = template.setMetadata(metadata);
-    final newTemplate = await createTemplate(template);
-    await deleteTemplate(path);
+  Future<String?> renameFile(
+    String oldKey,
+    String newKey, {
+    bool override = false,
+  }) async {
+    oldKey = normalizePath(oldKey);
+    newKey = normalizePath(newKey);
+    var data = await getFile(oldKey);
+    if (data == null) return null;
+    final newTemplate = await createFile(newKey, data);
+    await deleteFile(oldKey);
     return newTemplate;
   }
 
-  static TemplateFileSystem fromPlatform({ExternalStorage? remote}) {
+  static KeyFileSystem<T> fromPlatform<T>(FileSystemConfig config,
+      {ExternalStorage? remote}) {
     if (kIsWeb) {
-      return WebTemplateFileSystem();
+      return WebTemplateFileSystem(config: config);
     } else {
-      return remote?.map(
-            dav: (e) => DavRemoteTemplateFileSystem(e),
-            local: (e) => IOTemplateFileSystem(e.fullTemplatesPath),
-          ) ??
-          IOTemplateFileSystem();
+      return switch (remote) {
+        DavRemoteStorage storage => DavRemoteTemplateFileSystem<T>(storage),
+        LocalStorage storage => IOTemplateFileSystem<T>(storage.getBasePath()),
+        _ => IOTemplateFileSystem<T>(),
+      };
     }
   }
 }

@@ -2,7 +2,7 @@ import 'dart:typed_data';
 
 import 'location.dart';
 
-sealed class AppDocumentEntity {
+sealed class AppDocumentEntity<T> {
   final AssetLocation location;
 
   AppDocumentEntity(this.location);
@@ -24,21 +24,25 @@ sealed class AppDocumentEntity {
       .join('/');
 }
 
-class AppDocumentFile extends AppDocumentEntity {
-  final List<int> data;
+class AppDocumentFile<T> extends AppDocumentEntity<T> {
+  final Uint8List? data;
   final bool cached;
+  final T? metadata;
   final Uint8List? thumbnail;
 
   AppDocumentFile(
     super.location, {
-    this.data = const [],
+    this.data,
     this.cached = false,
     this.thumbnail,
+    this.metadata,
   });
+
+  bool get hasData => data != null;
 }
 
-class AppDocumentDirectory extends AppDocumentEntity {
-  final List<AppDocumentEntity> assets;
+class AppDocumentDirectory<T> extends AppDocumentEntity<T> {
+  final List<AppDocumentEntity<T>> assets;
 
   AppDocumentDirectory(super.location, {this.assets = const []});
 }

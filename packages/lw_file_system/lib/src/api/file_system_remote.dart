@@ -255,7 +255,7 @@ mixin RemoteSystem {
   }
 }
 
-abstract class DocumentRemoteSystem extends DocumentFileSystem
+abstract class DocumentRemoteSystem<T> extends DirectoryFileSystem<T>
     with RemoteSystem {
   @override
   Future<HttpClientResponse?> createRequest(List<String> path,
@@ -328,7 +328,7 @@ abstract class DocumentRemoteSystem extends DocumentFileSystem
   }
 }
 
-abstract class TemplateRemoteSystem extends TemplateFileSystem
+abstract class TemplateRemoteSystem<T> extends KeyFileSystem<T>
     with RemoteSystem {
   @override
   Future<HttpClientResponse?> createRequest(List<String> path,

@@ -2,10 +2,10 @@ import 'dart:typed_data';
 
 import 'location.dart';
 
-sealed class AppDocumentEntity<T> {
+sealed class FileSystemEntity<T> {
   final AssetLocation location;
 
-  AppDocumentEntity(this.location);
+  FileSystemEntity(this.location);
 
   String get fileName => location.fileName;
 
@@ -24,25 +24,31 @@ sealed class AppDocumentEntity<T> {
       .join('/');
 }
 
-class AppDocumentFile<T> extends AppDocumentEntity<T> {
-  final Uint8List? data;
+class FileSystemFile<T> extends FileSystemEntity<T> {
+  final T? data;
   final bool cached;
-  final T? metadata;
-  final Uint8List? thumbnail;
 
-  AppDocumentFile(
+  FileSystemFile(
     super.location, {
     this.data,
     this.cached = false,
-    this.thumbnail,
-    this.metadata,
   });
 
   bool get hasData => data != null;
 }
 
-class AppDocumentDirectory<T> extends AppDocumentEntity<T> {
-  final List<AppDocumentEntity<T>> assets;
+class FileSystemDirectory<T> extends FileSystemEntity<T> {
+  final List<FileSystemEntity<T>> assets;
 
-  AppDocumentDirectory(super.location, {this.assets = const []});
+  FileSystemDirectory(super.location, {this.assets = const []});
+
+  FileSystemDirectory<T> withAssets(List<FileSystemEntity<T>> assets) =>
+      FileSystemDirectory(
+        location,
+        assets: assets,
+      );
 }
+
+typedef RawFileSystemEntity = FileSystemEntity<Uint8List>;
+typedef RawFileSystemFile = FileSystemFile<Uint8List>;
+typedef RawFileSystemDirectory = FileSystemDirectory<Uint8List>;

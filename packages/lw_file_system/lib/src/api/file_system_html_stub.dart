@@ -1,15 +1,14 @@
 import 'dart:typed_data';
 
-import 'package:flutter/material.dart';
 import 'package:lw_file_system/src/models/entity.dart';
 
 import 'file_system_base.dart';
 
-class WebDocumentFileSystem<T> extends DirectoryFileSystem<T> {
+class WebDocumentFileSystem extends DirectoryFileSystem {
   WebDocumentFileSystem({required super.config});
 
   @override
-  Future<AppDocumentDirectory<T>> createDirectory(String path) {
+  Future<FileSystemDirectory<Uint8List>> createDirectory(String path) {
     throw UnimplementedError();
   }
 
@@ -19,23 +18,17 @@ class WebDocumentFileSystem<T> extends DirectoryFileSystem<T> {
   }
 
   @override
-  Stream<AppDocumentEntity<T>?> fetchAsset(String path,
-      [bool? listFiles = true]) {
-    throw UnimplementedError();
-  }
-
-  @override
   Future<bool> hasAsset(String path) {
     throw UnimplementedError();
   }
 
   @override
-  Future<void> updateFile(String path, List<int> data) {
+  Future<void> updateFile(String path, Uint8List data) {
     throw UnimplementedError();
   }
 }
 
-class WebTemplateFileSystem<T> extends KeyFileSystem<T> {
+class WebTemplateFileSystem extends KeyFileSystem {
   WebTemplateFileSystem({required super.config});
 
   @override
@@ -49,7 +42,7 @@ class WebTemplateFileSystem<T> extends KeyFileSystem<T> {
   }
 
   @override
-  Future<List<AppDocumentFile<T>>> getFiles() {
+  Future<List<String>> getKeys() {
     throw UnimplementedError();
   }
 

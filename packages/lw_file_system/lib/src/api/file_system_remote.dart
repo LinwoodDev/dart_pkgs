@@ -289,7 +289,7 @@ abstract class DocumentRemoteSystem<T> extends DirectoryFileSystem<T>
       final asset = await getAsset(path);
       if (asset == null) continue;
       files.add(await getSyncFile(asset.pathWithLeadingSlash));
-      if (asset is AppDocumentDirectory) {
+      if (asset is FileSystemDirectory) {
         for (final file in asset.assets) {
           files.add(await getSyncFile(file.pathWithLeadingSlash));
         }
@@ -312,7 +312,7 @@ abstract class DocumentRemoteSystem<T> extends DirectoryFileSystem<T>
 
   Future<void> cache(String path) async {
     final asset = await getAsset(path);
-    if (asset is AppDocumentDirectory) {
+    if (asset is FileSystemDirectory) {
       var filePath = path;
       if (filePath.startsWith('/')) {
         filePath = filePath.substring(1);
@@ -322,7 +322,7 @@ abstract class DocumentRemoteSystem<T> extends DirectoryFileSystem<T>
       if (!(await directory.exists())) {
         await directory.create(recursive: true);
       }
-    } else if (asset is AppDocumentFile) {
+    } else if (asset is FileSystemFile) {
       cacheContent(path, asset.data);
     }
   }

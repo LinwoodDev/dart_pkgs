@@ -3,6 +3,8 @@ import 'dart:typed_data';
 
 import 'package:butterfly_api/butterfly_api.dart';
 import 'package:collection/collection.dart';
+import 'package:lw_file_system/lw_file_system.dart';
+import 'package:lw_file_system/src/models/entity.dart';
 import 'package:path/path.dart' as p;
 import 'package:xml/xml.dart';
 
@@ -12,11 +14,11 @@ import 'file_system_base.dart';
 import 'file_system_remote.dart';
 import '../models.dart';
 
-class DavRemoteDocumentFileSystem<T> extends DocumentRemoteSystem<T> {
+class DavRemoteDirectoryFileSystem extends DirectoryRemoteSystem {
   @override
-  final DavRemoteStorage remote;
+  final DavRemoteStorage storage;
 
-  DavRemoteDocumentFileSystem(this.remote);
+  DavRemoteDirectoryFileSystem({required super.config, required this.storage});
 
   @override
   Future<String> getRemoteCacheDirectory() async =>
@@ -249,6 +251,13 @@ class DavRemoteDocumentFileSystem<T> extends DocumentRemoteSystem<T> {
     final uniquePath = await findAvailableName(path);
     return updateFile(uniquePath, data).then((_) => getAppDocumentFile(
         AssetLocation(remote: remote.identifier, path: uniquePath), data));
+  }
+
+  @override
+  Future<FileSystemEntity<Uint8List>?> readAsset(String path,
+      {bool readData = true}) {
+    // TODO: implement readAsset
+    throw UnimplementedError();
   }
 }
 

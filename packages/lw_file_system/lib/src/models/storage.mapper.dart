@@ -145,9 +145,11 @@ class RemoteStorageMapper extends ClassMapperBase<RemoteStorage> {
   static DateTime? _$lastSynced(RemoteStorage v) => v.lastSynced;
   static const Field<RemoteStorage, DateTime> _f$lastSynced =
       Field('lastSynced', _$lastSynced, opt: true);
-  static List<String> _$cachedDocuments(RemoteStorage v) => v.cachedDocuments;
-  static const Field<RemoteStorage, List<String>> _f$cachedDocuments =
-      Field('cachedDocuments', _$cachedDocuments, opt: true, def: const []);
+  static Map<String, List<String>> _$cachedDocuments(RemoteStorage v) =>
+      v.cachedDocuments;
+  static const Field<RemoteStorage, Map<String, List<String>>>
+      _f$cachedDocuments = Field('cachedDocuments', _$cachedDocuments,
+          opt: true, def: const {}, hook: EmptyMapEntryHook());
 
   @override
   final MappableFields<RemoteStorage> fields = const {
@@ -205,8 +207,8 @@ abstract class RemoteStorageCopyWith<$R, $In extends RemoteStorage, $Out>
   @override
   MapCopyWith<$R, String, String, ObjectCopyWith<$R, String, String>?>
       get defaults;
-  ListCopyWith<$R, String, ObjectCopyWith<$R, String, String>?>
-      get cachedDocuments;
+  MapCopyWith<$R, String, List<String>,
+      ObjectCopyWith<$R, List<String>, List<String>>?> get cachedDocuments;
   @override
   $R call(
       {String? name,
@@ -219,7 +221,7 @@ abstract class RemoteStorageCopyWith<$R, $In extends RemoteStorage, $Out>
       String? certificateSha1,
       String? url,
       DateTime? lastSynced,
-      List<String>? cachedDocuments});
+      Map<String, List<String>>? cachedDocuments});
   RemoteStorageCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t);
 }
 
@@ -262,10 +264,11 @@ class DavRemoteStorageMapper extends ClassMapperBase<DavRemoteStorage> {
       Field('certificateSha1', _$certificateSha1, opt: true);
   static String _$url(DavRemoteStorage v) => v.url;
   static const Field<DavRemoteStorage, String> _f$url = Field('url', _$url);
-  static List<String> _$cachedDocuments(DavRemoteStorage v) =>
+  static Map<String, List<String>> _$cachedDocuments(DavRemoteStorage v) =>
       v.cachedDocuments;
-  static const Field<DavRemoteStorage, List<String>> _f$cachedDocuments =
-      Field('cachedDocuments', _$cachedDocuments, opt: true, def: const []);
+  static const Field<DavRemoteStorage, Map<String, List<String>>>
+      _f$cachedDocuments = Field('cachedDocuments', _$cachedDocuments,
+          opt: true, def: const {}, hook: EmptyMapEntryHook());
   static DateTime? _$lastSynced(DavRemoteStorage v) => v.lastSynced;
   static const Field<DavRemoteStorage, DateTime> _f$lastSynced =
       Field('lastSynced', _$lastSynced, opt: true);
@@ -370,8 +373,8 @@ abstract class DavRemoteStorageCopyWith<$R, $In extends DavRemoteStorage, $Out>
   MapCopyWith<$R, String, List<String>,
       ObjectCopyWith<$R, List<String>, List<String>>> get starred;
   @override
-  ListCopyWith<$R, String, ObjectCopyWith<$R, String, String>>
-      get cachedDocuments;
+  MapCopyWith<$R, String, List<String>,
+      ObjectCopyWith<$R, List<String>, List<String>>> get cachedDocuments;
   @override
   MapCopyWith<$R, String, dynamic, ObjectCopyWith<$R, dynamic, dynamic>>
       get extra;
@@ -385,7 +388,7 @@ abstract class DavRemoteStorageCopyWith<$R, $In extends DavRemoteStorage, $Out>
       String? username,
       String? certificateSha1,
       String? url,
-      List<String>? cachedDocuments,
+      Map<String, List<String>>? cachedDocuments,
       DateTime? lastSynced,
       Map<String, dynamic>? extra});
   DavRemoteStorageCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(
@@ -414,8 +417,9 @@ class _DavRemoteStorageCopyWithImpl<$R, $Out>
       get starred => MapCopyWith($value.starred,
           (v, t) => ObjectCopyWith(v, $identity, t), (v) => call(starred: v));
   @override
-  ListCopyWith<$R, String, ObjectCopyWith<$R, String, String>>
-      get cachedDocuments => ListCopyWith(
+  MapCopyWith<$R, String, List<String>,
+          ObjectCopyWith<$R, List<String>, List<String>>>
+      get cachedDocuments => MapCopyWith(
           $value.cachedDocuments,
           (v, t) => ObjectCopyWith(v, $identity, t),
           (v) => call(cachedDocuments: v));
@@ -433,7 +437,7 @@ class _DavRemoteStorageCopyWithImpl<$R, $Out>
           String? username,
           Object? certificateSha1 = $none,
           String? url,
-          List<String>? cachedDocuments,
+          Map<String, List<String>>? cachedDocuments,
           Object? lastSynced = $none,
           Map<String, dynamic>? extra}) =>
       $apply(FieldCopyWithData({

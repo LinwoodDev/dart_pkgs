@@ -164,7 +164,8 @@ abstract class DirectoryFileSystem extends GeneralFileSystem
       return WebDocumentFileSystem(config: config);
     } else {
       return switch (remote) {
-        DavRemoteStorage e => DavRemoteDocumentFileSystem(e),
+        DavRemoteStorage e =>
+          DavRemoteDirectoryFileSystem(config: config, storage: e),
         LocalStorage e => IODirectoryFileSystem(config: config, storage: e),
         _ => IODirectoryFileSystem(config: config),
       };

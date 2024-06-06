@@ -27,7 +27,7 @@ mixin GeneralKeyFileSystem<T> on GeneralFileSystem {
       final data = await getFile(key);
       if (data != null) {
         yield FileSystemFile(
-          AssetLocation(path: key, remote: remote?.identifier ?? ''),
+          AssetLocation(path: key, remote: storage?.identifier ?? ''),
           data: data,
         );
       }

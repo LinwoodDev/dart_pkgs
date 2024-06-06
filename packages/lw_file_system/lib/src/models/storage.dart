@@ -105,23 +105,7 @@ sealed class ExternalStorage with ExternalStorageMappable {
             : '$basePath/$path';
   }
 
-  bool hasDocumentCached(String name) {
-    if (!name.startsWith('/')) {
-      name = '/$name';
-    }
-    if (this is! RemoteStorage) {
-      return true;
-    }
-    return (this as RemoteStorage).cachedDocuments.any((doc) {
-      if (doc == name) {
-        return true;
-      }
-      if (name.startsWith(doc)) {
-        return !name.substring(doc.length + 1).contains('/');
-      }
-      return false;
-    });
-  }
+  bool hasDocumentCached(String name) => true;
 
   String get identifier;
 
@@ -136,7 +120,8 @@ sealed class RemoteStorage extends ExternalStorage with RemoteStorageMappable {
   final String? certificateSha1;
   final String url;
   final DateTime? lastSynced;
-  final List<String> cachedDocuments;
+  @MappableField(hook: EmptyMapEntryHook())
+  final Map<String, List<String>> cachedDocuments;
 
   const RemoteStorage({
     super.name,
@@ -149,7 +134,7 @@ sealed class RemoteStorage extends ExternalStorage with RemoteStorageMappable {
     this.certificateSha1,
     required this.url,
     this.lastSynced,
-    this.cachedDocuments = const [],
+    this.cachedDocuments = const {},
   });
 
   Uri get uri => Uri.parse(url);
@@ -191,6 +176,23 @@ sealed class RemoteStorage extends ExternalStorage with RemoteStorageMappable {
             path: [...current!.split('/'), ...path],
             query: query,
           );
+  }
+
+  @override
+  bool hasDocumentCached(String name, {String variant = ''}) {
+    if (!name.startsWith('/')) {
+      name = '/$name';
+    }
+    return cachedDocuments[variant]?.any((doc) {
+          if (doc == name) {
+            return true;
+          }
+          if (name.startsWith(doc)) {
+            return !name.substring(doc.length + 1).contains('/');
+          }
+          return false;
+        }) ??
+        false;
   }
 }
 
@@ -236,8 +238,8 @@ final class LocalStorage extends ExternalStorage with LocalStorageMappable {
 }
 
 abstract class PasswordStorage {
-  Future<String?> read(ExternalStorage storage);
-  void write(ExternalStorage storage, String password);
+  Future<String?> read(RemoteStorage storage);
+  void write(RemoteStorage storage, String password);
 }
 
 class InMemoryPasswordStorage implements PasswordStorage {
@@ -256,18 +258,47 @@ class InMemoryPasswordStorage implements PasswordStorage {
 
 class SecureStoragePasswordStorage implements PasswordStorage {
   final FlutterSecureStorage secureStorage;
+  final IOSOptions? iOptions;
+  final AndroidOptions? aOptions;
+  final LinuxOptions? lOptions;
+  final WebOptions? webOptions;
+  final MacOsOptions? mOptions;
+  final WindowsOptions? wOptions;
 
-  SecureStoragePasswordStorage(
-      [this.secureStorage = const FlutterSecureStorage()]);
+  SecureStoragePasswordStorage({
+    this.secureStorage = const FlutterSecureStorage(),
+    this.iOptions,
+    this.aOptions,
+    this.lOptions,
+    this.webOptions,
+    this.mOptions,
+    this.wOptions,
+  });
 
   @override
   Future<String?> read(ExternalStorage storage) async {
-    return secureStorage.read(key: 'remote ${storage.encodeIdentifier()}');
+    return secureStorage.read(
+      key: 'remote ${storage.encodeIdentifier()}',
+      iOptions: iOptions,
+      aOptions: aOptions,
+      lOptions: lOptions,
+      webOptions: webOptions,
+      mOptions: mOptions,
+      wOptions: wOptions,
+    );
   }
 
   @override
   void write(ExternalStorage storage, String password) {
     secureStorage.write(
-        key: 'remote ${storage.encodeIdentifier()}', value: password);
+      key: 'remote ${storage.encodeIdentifier()}',
+      value: password,
+      iOptions: iOptions,
+      aOptions: aOptions,
+      lOptions: lOptions,
+      webOptions: webOptions,
+      mOptions: mOptions,
+      wOptions: wOptions,
+    );
   }
 }

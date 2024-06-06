@@ -41,7 +41,7 @@ abstract class GeneralFileSystem {
 
   static Future<void> _defaultInit(GeneralFileSystem fileSystem) async {}
 
-  RemoteStorage? get remote => null;
+  ExternalStorage? get storage => null;
 
   String normalizePath(String path) {
     // Add leading slash

@@ -6,7 +6,8 @@ import 'package:flutter/foundation.dart';
 import 'package:lw_file_system/lw_file_system.dart';
 
 class IODirectoryFileSystem extends DirectoryFileSystem {
-  final ExternalStorage? storage;
+  @override
+  final LocalStorage? storage;
 
   IODirectoryFileSystem({
     this.storage,

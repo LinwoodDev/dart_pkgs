@@ -26,6 +26,12 @@ class WebDocumentFileSystem extends DirectoryFileSystem {
   Future<void> updateFile(String path, Uint8List data) {
     throw UnimplementedError();
   }
+
+  @override
+  Future<FileSystemEntity<Uint8List>?> readAsset(String path,
+      {bool readData = true}) {
+    throw UnimplementedError();
+  }
 }
 
 class WebTemplateFileSystem extends KeyFileSystem {

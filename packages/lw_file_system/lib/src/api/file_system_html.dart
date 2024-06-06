@@ -92,7 +92,9 @@ Future<Database> _getDatabase() async {
   return _db!;
 }
 
-abstract class WebDocumentFileSystem<T> extends DirectoryFileSystem<T> {
+abstract class WebDocumentFileSystem extends DirectoryFileSystem {
+  WebDocumentFileSystem({required super.config});
+
   @override
   Future<void> deleteAsset(String path) async {
     path = normalizePath(path);
@@ -355,83 +357,5 @@ class WebTemplateFileSystem extends TemplateFileSystem {
     });
     await txn.completed;
     return templates;
-  }
-}
-
-class WebPackFileSystem extends PackFileSystem {
-  @override
-  Future<void> deletePack(String name) async {
-    var db = await _getDatabase();
-    var txn = db.transaction('packs', 'readwrite');
-    var store = txn.objectStore('packs');
-    await store.delete(name);
-    await txn.completed;
-  }
-
-  @override
-  Future<NoteData?> getPack(String name) async {
-    var db = await _getDatabase();
-    var txn = db.transaction('packs', 'readonly');
-    var store = txn.objectStore('packs');
-    var data = await store.getObject(name);
-    if (data == null) {
-      await txn.completed;
-      return null;
-    }
-    await txn.completed;
-    return NoteData.fromData(Uint8List.fromList(List<int>.from(data as List)));
-  }
-
-  @override
-  Future<void> updatePack(NoteData pack) async {
-    var db = await _getDatabase();
-    var txn = db.transaction('packs', 'readwrite');
-    var store = txn.objectStore('packs');
-    var doc = pack.save();
-    await store.put(doc, pack.name);
-  }
-
-  @override
-  Future<bool> hasPack(String name) async {
-    var db = await _getDatabase();
-    var txn = db.transaction('packs', 'readonly');
-    var store = txn.objectStore('packs');
-    var doc = await store.getObject(name);
-    await txn.completed;
-    return doc != null;
-  }
-
-  @override
-  Future<List<NoteData>> getPacks() async {
-    var db = await _getDatabase();
-    var txn = db.transaction('packs', 'readonly');
-    var store = txn.objectStore('packs');
-    var cursor = store.openCursor(autoAdvance: true);
-    var packs = <NoteData>[];
-    await cursor.forEach((cursor) {
-      try {
-        packs.add(NoteData.fromData(
-            Uint8List.fromList(List<int>.from(cursor.value as List))));
-      } catch (e) {
-        if (kDebugMode) {
-          print(e);
-        }
-      }
-    });
-    await txn.completed;
-    return packs;
-  }
-
-  @override
-  Future<bool> createDefault(BuildContext context, {bool force = false}) async {
-    var prefs = await SharedPreferences.getInstance();
-    if (!force) {
-      force = !prefs.containsKey('defaultPack');
-    }
-    if (!force) return false;
-    final pack = await DocumentDefaults.getCorePack();
-    await createPack(pack);
-    prefs.setBool('defaultPack', true);
-    return true;
   }
 }

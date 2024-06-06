@@ -16,6 +16,7 @@ dependencies:
   idb_shim: ^2.4.1+1
   rxdart: ^0.27.7
   flutter_secure_storage: ^9.2.2
+  web: ^0.5.1
   # path: ^1.8.0
 
 dev_dependencies:

@@ -1,7 +1,6 @@
 import 'dart:typed_data';
 
 import 'package:lw_file_system/lw_file_system.dart';
-import 'package:lw_file_system/src/models/entity.dart';
 
 typedef EncodeTypedFileSystemCallback<T> = Uint8List Function(T data);
 typedef DecodeTypedFileSystemCallback<T> = T Function(Uint8List data);
@@ -56,6 +55,12 @@ class TypedDirectoryFileSystem<T> extends TypedFileSystem<T>
   @override
   Future<void> updateFile(String path, T data) =>
       fileSystem.updateFile(path, onEncode(data));
+
+  @override
+  Future<FileSystemEntity<T>?> readAsset(String path, {bool readData = true}) =>
+      fileSystem
+          .readAsset(path, readData: readData)
+          .then((entity) => entity == null ? null : _toTypedAsset(entity));
 }
 
 class TypedKeyFileSystem<T> extends TypedFileSystem<T>

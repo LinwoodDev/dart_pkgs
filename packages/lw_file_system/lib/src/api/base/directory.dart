@@ -11,12 +11,12 @@ mixin GeneralDirectoryFileSystem<T> on GeneralFileSystem {
         .then((value) => value as FileSystemDirectory<T>);
   }
 
-  Future<FileSystemEntity<T>?> _fetchAsset(String path);
+  Future<FileSystemEntity<T>?> readAsset(String path, {bool readData = true});
 
   Stream<FileSystemEntity<T>?> fetchAsset(String path,
       {int listLevel = oneListLevel, bool readData = true}) async* {
     final nextLevel = listLevel < 0 ? listLevel : (listLevel - 1);
-    final asset = await _fetchAsset(path);
+    final asset = await readAsset(path, readData: readData);
     if (listLevel == 0 || asset is! FileSystemDirectory<T>) {
       yield asset;
       return;
@@ -79,7 +79,8 @@ mixin GeneralDirectoryFileSystem<T> on GeneralFileSystem {
         .then((_) => getAppDocumentFile(AssetLocation.local(uniquePath), data));
   }
 
-  Future<bool> hasAsset(String path);
+  Future<bool> hasAsset(String path) =>
+      getAsset(path).then((value) => value != null);
   Future<void> deleteAsset(String path);
 
   Future<FileSystemEntity<T>?> renameAsset(String path, String newName) async {
@@ -164,9 +165,8 @@ abstract class DirectoryFileSystem extends GeneralFileSystem
     } else {
       return switch (remote) {
         DavRemoteStorage e => DavRemoteDocumentFileSystem(e),
-        LocalStorage e =>
-          IODocumentFileSystem(e.getBasePath(), remote.identifier),
-        _ => IODocumentFileSystem(),
+        LocalStorage e => IODirectoryFileSystem(config: config, storage: e),
+        _ => IODirectoryFileSystem(config: config),
       };
     }
   }

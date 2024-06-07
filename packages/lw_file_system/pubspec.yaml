@@ -19,7 +19,6 @@ dependencies:
   web: ^0.5.1
   path: ^1.9.0
   xml: ^6.5.0
-  js_interop: ^0.0.1
   # path: ^1.8.0
 
 dev_dependencies:

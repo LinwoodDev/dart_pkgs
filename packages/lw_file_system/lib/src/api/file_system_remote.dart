@@ -6,6 +6,7 @@ import 'dart:typed_data';
 import 'package:collection/collection.dart';
 import 'package:lw_file_system/lw_file_system.dart';
 import 'package:path/path.dart' as p;
+import 'package:rxdart/rxdart.dart';
 
 enum FileSyncStatus { localLatest, remoteLatest, synced, conflict, offline }
 
@@ -89,12 +90,39 @@ mixin RemoteFileSystem on GeneralFileSystem {
     return utf8.decode(await getBodyBytes(response));
   }
 
-  Future<Uint8List?> getCachedContent(String path) async {
+  Future<RawFileSystemEntity?> getCachedContent(String path) async {
     if (!storage.hasDocumentCached(path)) return null;
-    var absolutePath = await getAbsolutePath(path);
-    var file = File(absolutePath);
+    final absolutePath = await getAbsolutePath(path);
+    final file = File(absolutePath);
     if (await file.exists()) {
-      return await file.readAsBytes();
+      return RawFileSystemFile(
+        AssetLocation(remote: storage.identifier, path: path),
+        data: await file.readAsBytes(),
+        cached: true,
+      );
+    }
+    final directory = Directory(absolutePath);
+    if (await directory.exists()) {
+      return RawFileSystemDirectory(
+        AssetLocation(remote: storage.identifier, path: path),
+        assets: await directory
+            .list()
+            .map((e) {
+              if (e is File) {
+                return RawFileSystemFile(
+                  AssetLocation(remote: storage.identifier, path: path),
+                  cached: true,
+                );
+              }
+              if (e is Directory) {
+                return RawFileSystemDirectory(
+                    AssetLocation(remote: storage.identifier, path: path));
+              }
+              return null;
+            })
+            .whereNotNull()
+            .toList(),
+      );
     }
     return null;
   }
@@ -235,9 +263,9 @@ mixin RemoteFileSystem on GeneralFileSystem {
   }
 }
 
-abstract class DirectoryRemoteSystem extends DirectoryFileSystem
+abstract class RemoteDirectoryFileSystem extends DirectoryFileSystem
     with RemoteFileSystem {
-  DirectoryRemoteSystem({required super.config});
+  RemoteDirectoryFileSystem({required super.config});
 
   List<String> getCachedFilePaths() {
     final files = <String>[];
@@ -280,11 +308,14 @@ abstract class DirectoryRemoteSystem extends DirectoryFileSystem
     if (content == null) {
       return;
     }
-    await updateFile(path, content, forceSync: true);
+    if (content is RawFileSystemFile) {
+      final data = content.data;
+      if (data != null) await updateFile(path, data, forceSync: true);
+    }
   }
 
   @override
-  Future<void> updateFile(String path, List<int> data,
+  Future<void> updateFile(String path, Uint8List data,
       {bool forceSync = false});
 
   Future<void> cache(String path) async {

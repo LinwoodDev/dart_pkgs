@@ -30,10 +30,13 @@ abstract class GeneralFileSystem {
 
   ExternalStorage? get storage => null;
 
-  String normalizePath(String path) {
+  String normalizePath(String path, {bool leadingSlash = true}) {
     // Add leading slash
-    if (!path.startsWith('/')) {
+    if (!path.startsWith('/') && leadingSlash) {
       path = '/$path';
+    }
+    if (path.startsWith('/') && !leadingSlash) {
+      path = path.substring(1);
     }
     // Remove trailing slash
     if (path.endsWith('/')) {

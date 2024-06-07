@@ -116,7 +116,8 @@ abstract class WebDirectoryFileSystem extends DirectoryFileSystem {
         if (data == null) return null;
         final map = Map<String, dynamic>.from(data as Map);
         if (map['type'] == 'file') {
-          return RawFileSystemFile(AssetLocation.local(path));
+          return RawFileSystemFile(AssetLocation.local(path),
+              data: await getData(path));
         } else if (map['type'] == 'directory') {
           return RawFileSystemDirectory(AssetLocation.local(path));
         }

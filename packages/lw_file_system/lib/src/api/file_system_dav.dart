@@ -4,13 +4,11 @@ import 'dart:typed_data';
 import 'package:butterfly_api/butterfly_api.dart';
 import 'package:collection/collection.dart';
 import 'package:lw_file_system/lw_file_system.dart';
-import 'package:lw_file_system/src/models/entity.dart';
 import 'package:path/path.dart' as p;
 import 'package:xml/xml.dart';
 
 import '../../cubits/settings.dart';
 import '../../models/defaults.dart';
-import 'file_system_base.dart';
 import 'file_system_remote.dart';
 import '../models.dart';
 

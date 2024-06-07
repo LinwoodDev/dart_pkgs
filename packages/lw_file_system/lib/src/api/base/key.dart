@@ -17,7 +17,7 @@ mixin GeneralKeyFileSystem<T> on GeneralFileSystem {
     return name;
   }
 
-  Future<bool> hasKey(String name);
+  Future<bool> hasKey(String key);
   Future<void> updateFile(String key, T data);
   Future<void> deleteFile(String key);
   Future<List<String>> getKeys();
@@ -104,9 +104,9 @@ class KeyDirectoryFileSystem extends KeyFileSystem {
   }
 
   @override
-  Future<bool> hasKey(String name) async {
-    if (!await fileSystem.hasAsset(name)) return false;
-    final asset = await fileSystem.getAsset(name);
+  Future<bool> hasKey(String key) async {
+    if (!await fileSystem.hasAsset(key)) return false;
+    final asset = await fileSystem.getAsset(key);
     return asset is RawFileSystemFile;
   }
 

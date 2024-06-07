@@ -7,27 +7,35 @@ typedef InitDatabaseCallback = Future<void> Function(Database database);
 
 class FileSystemConfig {
   final PasswordStorage passwordStorage;
-  final String databaseName;
-  final String variant;
-  final String? cacheVariant, pathVariant;
-  final String? dataDatabaseName;
+  final String storeName, variant;
+  final String? cacheVariant, pathVariant, dataStoreName;
   final GetDirectoryCallback getDirectory;
-  final InitDatabaseCallback initDatabase;
+  final OnUpgradeNeededFunction? onDatabaseUpgrade;
+  final String database;
 
   FileSystemConfig({
     required this.passwordStorage,
-    required this.databaseName,
+    required this.storeName,
     required this.getDirectory,
-    this.dataDatabaseName,
-    required this.initDatabase,
+    this.dataStoreName,
+    this.onDatabaseUpgrade,
     this.variant = '',
     this.cacheVariant,
     this.pathVariant,
+    required this.database,
   });
 
-  String get currentDataDatabaseName =>
-      dataDatabaseName ?? '$databaseName-data';
+  String get currentDataStoreName => dataStoreName ?? '$storeName-data';
 
   String get currentCacheVariant => cacheVariant ?? variant;
   String get currentPathVariant => pathVariant ?? variant;
+  OnUpgradeNeededFunction get currentOnDatabaseUpgrade =>
+      onDatabaseUpgrade ?? defaultOnUpgradeNeeded;
+
+  Future<void> defaultOnUpgradeNeeded(VersionChangeEvent event) async {
+    if (event.oldVersion < 1) {
+      event.database.createObjectStore(storeName);
+      event.database.createObjectStore(currentDataStoreName);
+    }
+  }
 }

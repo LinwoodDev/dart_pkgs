@@ -59,7 +59,7 @@ class IODirectoryFileSystem extends DirectoryFileSystem {
   @override
   Future<RawFileSystemDirectory> createDirectory(String path) async {
     path = normalizePath(path);
-    final directory = Directory(path);
+    final directory = Directory(await getAbsolutePath(path));
     if (!await directory.exists()) {
       await directory.create(recursive: true);
     }
@@ -78,7 +78,7 @@ class IODirectoryFileSystem extends DirectoryFileSystem {
   @override
   Future<void> updateFile(String path, Uint8List data) async {
     path = normalizePath(path);
-    final file = File(path);
+    final file = File(await getAbsolutePath(path));
     if (!await file.exists()) {
       await file.create(recursive: true);
     }
@@ -88,14 +88,15 @@ class IODirectoryFileSystem extends DirectoryFileSystem {
   Future<FileSystemEntity<Uint8List>?> readAsset(String path,
       {bool readData = true}) async {
     path = normalizePath(path);
-    final file = File(path);
+    final absolutePath = await getAbsolutePath(path);
+    final file = File(absolutePath);
     if (await file.exists()) {
       return FileSystemFile(
         AssetLocation(path: path, remote: remoteName),
         data: readData ? await file.readAsBytes() : null,
       );
     }
-    final directory = Directory(path);
+    final directory = Directory(absolutePath);
     if (await directory.exists()) {
       return FileSystemDirectory(
         AssetLocation(path: path, remote: remoteName),

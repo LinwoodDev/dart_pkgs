@@ -1,16 +1,15 @@
 // ignore_for_file: avoid_web_libraries_in_flutter
 
 import 'dart:async';
-import 'dart:convert';
-import 'dart:html' as html;
+import 'dart:js_interop';
 import 'dart:js_util';
-import 'dart:typed_data';
 
+import 'package:collection/collection.dart';
+import 'package:flutter/foundation.dart';
 import 'package:idb_shim/idb.dart';
 import 'package:idb_shim/idb_browser.dart';
-import 'package:js/js.dart';
-
-import 'file_system_base.dart';
+import 'package:lw_file_system/lw_file_system.dart';
+import 'package:web/web.dart' as html;
 
 @JS()
 @staticInterop
@@ -37,77 +36,31 @@ class FileSystemHandle {
 }
 
 Database? _db;
-Future<Database> _getDatabase() async {
+Future<Database> _getDatabase(FileSystemConfig config) async {
   if (_db != null) return _db!;
   var idbFactory = getIdbFactory()!;
-  _db = await idbFactory.open('butterfly.db', version: 4,
-      onUpgradeNeeded: (VersionChangeEvent event) async {
-    Database db = event.database;
-    if (event.oldVersion < 1) {
-      db.createObjectStore('documents');
-    }
-    if (event.oldVersion < 2) {
-      var txn = event.transaction;
-      var store = txn.objectStore('documents');
-      var cursor = store.openCursor();
-      await Future.wait(await cursor.map<Future<dynamic>>((cursor) async {
-        // Add type to each document
-        var doc = cursor.value as Map<dynamic, dynamic>;
-        doc['type'] = 'document';
-        await store.put(doc);
-      }).toList());
-    }
-    if (event.oldVersion < 3) {
-      db.createObjectStore('templates');
-    }
-    if (event.oldVersion < 4) {
-      db.createObjectStore('packs');
-      db.createObjectStore('documents-data');
-      var txn = event.transaction;
-      var store = txn.objectStore('templates');
-      var cursor = store.openCursor();
-      await Future.wait(await cursor.map<Future<dynamic>>((cursor) async {
-        final value = cursor.value;
-        if (value is! Map) return value;
-        var type = value['type'];
-        if (type != 'document') return value;
-        final data = utf8.encode(jsonEncode(value));
-        return {'type': 'document', 'data': data};
-      }).toList());
-      var documentStore = txn.objectStore('documents');
-      await Future.wait(
-          await documentStore.openCursor().map<Future<dynamic>>((cursor) async {
-        var doc = cursor.value as Map<dynamic, dynamic>;
-        var data = doc['data'];
-        if (data is! String) return;
-        var path = cursor.key as String;
-        var dataStore = txn.objectStore('documents-data');
-        await dataStore.put(data, path);
-        doc['data'] = null;
-        await documentStore.put(doc, path);
-      }).toList());
-      await txn.completed;
-    }
-  });
+  _db = await idbFactory.open(config.database,
+      version: 4, onUpgradeNeeded: config.currentOnDatabaseUpgrade);
   return _db!;
 }
 
-abstract class WebDocumentFileSystem extends DirectoryFileSystem {
-  WebDocumentFileSystem({required super.config});
+abstract class WebDirectoryFileSystem extends DirectoryFileSystem {
+  WebDirectoryFileSystem({required super.config});
 
   @override
   Future<void> deleteAsset(String path) async {
     path = normalizePath(path);
-    var db = await _getDatabase();
-    var txn = db.transactionList(['documents', 'documents-data'], 'readwrite');
-    var store = txn.objectStore('documents');
-    var data = await store.getObject(path) as Map<dynamic, dynamic>?;
+    final db = await _getDatabase(config);
+    final txn = db.transactionList(
+        [config.storeName, config.currentDataStoreName], 'readwrite');
+    final store = txn.objectStore(config.storeName);
+    final data = await store.getObject(path) as Map<dynamic, dynamic>?;
     await store.delete(path);
-    var dataStore = txn.objectStore('documents-data');
+    final dataStore = txn.objectStore(config.currentDataStoreName);
     await dataStore.delete(path);
     if (data?['type'] == 'directory') {
       // delete all where key starts with path
-      var cursor = store.openCursor();
+      final cursor = store.openCursor();
       await cursor.forEach((cursor) {
         if (cursor.key.toString().startsWith(path)) {
           deleteAsset(cursor.key.toString());
@@ -118,64 +71,71 @@ abstract class WebDocumentFileSystem extends DirectoryFileSystem {
   }
 
   @override
-  Stream<AppDocumentEntity?> fetchAsset(String path,
-      [bool? listFiles = true]) async* {
+  Future<RawFileSystemEntity?> readAsset(String path,
+      {bool readData = true}) async {
     path = normalizePath(path);
-    var db = await _getDatabase();
+    final db = await _getDatabase(config);
     final location = AssetLocation.local(path);
-    var txn = db.transaction(['documents', 'documents-data'], 'readonly');
+    final txn = db.transaction(
+        [config.storeName, config.currentDataStoreName], 'readonly');
 
-    Future<List<int>?> getData(String path) async {
-      final dataStore = txn.objectStore('documents-data');
+    Future<Uint8List?> getData(String path) async {
+      final dataStore = txn.objectStore(config.currentDataStoreName);
       final data = await dataStore.getObject(path);
-      return List<int>.from(data as List);
+      return Uint8List.fromList(List<int>.from(data as List));
     }
 
-    var store = txn.objectStore('documents');
+    final store = txn.objectStore(config.storeName);
     var data = await store.getObject(path);
     if (path == '') {
       data = {'type': 'directory'};
     }
     if (data == null) {
       await txn.completed;
-      yield null;
-      return;
+      return null;
     }
-    var map = Map<String, dynamic>.from(data as Map);
+    final map = Map<String, dynamic>.from(data as Map);
     if (map['type'] == 'file') {
       final data = await getData(path);
       if (data == null) {
-        yield null;
-        return;
+        return null;
       }
-      final file = getAppDocumentFile(location, data);
+      final file = FileSystemFile(location, data: data);
       await txn.completed;
-      yield await file;
-      return;
+      return file;
     } else if (map['type'] == 'directory') {
-      yield AppDocumentDirectory(location, []);
-      if (listFiles ?? true) {
-        var cursor = store.openKeyCursor(autoAdvance: true);
-        final streams = fetchAssetsSync(
-            await cursor.map((e) => e.key.toString()).where((e) {
-              return e.startsWith(path) &&
-                  e != path &&
-                  !e.substring(path.length + 1).contains('/');
-            }).toList(),
-            listFiles == null ? null : false);
-        await for (var stream in streams) {
-          yield AppDocumentDirectory(location, stream);
+      var cursor = store.openKeyCursor(autoAdvance: true);
+      final names = await cursor.map((e) => e.key.toString()).where((e) {
+        return e.startsWith(path) &&
+            e != path &&
+            !e.substring(path.length + 1).contains('/');
+      }).toList();
+      final assets = (await Future.wait(names.map((e) async {
+        final store = txn.objectStore(config.storeName);
+        final data = await store.getObject(path);
+        if (data == null) return null;
+        final map = Map<String, dynamic>.from(data as Map);
+        if (map['type'] == 'file') {
+          return RawFileSystemFile(AssetLocation.local(path));
+        } else if (map['type'] == 'directory') {
+          return RawFileSystemDirectory(AssetLocation.local(path));
         }
-      }
-      return;
+        return null;
+      })))
+          .whereNotNull()
+          .toList();
+      return RawFileSystemDirectory(
+        location,
+        assets: assets,
+      );
     }
-    yield null;
+    return null;
   }
 
   @override
   Future<bool> hasAsset(String path) async {
     path = normalizePath(path);
-    final db = await _getDatabase();
+    final db = await _getDatabase(config);
     final txn = db.transaction('documents', 'readonly');
     final store = txn.objectStore('documents');
     final doc = await store.getObject(path);
@@ -192,25 +152,23 @@ abstract class WebDocumentFileSystem extends DirectoryFileSystem {
       await createDirectory(
           '/${pathWithoutSlash.substring(0, pathWithoutSlash.lastIndexOf('/'))}');
     }
-    final db = await _getDatabase();
-    final txn =
-        db.transactionList(['documents', 'documents-data'], 'readwrite');
-    final store = txn.objectStore('documents');
-    await store.put({
-      'type': 'file',
-    }, path);
-    final dataStore = txn.objectStore('documents-data');
+    final db = await _getDatabase(config);
+    final txn = db.transactionList(
+        [config.storeName, config.currentDataStoreName], 'readwrite');
+    final store = txn.objectStore(config.storeName);
+    await store.put({'type': 'file'}, path);
+    final dataStore = txn.objectStore(config.currentDataStoreName);
     await dataStore.put(data, path);
     await txn.completed;
     return true;
   }
 
   @override
-  Future<AppDocumentDirectory> createDirectory(String path) async {
+  Future<RawFileSystemDirectory> createDirectory(String path) async {
     path = normalizePath(path);
-    var db = await _getDatabase();
-    var txn = db.transaction('documents', 'readwrite');
-    var store = txn.objectStore('documents');
+    var db = await _getDatabase(config);
+    var txn = db.transaction(config.storeName, 'readwrite');
+    var store = txn.objectStore(config.storeName);
     final parents = path.split('/');
     String last = '/';
     if (parents.length <= 1) return await getRootDirectory();
@@ -221,7 +179,7 @@ abstract class WebDocumentFileSystem extends DirectoryFileSystem {
       last = '$currentPath/';
     }
     await txn.completed;
-    return AppDocumentDirectory(AssetLocation.local(path), const []);
+    return RawFileSystemDirectory(AssetLocation.local(path), assets: const []);
   }
 
   FileSystemHandle? _fs;
@@ -240,22 +198,22 @@ abstract class WebDocumentFileSystem extends DirectoryFileSystem {
         _fs = files.first;
         final file = await promiseToFuture(_fs!.getFile());
         final reader = html.FileReader();
-        reader.onLoad.listen((_) {
+        reader.onload.add((() {
           try {
             final result = reader.result as Uint8List;
             completer.complete(Uint8List.fromList(result));
           } catch (e) {
             completer.completeError(e);
           }
-        });
-        reader.onError.listen((_) {
+        }).toJS);
+        reader.onerror.add((() {
           final error = reader.error;
           if (error != null) {
             completer.completeError(error);
           } else {
             completer.complete(null);
           }
-        });
+        }).toJS);
         reader.readAsArrayBuffer(file);
       }
 
@@ -272,90 +230,69 @@ abstract class WebDocumentFileSystem extends DirectoryFileSystem {
 
   @override
   Future<void> saveAbsolute(String path, Uint8List bytes) async {
-    final a = html.document.createElement('a') as html.AnchorElement;
+    final a = html.document.createElement('a') as html.HTMLAnchorElement;
     // Create data URL
-    final blob = html.Blob([bytes], 'text/plain');
-    final url = html.Url.createObjectUrl(blob);
+    final blob =
+        html.Blob([bytes.toJS].toJS, html.BlobPropertyBag(type: 'text/plain'));
+    final url = html.URL.createObjectURL(blob);
     a.href = url;
     a.download = path;
     a.click();
+    html.URL.revokeObjectURL(url);
   }
 }
 
-class WebTemplateFileSystem extends TemplateFileSystem {
+class WebKeyFileSystem extends KeyFileSystem {
+  WebKeyFileSystem({required super.config});
+
   @override
-  Future<void> deleteTemplate(String name) async {
-    var db = await _getDatabase();
-    var txn = db.transaction('templates', 'readwrite');
-    var store = txn.objectStore('templates');
-    await store.delete(name);
+  Future<void> deleteFile(String key) async {
+    var db = await _getDatabase(config);
+    var txn = db.transaction(config.storeName, 'readwrite');
+    var store = txn.objectStore(config.storeName);
+    await store.delete(key);
     await txn.completed;
   }
 
   @override
-  Future<NoteData?> getTemplate(String name) async {
-    var db = await _getDatabase();
-    var txn = db.transaction('templates', 'readonly');
-    var store = txn.objectStore('templates');
-    var data = await store.getObject(name);
+  Future<Uint8List?> getFile(String key) async {
+    var db = await _getDatabase(config);
+    var txn = db.transaction(config.storeName, 'readonly');
+    var store = txn.objectStore(config.storeName);
+    var data = await store.getObject(config.storeName);
+    await txn.completed;
     if (data == null) {
-      await txn.completed;
       return null;
     }
-    await txn.completed;
-    return NoteData.fromData(Uint8List.fromList(List<int>.from(data as List)));
+    return Uint8List.fromList(List<int>.from(data as List));
   }
 
   @override
-  Future<void> updateTemplate(NoteData template) async {
-    var db = await _getDatabase();
-    var txn = db.transaction('templates', 'readwrite');
-    var store = txn.objectStore('templates');
-    var doc = template.save();
-    await store.put(doc, template.name);
+  Future<void> updateFile(String key, Uint8List data) async {
+    var db = await _getDatabase(config);
+    var txn = db.transaction(config.storeName, 'readwrite');
+    var store = txn.objectStore(config.storeName);
+    await store.put(data, key);
   }
 
   @override
-  Future<bool> hasTemplate(String name) async {
-    var db = await _getDatabase();
-    var txn = db.transaction('templates', 'readonly');
-    var store = txn.objectStore('templates');
-    var doc = await store.getObject(name);
+  Future<bool> hasKey(String key) async {
+    var db = await _getDatabase(config);
+    var txn = db.transaction(config.storeName, 'readonly');
+    var store = txn.objectStore(config.storeName);
+    var doc = await store.getObject(key);
     await txn.completed;
     return doc != null;
   }
 
   @override
-  Future<bool> createDefault(BuildContext context, {bool force = false}) async {
-    var defaults = await DocumentDefaults.getDefaults(context);
-    var prefs = await SharedPreferences.getInstance();
-    if (!force) {
-      force = !prefs.containsKey('defaultTemplate');
-    }
-    if (!force) return false;
-    await Future.wait(defaults.map((e) => updateTemplate(e)));
-    prefs.setBool('defaultTemplate', true);
-    return true;
-  }
-
-  @override
-  Future<List<NoteData>> getTemplates() async {
-    var db = await _getDatabase();
-    var txn = db.transaction('templates', 'readonly');
-    var store = txn.objectStore('templates');
+  Future<List<String>> getKeys() async {
+    var db = await _getDatabase(config);
+    var txn = db.transaction(config.storeName, 'readonly');
+    var store = txn.objectStore(config.storeName);
     var cursor = store.openCursor(autoAdvance: true);
-    var templates = <NoteData>[];
-    await cursor.forEach((cursor) {
-      try {
-        templates.add(NoteData.fromData(
-            Uint8List.fromList(List<int>.from(cursor.value as List))));
-      } catch (e) {
-        if (kDebugMode) {
-          print(e);
-        }
-      }
-    });
+    final keys = cursor.map((e) => e.key.toString()).toList();
     await txn.completed;
-    return templates;
+    return keys;
   }
 }

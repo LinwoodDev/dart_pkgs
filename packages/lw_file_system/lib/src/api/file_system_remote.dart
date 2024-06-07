@@ -89,20 +89,9 @@ mixin RemoteFileSystem on GeneralFileSystem {
     return utf8.decode(await getBodyBytes(response));
   }
 
-  Future<String> getRemoteCacheDirectory() async =>
-      config.getDirectory(storage);
-
-  Future<String> getAbsoluteCachePath(String path) async {
-    var cacheDir = await getRemoteCacheDirectory();
-    if (path.startsWith('/')) {
-      path = path.substring(1);
-    }
-    return p.join(cacheDir, path);
-  }
-
   Future<Uint8List?> getCachedContent(String path) async {
     if (!storage.hasDocumentCached(path)) return null;
-    var absolutePath = await getAbsoluteCachePath(path);
+    var absolutePath = await getAbsolutePath(path);
     var file = File(absolutePath);
     if (await file.exists()) {
       return await file.readAsBytes();
@@ -111,7 +100,7 @@ mixin RemoteFileSystem on GeneralFileSystem {
   }
 
   Future<void> cacheContent(String path, Uint8List content) async {
-    var absolutePath = await getAbsoluteCachePath(path);
+    var absolutePath = await getAbsolutePath(path);
     var file = File(absolutePath);
     final directory = Directory(absolutePath);
     if (await directory.exists()) return;
@@ -122,7 +111,7 @@ mixin RemoteFileSystem on GeneralFileSystem {
   }
 
   Future<void> deleteCachedContent(String path) async {
-    var absolutePath = await getAbsoluteCachePath(path);
+    var absolutePath = await getAbsolutePath(path);
     var file = File(absolutePath);
     if (await file.exists()) {
       await file.delete();
@@ -130,7 +119,7 @@ mixin RemoteFileSystem on GeneralFileSystem {
   }
 
   Future<void> clearCachedContent() async {
-    var cacheDir = await getRemoteCacheDirectory();
+    var cacheDir = await getDirectory();
     var directory = Directory(cacheDir);
     final exists = await directory.exists();
     int maxRetries = 5;
@@ -162,7 +151,7 @@ mixin RemoteFileSystem on GeneralFileSystem {
   }
 
   Future<Map<String, Uint8List>> getCachedFiles() async {
-    var cacheDir = await getRemoteCacheDirectory();
+    var cacheDir = await getDirectory();
     var files = <String, Uint8List>{};
     var dir = Directory(cacheDir);
     var list = await dir.list().toList();
@@ -177,7 +166,7 @@ mixin RemoteFileSystem on GeneralFileSystem {
   }
 
   Future<DateTime?> getCachedFileModified(String path) async {
-    var absolutePath = await getAbsoluteCachePath(path);
+    var absolutePath = await getAbsolutePath(path);
     final file = File(absolutePath);
     if (await file.exists()) {
       return file.lastModified();
@@ -190,7 +179,7 @@ mixin RemoteFileSystem on GeneralFileSystem {
   }
 
   Future<Map<String, DateTime>> getCachedFileModifieds() async {
-    var cacheDir = await getRemoteCacheDirectory();
+    var cacheDir = await getDirectory();
     var files = <String, DateTime>{};
     var dir = Directory(cacheDir);
     var list = await dir.list().toList();
@@ -210,7 +199,7 @@ mixin RemoteFileSystem on GeneralFileSystem {
     var localLastModified = await getCachedFileModified(path);
     var remoteLastModified = await getRemoteFileModified(path);
     var syncedLastModified = storage.lastSynced;
-    final directory = Directory(await getAbsoluteCachePath(path));
+    final directory = Directory(await getAbsolutePath(path));
 
     return SyncFile(
         isDirectory: await directory.exists(),
@@ -222,7 +211,7 @@ mixin RemoteFileSystem on GeneralFileSystem {
 
   Future<List<SyncFile>> getSyncFiles() async {
     var files = <SyncFile>[];
-    var cacheDir = await getRemoteCacheDirectory();
+    var cacheDir = await getDirectory();
     var dir = Directory(cacheDir);
     if (!await dir.exists()) {
       await dir.create(recursive: true);
@@ -305,7 +294,7 @@ abstract class DirectoryRemoteSystem extends DirectoryFileSystem
       if (filePath.startsWith('/')) {
         filePath = filePath.substring(1);
       }
-      filePath = p.join(await getRemoteCacheDirectory(), filePath);
+      filePath = p.join(await getDirectory(), filePath);
       final directory = Directory(filePath);
       if (!(await directory.exists())) {
         await directory.create(recursive: true);

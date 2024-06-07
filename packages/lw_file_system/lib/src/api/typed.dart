@@ -89,7 +89,7 @@ class TypedKeyFileSystem<T> extends TypedFileSystem<T>
   Future<List<String>> getKeys() => fileSystem.getKeys();
 
   @override
-  Future<bool> hasKey(String name) => fileSystem.hasKey(name);
+  Future<bool> hasKey(String key) => fileSystem.hasKey(key);
 
   @override
   Future<void> updateFile(String key, T data) =>

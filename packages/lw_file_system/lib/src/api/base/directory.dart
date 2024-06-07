@@ -75,8 +75,8 @@ mixin GeneralDirectoryFileSystem<T> on GeneralFileSystem {
   Future<FileSystemFile<T>?> createFile(String path, T data) async {
     path = normalizePath(path);
     final uniquePath = await findAvailableName(path);
-    return updateFile(uniquePath, data)
-        .then((_) => getAppDocumentFile(AssetLocation.local(uniquePath), data));
+    return updateFile(uniquePath, data).then(
+        (_) => FileSystemFile(AssetLocation.local(uniquePath), data: data));
   }
 
   Future<bool> hasAsset(String path) =>

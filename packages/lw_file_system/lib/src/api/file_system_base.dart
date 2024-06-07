@@ -17,19 +17,6 @@ typedef InitFSCallback = FutureOr<void> Function(GeneralFileSystem fileSystem);
 typedef CreateFileCallback = FutureOr<Uint8List> Function(
     String path, Uint8List data);
 
-Future<FileSystemFile<T>> getAppDocumentFile<T>(
-  AssetLocation location,
-  T data, {
-  bool cached = false,
-  bool readMetadata = true,
-}) async {
-  return FileSystemFile(
-    location,
-    data: data,
-    cached: cached,
-  );
-}
-
 abstract class GeneralFileSystem {
   final InitFSCallback onInit;
   final FileSystemConfig config;
@@ -90,7 +77,7 @@ abstract class GeneralFileSystem {
     return '$root/$relativePath';
   }
 
-  FutureOr<String> getDirectory() => '/';
+  Future<String> getDirectory() async => config.getDirectory(storage);
 }
 
 Archive exportDirectory(FileSystemDirectory directory) {

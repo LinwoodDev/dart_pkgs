@@ -53,7 +53,7 @@ class WebTemplateFileSystem extends KeyFileSystem {
   }
 
   @override
-  Future<bool> hasKey(String name) {
+  Future<bool> hasKey(String key) {
     throw UnimplementedError();
   }
 

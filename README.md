@@ -12,3 +12,4 @@ This is a collection of useful flutter plugins.
 * [networker](packages/networker) - Universal Networking library for dart/flutter
 * [dart_leap](packages/dart_leap) - Helper library for dart
 * [material_leap](packages/material_leap) - Additional material design widgets and helpers for flutter
+* [lw_file_system](packages/lw_file_system) - Cross platform file system for flutter

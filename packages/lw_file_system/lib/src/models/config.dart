@@ -1,11 +1,13 @@
+import 'dart:async';
+
 import 'package:idb_shim/idb.dart';
-import 'package:lw_file_system/src/models/storage.dart';
+import 'package:lw_file_system/lw_file_system.dart';
 
 typedef GetDirectoryCallback = Future<String> Function(
     ExternalStorage? storage);
 typedef InitDatabaseCallback = Future<void> Function(Database database);
 
-class FileSystemConfig {
+class FileSystemConfig<T extends GeneralFileSystem> {
   final PasswordStorage passwordStorage;
   final String storeName, variant;
   final String? cacheVariant, pathVariant, dataStoreName;

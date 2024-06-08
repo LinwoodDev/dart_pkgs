@@ -13,20 +13,30 @@ import 'file_system_html_stub.dart'
 part 'base/directory.dart';
 part 'base/key.dart';
 
-typedef InitFSCallback = FutureOr<void> Function(GeneralFileSystem fileSystem);
+typedef CreateDefaultCallback<T extends GeneralFileSystem> = FutureOr<void>
+    Function(T fileSystem);
+
 typedef CreateFileCallback = FutureOr<Uint8List> Function(
     String path, Uint8List data);
 
+void defaultCreateDefault(GeneralFileSystem fileSystem) {}
+
 abstract class GeneralFileSystem {
-  final InitFSCallback onInit;
   final FileSystemConfig config;
 
   GeneralFileSystem({
-    this.onInit = _defaultInit,
     required this.config,
   });
 
-  static Future<void> _defaultInit(GeneralFileSystem fileSystem) async {}
+  Future<bool> isInitialized();
+
+  Future<void> runInitialize();
+
+  Future<void> initialize() async {
+    if (!await isInitialized()) {
+      await runInitialize();
+    }
+  }
 
   ExternalStorage? get storage => null;
 

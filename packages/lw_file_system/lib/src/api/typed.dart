@@ -19,14 +19,34 @@ class TypedDirectoryFileSystem<T> extends TypedFileSystem<T>
     with GeneralDirectoryFileSystem<T> {
   @override
   final DirectoryFileSystem fileSystem;
+  final CreateDefaultCallback<TypedDirectoryFileSystem<T>> createDefault;
 
-  TypedDirectoryFileSystem(
+  TypedDirectoryFileSystem._(
     this.fileSystem, {
     required super.onDecode,
     required super.onEncode,
     required super.config,
+    this.createDefault = defaultCreateDefault,
   });
 
+  factory TypedDirectoryFileSystem.build(
+    FileSystemConfig config,
+    CreateDefaultCallback<TypedDirectoryFileSystem<T>> createDefault,
+    ExternalStorage? storage, {
+    required EncodeTypedFileSystemCallback<T> onEncode,
+    required DecodeTypedFileSystemCallback<T> onDecode,
+  }) {
+    TypedDirectoryFileSystem<T>? fileSystem;
+    fileSystem = TypedDirectoryFileSystem._(
+      DirectoryFileSystem.fromPlatform(config,
+          createDefault: (_) => fileSystem?.createDefault(fileSystem)),
+      onEncode: onEncode,
+      onDecode: onDecode,
+      config: config,
+      createDefault: createDefault,
+    );
+    return fileSystem;
+  }
   FileSystemEntity<T> _toTypedAsset(RawFileSystemEntity entity) =>
       switch (entity) {
         RawFileSystemFile file => FileSystemFile(
@@ -61,19 +81,46 @@ class TypedDirectoryFileSystem<T> extends TypedFileSystem<T>
       fileSystem
           .readAsset(path, readData: readData)
           .then((entity) => entity == null ? null : _toTypedAsset(entity));
+
+  @override
+  Future<bool> isInitialized() => fileSystem.isInitialized();
+
+  @override
+  Future<void> runInitialize() => fileSystem.runInitialize();
 }
 
 class TypedKeyFileSystem<T> extends TypedFileSystem<T>
     with GeneralKeyFileSystem<T> {
   @override
   final KeyFileSystem fileSystem;
+  final CreateDefaultCallback<TypedKeyFileSystem<T>> createDefault;
 
-  TypedKeyFileSystem(
+  TypedKeyFileSystem._(
     this.fileSystem, {
     required super.onDecode,
     required super.onEncode,
     required super.config,
+    this.createDefault = defaultCreateDefault,
   });
+
+  factory TypedKeyFileSystem.build(
+    FileSystemConfig config,
+    CreateDefaultCallback<TypedKeyFileSystem<T>> createDefault,
+    ExternalStorage? storage, {
+    required EncodeTypedFileSystemCallback<T> onEncode,
+    required DecodeTypedFileSystemCallback<T> onDecode,
+  }) {
+    TypedKeyFileSystem<T>? fileSystem;
+    fileSystem = TypedKeyFileSystem._(
+      KeyFileSystem.fromPlatform(config,
+          createDefault: (_) => fileSystem?.createDefault(fileSystem)),
+      onEncode: onEncode,
+      onDecode: onDecode,
+      config: config,
+      createDefault: createDefault,
+    );
+    return fileSystem;
+  }
 
   @override
   Future<void> deleteFile(String key) => fileSystem.deleteFile(key);
@@ -94,4 +141,10 @@ class TypedKeyFileSystem<T> extends TypedFileSystem<T>
   @override
   Future<void> updateFile(String key, T data) =>
       fileSystem.updateFile(key, onEncode(data));
+
+  @override
+  Future<bool> isInitialized() => fileSystem.isInitialized();
+
+  @override
+  Future<void> runInitialize() => fileSystem.runInitialize();
 }

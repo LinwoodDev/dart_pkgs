@@ -32,6 +32,17 @@ class WebDocumentFileSystem extends DirectoryFileSystem {
       {bool readData = true}) {
     throw UnimplementedError();
   }
+
+  @override
+  Future<bool> isInitialized() {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> runInitialize() {
+    // TODO: implement runInitialize
+    throw UnimplementedError();
+  }
 }
 
 class WebTemplateFileSystem extends KeyFileSystem {
@@ -59,6 +70,18 @@ class WebTemplateFileSystem extends KeyFileSystem {
 
   @override
   Future<void> updateFile(String key, Uint8List data) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<bool> isInitialized() {
+    // TODO: implement isInitialized
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> runInitialize() {
+    // TODO: implement runInitialize
     throw UnimplementedError();
   }
 }

@@ -12,6 +12,7 @@ class IODirectoryFileSystem extends DirectoryFileSystem {
   IODirectoryFileSystem({
     this.storage,
     required super.config,
+    super.createDefault,
   });
 
   String get remoteName => storage?.identifier ?? '';
@@ -120,5 +121,15 @@ class IODirectoryFileSystem extends DirectoryFileSystem {
       );
     }
     return null;
+  }
+
+  @override
+  Future<bool> isInitialized() async =>
+      Directory(await config.getDirectory(storage)).exists();
+
+  @override
+  Future<void> runInitialize() async {
+    await createDirectory('');
+    createDefault(this);
   }
 }

@@ -241,6 +241,12 @@ abstract class WebDirectoryFileSystem extends DirectoryFileSystem {
     a.click();
     html.URL.revokeObjectURL(url);
   }
+
+  @override
+  Future<bool> isInitialized() => Future.value(true);
+
+  @override
+  Future<void> runInitialize() => Future.value(createDefault(this));
 }
 
 class WebKeyFileSystem extends KeyFileSystem {
@@ -296,4 +302,10 @@ class WebKeyFileSystem extends KeyFileSystem {
     await txn.completed;
     return keys;
   }
+
+  @override
+  Future<bool> isInitialized() => Future.value(true);
+
+  @override
+  Future<void> runInitialize() => Future.value(createDefault(this));
 }

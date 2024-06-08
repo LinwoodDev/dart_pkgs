@@ -11,7 +11,11 @@ class DavRemoteDirectoryFileSystem extends RemoteDirectoryFileSystem {
   @override
   final DavRemoteStorage storage;
 
-  DavRemoteDirectoryFileSystem({required super.config, required this.storage});
+  DavRemoteDirectoryFileSystem({
+    required super.config,
+    required this.storage,
+    super.createDefault,
+  });
 
   @override
   Future<RawFileSystemDirectory> createDirectory(String path) async {
@@ -215,5 +219,17 @@ class DavRemoteDirectoryFileSystem extends RemoteDirectoryFileSystem {
       throw Exception(
           'Failed to update document: ${response?.statusCode} ${response?.reasonPhrase}');
     }
+  }
+
+  @override
+  Future<bool> isInitialized() async {
+    final response = await createRequest([]);
+    return response?.statusCode == 200;
+  }
+
+  @override
+  Future<void> runInitialize() async {
+    await createDirectory('');
+    await createDefault(this);
   }
 }

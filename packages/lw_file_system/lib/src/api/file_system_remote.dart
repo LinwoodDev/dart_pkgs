@@ -265,7 +265,10 @@ mixin RemoteFileSystem on GeneralFileSystem {
 
 abstract class RemoteDirectoryFileSystem extends DirectoryFileSystem
     with RemoteFileSystem {
-  RemoteDirectoryFileSystem({required super.config});
+  RemoteDirectoryFileSystem({
+    required super.config,
+    super.createDefault,
+  });
 
   List<String> getCachedFilePaths() {
     final files = <String>[];

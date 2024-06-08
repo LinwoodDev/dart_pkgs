@@ -156,18 +156,28 @@ mixin GeneralDirectoryFileSystem<T> on GeneralFileSystem {
 
 abstract class DirectoryFileSystem extends GeneralFileSystem
     with GeneralDirectoryFileSystem<Uint8List> {
-  DirectoryFileSystem({required super.config});
+  final CreateDefaultCallback<DirectoryFileSystem> createDefault;
+  DirectoryFileSystem({
+    required super.config,
+    this.createDefault = defaultCreateDefault,
+  });
 
-  static DirectoryFileSystem fromPlatform(FileSystemConfig config,
-      {final ExternalStorage? remote}) {
+  static DirectoryFileSystem fromPlatform(
+    FileSystemConfig config, {
+    final ExternalStorage? storage,
+    CreateDefaultCallback<DirectoryFileSystem> createDefault =
+        defaultCreateDefault,
+  }) {
     if (kIsWeb) {
       return WebDocumentFileSystem(config: config);
     } else {
-      return switch (remote) {
-        DavRemoteStorage e =>
-          DavRemoteDirectoryFileSystem(config: config, storage: e),
-        LocalStorage e => IODirectoryFileSystem(config: config, storage: e),
-        _ => IODirectoryFileSystem(config: config),
+      return switch (storage) {
+        DavRemoteStorage e => DavRemoteDirectoryFileSystem(
+            config: config, storage: e, createDefault: createDefault),
+        LocalStorage e => IODirectoryFileSystem(
+            config: config, storage: e, createDefault: createDefault),
+        _ =>
+          IODirectoryFileSystem(config: config, createDefault: createDefault),
       };
     }
   }

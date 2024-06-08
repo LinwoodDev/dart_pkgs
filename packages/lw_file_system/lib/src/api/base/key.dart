@@ -53,42 +53,66 @@ mixin GeneralKeyFileSystem<T> on GeneralFileSystem {
 
 abstract class KeyFileSystem extends GeneralFileSystem
     with GeneralKeyFileSystem<Uint8List> {
+  final CreateDefaultCallback<KeyFileSystem> createDefault;
+
   KeyFileSystem({
     required super.config,
-    super.onInit,
+    this.createDefault = defaultCreateDefault,
   });
 
-  static KeyFileSystem fromPlatform(FileSystemConfig config,
-      {ExternalStorage? remote}) {
+  static KeyFileSystem fromPlatform(
+    FileSystemConfig config, {
+    ExternalStorage? storage,
+    CreateDefaultCallback<KeyFileSystem>? createDefault,
+  }) {
     if (kIsWeb) {
       return WebTemplateFileSystem(config: config);
     } else {
-      return KeyDirectoryFileSystem(
-        config: config,
-        fileSystem: DirectoryFileSystem.fromPlatform(config, remote: remote),
-      );
+      return KeyDirectoryFileSystem.build(config, storage: storage);
     }
+  }
+
+  void _runDefault() {
+    createDefault(this);
   }
 }
 
 class KeyDirectoryFileSystem extends KeyFileSystem {
-  final GeneralDirectoryFileSystem<Uint8List> fileSystem;
+  final GeneralDirectoryFileSystem<Uint8List> _fileSystem;
 
-  KeyDirectoryFileSystem({required super.config, required this.fileSystem});
+  KeyDirectoryFileSystem._({
+    required super.config,
+    required GeneralDirectoryFileSystem<Uint8List> fileSystem,
+  }) : _fileSystem = fileSystem;
+
+  factory KeyDirectoryFileSystem.build(FileSystemConfig config,
+      {ExternalStorage? storage}) {
+    KeyDirectoryFileSystem? fileSystem;
+    void createDefault(_) => fileSystem?._runDefault();
+
+    final directory = DirectoryFileSystem.fromPlatform(
+      config,
+      createDefault: createDefault,
+      storage: storage,
+    );
+    fileSystem =
+        KeyDirectoryFileSystem._(config: config, fileSystem: directory);
+    return fileSystem;
+  }
 
   @override
-  Future<void> deleteFile(String key) => fileSystem.deleteAsset(key);
+  Future<void> deleteFile(String key) => _fileSystem.deleteAsset(key);
 
   @override
   Future<Uint8List?> getFile(String key) async {
-    final asset = await fileSystem.getAsset(key);
+    final asset = await _fileSystem.getAsset(key);
     if (asset is RawFileSystemFile) return asset.data;
     return null;
   }
 
   @override
   Future<List<String>> getKeys() async {
-    final directory = await fileSystem.getRootDirectory(
+    final directory = await _fileSystem.getRootDirectory(
         listLevel: allListLevel, readData: false);
     final assets = <String>[];
     final remaining = [...directory.assets];
@@ -105,8 +129,8 @@ class KeyDirectoryFileSystem extends KeyFileSystem {
 
   @override
   Future<bool> hasKey(String key) async {
-    if (!await fileSystem.hasAsset(key)) return false;
-    final asset = await fileSystem.getAsset(key);
+    if (!await _fileSystem.hasAsset(key)) return false;
+    final asset = await _fileSystem.getAsset(key);
     return asset is RawFileSystemFile;
   }
 
@@ -114,10 +138,16 @@ class KeyDirectoryFileSystem extends KeyFileSystem {
   Future<void> updateFile(String key, Uint8List data) async {
     key = normalizePath(key);
     final parent = key.substring(0, key.lastIndexOf('/'));
-    if ((await fileSystem.getAsset(parent,
+    if ((await _fileSystem.getAsset(parent,
         listLevel: noListLevel, readData: false)) is! RawFileSystemDirectory) {
-      await fileSystem.createDirectory(parent);
+      await _fileSystem.createDirectory(parent);
     }
-    return fileSystem.updateFile(key, data);
+    return _fileSystem.updateFile(key, data);
   }
+
+  @override
+  Future<bool> isInitialized() => _fileSystem.isInitialized();
+
+  @override
+  Future<void> runInitialize() => _fileSystem.runInitialize();
 }

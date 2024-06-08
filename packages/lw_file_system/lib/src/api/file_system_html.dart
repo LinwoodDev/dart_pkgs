@@ -2,7 +2,6 @@
 
 import 'dart:async';
 import 'dart:js_interop';
-import 'dart:js_util';
 
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
@@ -21,7 +20,7 @@ extension FileHandlingWindowExtension on FileHandlingWindow {
 
 @JS()
 class LaunchQueue {
-  external void setConsumer(void Function(LaunchParams) f);
+  external void setConsumer(JSFunction f);
 }
 
 @JS()
@@ -32,7 +31,7 @@ class LaunchParams {
 
 @JS()
 class FileSystemHandle {
-  external Object getFile();
+  external JSPromise<html.Blob> getFile();
 }
 
 Database? _db;
@@ -197,7 +196,7 @@ abstract class WebDirectoryFileSystem extends DirectoryFileSystem {
           return;
         }
         _fs = files.first;
-        final file = await promiseToFuture(_fs!.getFile());
+        final file = await _fs!.getFile().toDart;
         final reader = html.FileReader();
         reader.onload.add((() {
           try {
@@ -218,7 +217,7 @@ abstract class WebDirectoryFileSystem extends DirectoryFileSystem {
         reader.readAsArrayBuffer(file);
       }
 
-      fileWindow.launchQueue?.setConsumer(allowInterop(complete));
+      fileWindow.launchQueue?.setConsumer(complete.toJS);
       return completer.future;
     } on NoSuchMethodError catch (e) {
       if (kDebugMode) {

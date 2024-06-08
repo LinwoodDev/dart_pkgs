@@ -4,9 +4,9 @@
 
 ## Features
 
-|     Method | Description          | Windows | Linux |  Web  | Android |
-| ---------: | :------------------- | :-----: | :---: | :---: | :-----: |
-| `getFonts` | Get all system fonts |    ✅    |   ✅   |   ✅   |    ❌    |
+|     Method | Description          | Windows | Linux | Web (JS) | Web (WASM) | Android |
+| ---------: | :------------------- | :-----: | :---: | :------: | :--------: | :-----: |
+| `getFonts` | Get all system fonts |    ✅    |   ✅   |    ✅     |     ✅      |    ❌    |
 
 ## Information
 

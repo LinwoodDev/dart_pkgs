@@ -30,15 +30,17 @@ class TypedDirectoryFileSystem<T> extends TypedFileSystem<T>
   });
 
   factory TypedDirectoryFileSystem.build(
-    FileSystemConfig config,
-    CreateDefaultCallback<TypedDirectoryFileSystem<T>> createDefault,
-    ExternalStorage? storage, {
+    FileSystemConfig config, {
+    ExternalStorage? storage,
+    CreateDefaultCallback<TypedDirectoryFileSystem<T>> createDefault =
+        defaultCreateDefault,
     required EncodeTypedFileSystemCallback<T> onEncode,
     required DecodeTypedFileSystemCallback<T> onDecode,
   }) {
     TypedDirectoryFileSystem<T>? fileSystem;
     fileSystem = TypedDirectoryFileSystem._(
       DirectoryFileSystem.fromPlatform(config,
+          storage: storage,
           createDefault: (_) => fileSystem?.createDefault(fileSystem)),
       onEncode: onEncode,
       onDecode: onDecode,
@@ -104,15 +106,17 @@ class TypedKeyFileSystem<T> extends TypedFileSystem<T>
   });
 
   factory TypedKeyFileSystem.build(
-    FileSystemConfig config,
-    CreateDefaultCallback<TypedKeyFileSystem<T>> createDefault,
-    ExternalStorage? storage, {
+    FileSystemConfig config, {
+    ExternalStorage? storage,
+    CreateDefaultCallback<TypedKeyFileSystem<T>> createDefault =
+        defaultCreateDefault,
     required EncodeTypedFileSystemCallback<T> onEncode,
     required DecodeTypedFileSystemCallback<T> onDecode,
   }) {
     TypedKeyFileSystem<T>? fileSystem;
     fileSystem = TypedKeyFileSystem._(
       KeyFileSystem.fromPlatform(config,
+          storage: storage,
           createDefault: (_) => fileSystem?.createDefault(fileSystem)),
       onEncode: onEncode,
       onDecode: onDecode,

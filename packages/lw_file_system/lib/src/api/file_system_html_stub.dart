@@ -4,8 +4,8 @@ import 'package:lw_file_system/src/models/entity.dart';
 
 import 'file_system_base.dart';
 
-class WebDocumentFileSystem extends DirectoryFileSystem {
-  WebDocumentFileSystem({required super.config});
+class WebDirectoryFileSystem extends DirectoryFileSystem {
+  WebDirectoryFileSystem({required super.config});
 
   @override
   Future<FileSystemDirectory<Uint8List>> createDirectory(String path) {
@@ -40,13 +40,12 @@ class WebDocumentFileSystem extends DirectoryFileSystem {
 
   @override
   Future<void> runInitialize() {
-    // TODO: implement runInitialize
     throw UnimplementedError();
   }
 }
 
-class WebTemplateFileSystem extends KeyFileSystem {
-  WebTemplateFileSystem({required super.config});
+class WebKeyFileSystem extends KeyFileSystem {
+  WebKeyFileSystem({required super.config});
 
   @override
   Future<void> deleteFile(String key) {
@@ -75,13 +74,11 @@ class WebTemplateFileSystem extends KeyFileSystem {
 
   @override
   Future<bool> isInitialized() {
-    // TODO: implement isInitialized
     throw UnimplementedError();
   }
 
   @override
   Future<void> runInitialize() {
-    // TODO: implement runInitialize
     throw UnimplementedError();
   }
 }

@@ -66,7 +66,7 @@ abstract class KeyFileSystem extends GeneralFileSystem
     CreateDefaultCallback<KeyFileSystem>? createDefault,
   }) {
     if (kIsWeb) {
-      return WebTemplateFileSystem(config: config);
+      return WebKeyFileSystem(config: config);
     } else {
       return KeyDirectoryFileSystem.build(config, storage: storage);
     }

@@ -10,21 +10,16 @@ import 'package:idb_shim/idb_browser.dart';
 import 'package:lw_file_system/lw_file_system.dart';
 import 'package:web/web.dart' as html;
 
-@JS()
-@staticInterop
-class FileHandlingWindow {}
-
-extension FileHandlingWindowExtension on FileHandlingWindow {
-  external LaunchQueue? get launchQueue;
-}
+@JS('window.launchQueue')
+external LaunchQueue? get launchQueue;
 
 @JS()
-class LaunchQueue {
+extension type LaunchQueue._(JSObject _) implements JSObject {
   external void setConsumer(JSFunction f);
 }
 
 @JS()
-class LaunchParams {
+extension type LaunchParams._(JSObject _) implements JSObject {
   @JS('files')
   external List get files;
 }
@@ -43,7 +38,7 @@ Future<Database> _getDatabase(FileSystemConfig config) async {
   return _db!;
 }
 
-abstract class WebDirectoryFileSystem extends DirectoryFileSystem {
+class WebDirectoryFileSystem extends DirectoryFileSystem {
   WebDirectoryFileSystem({required super.config});
 
   @override
@@ -187,7 +182,6 @@ abstract class WebDirectoryFileSystem extends DirectoryFileSystem {
   @override
   Future<Uint8List?> loadAbsolute(String path) async {
     try {
-      final fileWindow = html.window as FileHandlingWindow;
       final completer = Completer<Uint8List?>();
       void complete(LaunchParams launchParams) async {
         final files = launchParams.files.cast<FileSystemHandle>();
@@ -217,7 +211,7 @@ abstract class WebDirectoryFileSystem extends DirectoryFileSystem {
         reader.readAsArrayBuffer(file);
       }
 
-      fileWindow.launchQueue?.setConsumer(complete.toJS);
+      launchQueue?.setConsumer(complete.toJS);
       return completer.future;
     } on NoSuchMethodError catch (e) {
       if (kDebugMode) {

@@ -14,6 +14,7 @@ class FileSystemConfig<T extends GeneralFileSystem> {
   final GetDirectoryCallback getDirectory;
   final OnUpgradeNeededFunction? onDatabaseUpgrade;
   final String database;
+  final int databaseVersion;
 
   FileSystemConfig({
     required this.passwordStorage,
@@ -25,6 +26,7 @@ class FileSystemConfig<T extends GeneralFileSystem> {
     this.cacheVariant,
     this.pathVariant,
     required this.database,
+    required this.databaseVersion,
   });
 
   String get currentDataStoreName => dataStoreName ?? '$storeName-data';

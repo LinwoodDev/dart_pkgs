@@ -33,8 +33,11 @@ Database? _db;
 Future<Database> _getDatabase(FileSystemConfig config) async {
   if (_db != null) return _db!;
   var idbFactory = getIdbFactory()!;
-  _db = await idbFactory.open(config.database,
-      version: 4, onUpgradeNeeded: config.currentOnDatabaseUpgrade);
+  _db = await idbFactory.open(
+    config.database,
+    version: config.databaseVersion,
+    onUpgradeNeeded: config.currentOnDatabaseUpgrade,
+  );
   return _db!;
 }
 

@@ -7,7 +7,7 @@ import '../../networker.dart';
 final class RpcRequest {
   final Map<String, dynamic> data;
 
-  RpcRequest(ConnectionId receiver, String function, dynamic message)
+  RpcRequest(Channel receiver, String function, dynamic message)
       : data = {
           'receiver': receiver,
           'function': function,
@@ -18,14 +18,14 @@ final class RpcRequest {
 
   dynamic get message => data['message'];
   String get function => data['function'];
-  ConnectionId get receiver => data['receiver'];
+  Channel get receiver => data['receiver'];
 }
 
 final class RpcMessage extends RpcRequest {
   RpcMessage(super.data) : super.fromData();
 
-  ConnectionId? get client => data['client'];
-  ConnectionId? get you => data['you'];
+  Channel? get client => data['client'];
+  Channel? get you => data['you'];
 }
 
 enum RpcType { authority, any, disabled }
@@ -37,11 +37,11 @@ final class RpcFunction {
 
   RpcFunction(this.type, this.onMessage, [this.canCallLocally = false]);
 
-  bool shouldRun(ConnectionId id, ConnectionId you, [bool forceLocal = false]) {
+  bool shouldRun(Channel id, Channel you, [bool forceLocal = false]) {
     if (!forceLocal && !canCallLocally && id == you) return false;
     switch (type) {
       case RpcType.authority:
-        return id.isAuthority;
+        return id == kAuthorityChannel;
       case RpcType.any:
         return true;
       case RpcType.disabled:
@@ -76,9 +76,7 @@ mixin RpcPlugin {
   }
 }
 
-class RpcNetworkerServerPlugin extends NetworkerServerPlugin with RpcPlugin {
-  final Map<(NetworkerServer server, ConnectionId connection),
-      StreamSubscription> _subscriptions = {};
+class RpcNetworkerServerPlugin extends SimpleNetworkerPipe with RpcPlugin {
   final Set<NetworkerServer> _servers = {};
 
   RpcMessage? Function(RpcMessage request)? _onRequest;
@@ -90,18 +88,17 @@ class RpcNetworkerServerPlugin extends NetworkerServerPlugin with RpcPlugin {
   @override
   void sendMessage(RpcRequest request) {
     for (final server in _servers) {
-      _send(server, kNetworkerConnectionIdAuthority, request.data);
+      _send(server, kAuthorityChannel, request.data);
     }
   }
 
-  void _send(
-      NetworkerServer server, ConnectionId id, Map<String, dynamic> event) {
-    var message = RpcMessage(
-        {...event, 'client': id, 'you': kNetworkerConnectionIdAuthority});
+  void _send(NetworkerServer server, Channel id, Map<String, dynamic> event) {
+    var message =
+        RpcMessage({...event, 'client': id, 'you': kAuthorityChannel});
     final modified = _onRequest?.call(message);
     if (modified == null && _onRequest != null) return;
     message = modified ?? message;
-    Uint8List getData(ConnectionId you) {
+    Uint8List getData(Channel you) {
       var newMessage = RpcMessage({...message.data, 'you': you});
       final data = Uint8List.fromList(utf8.encode(jsonEncode(newMessage.data)));
       return data;
@@ -110,45 +107,19 @@ class RpcNetworkerServerPlugin extends NetworkerServerPlugin with RpcPlugin {
     final receiver = message.receiver;
 
     switch (receiver) {
-      case kNetworkerConnectionIdAny:
-        for (final element in server.connectionIds) {
+      case kAnyChannel:
+        for (final element in server.connections) {
           server.getConnection(element)?.sendMessage(getData(element));
         }
         runFunction(message);
         break;
-      case kNetworkerConnectionIdAuthority:
+      case kAuthorityChannel:
         runFunction(message);
         break;
       default:
         server.getConnection(receiver)?.sendMessage(getData(receiver));
         break;
     }
-  }
-
-  @override
-  void onAdd(NetworkerServer<NetworkerConnection> server) {
-    _servers.add(server);
-  }
-
-  @override
-  void onRemove(NetworkerServer<NetworkerConnection> server) {
-    _servers.remove(server);
-  }
-
-  @override
-  void onConnect(NetworkerServer server, ConnectionId id) {
-    final sub = server
-        .getConnection(id)
-        ?.read
-        .listen((event) => _send(server, id, jsonDecode(utf8.decode(event))));
-    if (sub != null) {
-      _subscriptions[(server, id)] = sub;
-    }
-  }
-
-  @override
-  void onDisconnect(NetworkerServer server, ConnectionId id) {
-    _subscriptions.remove((server, id))?.cancel();
   }
 }
 

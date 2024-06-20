@@ -1,4 +1,4 @@
-import 'plugin.dart';
+import 'package:networker/networker.dart';
 
 final class NetworkerPipeTransformer<I, O> extends NetworkerPipe<I, O> {
   final O Function(I) _decode;

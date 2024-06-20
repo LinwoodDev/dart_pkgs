@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 
-import 'plugin.dart';
+import 'package:networker/networker.dart';
 
 final class StringNetworkerPlugin extends NetworkerPipe<Uint8List, String> {
   @override

@@ -5,7 +5,7 @@ import '../connection.dart';
 
 typedef RawNetworkerPipe = SimpleNetworkerPipe<Uint8List>;
 
-final class NetworkerPacket<T> {
+class NetworkerPacket<T> {
   final T data;
   final Channel channel;
 
@@ -27,7 +27,11 @@ abstract class NetworkerPipe<I, O> {
   Stream<NetworkerPacket<I>> get write => _writeController.stream;
 
   O decode(I data);
+  (O, Channel)? decodeChannel(I data, Channel channel) =>
+      (decode(data), channel);
   I encode(O data);
+  (I, Channel)? encodeChannel(O data, Channel channel) =>
+      (encode(data), channel);
 
   void connect(NetworkerPipe<O, dynamic> pipe) {
     _pipes[pipe] = pipe._writeController.stream.listen(_sendMessagePacket);
@@ -38,11 +42,13 @@ abstract class NetworkerPipe<I, O> {
   }
 
   void onMessage(I data, [Channel channel = kAnyChannel]) {
-    final rawData = decode(data);
-    _readController.add(NetworkerPacket(rawData, channel));
+    final result = decodeChannel(data, channel);
+    if (result == null) return;
+    final (rawData, rawChannel) = result;
+    _readController.add(NetworkerPacket(rawData, rawChannel));
     for (final plugin in _pipes.keys) {
       try {
-        plugin.onMessage(rawData, channel);
+        plugin.onMessage(rawData, rawChannel);
       } catch (_) {}
     }
   }
@@ -51,8 +57,10 @@ abstract class NetworkerPipe<I, O> {
       sendMessage(packet.data, packet.channel);
 
   void sendMessage(O data, [Channel channel = kAnyChannel]) {
-    final rawData = encode(data);
-    _writeController.add(NetworkerPacket(rawData, channel));
+    final result = encodeChannel(data, channel);
+    if (result == null) return;
+    final (rawData, rawChannel) = result;
+    _writeController.add(NetworkerPacket(rawData, rawChannel));
   }
 }
 

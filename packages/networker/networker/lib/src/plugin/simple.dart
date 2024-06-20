@@ -24,3 +24,29 @@ final class ReversedNetworkerPipe<I, O> extends NetworkerPipe<I, O> {
   @override
   I encode(O data) => pipe.decode(data);
 }
+
+final class FilteredNetworkerPipe<T> extends SimpleNetworkerPipe<T> {
+  final bool Function(T, Channel)? filterEncoded;
+  final bool Function(T, Channel)? filterDecoded;
+
+  FilteredNetworkerPipe({
+    this.filterEncoded,
+    this.filterDecoded,
+  });
+
+  @override
+  (T, Channel)? decodeChannel(T data, Channel channel) {
+    if (!(filterDecoded?.call(data, channel) ?? true)) {
+      return null;
+    }
+    return super.decodeChannel(data, channel);
+  }
+
+  @override
+  (T, Channel)? encodeChannel(T data, Channel channel) {
+    if (!(filterEncoded?.call(data, channel) ?? true)) {
+      return null;
+    }
+    return super.encodeChannel(data, channel);
+  }
+}

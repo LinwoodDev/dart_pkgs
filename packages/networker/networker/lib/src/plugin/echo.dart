@@ -1,7 +1,7 @@
 import 'package:networker/networker.dart';
 
 class EchoPipe<T> extends SimpleNetworkerPipe<T> {
-  final int? toChannel;
+  final Channel? toChannel;
 
   EchoPipe({this.toChannel});
 

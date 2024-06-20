@@ -28,23 +28,33 @@ class InternalChannelPipe extends RawNetworkerPipe {
   }
 }
 
-class ChannelFilterPipe extends RawNetworkerPipe {
+class ChannelFilterPipe<T> extends SimpleNetworkerPipe<T> {
   final Channel channel;
-  final bool filterEncoded;
+  final bool filterEncoded, filterDecoded;
+  final bool allowAnyChannel;
 
-  ChannelFilterPipe({required this.channel, this.filterEncoded = false});
+  ChannelFilterPipe({
+    required this.channel,
+    this.filterEncoded = true,
+    this.filterDecoded = true,
+    this.allowAnyChannel = true,
+  });
 
   @override
-  (Uint8List, Channel)? decodeChannel(Uint8List data, Channel channel) {
-    if (channel != this.channel) {
+  (T, Channel)? decodeChannel(T data, Channel channel) {
+    if (channel != this.channel &&
+        filterDecoded &&
+        (!allowAnyChannel || channel != kAnyChannel)) {
       return null;
     }
     return (data, channel);
   }
 
   @override
-  (Uint8List, Channel)? encodeChannel(Uint8List data, Channel channel) {
-    if (channel != this.channel && filterEncoded) {
+  (T, Channel)? encodeChannel(T data, Channel channel) {
+    if (channel != this.channel &&
+        filterEncoded &&
+        (!allowAnyChannel || channel != kAnyChannel)) {
       return null;
     }
     return (data, channel);

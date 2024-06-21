@@ -1,3 +1,3 @@
 part of 'connection.dart';
 
-abstract class NetworkerClient extends NetworkerConnection {}
+abstract class NetworkerClient extends NetworkerBase {}

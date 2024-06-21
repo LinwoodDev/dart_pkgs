@@ -1,4 +1,4 @@
-import 'plugin.dart';
+import 'package:networker/networker.dart';
 
 final class RoomMessage<T> {
   final Map<String, dynamic> data;
@@ -10,17 +10,18 @@ final class RoomMessage<T> {
   dynamic getAttribute(String key) => data[key];
 }
 
-final class RoomNetworkerPlugin<T> extends NetworkerMessenger {
-  final Map<String, NetworkerMessenger<T>> _rooms = {};
+final class RoomNetworkerPlugin<T> extends SimpleNetworkerPipe {
+  final Map<String, SimpleNetworkerPipe<T>> _rooms = {};
+
   @override
-  void onMessage(data) {
-    super.onMessage(data);
+  void onMessage(data, [Channel channel = kAnyChannel]) {
+    super.onMessage(data, channel);
     final message = RoomMessage(data);
-    _rooms[message.room]?.onMessage(message.message);
+    _rooms[message.room]?.onMessage(message.message, channel);
   }
 
   void addRoom(String room) {
-    _rooms[room] ??= NetworkerMessenger<T>();
+    _rooms[room] ??= SimpleNetworkerPipe<T>();
   }
 
   void removeRoom(String room) {

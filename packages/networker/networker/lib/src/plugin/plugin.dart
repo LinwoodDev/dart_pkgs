@@ -1,55 +1,73 @@
 import 'dart:async';
+import 'dart:typed_data';
 
 import '../connection.dart';
 
-typedef BaseNetworkerPlugin = NetworkerPlugin<RawData, RawData>;
+typedef RawNetworkerPipe = SimpleNetworkerPipe<Uint8List>;
 
-abstract class NetworkerPlugin<I, O> {
-  final Map<NetworkerPlugin<O, dynamic>, StreamSubscription<O>> _plugins = {};
-  final StreamController<O> _readController = StreamController<O>.broadcast();
-  final StreamController<I> _writeController = StreamController<I>.broadcast();
+class NetworkerPacket<T> {
+  final T data;
+  final Channel channel;
 
-  Stream<O> get read => _readController.stream;
-  Stream<I> get write => _writeController.stream;
+  NetworkerPacket(this.data, [this.channel = kAnyChannel]);
+
+  bool get isServer => channel == kAuthorityChannel;
+  bool get isAny => channel == kAnyChannel;
+}
+
+abstract class NetworkerPipe<I, O> {
+  final Map<NetworkerPipe<O, dynamic>, StreamSubscription<NetworkerPacket<O>>>
+      _pipes = {};
+  final StreamController<NetworkerPacket<O>> _readController =
+      StreamController<NetworkerPacket<O>>.broadcast();
+  final StreamController<NetworkerPacket<I>> _writeController =
+      StreamController<NetworkerPacket<I>>.broadcast();
+
+  Stream<NetworkerPacket<O>> get read => _readController.stream;
+  Stream<NetworkerPacket<I>> get write => _writeController.stream;
 
   O decode(I data);
+  (O, Channel)? decodeChannel(I data, Channel channel) =>
+      (decode(data), channel);
   I encode(O data);
+  (I, Channel)? encodeChannel(O data, Channel channel) =>
+      (encode(data), channel);
 
-  void addPlugin(NetworkerPlugin<O, dynamic> plugin) {
-    _plugins[plugin] = plugin._writeController.stream.listen(sendMessage);
+  void connect(NetworkerPipe<O, dynamic> pipe) {
+    _pipes[pipe] = pipe._writeController.stream.listen(_sendMessagePacket);
   }
 
-  void removePlugin(NetworkerPlugin<O, dynamic> plugin) {
-    _plugins.remove(plugin)?.cancel();
+  void disconnect(NetworkerPipe<O, dynamic> pipe) {
+    _pipes.remove(pipe)?.cancel();
   }
 
-  void onMessage(I data) {
-    final rawData = decode(data);
-    _readController.add(rawData);
-    for (final plugin in _plugins.keys) {
+  void onMessage(I data, [Channel channel = kAnyChannel]) {
+    final result = decodeChannel(data, channel);
+    if (result == null) return;
+    final (rawData, rawChannel) = result;
+    _readController.add(NetworkerPacket(rawData, rawChannel));
+    for (final plugin in _pipes.keys) {
       try {
-        plugin.onMessage(rawData);
+        plugin.onMessage(rawData, rawChannel);
       } catch (_) {}
     }
   }
 
-  void sendMessage(O data) {
-    final rawData = encode(data);
-    _writeController.add(rawData);
+  void _sendMessagePacket(NetworkerPacket packet) =>
+      sendMessage(packet.data, packet.channel);
+
+  void sendMessage(O data, [Channel channel = kAnyChannel]) {
+    final result = encodeChannel(data, channel);
+    if (result == null) return;
+    final (rawData, rawChannel) = result;
+    _writeController.add(NetworkerPacket(rawData, rawChannel));
   }
 }
 
-class NetworkerMessenger<T> extends NetworkerPlugin<T, T> {
+class SimpleNetworkerPipe<T> extends NetworkerPipe<T, T> {
   @override
   T decode(T data) => data;
 
   @override
   T encode(T data) => data;
-}
-
-abstract class NetworkerServerPlugin {
-  void onAdd(NetworkerServer server) {}
-  void onRemove(NetworkerServer server) {}
-  void onConnect(NetworkerServer server, ConnectionId id) {}
-  void onDisconnect(NetworkerServer server, ConnectionId id) {}
 }

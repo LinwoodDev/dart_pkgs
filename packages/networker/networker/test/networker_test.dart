@@ -3,11 +3,14 @@ import 'package:test/test.dart';
 
 const secondPluginPrefix = 'secondPlugin';
 
-(NetworkerMessenger, NetworkerMessenger, SimpleNetworkerPlugin<String, String>)
-    _buildTestMessenger() {
-  final messenger = NetworkerMessenger();
-  final plugin = NetworkerMessenger();
-  final secondTranslator = SimpleNetworkerPlugin<String, String>((data) {
+(
+  SimpleNetworkerPipe,
+  SimpleNetworkerPipe,
+  NetworkerPipeTransformer<String, String>
+) _buildTestMessenger() {
+  final messenger = SimpleNetworkerPipe();
+  final plugin = SimpleNetworkerPipe();
+  final secondTranslator = NetworkerPipeTransformer<String, String>((data) {
     return secondPluginPrefix + data;
   }, (data) {
     if (data.startsWith(secondPluginPrefix)) {
@@ -15,15 +18,15 @@ const secondPluginPrefix = 'secondPlugin';
     }
     return data;
   });
-  final simple = SimpleNetworkerPlugin<Map<String, dynamic>, ClientEvents>(
+  final simple = NetworkerPipeTransformer<Map<String, dynamic>, ClientEvents>(
     ClientEvents.fromJson,
     (data) => data.toJson(),
   );
   final json = JsonNetworkerPlugin();
-  json.addPlugin(simple);
-  plugin.addPlugin(json);
-  messenger.addPlugin(plugin);
-  plugin.addPlugin(secondTranslator);
+  json.connect(simple);
+  plugin.connect(json);
+  messenger.connect(plugin);
+  plugin.connect(secondTranslator);
   return (messenger, plugin, secondTranslator);
 }
 

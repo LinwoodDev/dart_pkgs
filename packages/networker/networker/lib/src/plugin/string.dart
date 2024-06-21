@@ -1,12 +1,11 @@
 import 'dart:typed_data';
 
-import '../connection.dart';
-import 'plugin.dart';
+import 'package:networker/networker.dart';
 
-final class StringNetworkerPlugin extends NetworkerPlugin<RawData, String> {
+final class StringNetworkerPlugin extends NetworkerPipe<Uint8List, String> {
   @override
-  String decode(RawData data) => String.fromCharCodes(data);
+  String decode(Uint8List data) => String.fromCharCodes(data);
 
   @override
-  RawData encode(String data) => Uint8List.fromList(data.codeUnits);
+  Uint8List encode(String data) => Uint8List.fromList(data.codeUnits);
 }

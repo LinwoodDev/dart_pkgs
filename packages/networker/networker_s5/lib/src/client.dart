@@ -52,7 +52,8 @@ class NetworkerS5 extends NetworkerClient {
   bool get isClosed => subscription == null;
 
   @override
-  Future<void> sendMessage(RawData data) async {
+  Future<void> sendMessage(Uint8List data,
+      [Channel channel = kAnyChannel]) async {
     super.sendMessage(data);
     final msg = await SignedStreamMessage.create(
       kp: kp,

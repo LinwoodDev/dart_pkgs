@@ -8,10 +8,7 @@ environment:
   sdk: '>=2.17.1 <3.0.0'
 dependencies: 
   networker:
-    git:
-      url: https://github.com/LinwoodDev/dart_pkgs.git
-      path: packages/networker/networker
-      ref: 6617b9bbfb481ef59b1a6921f1676bb90d73ecf9
+    path: ../networker
   s5: ^0.2.0
   hive: ^2.2.3
   http: ^1.2.0

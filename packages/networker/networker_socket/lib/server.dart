@@ -1,14 +1,14 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:networker/networker.dart';
 
-class NetworkerSocketServerConnection extends NetworkerConnection {
-  final WebSocket socket;
-  @override
+class NetworkerSocketInfo extends ConnectionInfo {
   final Uri address;
+  final WebSocket socket;
 
-  NetworkerSocketServerConnection(this.socket, this.address);
+  NetworkerSocketInfo(this.address, this.socket);
 
   @override
   void close() {
@@ -19,15 +19,15 @@ class NetworkerSocketServerConnection extends NetworkerConnection {
   bool get isClosed => socket.closeReason != null;
 
   @override
-  FutureOr<void> init() {}
+  void sendMessage(Uint8List data) {
+    socket.add(data);
+  }
 }
 
-class NetworkerSocketServer
-    extends NetworkerServer<NetworkerSocketServerConnection> {
+class NetworkerSocketServer extends NetworkerServer<NetworkerSocketInfo> {
   final HttpServer server;
   bool _isClosed = false;
   bool Function(HttpRequest event)? filterConnections;
-
   NetworkerSocketServer(this.server, [this.filterConnections]);
 
   @override
@@ -51,20 +51,15 @@ class NetworkerSocketServer
     await for (var request in server.where(filterConnections ?? (e) => true)) {
       try {
         final socket = await WebSocketTransformer.upgrade(request);
-        addConnection(socket.hashCode,
-            NetworkerSocketServerConnection(socket, request.requestedUri));
+        addClientConnection(
+            socket.hashCode, NetworkerSocketInfo(request.requestedUri, socket));
         socket.listen((event) {
-          onMessage(socket.hashCode, event);
+          onMessage(event, socket.hashCode);
         }, onDone: () {
           removeConnection(socket.hashCode);
         });
       } catch (_) {}
     }
     _isClosed = true;
-  }
-
-  @override
-  void sendMessage(ConnectionId id, RawData data) {
-    getConnection(id)?.socket.add(data);
   }
 }

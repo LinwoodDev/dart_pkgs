@@ -1,8 +1,10 @@
+import 'dart:typed_data';
+
 import 'package:networker/networker.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 class NetworkerSocketClient extends NetworkerClient {
-  final WebSocketChannel channel;
+  final WebSocketChannel webSocketChannel;
   @override
   final Uri address;
 
@@ -10,27 +12,27 @@ class NetworkerSocketClient extends NetworkerClient {
       : this.fromChannel(
             address, WebSocketChannel.connect(address, protocols: protocols));
 
-  NetworkerSocketClient.fromChannel(this.address, this.channel);
+  NetworkerSocketClient.fromChannel(this.address, this.webSocketChannel);
 
   @override
   void init() {
-    channel.stream.listen((event) {
+    webSocketChannel.stream.listen((event) {
       onMessage(event);
     });
   }
 
   @override
   void close() {
-    channel.sink.close();
+    webSocketChannel.sink.close();
   }
 
   @override
-  bool get isClosed => channel.closeReason == null;
+  bool get isClosed => webSocketChannel.closeReason == null;
 
   @override
-  Future<void> sendMessage(RawData data) {
+  Future<void> sendMessage(Uint8List data, [Channel channel = kAnyChannel]) {
     super.sendMessage(data);
-    channel.sink.add(data);
-    return channel.sink.done;
+    webSocketChannel.sink.add(data);
+    return webSocketChannel.sink.done;
   }
 }

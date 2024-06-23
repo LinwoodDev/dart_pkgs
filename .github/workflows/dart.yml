@@ -15,6 +15,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         project:
           - packages/dart_leap
@@ -27,6 +28,9 @@ jobs:
           - packages/networker/networker_rtc
           - packages/networker/networker_socket
           - packages/networker/networker_s5
+    defaults:
+      run:
+        working-directory: ${{ matrix.project }}
     steps:
       - uses: actions/checkout@v4
       - uses: dart-lang/setup-dart@v1

@@ -34,28 +34,28 @@ void main() {
   test('plugin calls global sendMessage', () {
     final (messenger, plugin, _) = _buildTestMessenger();
     messenger.write.listen(expectAsync1((data) {
-      expect(data, 'test');
+      expect(data.data, 'test');
     }));
     plugin.sendMessage('test');
   });
   test('onMessage calls plugin reader', () {
     final (messenger, plugin, _) = _buildTestMessenger();
     plugin.read.listen(expectAsync1((data) {
-      expect(data, 'test');
+      expect(data.data, 'test');
     }));
     messenger.onMessage('test');
   });
   test('plugin calls nested reader', () {
     final (messenger, _, secondPlugin) = _buildTestMessenger();
     secondPlugin.read.listen(expectAsync1((data) {
-      expect(data, '${secondPluginPrefix}test');
+      expect(data.data, '${secondPluginPrefix}test');
     }));
     messenger.onMessage('test');
   });
   test('plugin calls nested sendMessage', () {
     final (messenger, _, secondPlugin) = _buildTestMessenger();
     messenger.write.listen(expectAsync1((data) {
-      expect(data, 'test');
+      expect(data.data, 'test');
     }));
     secondPlugin.sendMessage('${secondPluginPrefix}test');
   });

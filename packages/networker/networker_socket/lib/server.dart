@@ -51,12 +51,14 @@ class NetworkerSocketServer extends NetworkerServer<NetworkerSocketInfo> {
     await for (var request in server.where(filterConnections ?? (e) => true)) {
       try {
         final socket = await WebSocketTransformer.upgrade(request);
-        addClientConnection(
-            socket.hashCode, NetworkerSocketInfo(request.requestedUri, socket));
+        final id = addClientConnection(
+            NetworkerSocketInfo(request.requestedUri, socket));
+        // No free space
+        if (id == kAnyChannel) socket.close();
         socket.listen((event) {
-          onMessage(event, socket.hashCode);
+          onMessage(event, id);
         }, onDone: () {
-          removeConnection(socket.hashCode);
+          removeConnection(id);
         });
       } catch (_) {}
     }

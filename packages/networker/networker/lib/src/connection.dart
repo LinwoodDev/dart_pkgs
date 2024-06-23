@@ -12,4 +12,4 @@ part 'server.dart';
 typedef Channel = int;
 
 const kAnyChannel = 0;
-const kAuthorityChannel = -1;
+const kAuthorityChannel = 1;

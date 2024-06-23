@@ -6,6 +6,8 @@ abstract class ConnectionInfo {
   bool get isClosed;
 }
 
+/// The server abstraction of the networker library
+/// Please note that connection ids can only be between 2 and 2^16
 abstract class NetworkerServer<T extends ConnectionInfo> extends NetworkerBase {
   final Map<Channel, T> _connections = {};
   final StreamController<Channel> _connectController =
@@ -20,12 +22,23 @@ abstract class NetworkerServer<T extends ConnectionInfo> extends NetworkerBase {
 
   T? getConnectionInfo(Channel channel) => _connections[channel];
 
+  Channel _findAvailableChannel() {
+    final keys = _connections.keys.toList();
+    for (var i = 2; i < 2 ^ 16; i++) {
+      if (!keys.contains(i)) {
+        return i;
+      }
+    }
+    return kAnyChannel;
+  }
+
   @protected
-  bool addClientConnection(Channel id, T info) {
-    if (_connections.containsKey(id)) return false;
+  Channel addClientConnection(T info) {
+    final id = _findAvailableChannel();
+    if (id == kAnyChannel) return id;
     _connections[id] = info;
     _connectController.add(id);
-    return true;
+    return id;
   }
 
   @protected

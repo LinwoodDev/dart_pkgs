@@ -2,7 +2,7 @@ name: material_leap
 description: Additional widgets for Flutter Material Design.
 version: 0.0.1
 publish_to: none
-source: https://github.com/LinwoodDev/material_leap
+source: https://github.com/LinwoodDev/dart_pkgs
 
 environment:
   sdk: '>=2.19.6 <3.0.0'
@@ -16,7 +16,10 @@ dependencies:
   intl: ">=0.18.0 <0.20.0"
   phosphor_flutter: ^2.1.0
   dart_leap:
-    path: ../dart_leap
+    git:
+      url: https://github.com/LinwoodDev/dart_pkgs
+      path: packages/dart_leap
+      ref: d45bd54f2efd6a861d6f44a8b833575b0482dc4c
   window_manager: ^0.3.9
   flutter_bloc: ^8.1.5
 

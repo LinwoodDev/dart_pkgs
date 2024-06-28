@@ -1,6 +1,7 @@
 name: lw_file_system
 description: A starting point for Dart libraries or applications.
 version: 1.0.0
+publish_to: none
 # repository: https://github.com/my_org/my_repo
 
 environment:
@@ -19,6 +20,11 @@ dependencies:
   web: ^0.5.1
   path: ^1.9.0
   xml: ^6.5.0
+  lw_file_system_api:
+    git:
+      url: https://github.com/LinwoodDev/dart_pkgs
+      path: packages/lw_file_system_api
+      ref: a2b169be76ddafffc0fd156e2d192dec64378994
   # path: ^1.8.0
 
 dev_dependencies:

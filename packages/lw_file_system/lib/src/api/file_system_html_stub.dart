@@ -1,8 +1,6 @@
 import 'dart:typed_data';
 
-import 'package:lw_file_system/src/models/entity.dart';
-
-import 'file_system_base.dart';
+import 'package:lw_file_system/lw_file_system.dart';
 
 class WebDirectoryFileSystem extends DirectoryFileSystem {
   WebDirectoryFileSystem({required super.config});

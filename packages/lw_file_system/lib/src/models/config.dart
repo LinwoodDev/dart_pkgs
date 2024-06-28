@@ -15,6 +15,7 @@ class FileSystemConfig<T extends GeneralFileSystem> {
   final OnUpgradeNeededFunction? onDatabaseUpgrade;
   final String database;
   final int databaseVersion;
+  final bool useDefaultStoreCreation;
 
   FileSystemConfig({
     required this.passwordStorage,
@@ -27,19 +28,24 @@ class FileSystemConfig<T extends GeneralFileSystem> {
     this.pathVariant,
     required this.database,
     required this.databaseVersion,
+    this.useDefaultStoreCreation = true,
   });
 
   String get currentDataStoreName => dataStoreName ?? '$storeName-data';
 
   String get currentCacheVariant => cacheVariant ?? variant;
   String get currentPathVariant => pathVariant ?? variant;
-  OnUpgradeNeededFunction get currentOnDatabaseUpgrade =>
-      onDatabaseUpgrade ?? defaultOnUpgradeNeeded;
-
   Future<void> defaultOnUpgradeNeeded(VersionChangeEvent event) async {
     if (event.oldVersion < 1) {
       event.database.createObjectStore(storeName);
       event.database.createObjectStore(currentDataStoreName);
     }
+  }
+
+  Future<void> runOnUpgradeNeeded(VersionChangeEvent event) async {
+    if (useDefaultStoreCreation) {
+      await defaultOnUpgradeNeeded(event);
+    }
+    await onDatabaseUpgrade?.call(event);
   }
 }

@@ -36,7 +36,7 @@ Future<Database> _getDatabase(FileSystemConfig config) async {
   _db = await idbFactory.open(
     config.database,
     version: config.databaseVersion,
-    onUpgradeNeeded: config.currentOnDatabaseUpgrade,
+    onUpgradeNeeded: config.runOnUpgradeNeeded,
   );
   return _db!;
 }

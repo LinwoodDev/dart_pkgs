@@ -52,9 +52,11 @@ packages:
   dart_leap:
     dependency: transitive
     description:
-      path: "../../dart_leap"
-      relative: true
-    source: path
+      path: "packages/dart_leap"
+      ref: d45bd54f2efd6a861d6f44a8b833575b0482dc4c
+      resolved-ref: d45bd54f2efd6a861d6f44a8b833575b0482dc4c
+      url: "https://github.com/LinwoodDev/dart_pkgs"
+    source: git
     version: "1.0.0"
   fake_async:
     dependency: transitive

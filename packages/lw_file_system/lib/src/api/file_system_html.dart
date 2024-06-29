@@ -20,12 +20,11 @@ extension type LaunchQueue._(JSObject _) implements JSObject {
 
 @JS()
 extension type LaunchParams._(JSObject _) implements JSObject {
-  @JS('files')
-  external List get files;
+  external JSArray<FileSystemHandle> get files;
 }
 
 @JS()
-class FileSystemHandle {
+extension type FileSystemHandle._(JSObject _) implements JSObject {
   external JSPromise<html.Blob> getFile();
 }
 
@@ -187,7 +186,7 @@ class WebDirectoryFileSystem extends DirectoryFileSystem {
     try {
       final completer = Completer<Uint8List?>();
       void complete(LaunchParams launchParams) async {
-        final files = launchParams.files.cast<FileSystemHandle>();
+        final files = launchParams.files.toDart;
         if (files.isEmpty) {
           completer.complete(null);
           return;

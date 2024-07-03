@@ -1,4 +1,9 @@
-class AssetLocation {
+import 'package:dart_mappable/dart_mappable.dart';
+
+part 'location.mapper.dart';
+
+@MappableClass()
+class AssetLocation with AssetLocationMappable {
   final String remote;
   final String path;
   final bool absolute;

@@ -4,8 +4,7 @@ mixin GeneralKeyFileSystem<T> on GeneralFileSystem {
   Future<T?> getFile(String key);
 
   Future<T?> getDefaultFile(String key) async =>
-      await getFile(key) ??
-      await getFiles().then((value) => value.firstOrNull?.data);
+      await getFile(key) ?? (await listFiles().first).value;
 
   Future<String> findAvailableKey(String path) =>
       _findAvailableName(path, hasKey);
@@ -21,20 +20,25 @@ mixin GeneralKeyFileSystem<T> on GeneralFileSystem {
   Future<void> updateFile(String key, T data);
   Future<void> deleteFile(String key);
   Future<List<String>> getKeys();
-  Stream<FileSystemFile<T>> fetchFiles() async* {
+  Stream<MapEntry<String, T>> listFiles() async* {
     final keys = await getKeys();
     yield* Stream.fromIterable(keys).asyncExpand((key) async* {
       final data = await getFile(key);
       if (data != null) {
-        yield FileSystemFile(
-          AssetLocation(path: key, remote: storage?.identifier ?? ''),
-          data: data,
-        );
+        yield MapEntry(key, data);
       }
     });
   }
 
-  Future<List<FileSystemFile<T>>> getFiles() => fetchFiles().toList();
+  Stream<Map<String, T>> fetchFiles() {
+    final files = <String, T>{};
+    return listFiles().map((event) {
+      files[event.key] = event.value;
+      return files;
+    });
+  }
+
+  Future<Map<String, T>> getFiles() => fetchFiles().last;
 
   Future<String?> renameFile(
     String oldKey,

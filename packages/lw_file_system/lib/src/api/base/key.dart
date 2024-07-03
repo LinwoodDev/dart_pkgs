@@ -105,11 +105,12 @@ class KeyDirectoryFileSystem extends KeyFileSystem {
   }
 
   @override
-  Future<void> deleteFile(String key) => _fileSystem.deleteAsset(key);
+  Future<void> deleteFile(String key) =>
+      _fileSystem.deleteAsset(key + config.keySuffix);
 
   @override
   Future<Uint8List?> getFile(String key) async {
-    final asset = await _fileSystem.getAsset(key);
+    final asset = await _fileSystem.getAsset(key + config.keySuffix);
     if (asset is RawFileSystemFile) return asset.data;
     return null;
   }
@@ -122,8 +123,11 @@ class KeyDirectoryFileSystem extends KeyFileSystem {
     final remaining = [...directory.assets];
     while (remaining.isNotEmpty) {
       final asset = remaining.removeAt(0);
+      final path = asset.location.path;
       if (asset is RawFileSystemFile) {
-        assets.add(asset.location.path);
+        if (path.endsWith(config.keySuffix)) {
+          assets.add(path.substring(0, path.length - config.keySuffix.length));
+        }
       } else if (asset is RawFileSystemDirectory) {
         remaining.addAll(asset.assets);
       }
@@ -133,8 +137,8 @@ class KeyDirectoryFileSystem extends KeyFileSystem {
 
   @override
   Future<bool> hasKey(String key) async {
-    if (!await _fileSystem.hasAsset(key)) return false;
-    final asset = await _fileSystem.getAsset(key);
+    if (!await _fileSystem.hasAsset(key + config.keySuffix)) return false;
+    final asset = await _fileSystem.getAsset(key + config.keySuffix);
     return asset is RawFileSystemFile;
   }
 
@@ -146,7 +150,7 @@ class KeyDirectoryFileSystem extends KeyFileSystem {
         listLevel: noListLevel, readData: false)) is! RawFileSystemDirectory) {
       await _fileSystem.createDirectory(parent);
     }
-    return _fileSystem.updateFile(key, data);
+    return _fileSystem.updateFile(key + config.keySuffix, data);
   }
 
   @override

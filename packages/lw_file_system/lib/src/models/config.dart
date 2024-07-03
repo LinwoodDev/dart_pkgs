@@ -16,6 +16,7 @@ class FileSystemConfig<T extends GeneralFileSystem> {
   final String database;
   final int databaseVersion;
   final bool useDefaultStoreCreation;
+  final String keySuffix;
 
   FileSystemConfig({
     required this.passwordStorage,
@@ -29,6 +30,7 @@ class FileSystemConfig<T extends GeneralFileSystem> {
     required this.database,
     required this.databaseVersion,
     this.useDefaultStoreCreation = true,
+    this.keySuffix = '',
   });
 
   String get currentDataStoreName => dataStoreName ?? '$storeName-data';

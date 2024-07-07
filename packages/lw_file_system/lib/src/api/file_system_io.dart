@@ -71,9 +71,9 @@ class IODirectoryFileSystem extends DirectoryFileSystem {
   }
 
   @override
-  Future<void> deleteAsset(String path) {
+  Future<void> deleteAsset(String path) async {
     path = normalizePath(path);
-    return File(path).delete();
+    File(await getAbsolutePath(path)).delete();
   }
 
   @override

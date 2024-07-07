@@ -30,12 +30,13 @@ mixin GeneralKeyFileSystem<T> on GeneralFileSystem {
     });
   }
 
-  Stream<Map<String, T>> fetchFiles() {
+  Stream<Map<String, T>> fetchFiles() async* {
     final files = <String, T>{};
-    return listFiles().map((event) {
-      files[event.key] = event.value;
-      return files;
-    });
+    yield files;
+    await for (final file in listFiles()) {
+      files[file.key] = file.value;
+      yield files;
+    }
   }
 
   Future<Map<String, T>> getFiles() => fetchFiles().last;

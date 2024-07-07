@@ -83,6 +83,7 @@ class IODirectoryFileSystem extends DirectoryFileSystem {
     if (!await file.exists()) {
       await file.create(recursive: true);
     }
+    await file.writeAsBytes(data);
   }
 
   @override

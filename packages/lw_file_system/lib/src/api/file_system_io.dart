@@ -73,7 +73,7 @@ class IODirectoryFileSystem extends DirectoryFileSystem {
   @override
   Future<void> deleteAsset(String path) async {
     path = normalizePath(path);
-    File(await getAbsolutePath(path)).delete();
+    await File(await getAbsolutePath(path)).delete();
   }
 
   @override
@@ -131,6 +131,6 @@ class IODirectoryFileSystem extends DirectoryFileSystem {
   @override
   Future<void> runInitialize() async {
     await createDirectory('');
-    createDefault(this);
+    await createDefault(this);
   }
 }

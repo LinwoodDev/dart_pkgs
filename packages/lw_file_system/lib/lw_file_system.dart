@@ -8,3 +8,4 @@ export 'src/api/file_system_base.dart';
 export 'src/api/typed.dart';
 export 'src/models/config.dart';
 export 'src/models/password.dart';
+export 'src/models/remote.dart';

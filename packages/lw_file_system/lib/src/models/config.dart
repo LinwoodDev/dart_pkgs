@@ -7,6 +7,21 @@ typedef GetDirectoryCallback = Future<String> Function(
     ExternalStorage? storage);
 typedef InitDatabaseCallback = Future<void> Function(Database database);
 
+Future<void> initConfigStores(
+    VersionChangeEvent event, Iterable<FileSystemConfig> configs) async {
+  return initStores(
+      event, configs.expand((e) => [e.storeName, e.currentDataStoreName]));
+}
+
+Future<void> initStores(
+    VersionChangeEvent event, Iterable<String> stores) async {
+  if (event.oldVersion < 1) {
+    for (final store in stores) {
+      event.database.createObjectStore(store);
+    }
+  }
+}
+
 class FileSystemConfig<T extends GeneralFileSystem> {
   final PasswordStorage passwordStorage;
   final String storeName, variant;
@@ -15,7 +30,6 @@ class FileSystemConfig<T extends GeneralFileSystem> {
   final OnUpgradeNeededFunction? onDatabaseUpgrade;
   final String database;
   final int databaseVersion;
-  final bool useDefaultStoreCreation;
   final String keySuffix;
 
   FileSystemConfig({
@@ -29,7 +43,6 @@ class FileSystemConfig<T extends GeneralFileSystem> {
     this.pathVariant,
     required this.database,
     required this.databaseVersion,
-    this.useDefaultStoreCreation = true,
     this.keySuffix = '',
   });
 
@@ -37,16 +50,10 @@ class FileSystemConfig<T extends GeneralFileSystem> {
 
   String get currentCacheVariant => cacheVariant ?? variant;
   String get currentPathVariant => pathVariant ?? variant;
-  Future<void> defaultOnUpgradeNeeded(VersionChangeEvent event) async {
-    if (event.oldVersion < 1) {
-      event.database.createObjectStore(storeName);
-      event.database.createObjectStore(currentDataStoreName);
-    }
-  }
 
   Future<void> runOnUpgradeNeeded(VersionChangeEvent event) async {
-    if (useDefaultStoreCreation) {
-      await defaultOnUpgradeNeeded(event);
+    if (onDatabaseUpgrade == null) {
+      return initConfigStores(event, [this]);
     }
     await onDatabaseUpgrade?.call(event);
   }

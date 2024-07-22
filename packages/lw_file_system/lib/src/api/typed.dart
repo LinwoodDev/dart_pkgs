@@ -151,4 +151,7 @@ class TypedKeyFileSystem<T> extends TypedFileSystem<T>
 
   @override
   Future<void> runInitialize() => fileSystem.runInitialize();
+
+  @override
+  Future<void> reset() => fileSystem.reset();
 }

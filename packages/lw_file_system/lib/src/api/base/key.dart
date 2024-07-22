@@ -80,6 +80,14 @@ abstract class KeyFileSystem extends GeneralFileSystem
   void _runDefault() {
     createDefault(this);
   }
+
+  @override
+  Future<void> reset() async {
+    final files = await getKeys();
+    for (final file in files) {
+      await deleteFile(file);
+    }
+  }
 }
 
 class KeyDirectoryFileSystem extends KeyFileSystem {

@@ -152,6 +152,14 @@ mixin GeneralDirectoryFileSystem<T> on GeneralFileSystem {
     if (path != newPath) await deleteAsset(path);
     return asset;
   }
+
+  @override
+  Future<void> reset() async {
+    final files = await getRootDirectory(readData: false);
+    for (final file in files.assets) {
+      deleteAsset(file.location.path);
+    }
+  }
 }
 
 abstract class DirectoryFileSystem extends GeneralFileSystem

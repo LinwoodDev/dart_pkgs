@@ -68,12 +68,13 @@ abstract class KeyFileSystem extends GeneralFileSystem
   static KeyFileSystem fromPlatform(
     FileSystemConfig config, {
     ExternalStorage? storage,
-    CreateDefaultCallback<KeyFileSystem>? createDefault,
+    CreateDefaultCallback<KeyFileSystem> createDefault = defaultCreateDefault,
   }) {
     if (kIsWeb) {
-      return WebKeyFileSystem(config: config);
+      return WebKeyFileSystem(config: config, createDefault: createDefault);
     } else {
-      return KeyDirectoryFileSystem.build(config, storage: storage);
+      return KeyDirectoryFileSystem.build(config,
+          storage: storage, createDefault: createDefault);
     }
   }
 
@@ -96,20 +97,24 @@ class KeyDirectoryFileSystem extends KeyFileSystem {
   KeyDirectoryFileSystem._({
     required super.config,
     required GeneralDirectoryFileSystem<Uint8List> fileSystem,
+    super.createDefault,
   }) : _fileSystem = fileSystem;
 
-  factory KeyDirectoryFileSystem.build(FileSystemConfig config,
-      {ExternalStorage? storage}) {
+  factory KeyDirectoryFileSystem.build(
+    FileSystemConfig config, {
+    ExternalStorage? storage,
+    CreateDefaultCallback<KeyFileSystem> createDefault = defaultCreateDefault,
+  }) {
     KeyDirectoryFileSystem? fileSystem;
-    void createDefault(_) => fileSystem?._runDefault();
+    void createWrappedDefault(_) => fileSystem?._runDefault();
 
     final directory = DirectoryFileSystem.fromPlatform(
       config,
-      createDefault: createDefault,
+      createDefault: createWrappedDefault,
       storage: storage,
     );
-    fileSystem =
-        KeyDirectoryFileSystem._(config: config, fileSystem: directory);
+    fileSystem = KeyDirectoryFileSystem._(
+        config: config, fileSystem: directory, createDefault: createDefault);
     return fileSystem;
   }
 

@@ -44,7 +44,7 @@ class WebDirectoryFileSystem extends DirectoryFileSystem {
 }
 
 class WebKeyFileSystem extends KeyFileSystem {
-  WebKeyFileSystem({required super.config});
+  WebKeyFileSystem({required super.config, super.createDefault});
 
   @override
   Future<void> deleteFile(String key) {

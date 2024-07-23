@@ -82,7 +82,7 @@ class TypedDirectoryFileSystem<T> extends TypedFileSystem<T>
   Future<bool> hasAsset(String path) => fileSystem.hasAsset(path);
 
   @override
-  Future<void> updateFile(String path, T data) =>
+  Future<void> updateFile(String path, T data, {bool forceSync = false}) =>
       fileSystem.updateFile(path, onEncode(data));
 
   @override

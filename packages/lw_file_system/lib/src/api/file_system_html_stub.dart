@@ -21,7 +21,8 @@ class WebDirectoryFileSystem extends DirectoryFileSystem {
   }
 
   @override
-  Future<void> updateFile(String path, Uint8List data) {
+  Future<void> updateFile(String path, Uint8List data,
+      {bool forceSync = false}) {
     throw UnimplementedError();
   }
 

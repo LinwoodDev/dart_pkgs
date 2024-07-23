@@ -141,7 +141,8 @@ class WebDirectoryFileSystem extends DirectoryFileSystem {
   }
 
   @override
-  Future<bool> updateFile(String path, List<int> data) async {
+  Future<bool> updateFile(String path, List<int> data,
+      {bool forceSync = false}) async {
     path = normalizePath(path);
     final pathWithoutSlash = path.substring(1);
     // Create directory if it doesn't exist

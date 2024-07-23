@@ -82,14 +82,15 @@ mixin GeneralDirectoryFileSystem<T> on GeneralFileSystem {
               forceRemote: forceRemote)
           .last;
   Future<FileSystemDirectory<T>> createDirectory(String path);
-  Future<void> updateFile(String path, T data);
+  Future<void> updateFile(String path, T data, {bool forceSync = false});
   Future<String> findAvailableName(String path) =>
       _findAvailableName(path, hasAsset);
 
-  Future<FileSystemFile<T>?> createFile(String path, T data) async {
+  Future<FileSystemFile<T>?> createFile(String path, T data,
+      {bool forceSync = false}) async {
     path = normalizePath(path);
     final uniquePath = await findAvailableName(path);
-    return updateFile(uniquePath, data).then(
+    return updateFile(uniquePath, data, forceSync: forceSync).then(
         (_) => FileSystemFile(AssetLocation.local(uniquePath), data: data));
   }
 

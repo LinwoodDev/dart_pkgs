@@ -77,7 +77,8 @@ class IODirectoryFileSystem extends DirectoryFileSystem {
   }
 
   @override
-  Future<void> updateFile(String path, Uint8List data) async {
+  Future<void> updateFile(String path, Uint8List data,
+      {bool forceSync = false}) async {
     path = normalizePath(path);
     final file = File(await getAbsolutePath(path));
     if (!await file.exists()) {

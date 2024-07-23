@@ -13,6 +13,13 @@ sealed class TypedFileSystem<T> extends GeneralFileSystem {
       {required this.onEncode, required this.onDecode, required super.config});
 
   GeneralFileSystem get fileSystem;
+
+  @override
+  Future<Uint8List?> loadAbsolute(String path) => fileSystem.loadAbsolute(path);
+
+  @override
+  Future<void> saveAbsolute(String path, Uint8List bytes) =>
+      fileSystem.saveAbsolute(path, bytes);
 }
 
 class TypedDirectoryFileSystem<T> extends TypedFileSystem<T>

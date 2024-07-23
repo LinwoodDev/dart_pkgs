@@ -94,6 +94,10 @@ abstract class GeneralFileSystem {
   }
 
   Future<String> getDirectory() async => config.getDirectory(storage);
+
+  Future<Uint8List?> loadAbsolute(String path) => Future.value(null);
+
+  Future<void> saveAbsolute(String path, Uint8List bytes) => Future.value();
 }
 
 Archive exportDirectory(FileSystemDirectory directory) {

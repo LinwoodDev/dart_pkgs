@@ -167,4 +167,12 @@ class KeyDirectoryFileSystem extends KeyFileSystem {
 
   @override
   Future<void> runInitialize() => _fileSystem.runInitialize();
+
+  @override
+  Future<Uint8List?> loadAbsolute(String path) =>
+      _fileSystem.loadAbsolute(path);
+
+  @override
+  Future<void> saveAbsolute(String path, Uint8List bytes) =>
+      _fileSystem.saveAbsolute(path, bytes);
 }

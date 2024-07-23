@@ -3,7 +3,6 @@ import 'dart:typed_data';
 
 import 'package:collection/collection.dart';
 import 'package:lw_file_system/lw_file_system.dart';
-import 'package:lw_file_system/src/api/file_system_remote.dart';
 import 'package:path/path.dart' as p;
 import 'package:xml/xml.dart';
 

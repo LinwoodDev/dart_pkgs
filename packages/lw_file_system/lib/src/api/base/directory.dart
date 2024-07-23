@@ -115,11 +115,11 @@ mixin GeneralDirectoryFileSystem<T> on GeneralFileSystem {
     return null;
   }
 
-  static Stream<List<RawFileSystemEntity>> fetchAssetsGlobal(
+  static Stream<List<FileSystemEntity<T>>> fetchAssetsGlobal<T>(
       Stream<AssetLocation> locations,
-      Map<String, DirectoryFileSystem> fileSystems,
+      Map<String, GeneralDirectoryFileSystem<T>> fileSystems,
       {int listLevel = oneListLevel}) {
-    final files = <RawFileSystemEntity>[];
+    final files = <FileSystemEntity<T>>[];
     final streams = locations.asyncExpand((e) async* {
       final fileSystem = fileSystems[e.remote];
       if (fileSystem == null) return;
@@ -139,9 +139,9 @@ mixin GeneralDirectoryFileSystem<T> on GeneralFileSystem {
     return streams.map((event) => files);
   }
 
-  static Stream<List<RawFileSystemEntity>> fetchAssetsGlobalSync(
+  static Stream<List<FileSystemEntity<T>>> fetchAssetsGlobalSync<T>(
           Iterable<AssetLocation> locations,
-          Map<String, DirectoryFileSystem> fileSystems,
+          Map<String, GeneralDirectoryFileSystem<T>> fileSystems,
           {int listLevel = oneListLevel}) =>
       fetchAssetsGlobal(Stream.fromIterable(locations), fileSystems,
           listLevel: listLevel);

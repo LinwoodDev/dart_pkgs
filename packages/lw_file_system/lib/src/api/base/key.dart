@@ -78,9 +78,7 @@ abstract class KeyFileSystem extends GeneralFileSystem
     }
   }
 
-  void _runDefault() {
-    createDefault(this);
-  }
+  Future<void> _runDefault() => Future.value(createDefault(this));
 
   @override
   Future<void> reset() async {
@@ -106,7 +104,8 @@ class KeyDirectoryFileSystem extends KeyFileSystem {
     CreateDefaultCallback<KeyFileSystem> createDefault = defaultCreateDefault,
   }) {
     KeyDirectoryFileSystem? fileSystem;
-    void createWrappedDefault(_) => fileSystem?._runDefault();
+    Future<void> createWrappedDefault(_) =>
+        fileSystem?._runDefault() ?? Future.value();
 
     final directory = DirectoryFileSystem.fromPlatform(
       config,

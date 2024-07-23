@@ -35,7 +35,7 @@ abstract class GeneralFileSystem {
   Future<void> reset();
 
   Future<void> initialize({bool force = false}) async {
-    if (force) reset();
+    if (force) await reset();
     if (force || !await isInitialized()) {
       await runInitialize();
     }

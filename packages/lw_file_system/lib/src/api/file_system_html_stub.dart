@@ -3,7 +3,7 @@ import 'dart:typed_data';
 import 'package:lw_file_system/lw_file_system.dart';
 
 class WebDirectoryFileSystem extends DirectoryFileSystem {
-  WebDirectoryFileSystem({required super.config});
+  WebDirectoryFileSystem({required super.config, super.createDefault});
 
   @override
   Future<FileSystemDirectory<Uint8List>> createDirectory(String path) {

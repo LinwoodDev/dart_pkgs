@@ -41,7 +41,7 @@ Future<Database> _getDatabase(FileSystemConfig config) async {
 }
 
 class WebDirectoryFileSystem extends DirectoryFileSystem {
-  WebDirectoryFileSystem({required super.config});
+  WebDirectoryFileSystem({required super.config, super.createDefault});
 
   @override
   Future<void> deleteAsset(String path) async {

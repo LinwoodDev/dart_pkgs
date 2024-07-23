@@ -86,9 +86,10 @@ class TypedDirectoryFileSystem<T> extends TypedFileSystem<T>
       fileSystem.updateFile(path, onEncode(data));
 
   @override
-  Future<FileSystemEntity<T>?> readAsset(String path, {bool readData = true}) =>
+  Future<FileSystemEntity<T>?> readAsset(String path,
+          {bool readData = true, bool forceRemote = false}) =>
       fileSystem
-          .readAsset(path, readData: readData)
+          .readAsset(path, readData: readData, forceRemote: forceRemote)
           .then((entity) => entity == null ? null : _toTypedAsset(entity));
 
   @override

@@ -88,7 +88,7 @@ class IODirectoryFileSystem extends DirectoryFileSystem {
 
   @override
   Future<FileSystemEntity<Uint8List>?> readAsset(String path,
-      {bool readData = true}) async {
+      {bool readData = true, bool forceRemote = false}) async {
     path = normalizePath(path);
     final absolutePath = await getAbsolutePath(path);
     final file = File(absolutePath);

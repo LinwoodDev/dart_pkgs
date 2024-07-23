@@ -27,7 +27,7 @@ class WebDirectoryFileSystem extends DirectoryFileSystem {
 
   @override
   Future<FileSystemEntity<Uint8List>?> readAsset(String path,
-      {bool readData = true}) {
+      {bool readData = true, bool forceRemote = false}) {
     throw UnimplementedError();
   }
 

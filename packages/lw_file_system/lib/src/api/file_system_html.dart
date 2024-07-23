@@ -68,7 +68,7 @@ class WebDirectoryFileSystem extends DirectoryFileSystem {
 
   @override
   Future<RawFileSystemEntity?> readAsset(String path,
-      {bool readData = true}) async {
+      {bool readData = true, bool forceRemote = false}) async {
     path = normalizePath(path);
     final db = await _getDatabase(config);
     final location = AssetLocation.local(path);

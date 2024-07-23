@@ -193,7 +193,9 @@ abstract class DirectoryFileSystem extends GeneralFileSystem
   Future<bool> moveAbsolute(String oldPath, String newPath) =>
       Future.value(false);
 
+  @override
   Future<Uint8List?> loadAbsolute(String path) => Future.value(null);
 
+  @override
   Future<void> saveAbsolute(String path, Uint8List bytes) => Future.value();
 }

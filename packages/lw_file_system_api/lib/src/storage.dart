@@ -73,6 +73,7 @@ class EmptyMapEntryHook extends MappingHook {
     hook: ChainedHook([
   UnmappedPropertiesHook('extra'),
   PathHook(),
+  TemplateHook(),
 ]))
 sealed class ExternalStorage with ExternalStorageMappable {
   final String name;

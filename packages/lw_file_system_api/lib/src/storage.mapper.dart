@@ -53,8 +53,8 @@ class ExternalStorageMapper extends ClassMapperBase<ExternalStorage> {
   };
 
   @override
-  final MappingHook hook =
-      const ChainedHook([UnmappedPropertiesHook('extra'), PathHook()]);
+  final MappingHook hook = const ChainedHook(
+      [UnmappedPropertiesHook('extra'), PathHook(), TemplateHook()]);
   static ExternalStorage _instantiate(DecodingData data) {
     throw MapperException.missingConstructor('ExternalStorage');
   }
@@ -167,8 +167,8 @@ class RemoteStorageMapper extends ClassMapperBase<RemoteStorage> {
   };
 
   @override
-  final MappingHook superHook =
-      const ChainedHook([UnmappedPropertiesHook('extra'), PathHook()]);
+  final MappingHook superHook = const ChainedHook(
+      [UnmappedPropertiesHook('extra'), PathHook(), TemplateHook()]);
 
   static RemoteStorage _instantiate(DecodingData data) {
     throw MapperException.missingConstructor('RemoteStorage');
@@ -292,8 +292,8 @@ class DavRemoteStorageMapper extends ClassMapperBase<DavRemoteStorage> {
   };
 
   @override
-  final MappingHook superHook =
-      const ChainedHook([UnmappedPropertiesHook('extra'), PathHook()]);
+  final MappingHook superHook = const ChainedHook(
+      [UnmappedPropertiesHook('extra'), PathHook(), TemplateHook()]);
 
   static DavRemoteStorage _instantiate(DecodingData data) {
     return DavRemoteStorage(
@@ -519,8 +519,8 @@ class LocalStorageMapper extends ClassMapperBase<LocalStorage> {
   };
 
   @override
-  final MappingHook superHook =
-      const ChainedHook([UnmappedPropertiesHook('extra'), PathHook()]);
+  final MappingHook superHook = const ChainedHook(
+      [UnmappedPropertiesHook('extra'), PathHook(), TemplateHook()]);
 
   static LocalStorage _instantiate(DecodingData data) {
     return LocalStorage(

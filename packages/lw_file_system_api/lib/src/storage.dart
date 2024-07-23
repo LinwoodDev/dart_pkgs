@@ -71,10 +71,11 @@ class EmptyMapEntryHook extends MappingHook {
 
 @MappableClass(
     hook: ChainedHook([
-  UnmappedPropertiesHook('extra'),
-  PathHook(),
-  TemplateHook(),
-]))
+      UnmappedPropertiesHook('extra'),
+      PathHook(),
+      TemplateHook(),
+    ]),
+    discriminatorKey: 'type')
 sealed class ExternalStorage with ExternalStorageMappable {
   final String name;
   final Map<String, String> paths;
@@ -196,7 +197,7 @@ sealed class RemoteStorage extends ExternalStorage with RemoteStorageMappable {
   }
 }
 
-@MappableClass()
+@MappableClass(discriminatorValue: 'dav')
 final class DavRemoteStorage extends RemoteStorage
     with DavRemoteStorageMappable {
   const DavRemoteStorage({
@@ -220,7 +221,7 @@ final class DavRemoteStorage extends RemoteStorage
   String get label => name.isEmpty ? uri.host : name;
 }
 
-@MappableClass()
+@MappableClass(discriminatorValue: 'local')
 final class LocalStorage extends ExternalStorage with LocalStorageMappable {
   const LocalStorage({
     super.name,

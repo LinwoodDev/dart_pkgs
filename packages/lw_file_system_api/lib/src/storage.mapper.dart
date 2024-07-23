@@ -56,7 +56,8 @@ class ExternalStorageMapper extends ClassMapperBase<ExternalStorage> {
   final MappingHook hook = const ChainedHook(
       [UnmappedPropertiesHook('extra'), PathHook(), TemplateHook()]);
   static ExternalStorage _instantiate(DecodingData data) {
-    throw MapperException.missingConstructor('ExternalStorage');
+    throw MapperException.missingSubclass(
+        'ExternalStorage', 'type', '${data.value['type']}');
   }
 
   @override
@@ -99,14 +100,14 @@ abstract class ExternalStorageCopyWith<$R, $In extends ExternalStorage, $Out>
       Then<$Out2, $R2> t);
 }
 
-class RemoteStorageMapper extends ClassMapperBase<RemoteStorage> {
+class RemoteStorageMapper extends SubClassMapperBase<RemoteStorage> {
   RemoteStorageMapper._();
 
   static RemoteStorageMapper? _instance;
   static RemoteStorageMapper ensureInitialized() {
     if (_instance == null) {
       MapperContainer.globals.use(_instance = RemoteStorageMapper._());
-      ExternalStorageMapper.ensureInitialized();
+      ExternalStorageMapper.ensureInitialized().addSubMapper(_instance!);
       DavRemoteStorageMapper.ensureInitialized();
     }
     return _instance!;
@@ -167,11 +168,20 @@ class RemoteStorageMapper extends ClassMapperBase<RemoteStorage> {
   };
 
   @override
+  final String discriminatorKey = 'type';
+  @override
+  final dynamic discriminatorValue = 'RemoteStorage';
+  @override
+  late final ClassMapperBase superMapper =
+      ExternalStorageMapper.ensureInitialized();
+
+  @override
   final MappingHook superHook = const ChainedHook(
       [UnmappedPropertiesHook('extra'), PathHook(), TemplateHook()]);
 
   static RemoteStorage _instantiate(DecodingData data) {
-    throw MapperException.missingConstructor('RemoteStorage');
+    throw MapperException.missingSubclass(
+        'RemoteStorage', 'type', '${data.value['type']}');
   }
 
   @override
@@ -225,14 +235,14 @@ abstract class RemoteStorageCopyWith<$R, $In extends RemoteStorage, $Out>
   RemoteStorageCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t);
 }
 
-class DavRemoteStorageMapper extends ClassMapperBase<DavRemoteStorage> {
+class DavRemoteStorageMapper extends SubClassMapperBase<DavRemoteStorage> {
   DavRemoteStorageMapper._();
 
   static DavRemoteStorageMapper? _instance;
   static DavRemoteStorageMapper ensureInitialized() {
     if (_instance == null) {
       MapperContainer.globals.use(_instance = DavRemoteStorageMapper._());
-      RemoteStorageMapper.ensureInitialized();
+      RemoteStorageMapper.ensureInitialized().addSubMapper(_instance!);
     }
     return _instance!;
   }
@@ -290,6 +300,14 @@ class DavRemoteStorageMapper extends ClassMapperBase<DavRemoteStorage> {
     #lastSynced: _f$lastSynced,
     #extra: _f$extra,
   };
+
+  @override
+  final String discriminatorKey = 'type';
+  @override
+  final dynamic discriminatorValue = 'dav';
+  @override
+  late final ClassMapperBase superMapper =
+      RemoteStorageMapper.ensureInitialized();
 
   @override
   final MappingHook superHook = const ChainedHook(
@@ -473,14 +491,14 @@ class _DavRemoteStorageCopyWithImpl<$R, $Out>
       _DavRemoteStorageCopyWithImpl($value, $cast, t);
 }
 
-class LocalStorageMapper extends ClassMapperBase<LocalStorage> {
+class LocalStorageMapper extends SubClassMapperBase<LocalStorage> {
   LocalStorageMapper._();
 
   static LocalStorageMapper? _instance;
   static LocalStorageMapper ensureInitialized() {
     if (_instance == null) {
       MapperContainer.globals.use(_instance = LocalStorageMapper._());
-      ExternalStorageMapper.ensureInitialized();
+      ExternalStorageMapper.ensureInitialized().addSubMapper(_instance!);
     }
     return _instance!;
   }
@@ -517,6 +535,14 @@ class LocalStorageMapper extends ClassMapperBase<LocalStorage> {
     #starred: _f$starred,
     #extra: _f$extra,
   };
+
+  @override
+  final String discriminatorKey = 'type';
+  @override
+  final dynamic discriminatorValue = 'local';
+  @override
+  late final ClassMapperBase superMapper =
+      ExternalStorageMapper.ensureInitialized();
 
   @override
   final MappingHook superHook = const ChainedHook(

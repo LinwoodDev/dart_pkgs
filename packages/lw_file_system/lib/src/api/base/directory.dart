@@ -109,21 +109,22 @@ mixin GeneralDirectoryFileSystem<T> on GeneralFileSystem {
     return moveAsset(path, newPath);
   }
 
-  Future<FileSystemEntity<T>?> duplicateAsset(
-      String path, String newPath) async {
+  Future<FileSystemEntity<T>?> duplicateAsset(String path, String newPath,
+      {bool forceSync = false}) async {
     path = normalizePath(path);
     final asset = await getAsset(path);
     if (asset == null) return null;
     if (asset is FileSystemFile<T>) {
       final data = asset.data;
       if (data != null) {
-        return createFile(newPath, data);
+        return createFile(newPath, data, forceSync: forceSync);
       }
     } else if (asset is FileSystemDirectory<T>) {
       var newDir = await createDirectory(newPath);
       for (var child in asset.assets) {
         await duplicateAsset(
-            '$path/${child.fileName}', '$newPath/${child.fileName}');
+            '$path/${child.fileName}', '$newPath/${child.fileName}',
+            forceSync: forceSync);
       }
       return newDir;
     }
@@ -161,8 +162,9 @@ mixin GeneralDirectoryFileSystem<T> on GeneralFileSystem {
       fetchAssetsGlobal(Stream.fromIterable(locations), fileSystems,
           listLevel: listLevel);
 
-  Future<FileSystemEntity<T>?> moveAsset(String path, String newPath) async {
-    var asset = await duplicateAsset(path, newPath);
+  Future<FileSystemEntity<T>?> moveAsset(String path, String newPath,
+      {bool forceSync = false}) async {
+    var asset = await duplicateAsset(path, newPath, forceSync: forceSync);
     if (asset == null) return null;
     if (path != newPath) await deleteAsset(path);
     return asset;

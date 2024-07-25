@@ -37,14 +37,16 @@ class TemplateHook extends MappingHook {
   @override
   dynamic beforeDecode(dynamic value) {
     if (value is Map<String, dynamic>) {
-      final paths = value.entries.where((e) => e.key.startsWith(prefix)).map(
-          (e) =>
+      final paths = value.entries
+          .where((e) => e.key.startsWith(prefix) && e.key != prefix)
+          .map((e) =>
               MapEntry(decapitalize(e.key.substring(prefix.length)), e.value));
+      final Map? remaining = value['defaults'];
       return {
         ...value,
         'defaults': {
-          Map<String, dynamic>.fromEntries(paths),
-          ...?value['defaults']
+          ...Map<String, dynamic>.fromEntries(paths),
+          ...?remaining,
         },
       };
     }

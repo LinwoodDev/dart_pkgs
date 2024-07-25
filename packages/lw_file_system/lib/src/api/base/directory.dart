@@ -192,7 +192,8 @@ abstract class DirectoryFileSystem extends GeneralFileSystem
         defaultCreateDefault,
   }) {
     if (kIsWeb) {
-      return WebDirectoryFileSystem(config: config, createDefault: createDefault);
+      return WebDirectoryFileSystem(
+          config: config, createDefault: createDefault);
     } else {
       return switch (storage) {
         DavRemoteStorage e => DavRemoteDirectoryFileSystem(

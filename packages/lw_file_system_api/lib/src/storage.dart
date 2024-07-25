@@ -17,9 +17,13 @@ class PathHook extends MappingHook {
               e.key.endsWith(suffix) || e.key.endsWith(suffix.toLowerCase()))
           .map((e) => MapEntry(
               e.key.substring(0, e.key.length - suffix.length), e.value));
+      final Map? remaining = value['paths'];
       return {
         ...value,
-        'paths': {Map<String, dynamic>.fromEntries(paths), ...?value['paths']},
+        'paths': {
+          ...Map<String, dynamic>.fromEntries(paths),
+          ...?remaining,
+        },
       };
     }
     return value;

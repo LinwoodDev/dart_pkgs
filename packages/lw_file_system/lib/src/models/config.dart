@@ -22,7 +22,7 @@ Future<void> initStores(
   }
 }
 
-class FileSystemConfig<T extends GeneralFileSystem> {
+class FileSystemConfig {
   final PasswordStorage passwordStorage;
   final String storeName, variant;
   final String? cacheVariant, pathVariant, dataStoreName;

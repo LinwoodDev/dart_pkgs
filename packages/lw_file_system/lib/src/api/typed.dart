@@ -9,6 +9,8 @@ sealed class TypedFileSystem<T> extends GeneralFileSystem {
   final EncodeTypedFileSystemCallback<T> onEncode;
   final DecodeTypedFileSystemCallback<T> onDecode;
 
+  RemoteFileSystem? get remoteSystem;
+
   TypedFileSystem(
       {required this.onEncode, required this.onDecode, required super.config});
 
@@ -27,6 +29,13 @@ class TypedDirectoryFileSystem<T> extends TypedFileSystem<T>
   @override
   final DirectoryFileSystem fileSystem;
   final CreateDefaultCallback<TypedDirectoryFileSystem<T>> createDefault;
+
+  @override
+  RemoteDirectoryFileSystem? get remoteSystem {
+    final fs = fileSystem;
+    if (fs is RemoteDirectoryFileSystem) return fs;
+    return null;
+  }
 
   TypedDirectoryFileSystem._(
     this.fileSystem, {
@@ -104,6 +113,16 @@ class TypedKeyFileSystem<T> extends TypedFileSystem<T>
   @override
   final KeyFileSystem fileSystem;
   final CreateDefaultCallback<TypedKeyFileSystem<T>> createDefault;
+
+  @override
+  RemoteFileSystem? get remoteSystem {
+    final fs = fileSystem;
+    if (fs is KeyDirectoryFileSystem) {
+      final remote = fs.fileSystem;
+      if (remote is RemoteDirectoryFileSystem) return remote;
+    }
+    return null;
+  }
 
   TypedKeyFileSystem._(
     this.fileSystem, {

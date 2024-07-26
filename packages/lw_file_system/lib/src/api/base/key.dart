@@ -90,13 +90,13 @@ abstract class KeyFileSystem extends GeneralFileSystem
 }
 
 class KeyDirectoryFileSystem extends KeyFileSystem {
-  final GeneralDirectoryFileSystem<Uint8List> _fileSystem;
+  final GeneralDirectoryFileSystem<Uint8List> fileSystem;
 
   KeyDirectoryFileSystem._({
     required super.config,
-    required GeneralDirectoryFileSystem<Uint8List> fileSystem,
+    required this.fileSystem,
     super.createDefault,
-  }) : _fileSystem = fileSystem;
+  });
 
   factory KeyDirectoryFileSystem.build(
     FileSystemConfig config, {
@@ -119,18 +119,18 @@ class KeyDirectoryFileSystem extends KeyFileSystem {
 
   @override
   Future<void> deleteFile(String key) =>
-      _fileSystem.deleteAsset(key + config.keySuffix);
+      fileSystem.deleteAsset(key + config.keySuffix);
 
   @override
   Future<Uint8List?> getFile(String key) async {
-    final asset = await _fileSystem.getAsset(key + config.keySuffix);
+    final asset = await fileSystem.getAsset(key + config.keySuffix);
     if (asset is RawFileSystemFile) return asset.data;
     return null;
   }
 
   @override
   Future<List<String>> getKeys() async {
-    final directory = await _fileSystem.getRootDirectory(
+    final directory = await fileSystem.getRootDirectory(
         listLevel: allListLevel, readData: false);
     final assets = <String>[];
     final remaining = [...directory.assets];
@@ -150,8 +150,8 @@ class KeyDirectoryFileSystem extends KeyFileSystem {
 
   @override
   Future<bool> hasKey(String key) async {
-    if (!await _fileSystem.hasAsset(key + config.keySuffix)) return false;
-    final asset = await _fileSystem.getAsset(key + config.keySuffix);
+    if (!await fileSystem.hasAsset(key + config.keySuffix)) return false;
+    final asset = await fileSystem.getAsset(key + config.keySuffix);
     return asset is RawFileSystemFile;
   }
 
@@ -159,24 +159,23 @@ class KeyDirectoryFileSystem extends KeyFileSystem {
   Future<void> updateFile(String key, Uint8List data) async {
     key = normalizePath(key);
     final parent = key.substring(0, key.lastIndexOf('/'));
-    if ((await _fileSystem.getAsset(parent,
+    if ((await fileSystem.getAsset(parent,
         listLevel: noListLevel, readData: false)) is! RawFileSystemDirectory) {
-      await _fileSystem.createDirectory(parent);
+      await fileSystem.createDirectory(parent);
     }
-    return _fileSystem.updateFile(key + config.keySuffix, data);
+    return fileSystem.updateFile(key + config.keySuffix, data);
   }
 
   @override
-  Future<bool> isInitialized() => _fileSystem.isInitialized();
+  Future<bool> isInitialized() => fileSystem.isInitialized();
 
   @override
-  Future<void> runInitialize() => _fileSystem.runInitialize();
+  Future<void> runInitialize() => fileSystem.runInitialize();
 
   @override
-  Future<Uint8List?> loadAbsolute(String path) =>
-      _fileSystem.loadAbsolute(path);
+  Future<Uint8List?> loadAbsolute(String path) => fileSystem.loadAbsolute(path);
 
   @override
   Future<void> saveAbsolute(String path, Uint8List bytes) =>
-      _fileSystem.saveAbsolute(path, bytes);
+      fileSystem.saveAbsolute(path, bytes);
 }

@@ -78,7 +78,8 @@ class WebDirectoryFileSystem extends DirectoryFileSystem {
     Future<Uint8List?> getData(String path) async {
       final dataStore = txn.objectStore(config.currentDataStoreName);
       final data = await dataStore.getObject(path);
-      return Uint8List.fromList(List<int>.from(data as List));
+      if (data is! List) return null;
+      return Uint8List.fromList(List<int>.from(data));
     }
 
     final store = txn.objectStore(config.storeName);
@@ -113,7 +114,7 @@ class WebDirectoryFileSystem extends DirectoryFileSystem {
         final map = Map<String, dynamic>.from(data as Map);
         if (map['type'] == 'file') {
           return RawFileSystemFile(AssetLocation.local(path),
-              data: await getData(path));
+              data: await getData(e));
         } else if (map['type'] == 'directory') {
           return RawFileSystemDirectory(AssetLocation.local(path));
         }

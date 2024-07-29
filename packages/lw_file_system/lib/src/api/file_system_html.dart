@@ -259,10 +259,11 @@ class WebKeyFileSystem extends KeyFileSystem {
 
   @override
   Future<Uint8List?> getFile(String key) async {
-    var db = await _getDatabase(config);
-    var txn = db.transaction(config.storeName, 'readonly');
-    var store = txn.objectStore(config.storeName);
-    var data = await store.getObject(config.storeName);
+    key = normalizePath(key);
+    final db = await _getDatabase(config);
+    final txn = db.transaction(config.storeName, 'readonly');
+    final store = txn.objectStore(config.storeName);
+    final data = await store.getObject(key);
     await txn.completed;
     if (data == null) {
       return null;
@@ -272,28 +273,30 @@ class WebKeyFileSystem extends KeyFileSystem {
 
   @override
   Future<void> updateFile(String key, Uint8List data) async {
-    var db = await _getDatabase(config);
-    var txn = db.transaction(config.storeName, 'readwrite');
-    var store = txn.objectStore(config.storeName);
+    key = normalizePath(key);
+    final db = await _getDatabase(config);
+    final txn = db.transaction(config.storeName, 'readwrite');
+    final store = txn.objectStore(config.storeName);
     await store.put(data, key);
   }
 
   @override
   Future<bool> hasKey(String key) async {
-    var db = await _getDatabase(config);
-    var txn = db.transaction(config.storeName, 'readonly');
-    var store = txn.objectStore(config.storeName);
-    var doc = await store.getObject(key);
+    key = normalizePath(key);
+    final db = await _getDatabase(config);
+    final txn = db.transaction(config.storeName, 'readonly');
+    final store = txn.objectStore(config.storeName);
+    final doc = await store.getObject(key);
     await txn.completed;
     return doc != null;
   }
 
   @override
   Future<List<String>> getKeys() async {
-    var db = await _getDatabase(config);
-    var txn = db.transaction(config.storeName, 'readonly');
-    var store = txn.objectStore(config.storeName);
-    var cursor = store.openCursor(autoAdvance: true);
+    final db = await _getDatabase(config);
+    final txn = db.transaction(config.storeName, 'readonly');
+    final store = txn.objectStore(config.storeName);
+    final cursor = store.openCursor(autoAdvance: true);
     final keys = cursor.map((e) => e.key.toString()).toList();
     await txn.completed;
     return keys;

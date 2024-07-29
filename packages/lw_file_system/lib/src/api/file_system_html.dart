@@ -108,7 +108,7 @@ class WebDirectoryFileSystem extends DirectoryFileSystem {
       }).toList();
       final assets = (await Future.wait(names.map((e) async {
         final store = txn.objectStore(config.storeName);
-        final data = await store.getObject(path);
+        final data = await store.getObject(e);
         if (data == null) return null;
         final map = Map<String, dynamic>.from(data as Map);
         if (map['type'] == 'file') {

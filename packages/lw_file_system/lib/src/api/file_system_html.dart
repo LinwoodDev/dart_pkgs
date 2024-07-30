@@ -68,7 +68,7 @@ mixin WebFileSystem on GeneralFileSystem {
 
   @override
   Future<void> runInitialize() async {
-    await getDirectory();
+    await _getDatabase();
   }
 
   @override

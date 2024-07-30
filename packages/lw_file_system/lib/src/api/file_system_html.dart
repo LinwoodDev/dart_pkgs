@@ -36,16 +36,18 @@ mixin WebFileSystem on GeneralFileSystem {
   Future<Database> _getDatabase() async {
     if (_db != null) return _db!;
     final idbFactory = getIdbFactory()!;
+    bool shouldRunDefault = false;
     _db = await idbFactory.open(
       config.database,
       version: config.databaseVersion,
       onUpgradeNeeded: (event) async {
         config.runOnUpgradeNeeded(event);
-        if (event.oldVersion < 1) {
-          await _runDefault();
-        }
+        shouldRunDefault = event.oldVersion < 1;
       },
     );
+    if (shouldRunDefault) {
+      await _runDefault();
+    }
     return _db!;
   }
 

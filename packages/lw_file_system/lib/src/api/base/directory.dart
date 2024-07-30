@@ -1,4 +1,4 @@
-part of '../file_system_base.dart';
+part of 'general.dart';
 
 const allListLevel = -1;
 const oneListLevel = 1;
@@ -208,4 +208,8 @@ abstract class DirectoryFileSystem extends GeneralFileSystem
       };
     }
   }
+
+  @override
+  @protected
+  FutureOr<void> runDefault() => createDefault(this);
 }

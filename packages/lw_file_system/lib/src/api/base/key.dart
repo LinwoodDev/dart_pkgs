@@ -1,4 +1,4 @@
-part of '../file_system_base.dart';
+part of 'general.dart';
 
 mixin GeneralKeyFileSystem<T> on GeneralFileSystem {
   Future<T?> getFile(String key);
@@ -78,7 +78,9 @@ abstract class KeyFileSystem extends GeneralFileSystem
     }
   }
 
-  Future<void> _runDefault() => Future.value(createDefault(this));
+  @override
+  @protected
+  FutureOr<void> runDefault() => createDefault(this);
 
   @override
   Future<void> reset() async {
@@ -105,7 +107,7 @@ class KeyDirectoryFileSystem extends KeyFileSystem {
   }) {
     KeyDirectoryFileSystem? fileSystem;
     Future<void> createWrappedDefault(_) =>
-        fileSystem?._runDefault() ?? Future.value();
+        Future.value(fileSystem?.runDefault());
 
     final directory = DirectoryFileSystem.fromPlatform(
       config,
@@ -113,7 +115,10 @@ class KeyDirectoryFileSystem extends KeyFileSystem {
       storage: storage,
     );
     fileSystem = KeyDirectoryFileSystem._(
-        config: config, fileSystem: directory, createDefault: createDefault);
+      config: config,
+      fileSystem: directory,
+      createDefault: createDefault,
+    );
     return fileSystem;
   }
 

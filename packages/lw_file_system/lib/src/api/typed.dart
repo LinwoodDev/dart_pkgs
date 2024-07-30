@@ -1,6 +1,6 @@
 import 'dart:async';
-import 'dart:typed_data';
 
+import 'package:flutter/foundation.dart';
 import 'package:lw_file_system/lw_file_system.dart';
 
 typedef EncodeTypedFileSystemCallback<T> = Uint8List Function(T data);
@@ -55,10 +55,15 @@ class TypedDirectoryFileSystem<T> extends TypedFileSystem<T>
     required DecodeTypedFileSystemCallback<T> onDecode,
   }) {
     TypedDirectoryFileSystem<T>? fileSystem;
+    Future<void> createWrappedDefault(_) =>
+        Future.value(fileSystem?.runDefault());
+    final directorySystem = DirectoryFileSystem.fromPlatform(
+      config,
+      storage: storage,
+      createDefault: createWrappedDefault,
+    );
     fileSystem = TypedDirectoryFileSystem._(
-      DirectoryFileSystem.fromPlatform(config,
-          storage: storage,
-          createDefault: (_) => fileSystem?.createDefault(fileSystem)),
+      directorySystem,
       onEncode: onEncode,
       onDecode: onDecode,
       config: config,
@@ -107,6 +112,10 @@ class TypedDirectoryFileSystem<T> extends TypedFileSystem<T>
 
   @override
   Future<void> runInitialize() => fileSystem.runInitialize();
+
+  @override
+  @protected
+  FutureOr<void> runDefault() => createDefault(this);
 }
 
 class TypedKeyFileSystem<T> extends TypedFileSystem<T>
@@ -142,10 +151,15 @@ class TypedKeyFileSystem<T> extends TypedFileSystem<T>
     required DecodeTypedFileSystemCallback<T> onDecode,
   }) {
     TypedKeyFileSystem<T>? fileSystem;
+    Future<void> createWrappedDefault(_) =>
+        Future.value(fileSystem?.runDefault());
+    final keySystem = KeyFileSystem.fromPlatform(
+      config,
+      storage: storage,
+      createDefault: createWrappedDefault,
+    );
     fileSystem = TypedKeyFileSystem._(
-      KeyFileSystem.fromPlatform(config,
-          storage: storage,
-          createDefault: (_) => fileSystem?.createDefault(fileSystem)),
+      keySystem,
       onEncode: onEncode,
       onDecode: onDecode,
       config: config,
@@ -182,4 +196,8 @@ class TypedKeyFileSystem<T> extends TypedFileSystem<T>
 
   @override
   Future<void> reset() => fileSystem.reset();
+
+  @override
+  @protected
+  FutureOr<void> runDefault() => createDefault(this);
 }

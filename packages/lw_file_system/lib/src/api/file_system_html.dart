@@ -31,24 +31,24 @@ extension type FileSystemHandle._(JSObject _) implements JSObject {
 mixin WebFileSystem on GeneralFileSystem {
   Database? _db;
 
-  FutureOr<void> _runDefault();
+  String _localStorageKey() =>
+      'lw_file_system.init.${config.database}.${config.storeName}';
 
   Future<Database> _getDatabase() async {
-    if (_db != null) return _db!;
+    var db = _db;
+    if (db != null) return db;
     final idbFactory = getIdbFactory()!;
-    bool shouldRunDefault = false;
-    _db = await idbFactory.open(
+    db = await idbFactory.open(
       config.database,
       version: config.databaseVersion,
-      onUpgradeNeeded: (event) async {
-        config.runOnUpgradeNeeded(event);
-        shouldRunDefault = event.oldVersion < 1;
-      },
+      onUpgradeNeeded: config.runOnUpgradeNeeded,
     );
-    if (shouldRunDefault) {
-      await _runDefault();
+    _db = db;
+    if (!isInitialized()) {
+      runDefault();
+      html.window.localStorage.setItem(_localStorageKey(), 'true');
     }
-    return _db!;
+    return db;
   }
 
   @override
@@ -65,7 +65,7 @@ mixin WebFileSystem on GeneralFileSystem {
       await dataStore.clear();
     }
     await txn.completed;
-    await _runDefault();
+    html.window.localStorage.removeItem(_localStorageKey());
   }
 
   @override
@@ -75,7 +75,8 @@ mixin WebFileSystem on GeneralFileSystem {
 
   @override
   bool isInitialized() {
-    return _db != null;
+    final value = html.window.localStorage.getItem(_localStorageKey());
+    return value == 'true';
   }
 }
 
@@ -277,9 +278,6 @@ class WebDirectoryFileSystem extends DirectoryFileSystem with WebFileSystem {
     a.click();
     html.URL.revokeObjectURL(url);
   }
-
-  @override
-  FutureOr<void> _runDefault() => createDefault(this);
 }
 
 class WebKeyFileSystem extends KeyFileSystem with WebFileSystem {
@@ -287,9 +285,10 @@ class WebKeyFileSystem extends KeyFileSystem with WebFileSystem {
 
   @override
   Future<void> deleteFile(String key) async {
-    var db = await _getDatabase();
-    var txn = db.transaction(config.storeName, 'readwrite');
-    var store = txn.objectStore(config.storeName);
+    key = normalizePath(key);
+    final db = await _getDatabase();
+    final txn = db.transaction(config.storeName, 'readwrite');
+    final store = txn.objectStore(config.storeName);
     await store.delete(key);
     await txn.completed;
   }
@@ -315,6 +314,7 @@ class WebKeyFileSystem extends KeyFileSystem with WebFileSystem {
     final txn = db.transaction(config.storeName, 'readwrite');
     final store = txn.objectStore(config.storeName);
     await store.put(data, key);
+    await txn.completed;
   }
 
   @override
@@ -338,7 +338,4 @@ class WebKeyFileSystem extends KeyFileSystem with WebFileSystem {
     await txn.completed;
     return keys;
   }
-
-  @override
-  FutureOr<void> _runDefault() => createDefault(this);
 }

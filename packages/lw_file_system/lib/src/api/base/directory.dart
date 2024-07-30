@@ -182,6 +182,7 @@ mixin GeneralDirectoryFileSystem<T> on GeneralFileSystem {
 abstract class DirectoryFileSystem extends GeneralFileSystem
     with GeneralDirectoryFileSystem<Uint8List> {
   final CreateDefaultCallback<DirectoryFileSystem> createDefault;
+
   DirectoryFileSystem({
     required super.config,
     this.createDefault = defaultCreateDefault,

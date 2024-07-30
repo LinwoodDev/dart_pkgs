@@ -28,7 +28,7 @@ abstract class GeneralFileSystem {
     required this.config,
   });
 
-  Future<bool> isInitialized();
+  FutureOr<bool> isInitialized();
 
   Future<void> runInitialize();
 

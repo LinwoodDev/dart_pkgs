@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:lw_file_system/lw_file_system.dart';
@@ -102,7 +103,7 @@ class TypedDirectoryFileSystem<T> extends TypedFileSystem<T>
           .then((entity) => entity == null ? null : _toTypedAsset(entity));
 
   @override
-  Future<bool> isInitialized() => fileSystem.isInitialized();
+  FutureOr<bool> isInitialized() => fileSystem.isInitialized();
 
   @override
   Future<void> runInitialize() => fileSystem.runInitialize();
@@ -174,7 +175,7 @@ class TypedKeyFileSystem<T> extends TypedFileSystem<T>
       fileSystem.updateFile(key, onEncode(data));
 
   @override
-  Future<bool> isInitialized() => fileSystem.isInitialized();
+  FutureOr<bool> isInitialized() => fileSystem.isInitialized();
 
   @override
   Future<void> runInitialize() => fileSystem.runInitialize();

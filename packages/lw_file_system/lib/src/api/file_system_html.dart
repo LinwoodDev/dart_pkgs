@@ -28,25 +28,62 @@ extension type FileSystemHandle._(JSObject _) implements JSObject {
   external JSPromise<html.Blob> getFile();
 }
 
-Database? _db;
-Future<Database> _getDatabase(FileSystemConfig config) async {
-  if (_db != null) return _db!;
-  var idbFactory = getIdbFactory()!;
-  _db = await idbFactory.open(
-    config.database,
-    version: config.databaseVersion,
-    onUpgradeNeeded: config.runOnUpgradeNeeded,
-  );
-  return _db!;
+mixin WebFileSystem on GeneralFileSystem {
+  Database? _db;
+
+  FutureOr<void> _runDefault();
+
+  Future<Database> _getDatabase() async {
+    if (_db != null) return _db!;
+    final idbFactory = getIdbFactory()!;
+    _db = await idbFactory.open(
+      config.database,
+      version: config.databaseVersion,
+      onUpgradeNeeded: (event) async {
+        config.runOnUpgradeNeeded(event);
+        if (event.oldVersion < 1) {
+          await _runDefault();
+        }
+      },
+    );
+    return _db!;
+  }
+
+  @override
+  Future<void> reset() async {
+    final db = await _getDatabase();
+    final txn = db.transactionList([
+      config.storeName,
+      if (this is DirectoryFileSystem) config.currentDataStoreName
+    ], 'readwrite');
+    final store = txn.objectStore(config.storeName);
+    await store.clear();
+    if (this is DirectoryFileSystem) {
+      final dataStore = txn.objectStore(config.currentDataStoreName);
+      await dataStore.clear();
+    }
+    await txn.completed;
+    await _runDefault();
+  }
+
+  @override
+  Future<void> runInitialize() async {
+    await getDirectory();
+  }
+
+  @override
+  bool isInitialized() {
+    return _db != null;
+  }
 }
 
-class WebDirectoryFileSystem extends DirectoryFileSystem {
+class WebDirectoryFileSystem extends DirectoryFileSystem with WebFileSystem {
   WebDirectoryFileSystem({required super.config, super.createDefault});
 
   @override
   Future<void> deleteAsset(String path) async {
     path = normalizePath(path);
-    final db = await _getDatabase(config);
+    final db = await _getDatabase();
     final txn = db.transactionList(
         [config.storeName, config.currentDataStoreName], 'readwrite');
     final store = txn.objectStore(config.storeName);
@@ -70,7 +107,7 @@ class WebDirectoryFileSystem extends DirectoryFileSystem {
   Future<RawFileSystemEntity?> readAsset(String path,
       {bool readData = true, bool forceRemote = false}) async {
     path = normalizePath(path);
-    final db = await _getDatabase(config);
+    final db = await _getDatabase();
     final location = AssetLocation.local(path);
     final txn = db.transaction(
         [config.storeName, config.currentDataStoreName], 'readonly');
@@ -133,7 +170,7 @@ class WebDirectoryFileSystem extends DirectoryFileSystem {
   @override
   Future<bool> hasAsset(String path) async {
     path = normalizePath(path);
-    final db = await _getDatabase(config);
+    final db = await _getDatabase();
     final txn = db.transaction('documents', 'readonly');
     final store = txn.objectStore('documents');
     final doc = await store.getObject(path);
@@ -151,7 +188,7 @@ class WebDirectoryFileSystem extends DirectoryFileSystem {
       await createDirectory(
           '/${pathWithoutSlash.substring(0, pathWithoutSlash.lastIndexOf('/'))}');
     }
-    final db = await _getDatabase(config);
+    final db = await _getDatabase();
     final txn = db.transactionList(
         [config.storeName, config.currentDataStoreName], 'readwrite');
     final store = txn.objectStore(config.storeName);
@@ -165,7 +202,7 @@ class WebDirectoryFileSystem extends DirectoryFileSystem {
   @override
   Future<RawFileSystemDirectory> createDirectory(String path) async {
     path = normalizePath(path);
-    var db = await _getDatabase(config);
+    var db = await _getDatabase();
     var txn = db.transaction(config.storeName, 'readwrite');
     var store = txn.objectStore(config.storeName);
     final parents = path.split('/');
@@ -240,18 +277,15 @@ class WebDirectoryFileSystem extends DirectoryFileSystem {
   }
 
   @override
-  Future<bool> isInitialized() => Future.value(true);
-
-  @override
-  Future<void> runInitialize() => Future.value(createDefault(this));
+  FutureOr<void> _runDefault() => createDefault(this);
 }
 
-class WebKeyFileSystem extends KeyFileSystem {
+class WebKeyFileSystem extends KeyFileSystem with WebFileSystem {
   WebKeyFileSystem({required super.config, super.createDefault});
 
   @override
   Future<void> deleteFile(String key) async {
-    var db = await _getDatabase(config);
+    var db = await _getDatabase();
     var txn = db.transaction(config.storeName, 'readwrite');
     var store = txn.objectStore(config.storeName);
     await store.delete(key);
@@ -261,7 +295,7 @@ class WebKeyFileSystem extends KeyFileSystem {
   @override
   Future<Uint8List?> getFile(String key) async {
     key = normalizePath(key);
-    final db = await _getDatabase(config);
+    final db = await _getDatabase();
     final txn = db.transaction(config.storeName, 'readonly');
     final store = txn.objectStore(config.storeName);
     final data = await store.getObject(key);
@@ -275,7 +309,7 @@ class WebKeyFileSystem extends KeyFileSystem {
   @override
   Future<void> updateFile(String key, Uint8List data) async {
     key = normalizePath(key);
-    final db = await _getDatabase(config);
+    final db = await _getDatabase();
     final txn = db.transaction(config.storeName, 'readwrite');
     final store = txn.objectStore(config.storeName);
     await store.put(data, key);
@@ -284,7 +318,7 @@ class WebKeyFileSystem extends KeyFileSystem {
   @override
   Future<bool> hasKey(String key) async {
     key = normalizePath(key);
-    final db = await _getDatabase(config);
+    final db = await _getDatabase();
     final txn = db.transaction(config.storeName, 'readonly');
     final store = txn.objectStore(config.storeName);
     final doc = await store.getObject(key);
@@ -294,7 +328,7 @@ class WebKeyFileSystem extends KeyFileSystem {
 
   @override
   Future<List<String>> getKeys() async {
-    final db = await _getDatabase(config);
+    final db = await _getDatabase();
     final txn = db.transaction(config.storeName, 'readonly');
     final store = txn.objectStore(config.storeName);
     final cursor = store.openCursor(autoAdvance: true);
@@ -304,8 +338,5 @@ class WebKeyFileSystem extends KeyFileSystem {
   }
 
   @override
-  Future<bool> isInitialized() => Future.value(true);
-
-  @override
-  Future<void> runInitialize() => Future.value(createDefault(this));
+  FutureOr<void> _runDefault() => createDefault(this);
 }

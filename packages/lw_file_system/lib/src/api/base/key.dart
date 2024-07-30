@@ -167,7 +167,7 @@ class KeyDirectoryFileSystem extends KeyFileSystem {
   }
 
   @override
-  Future<bool> isInitialized() => fileSystem.isInitialized();
+  FutureOr<bool> isInitialized() => fileSystem.isInitialized();
 
   @override
   Future<void> runInitialize() => fileSystem.runInitialize();

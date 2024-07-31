@@ -64,6 +64,8 @@ mixin WebFileSystem on GeneralFileSystem {
     }
     await txn.completed;
     html.window.localStorage.removeItem(config.currentDefaultStorageName);
+    _db?.close();
+    _db = null;
   }
 
   @override

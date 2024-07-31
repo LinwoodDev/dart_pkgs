@@ -31,9 +31,6 @@ extension type FileSystemHandle._(JSObject _) implements JSObject {
 mixin WebFileSystem on GeneralFileSystem {
   Database? _db;
 
-  String _localStorageKey() =>
-      'lw_file_system.init.${config.database}.${config.storeName}';
-
   Future<Database> _getDatabase() async {
     var db = _db;
     if (db != null) return db;
@@ -46,7 +43,8 @@ mixin WebFileSystem on GeneralFileSystem {
     _db = db;
     if (!isInitialized()) {
       runDefault();
-      html.window.localStorage.setItem(_localStorageKey(), 'true');
+      html.window.localStorage
+          .setItem(config.currentDefaultStorageName, 'true');
     }
     return db;
   }
@@ -65,7 +63,7 @@ mixin WebFileSystem on GeneralFileSystem {
       await dataStore.clear();
     }
     await txn.completed;
-    html.window.localStorage.removeItem(_localStorageKey());
+    html.window.localStorage.removeItem(config.currentDefaultStorageName);
   }
 
   @override
@@ -75,7 +73,8 @@ mixin WebFileSystem on GeneralFileSystem {
 
   @override
   bool isInitialized() {
-    final value = html.window.localStorage.getItem(_localStorageKey());
+    final value =
+        html.window.localStorage.getItem(config.currentDefaultStorageName);
     return value == 'true';
   }
 }

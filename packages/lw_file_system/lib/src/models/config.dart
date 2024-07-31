@@ -25,7 +25,7 @@ Future<void> initStores(
 class FileSystemConfig {
   final PasswordStorage passwordStorage;
   final String storeName, variant;
-  final String? cacheVariant, pathVariant, dataStoreName;
+  final String? cacheVariant, pathVariant, dataStoreName, defaultStorageKey;
   final GetDirectoryCallback getDirectory;
   final OnUpgradeNeededFunction? onDatabaseUpgrade;
   final String database;
@@ -41,6 +41,7 @@ class FileSystemConfig {
     this.variant = '',
     this.cacheVariant,
     this.pathVariant,
+    this.defaultStorageKey,
     required this.database,
     required this.databaseVersion,
     this.keySuffix = '',
@@ -50,6 +51,8 @@ class FileSystemConfig {
 
   String get currentCacheVariant => cacheVariant ?? variant;
   String get currentPathVariant => pathVariant ?? variant;
+  String get currentDefaultStorageName =>
+      defaultStorageKey ?? 'lw_file_system.init.$database.$storeName';
 
   Future<void> runOnUpgradeNeeded(VersionChangeEvent event) async {
     if (onDatabaseUpgrade == null) {

@@ -44,6 +44,9 @@ abstract class GeneralFileSystem {
   @protected
   FutureOr<void> runDefault();
 
+  @protected
+  bool hasDefault();
+
   ExternalStorage? get storage => null;
 
   String normalizePath(String path, {bool leadingSlash = true}) {

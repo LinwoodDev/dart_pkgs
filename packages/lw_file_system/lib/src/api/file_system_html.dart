@@ -41,7 +41,7 @@ mixin WebFileSystem on GeneralFileSystem {
       onUpgradeNeeded: config.runOnUpgradeNeeded,
     );
     _db = db;
-    if (!isInitialized()) {
+    if (hasDefault() && !isInitialized()) {
       runDefault();
       html.window.localStorage
           .setItem(config.currentDefaultStorageName, 'true');
@@ -73,6 +73,7 @@ mixin WebFileSystem on GeneralFileSystem {
 
   @override
   bool isInitialized() {
+    if (!hasDefault()) return true;
     final value =
         html.window.localStorage.getItem(config.currentDefaultStorageName);
     return value == 'true';

@@ -83,6 +83,10 @@ abstract class KeyFileSystem extends GeneralFileSystem
   FutureOr<void> runDefault() => createDefault(this);
 
   @override
+  @protected
+  bool hasDefault() => createDefault != defaultCreateDefault;
+
+  @override
   Future<void> reset() async {
     final files = await getKeys();
     for (final file in files) {

@@ -212,4 +212,8 @@ abstract class DirectoryFileSystem extends GeneralFileSystem
   @override
   @protected
   FutureOr<void> runDefault() => createDefault(this);
+
+  @override
+  @protected
+  bool hasDefault() => createDefault != defaultCreateDefault;
 }

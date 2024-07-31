@@ -116,6 +116,10 @@ class TypedDirectoryFileSystem<T> extends TypedFileSystem<T>
   @override
   @protected
   FutureOr<void> runDefault() => createDefault(this);
+
+  @override
+  @protected
+  bool hasDefault() => createDefault != defaultCreateDefault;
 }
 
 class TypedKeyFileSystem<T> extends TypedFileSystem<T>
@@ -200,4 +204,8 @@ class TypedKeyFileSystem<T> extends TypedFileSystem<T>
   @override
   @protected
   FutureOr<void> runDefault() => createDefault(this);
+
+  @override
+  @protected
+  bool hasDefault() => createDefault != defaultCreateDefault;
 }

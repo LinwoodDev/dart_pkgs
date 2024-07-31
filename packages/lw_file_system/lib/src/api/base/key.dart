@@ -1,4 +1,4 @@
-part of 'general.dart';
+part of '../file_system_base.dart';
 
 mixin GeneralKeyFileSystem<T> on GeneralFileSystem {
   Future<T?> getFile(String key);

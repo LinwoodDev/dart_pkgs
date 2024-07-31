@@ -5,13 +5,13 @@ import 'package:flutter/foundation.dart';
 import 'package:lw_file_system/lw_file_system.dart';
 import 'package:rxdart/rxdart.dart';
 
-import '../file_system_dav.dart';
-import '../file_system_io.dart';
-import '../file_system_html_stub.dart'
+import 'file_system_dav.dart';
+import 'file_system_io.dart';
+import 'file_system_html_stub.dart'
     if (dart.library.js) 'file_system_html.dart';
 
-part 'directory.dart';
-part 'key.dart';
+part 'base/directory.dart';
+part 'base/key.dart';
 
 typedef CreateDefaultCallback<T extends GeneralFileSystem> = FutureOr<void>
     Function(T fileSystem);

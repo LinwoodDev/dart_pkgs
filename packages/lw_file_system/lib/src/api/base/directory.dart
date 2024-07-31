@@ -1,4 +1,4 @@
-part of 'general.dart';
+part of '../file_system_base.dart';
 
 const allListLevel = -1;
 const oneListLevel = 1;

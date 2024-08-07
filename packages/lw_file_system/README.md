@@ -11,7 +11,7 @@
 ## Supported backends
 
 * Internal
-* External
+* Local external
 * WebDAV
 
 ## Features
@@ -19,5 +19,6 @@
 * Fake file system on web
 * One api for all platforms
 * File system operations
+* Ready to use serialization and deserialization of storage settings
 * Key File System for a key based access to files without directories
 * Typed file system with TypedFileSystem and TypedKeyFileSystem

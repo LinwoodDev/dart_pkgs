@@ -65,15 +65,15 @@ abstract class ArchiveData<T> {
     return file.content;
   }
 
-  T _updateState(ArchiveState state);
+  T updateState(ArchiveState state);
 
-  T setAsset(String name, Uint8List data) => _updateState(state.copyWith(
+  T setAsset(String name, Uint8List data) => updateState(state.copyWith(
         added: {...state.added, name: data},
         removed: Set.from(state.removed)..remove(name),
       ));
   T removeAsset(String name) => removeAssets([name]);
   T removeAssets(Iterable<String> names) =>
-      _updateState(state.copyWith(removed: {...state.removed, ...names}));
+      updateState(state.copyWith(removed: {...state.removed, ...names}));
 }
 
 class SimpleArchiveData extends ArchiveData<SimpleArchiveData> {
@@ -82,6 +82,6 @@ class SimpleArchiveData extends ArchiveData<SimpleArchiveData> {
   SimpleArchiveData.fromBytes(List<int> bytes) : super.fromBytes(bytes);
 
   @override
-  SimpleArchiveData _updateState(ArchiveState state) =>
+  SimpleArchiveData updateState(ArchiveState state) =>
       SimpleArchiveData(archive, state: state);
 }

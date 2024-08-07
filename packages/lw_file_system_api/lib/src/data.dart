@@ -67,9 +67,9 @@ abstract class ArchiveData<T> {
 
   T _updateState(ArchiveState state);
 
-  T addAsset(String name, Uint8List data) => _updateState(state.copyWith(
+  T setAsset(String name, Uint8List data) => _updateState(state.copyWith(
         added: {...state.added, name: data},
-        removed: state.removed..remove(name),
+        removed: Set.from(state.removed)..remove(name),
       ));
   T removeAsset(String name) => removeAssets([name]);
   T removeAssets(Iterable<String> names) =>

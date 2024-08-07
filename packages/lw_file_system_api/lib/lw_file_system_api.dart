@@ -6,3 +6,4 @@ library;
 export 'src/entity.dart';
 export 'src/location.dart';
 export 'src/storage.dart';
+export 'archive.dart';

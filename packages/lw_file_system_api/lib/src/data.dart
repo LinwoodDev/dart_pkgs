@@ -11,6 +11,8 @@ class ArchiveState with ArchiveStateMappable {
   final Set<String> removed;
 
   const ArchiveState({this.added = const {}, this.removed = const {}});
+
+  bool get isDirty => added.isNotEmpty || removed.isNotEmpty;
 }
 
 abstract class ArchiveData<T> {
@@ -28,6 +30,9 @@ abstract class ArchiveData<T> {
         state = ArchiveState();
 
   Archive export() {
+    if (!state.isDirty) {
+      return this.archive;
+    }
     final archive = Archive();
     for (final entry in state.added.entries) {
       archive.addFile(ArchiveFile(entry.key, entry.value.length, entry.value));
@@ -42,9 +47,8 @@ abstract class ArchiveData<T> {
     return archive;
   }
 
-  List<int>? exportBytes() {
-    return ZipEncoder().encode(export());
-  }
+  Uint8List exportAsBytes() =>
+      Uint8List.fromList(ZipEncoder().encode(export()) ?? []);
 
   Uint8List? getAsset(String name) {
     final added = state.added[name];

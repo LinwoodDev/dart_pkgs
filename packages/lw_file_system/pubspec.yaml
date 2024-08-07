@@ -24,7 +24,7 @@ dependencies:
     git:
       url: https://github.com/LinwoodDev/dart_pkgs
       path: packages/lw_file_system_api
-      ref: d0c9eb7d403eba898153fe2c03016aa83050cf69
+      ref: 3fbceaa767ad89cfff35d7cd02e2c7b2ff78e160
   # path: ^1.8.0
 
 dev_dependencies:

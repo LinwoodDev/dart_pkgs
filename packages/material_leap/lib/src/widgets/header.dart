@@ -16,19 +16,23 @@ class Header extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       child: Row(children: [
-        if (leading != null)
+        if (leading != null) ...[
           IconTheme(
               data: Theme.of(context).appBarTheme.iconTheme ??
                   Theme.of(context).iconTheme,
               child: leading!),
-        const SizedBox(width: 16),
+          const SizedBox(width: 16),
+        ],
         Expanded(
           child: DefaultTextStyle(
               style: Theme.of(context).textTheme.headlineSmall ??
                   const TextStyle(fontSize: 20),
               child: title),
         ),
-        ...actions,
+        if (actions.isNotEmpty) ...[
+          const SizedBox(width: 16),
+          ...actions,
+        ],
       ]),
     );
   }

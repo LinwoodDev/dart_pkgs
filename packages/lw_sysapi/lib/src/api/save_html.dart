@@ -1,9 +1,7 @@
-// ignore_for_file: avoid_web_libraries_in_flutter
-
-import 'dart:html';
-import 'dart:typed_data';
+import 'dart:js_interop';
 
 import 'package:flutter/material.dart';
+import 'package:web/web.dart';
 
 Future<void> exportFile(
   BuildContext context,
@@ -14,12 +12,12 @@ Future<void> exportFile(
   String uniformTypeIdentifier,
   String label,
 ) async {
-  final a = document.createElement('a') as AnchorElement;
+  final a = document.createElement('a') as HTMLAnchorElement;
   // Create data URL
-  final blob = Blob([Uint8List.fromList(bytes)], mimeType);
-  final url = Url.createObjectUrlFromBlob(blob);
+  final blob = Blob([bytes.toJSBox].toJS, BlobPropertyBag(type: mimeType));
+  final url = URL.createObjectURL(blob);
   a.href = url;
   a.download = '$fileName.$fileExtension';
   a.click();
-  Url.revokeObjectUrl(url);
+  URL.revokeObjectURL(url);
 }

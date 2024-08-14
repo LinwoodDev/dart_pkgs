@@ -8,7 +8,7 @@ import 'package:rxdart/rxdart.dart';
 import 'file_system_dav.dart';
 import 'file_system_io.dart';
 import 'file_system_html_stub.dart'
-    if (dart.library.js) 'file_system_html.dart';
+    if (dart.library.js_interop) 'file_system_html.dart';
 
 part 'base/directory.dart';
 part 'base/key.dart';

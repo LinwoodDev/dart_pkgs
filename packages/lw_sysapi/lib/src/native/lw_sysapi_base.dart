@@ -3,7 +3,7 @@ import 'dart:typed_data';
 
 import 'lw_sysapi_stub.dart'
     if (dart.library.io) 'lw_sysapi_io.dart'
-    if (dart.library.html) 'lw_sysapi_web.dart';
+    if (dart.library.js_interop) 'lw_sysapi_web.dart';
 
 abstract class SysAPIPlatform {
   FutureOr<List<String>?> getFonts();

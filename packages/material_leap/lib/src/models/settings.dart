@@ -2,7 +2,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_leap/src/api/full_screen.dart';
 import 'package:window_manager/window_manager.dart';
 
-abstract class LeapSettings {
+mixin LeapSettings {
   bool get nativeTitleBar;
 }
 

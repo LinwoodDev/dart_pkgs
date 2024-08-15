@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:lw_file_system/lw_file_system.dart';
+import 'package:path/path.dart' as p;
 
 class IODirectoryFileSystem extends DirectoryFileSystem {
   @override
@@ -105,15 +106,16 @@ class IODirectoryFileSystem extends DirectoryFileSystem {
         AssetLocation(path: path, remote: remoteName),
         assets: (await directory.list(followLinks: false).toList())
             .map((e) {
+              final current = normalizePath(
+                  p.relative(p.basename(e.path), from: absolutePath));
               if (e is File) {
                 return RawFileSystemFile(
-                  AssetLocation(path: e.path, remote: remoteName),
+                  AssetLocation(path: current, remote: remoteName),
                   data: readData ? e.readAsBytesSync() : null,
                 );
               } else if (e is Directory) {
                 return RawFileSystemDirectory(
-                  AssetLocation(path: e.path, remote: remoteName),
-                  assets: [],
+                  AssetLocation(path: current, remote: remoteName),
                 );
               }
               return null;

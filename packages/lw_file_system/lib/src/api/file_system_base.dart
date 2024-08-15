@@ -22,7 +22,7 @@ typedef CreateFileCallback = FutureOr<Uint8List> Function(
 
 void defaultCreateDefault(GeneralFileSystem fileSystem) {}
 
-final _pathContext = p.posix;
+final _pathContext = p.Context(style: p.Style.posix, current: '/');
 
 abstract class GeneralFileSystem {
   final FileSystemConfig config;
@@ -77,7 +77,8 @@ abstract class GeneralFileSystem {
   FutureOr<String> getAbsolutePath(String relativePath) async {
     relativePath = normalizePath(relativePath);
     final root = await getDirectory();
-    return p.join(root, relativePath);
+    return p.Context(style: p.Style.posix, current: root)
+        .absolute(relativePath);
   }
 
   Future<String> getDirectory() async => config.getDirectory(storage);

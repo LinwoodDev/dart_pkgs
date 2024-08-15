@@ -160,6 +160,25 @@ class KeyDirectoryFileSystem extends KeyFileSystem {
     return assets;
   }
 
+  Stream<RawFileSystemFile> listFiles() async* {
+    final directory = await fileSystem.getRootDirectory(
+        listLevel: allListLevel, readData: false);
+    final remaining = [...directory.assets];
+    final assets = <RawFileSystemFile>[];
+    while (remaining.isNotEmpty) {
+      final asset = remaining.removeAt(0);
+      final path = asset.path;
+      if (asset is RawFileSystemFile) {
+        if (path.endsWith(config.keySuffix)) {
+          assets.add(asset);
+        }
+      } else if (asset is RawFileSystemDirectory) {
+        remaining.addAll(asset.assets);
+      }
+    }
+    yield* Stream.fromIterable(assets);
+  }
+
   @override
   Future<bool> hasKey(String key) async {
     if (!await fileSystem.hasAsset(key + config.keySuffix)) return false;

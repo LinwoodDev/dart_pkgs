@@ -160,6 +160,7 @@ class KeyDirectoryFileSystem extends KeyFileSystem {
     return assets;
   }
 
+  @override
   Stream<RawFileSystemFile> listFiles() async* {
     final directory = await fileSystem.getRootDirectory(
         listLevel: allListLevel, readData: false);

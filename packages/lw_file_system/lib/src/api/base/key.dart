@@ -4,7 +4,7 @@ mixin GeneralKeyFileSystem<T> on GeneralFileSystem {
   Future<T?> getFile(String key);
 
   Future<T?> getDefaultFile(String key) async =>
-      await getFile(key) ?? (await listFiles().first).value;
+      await getFile(key) ?? (await listFiles().first).data;
 
   Future<String> findAvailableKey(String path) =>
       _findAvailableName(path, hasKey);
@@ -20,26 +20,29 @@ mixin GeneralKeyFileSystem<T> on GeneralFileSystem {
   Future<void> updateFile(String key, T data);
   Future<void> deleteFile(String key);
   Future<List<String>> getKeys();
-  Stream<MapEntry<String, T>> listFiles() async* {
+  Stream<FileSystemFile<T>> listFiles() async* {
     final keys = await getKeys();
     yield* Stream.fromIterable(keys).asyncExpand((key) async* {
       final data = await getFile(key);
       if (data != null) {
-        yield MapEntry(key, data);
+        yield FileSystemFile(
+          AssetLocation(path: key, remote: storage?.identifier ?? ''),
+          data: data,
+        );
       }
     });
   }
 
-  Stream<Map<String, T>> fetchFiles() async* {
-    final files = <String, T>{};
+  Stream<List<FileSystemFile<T>>> fetchFiles() async* {
+    final files = <FileSystemFile<T>>[];
     yield files;
     await for (final file in listFiles()) {
-      files[file.key] = file.value;
+      files.add(file);
       yield files;
     }
   }
 
-  Future<Map<String, T>> getFiles() => fetchFiles().last;
+  Future<List<FileSystemFile<T>>> getFiles() => fetchFiles().last;
 
   Future<String?> renameFile(
     String oldKey,

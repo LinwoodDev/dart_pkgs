@@ -106,8 +106,8 @@ class IODirectoryFileSystem extends DirectoryFileSystem {
         AssetLocation(path: path, remote: remoteName),
         assets: (await directory.list(followLinks: false).toList())
             .map((e) {
-              final current = normalizePath(
-                  p.relative(p.basename(e.path), from: absolutePath));
+              final current =
+                  normalizePath(p.relative(e.path, from: absolutePath));
               if (e is File) {
                 return RawFileSystemFile(
                   AssetLocation(path: current, remote: remoteName),

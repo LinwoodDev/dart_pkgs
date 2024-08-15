@@ -32,8 +32,6 @@ class AssetLocation with AssetLocationMappable {
 
   String get parent => p.dirname(path);
 
-  bool get absolute => p.isAbsolute(path);
-
   AssetLocation buildParentLocation() {
     return AssetLocation(path: parent, remote: remote);
   }

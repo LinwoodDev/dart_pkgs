@@ -30,21 +30,26 @@ mixin GeneralDirectoryFileSystem<T> on GeneralFileSystem {
     final assets = <FileSystemEntity<T>>[];
     FileSystemDirectory<T> getDir() => asset.withAssets(assets);
     yield getDir();
-    for (var child in asset.assets) {
+    for (final child in asset.assets) {
       int? index;
-      await for (final file in fetchAsset(child.fileName,
-          listLevel: nextLevel, readData: readData, forceRemote: forceRemote)) {
-        if (file == null) continue;
-        if (index == null) {
-          index = assets.length;
-          assets.add(file);
-        } else {
-          assets[index] = file;
+      if (child is FileSystemFile<T>) {
+        yield child;
+      } else {
+        await for (final file in fetchAsset(child.path,
+            listLevel: nextLevel,
+            readData: readData,
+            forceRemote: forceRemote)) {
+          if (file == null) continue;
+          if (index == null) {
+            index = assets.length;
+            assets.add(file);
+          } else {
+            assets[index] = file;
+          }
+          yield getDir();
         }
-        yield getDir();
       }
     }
-    yield getDir();
   }
 
   Stream<List<FileSystemEntity<T>>> fetchAssets(Stream<String> paths,

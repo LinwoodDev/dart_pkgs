@@ -1,4 +1,5 @@
 import 'package:dart_mappable/dart_mappable.dart';
+import 'package:path/path.dart' as p;
 
 part 'location.mapper.dart';
 
@@ -6,40 +7,42 @@ part 'location.mapper.dart';
 class AssetLocation with AssetLocationMappable {
   final String remote;
   final String path;
-  final bool absolute;
 
   const AssetLocation({
     this.remote = '',
     required this.path,
-    this.absolute = false,
   });
 
   factory AssetLocation.local(String path, [bool absolute = false]) =>
-      AssetLocation(path: path, absolute: absolute);
+      AssetLocation(path: path);
 
   static const empty = AssetLocation(path: '');
 
+  bool get isEmpty => path.isEmpty;
+
   bool get isRemote => remote.isNotEmpty;
 
-  String get identifier =>
-      isRemote ? '$pathWithLeadingSlash@$remote' : pathWithLeadingSlash;
+  String get identifier => isRemote ? '$path@$remote' : path;
 
-  String get pathWithLeadingSlash => path.startsWith('/') ? path : '/$path';
+  String get fileExtension => p.extension(path);
 
-  String get pathWithoutLeadingSlash =>
-      path.startsWith('/') ? path.substring(1) : path;
+  String get fileName => p.basename(path);
 
-  String get fileExtension =>
-      fileName.contains('.') ? fileName.split('.').last : '';
+  String get fileNameWithoutExtension => p.basenameWithoutExtension(path);
 
-  String get fileName => path.split('/').last;
-  String get parent {
-    final lastSlash = path.lastIndexOf('/');
-    if (lastSlash < 0) return '';
-    return path.substring(0, lastSlash);
+  String get parent => p.dirname(path);
+
+  bool get absolute => p.isAbsolute(path);
+
+  AssetLocation buildParentLocation() {
+    return AssetLocation(path: parent, remote: remote);
   }
 
-  bool isSame(AssetLocation other) =>
-      pathWithLeadingSlash == other.pathWithLeadingSlash &&
-      remote == other.remote;
+  AssetLocation buildChildLocation(String child) {
+    return AssetLocation(path: p.join(path, child), remote: remote);
+  }
+
+  AssetLocation buildSiblingLocation(String sibling) {
+    return AssetLocation(path: p.join(parent, sibling), remote: remote);
+  }
 }

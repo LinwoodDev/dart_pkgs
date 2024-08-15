@@ -46,7 +46,7 @@ class DavRemoteDirectoryFileSystem extends RemoteDirectoryFileSystem {
   @override
   Future<RawFileSystemEntity?> readAsset(String path,
       {bool readData = true, bool forceRemote = false}) async {
-    path = normalizePath(path, leadingSlash: false);
+    path = normalizePath(path);
     final cached = await getCachedContent(path);
     if (cached != null && !forceRemote) {
       return cached;

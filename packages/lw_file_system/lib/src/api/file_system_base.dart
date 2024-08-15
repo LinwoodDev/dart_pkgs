@@ -3,7 +3,9 @@ import 'dart:async';
 import 'package:archive/archive.dart';
 import 'package:flutter/foundation.dart';
 import 'package:lw_file_system/lw_file_system.dart';
+import 'package:path/path.dart' as p;
 import 'package:rxdart/rxdart.dart';
+import 'package:web/web.dart';
 
 import 'file_system_dav.dart';
 import 'file_system_io.dart';
@@ -20,6 +22,8 @@ typedef CreateFileCallback = FutureOr<Uint8List> Function(
     String path, Uint8List data);
 
 void defaultCreateDefault(GeneralFileSystem fileSystem) {}
+
+final _pathContext = p.Context(style: p.Style.posix);
 
 abstract class GeneralFileSystem {
   final FileSystemConfig config;
@@ -49,20 +53,8 @@ abstract class GeneralFileSystem {
 
   ExternalStorage? get storage => null;
 
-  String normalizePath(String path, {bool leadingSlash = true}) {
-    // Add leading slash
-    if (!path.startsWith('/') && leadingSlash) {
-      path = '/$path';
-    }
-    if (path.startsWith('/') && !leadingSlash) {
-      path = path.substring(1);
-    }
-    // Remove trailing slash
-    if (path.endsWith('/')) {
-      path = path.substring(0, path.length - 1);
-    }
-    return path;
-  }
+  String normalizePath(String path) =>
+      _pathContext.relative(_pathContext.canonicalize(path));
 
   String convertNameToFile(String name) {
     return name.replaceAll(RegExp(r'[\\/:\*\?"<>\|\n\0-\x1F\x7F-\xFF]'), '_');
@@ -73,30 +65,21 @@ abstract class GeneralFileSystem {
     final slashIndex = path.lastIndexOf('/');
     var dir = slashIndex < 0 ? '' : path.substring(0, slashIndex);
     if (dir.isNotEmpty) dir = '$dir/';
-    final dotIndex = path.lastIndexOf('.');
-    var ext = dotIndex < 0 ? '' : path.substring(dotIndex + 1);
-    if (ext.isNotEmpty) ext = '.$ext';
-    var name = dotIndex < 0
-        ? path.substring(dir.length)
-        : path.substring(slashIndex + 1, dotIndex);
+    final extension = p.extension(path);
+    final name = p.basenameWithoutExtension(path);
     var newName = name;
     var i = 1;
-    while (await hasAsset('$dir$newName$ext')) {
+    while (await hasAsset(p.join(dir, '$newName$extension'))) {
       newName = '$name ($i)';
       i++;
     }
-    return '$dir$newName$ext';
+    return p.join(dir, '$newName$extension');
   }
 
   FutureOr<String> getAbsolutePath(String relativePath) async {
-    // Convert \ to /
-    relativePath = relativePath.replaceAll('\\', '/');
-    // Remove leading slash
-    if (relativePath.startsWith('/')) {
-      relativePath = relativePath.substring(1);
-    }
+    relativePath = normalizePath(relativePath);
     final root = await getDirectory();
-    return '$root/$relativePath';
+    return p.join(root, relativePath);
   }
 
   Future<String> getDirectory() async => config.getDirectory(storage);

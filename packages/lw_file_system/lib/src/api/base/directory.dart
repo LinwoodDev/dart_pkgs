@@ -33,7 +33,8 @@ mixin GeneralDirectoryFileSystem<T> on GeneralFileSystem {
     for (final child in asset.assets) {
       int? index;
       if (child is FileSystemFile<T>) {
-        yield child;
+        assets.add(child);
+        yield getDir();
       } else {
         await for (final file in fetchAsset(child.path,
             listLevel: nextLevel,

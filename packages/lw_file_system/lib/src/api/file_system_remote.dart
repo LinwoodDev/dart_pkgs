@@ -254,10 +254,10 @@ abstract class RemoteDirectoryFileSystem extends DirectoryFileSystem
     for (final path in paths) {
       final asset = await getAsset(path);
       if (asset == null) continue;
-      files.add(await getSyncFile(asset.pathWithLeadingSlash));
+      files.add(await getSyncFile(asset.path));
       if (asset is RawFileSystemDirectory) {
         for (final file in asset.assets) {
-          files.add(await getSyncFile(file.pathWithLeadingSlash));
+          files.add(await getSyncFile(file.path));
         }
       }
     }

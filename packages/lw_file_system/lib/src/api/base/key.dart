@@ -145,7 +145,7 @@ class KeyDirectoryFileSystem extends KeyFileSystem {
     final remaining = [...directory.assets];
     while (remaining.isNotEmpty) {
       final asset = remaining.removeAt(0);
-      final path = asset.location.pathWithoutLeadingSlash;
+      final path = asset.location.path;
       if (asset is RawFileSystemFile) {
         if (path.endsWith(config.keySuffix)) {
           assets.add(path.substring(0, path.length - config.keySuffix.length));

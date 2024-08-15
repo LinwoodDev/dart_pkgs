@@ -5,7 +5,6 @@ import 'package:flutter/foundation.dart';
 import 'package:lw_file_system/lw_file_system.dart';
 import 'package:path/path.dart' as p;
 import 'package:rxdart/rxdart.dart';
-import 'package:web/web.dart';
 
 import 'file_system_dav.dart';
 import 'file_system_io.dart';
@@ -23,7 +22,7 @@ typedef CreateFileCallback = FutureOr<Uint8List> Function(
 
 void defaultCreateDefault(GeneralFileSystem fileSystem) {}
 
-final _pathContext = p.Context(style: p.Style.posix);
+final _pathContext = p.posix;
 
 abstract class GeneralFileSystem {
   final FileSystemConfig config;
@@ -53,8 +52,7 @@ abstract class GeneralFileSystem {
 
   ExternalStorage? get storage => null;
 
-  String normalizePath(String path) =>
-      _pathContext.relative(_pathContext.canonicalize(path));
+  String normalizePath(String path) => _pathContext.canonicalize(path);
 
   String convertNameToFile(String name) {
     return name.replaceAll(RegExp(r'[\\/:\*\?"<>\|\n\0-\x1F\x7F-\xFF]'), '_');
@@ -99,7 +97,7 @@ Archive exportDirectory(FileSystemDirectory directory) {
       final data = asset.data;
       if (data == null) return;
       final size = data.length;
-      final file = ArchiveFile(asset.pathWithoutLeadingSlash, size, data);
+      final file = ArchiveFile(asset.path, size, data);
       archive.addFile(file);
     } else if (asset is FileSystemDirectory) {
       var assets = asset.assets;

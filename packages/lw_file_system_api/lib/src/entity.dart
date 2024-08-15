@@ -11,6 +11,8 @@ sealed class FileSystemEntity<T> {
 
   String get remote => location.remote;
 
+  String get pathWithoutLeadingSlash => location.pathWithoutLeadingSlash;
+
   bool get isEmpty => location.isEmpty;
 
   bool get isRemote => location.isRemote;

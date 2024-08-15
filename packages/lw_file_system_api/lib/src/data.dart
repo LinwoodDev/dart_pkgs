@@ -79,7 +79,7 @@ abstract class ArchiveData<T> {
 class SimpleArchiveData extends ArchiveData<SimpleArchiveData> {
   SimpleArchiveData(super.archive, {super.state});
   SimpleArchiveData.empty() : super.empty();
-  SimpleArchiveData.fromBytes(List<int> bytes) : super.fromBytes(bytes);
+  SimpleArchiveData.fromBytes(super.bytes);
 
   @override
   SimpleArchiveData updateState(ArchiveState state) =>

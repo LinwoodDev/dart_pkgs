@@ -18,6 +18,9 @@ class AssetLocation with AssetLocationMappable {
 
   static const empty = AssetLocation(path: '');
 
+  String get pathWithoutLeadingSlash =>
+      path.startsWith('/') ? path.substring(1) : path;
+
   bool get isEmpty => path.isEmpty;
 
   bool get isRemote => remote.isNotEmpty;

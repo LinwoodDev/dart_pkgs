@@ -15,7 +15,7 @@ sealed class FileSystemEntity<T> {
 
   String get parent => location.parent;
 
-  bool get absolute => location.absolute;
+  String get pathWithoutLeadingSlash => location.pathWithoutLeadingSlash;
 }
 
 class FileSystemFile<T> extends FileSystemEntity<T> {

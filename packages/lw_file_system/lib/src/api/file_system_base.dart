@@ -76,6 +76,7 @@ abstract class GeneralFileSystem {
 
   FutureOr<String> getAbsolutePath(String relativePath) async {
     relativePath = normalizePath(relativePath);
+    if (relativePath.startsWith('/')) relativePath = relativePath.substring(1);
     final root = await getDirectory();
     return p.Context(style: p.Style.posix, current: root)
         .absolute(relativePath);

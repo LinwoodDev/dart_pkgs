@@ -174,7 +174,7 @@ mixin GeneralDirectoryFileSystem<T> on GeneralFileSystem {
   Future<void> reset() async {
     final files = await getRootDirectory(readData: false);
     for (final file in files.assets) {
-      deleteAsset(file.location.path);
+      deleteAsset(file.path);
     }
   }
 }

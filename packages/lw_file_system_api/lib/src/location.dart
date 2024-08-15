@@ -25,6 +25,8 @@ class AssetLocation with AssetLocationMappable {
 
   bool get isRemote => remote.isNotEmpty;
 
+  bool get isLocal => !isRemote;
+
   String get identifier => isRemote ? '$path@$remote' : path;
 
   String get fileExtension => p.extension(path);

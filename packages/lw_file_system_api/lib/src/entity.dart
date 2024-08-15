@@ -7,15 +7,25 @@ sealed class FileSystemEntity<T> {
 
   FileSystemEntity(this.location);
 
-  String get fileName => location.fileName;
+  String get path => location.path;
+
+  String get remote => location.remote;
+
+  bool get isEmpty => location.isEmpty;
+
+  bool get isRemote => location.isRemote;
+
+  bool get isLocal => location.isLocal;
+
+  String get identifier => location.identifier;
 
   String get fileExtension => location.fileExtension;
+
+  String get fileName => location.fileName;
 
   String get fileNameWithoutExtension => location.fileNameWithoutExtension;
 
   String get parent => location.parent;
-
-  String get pathWithoutLeadingSlash => location.pathWithoutLeadingSlash;
 }
 
 class FileSystemFile<T> extends FileSystemEntity<T> {

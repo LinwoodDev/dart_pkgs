@@ -11,17 +11,11 @@ sealed class FileSystemEntity<T> {
 
   String get fileExtension => location.fileExtension;
 
-  String get fileNameWithoutExtension => fileName.substring(0,
-      fileName.contains('.') ? fileName.lastIndexOf('.') : fileName.length - 1);
+  String get fileNameWithoutExtension => location.fileNameWithoutExtension;
 
-  String get pathWithLeadingSlash => location.pathWithLeadingSlash;
+  String get parent => location.parent;
 
-  String get pathWithoutLeadingSlash => location.pathWithoutLeadingSlash;
-
-  String get parent => pathWithLeadingSlash
-      .split('/')
-      .sublist(0, pathWithLeadingSlash.split('/').length - 1)
-      .join('/');
+  bool get absolute => location.absolute;
 }
 
 class FileSystemFile<T> extends FileSystemEntity<T> {

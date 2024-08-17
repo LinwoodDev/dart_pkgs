@@ -24,6 +24,7 @@ Future<void> initStores(
 
 class FileSystemConfig {
   final PasswordStorage passwordStorage;
+  final String Function() getUnnamed;
   final String storeName, variant;
   final String? cacheVariant, pathVariant, dataStoreName, defaultStorageKey;
   final GetDirectoryCallback getDirectory;
@@ -32,10 +33,17 @@ class FileSystemConfig {
   final int databaseVersion;
   final String keySuffix;
 
+  static String unnamedStatic() => 'Unnamed';
+  static String unnamedDate() {
+    final now = DateTime.now();
+    return '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
+  }
+
   FileSystemConfig({
     required this.passwordStorage,
     required this.storeName,
     required this.getDirectory,
+    this.getUnnamed = FileSystemConfig.unnamedDate,
     this.dataStoreName,
     this.onDatabaseUpgrade,
     this.variant = '',

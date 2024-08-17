@@ -17,9 +17,6 @@ part 'base/key.dart';
 typedef CreateDefaultCallback<T extends GeneralFileSystem> = FutureOr<void>
     Function(T fileSystem);
 
-typedef CreateFileCallback = FutureOr<Uint8List> Function(
-    String path, Uint8List data);
-
 void defaultCreateDefault(GeneralFileSystem fileSystem) {}
 
 final _pathContext = p.Context(style: p.Style.posix, current: '/');
@@ -54,15 +51,18 @@ abstract class GeneralFileSystem {
 
   String normalizePath(String path) => _pathContext.canonicalize(path);
 
-  String convertNameToFile(String name) {
-    return name.replaceAll(RegExp(r'[\\/:\*\?"<>\|\n\0-\x1F\x7F-\xFF]'), '_');
+  String convertNameToFile(
+      {String? name, String? fileExtension, String? directory}) {
+    name ??= config.getUnnamed();
+    fileExtension ??= '';
+    directory ??= '';
+    name = name.replaceAll(RegExp(r'[\\/:\*\?"<>\|\n\0-\x1F\x7F-\xFF]'), '_');
+    return p.join(directory, '$name$fileExtension');
   }
 
   Future<String> _findAvailableName(
       String path, Future<bool> Function(String) hasAsset) async {
-    final slashIndex = path.lastIndexOf('/');
-    var dir = slashIndex < 0 ? '' : path.substring(0, slashIndex);
-    if (dir.isNotEmpty) dir = '$dir/';
+    final dir = p.dirname(path);
     final extension = p.extension(path);
     final name = p.basenameWithoutExtension(path);
     var newName = name;

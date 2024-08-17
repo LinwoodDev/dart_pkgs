@@ -9,6 +9,16 @@ mixin GeneralKeyFileSystem<T> on GeneralFileSystem {
   Future<String> findAvailableKey(String path) =>
       _findAvailableName(path, hasKey);
 
+  Future<String> createFileWithName(T data,
+      {String? name, String? fileExtension, String? directory}) {
+    final path = convertNameToFile(
+      name: name,
+      fileExtension: fileExtension,
+      directory: directory,
+    );
+    return createFile(path, data);
+  }
+
   Future<String> createFile(String key, T data) async {
     key = normalizePath(key);
     final name = findAvailableKey(key);

@@ -92,7 +92,17 @@ mixin GeneralDirectoryFileSystem<T> on GeneralFileSystem {
   Future<String> findAvailableName(String path) =>
       _findAvailableName(path, hasAsset);
 
-  Future<FileSystemFile<T>?> createFile(String path, T data,
+  Future<FileSystemFile<T>> createFileWithName(T data,
+      {String? name, String? fileExtension, String? directory}) {
+    final path = convertNameToFile(
+      name: name,
+      fileExtension: fileExtension,
+      directory: directory,
+    );
+    return createFile(path, data);
+  }
+
+  Future<FileSystemFile<T>> createFile(String path, T data,
       {bool forceSync = false}) async {
     path = normalizePath(path);
     final uniquePath = await findAvailableName(path);

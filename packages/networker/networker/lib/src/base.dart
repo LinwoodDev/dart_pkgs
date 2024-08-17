@@ -5,7 +5,7 @@ sealed class NetworkerBase extends RawNetworkerPipe {
   Stream<void> get onClosed;
   FutureOr<void> init();
   bool get isClosed;
-  bool get isOpened => !isClosed;
+  bool get isOpen => !isClosed;
   void close();
   Uri get address;
 }

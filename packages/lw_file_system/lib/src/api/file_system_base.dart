@@ -53,9 +53,12 @@ abstract class GeneralFileSystem {
 
   String convertNameToFile(
       {String? name, String? fileExtension, String? directory}) {
-    name ??= config.getUnnamed();
+    name ??= '';
     fileExtension ??= '';
     directory ??= '';
+    if (name.isEmpty) {
+      name = config.getUnnamed();
+    }
     name = name.replaceAll(RegExp(r'[\\/:\*\?"<>\|\n\0-\x1F\x7F-\xFF]'), '_');
     return p.join(directory, '$name$fileExtension');
   }

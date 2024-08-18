@@ -5,13 +5,13 @@ publish_to: none
 # homepage: https://www.example.com
 
 environment:
-  sdk: ">=2.17.1 <3.0.0"
+  sdk: ">=2.17.1 <4.0.0"
 dependencies:
   networker:
     git:
       url: https://github.com/LinwoodDev/dart_pkgs
       path: packages/networker/networker
-      ref: 84a54efe5351072d2f520de619a0f4270c407b2d
+      ref: b5412c6aa819b1921cac5fd3dfff1d998586dd41
   web_socket_channel: ^3.0.0
 
 dev_dependencies:

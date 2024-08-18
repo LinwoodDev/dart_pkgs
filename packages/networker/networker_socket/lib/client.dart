@@ -44,11 +44,12 @@ class NetworkerSocketClient extends NetworkerClient {
 
   @override
   void close() {
-    channel?.sink.close();
+    _channel?.sink.close();
+    _channel = null;
   }
 
   @override
-  bool get isClosed => channel?.closeReason == null;
+  bool get isClosed => _channel?.closeReason == null;
 
   @override
   Future<void> sendMessage(Uint8List data, [Channel channel = kAnyChannel]) {

@@ -1,5 +1,7 @@
 import 'leap_localizations.dart';
 
+// ignore_for_file: type=lint
+
 /// The translations for Japanese (`ja`).
 class LeapLocalizationsJa extends LeapLocalizations {
   LeapLocalizationsJa([String locale = 'ja']) : super(locale);

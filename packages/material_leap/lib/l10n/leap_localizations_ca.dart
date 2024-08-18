@@ -1,5 +1,7 @@
 import 'leap_localizations.dart';
 
+// ignore_for_file: type=lint
+
 /// The translations for Catalan Valencian (`ca`).
 class LeapLocalizationsCa extends LeapLocalizations {
   LeapLocalizationsCa([String locale = 'ca']) : super(locale);

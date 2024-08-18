@@ -1,5 +1,7 @@
 import 'leap_localizations.dart';
 
+// ignore_for_file: type=lint
+
 /// The translations for Korean (`ko`).
 class LeapLocalizationsKo extends LeapLocalizations {
   LeapLocalizationsKo([String locale = 'ko']) : super(locale);

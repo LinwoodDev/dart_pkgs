@@ -1,5 +1,7 @@
 import 'leap_localizations.dart';
 
+// ignore_for_file: type=lint
+
 /// The translations for Romanian Moldavian Moldovan (`ro`).
 class LeapLocalizationsRo extends LeapLocalizations {
   LeapLocalizationsRo([String locale = 'ro']) : super(locale);

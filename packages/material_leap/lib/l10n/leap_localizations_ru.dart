@@ -1,5 +1,7 @@
 import 'leap_localizations.dart';
 
+// ignore_for_file: type=lint
+
 /// The translations for Russian (`ru`).
 class LeapLocalizationsRu extends LeapLocalizations {
   LeapLocalizationsRu([String locale = 'ru']) : super(locale);

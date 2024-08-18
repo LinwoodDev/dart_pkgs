@@ -50,7 +50,7 @@ class Header extends StatelessWidget {
                 data: iconTheme,
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: actions!,
                 ),
               ),

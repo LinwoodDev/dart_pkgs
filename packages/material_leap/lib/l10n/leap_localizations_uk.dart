@@ -1,5 +1,7 @@
 import 'leap_localizations.dart';
 
+// ignore_for_file: type=lint
+
 /// The translations for Ukrainian (`uk`).
 class LeapLocalizationsUk extends LeapLocalizations {
   LeapLocalizationsUk([String locale = 'uk']) : super(locale);

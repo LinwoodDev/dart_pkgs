@@ -1,5 +1,7 @@
 import 'leap_localizations.dart';
 
+// ignore_for_file: type=lint
+
 /// The translations for English (`en`).
 class LeapLocalizationsEn extends LeapLocalizations {
   LeapLocalizationsEn([String locale = 'en']) : super(locale);

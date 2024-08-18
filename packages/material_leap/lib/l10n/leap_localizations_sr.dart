@@ -1,5 +1,7 @@
 import 'leap_localizations.dart';
 
+// ignore_for_file: type=lint
+
 /// The translations for Serbian (`sr`).
 class LeapLocalizationsSr extends LeapLocalizations {
   LeapLocalizationsSr([String locale = 'sr']) : super(locale);

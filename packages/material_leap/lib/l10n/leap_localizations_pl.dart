@@ -1,5 +1,7 @@
 import 'leap_localizations.dart';
 
+// ignore_for_file: type=lint
+
 /// The translations for Polish (`pl`).
 class LeapLocalizationsPl extends LeapLocalizations {
   LeapLocalizationsPl([String locale = 'pl']) : super(locale);

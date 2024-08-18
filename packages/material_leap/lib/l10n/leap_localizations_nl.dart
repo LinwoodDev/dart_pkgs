@@ -1,5 +1,7 @@
 import 'leap_localizations.dart';
 
+// ignore_for_file: type=lint
+
 /// The translations for Dutch Flemish (`nl`).
 class LeapLocalizationsNl extends LeapLocalizations {
   LeapLocalizationsNl([String locale = 'nl']) : super(locale);

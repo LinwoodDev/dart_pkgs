@@ -1,5 +1,7 @@
 import 'leap_localizations.dart';
 
+// ignore_for_file: type=lint
+
 /// The translations for Vietnamese (`vi`).
 class LeapLocalizationsVi extends LeapLocalizations {
   LeapLocalizationsVi([String locale = 'vi']) : super(locale);

@@ -1,5 +1,7 @@
 import 'leap_localizations.dart';
 
+// ignore_for_file: type=lint
+
 /// The translations for Modern Greek (`el`).
 class LeapLocalizationsEl extends LeapLocalizations {
   LeapLocalizationsEl([String locale = 'el']) : super(locale);

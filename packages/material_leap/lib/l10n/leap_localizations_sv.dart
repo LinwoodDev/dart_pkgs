@@ -1,5 +1,7 @@
 import 'leap_localizations.dart';
 
+// ignore_for_file: type=lint
+
 /// The translations for Swedish (`sv`).
 class LeapLocalizationsSv extends LeapLocalizations {
   LeapLocalizationsSv([String locale = 'sv']) : super(locale);

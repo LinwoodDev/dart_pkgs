@@ -1,5 +1,7 @@
 import 'leap_localizations.dart';
 
+// ignore_for_file: type=lint
+
 /// The translations for Hebrew (`he`).
 class LeapLocalizationsHe extends LeapLocalizations {
   LeapLocalizationsHe([String locale = 'he']) : super(locale);

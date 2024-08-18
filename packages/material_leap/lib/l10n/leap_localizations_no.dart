@@ -1,5 +1,7 @@
 import 'leap_localizations.dart';
 
+// ignore_for_file: type=lint
+
 /// The translations for Norwegian (`no`).
 class LeapLocalizationsNo extends LeapLocalizations {
   LeapLocalizationsNo([String locale = 'no']) : super(locale);

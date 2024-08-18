@@ -34,6 +34,8 @@ import 'leap_localizations_uk.dart';
 import 'leap_localizations_vi.dart';
 import 'leap_localizations_zh.dart';
 
+// ignore_for_file: type=lint
+
 /// Callers can lookup localized strings with an instance of LeapLocalizations
 /// returned by `LeapLocalizations.of(context)`.
 ///

@@ -5,7 +5,7 @@ import 'package:material_leap/material_leap.dart';
 Future<T?> showLeapBottomSheet<T>({
   required BuildContext context,
   String title = '',
-  bool centerTitle = false,
+  bool centerTitle = true,
   Widget Function(BuildContext, Widget child)? builder,
   Widget? leading,
   Widget? trailing,
@@ -37,6 +37,7 @@ Future<T?> showLeapBottomSheet<T>({
                 actions: actions,
                 toolbarHeight: toolbarHeight,
                 spacing: spacing,
+                centerTitle: centerTitle,
               ),
               ...?children,
             ],

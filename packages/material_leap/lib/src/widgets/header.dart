@@ -4,7 +4,6 @@ class Header extends StatelessWidget {
   final Widget? leading, trailing;
   final List<Widget>? actions;
   final Widget title;
-  final EdgeInsetsGeometry? padding;
   final bool centerTitle;
   final double? spacing, toolbarHeight;
 
@@ -13,10 +12,9 @@ class Header extends StatelessWidget {
     this.leading,
     this.trailing,
     this.actions,
-    this.padding,
     this.spacing,
     this.toolbarHeight,
-    this.centerTitle = false,
+    this.centerTitle = true,
     required this.title,
   });
 
@@ -25,6 +23,8 @@ class Header extends StatelessWidget {
     final double toolbarHeight = this.toolbarHeight ??
         Theme.of(context).appBarTheme.toolbarHeight ??
         kToolbarHeight;
+    final iconTheme =
+        Theme.of(context).appBarTheme.iconTheme ?? Theme.of(context).iconTheme;
     return ConstrainedBox(
       constraints: BoxConstraints(maxHeight: toolbarHeight),
       child: NavigationToolbar(
@@ -38,17 +38,13 @@ class Header extends StatelessWidget {
         middleSpacing: spacing ?? 16,
         leading: leading == null
             ? null
-            : IconTheme(
-                data: Theme.of(context).appBarTheme.iconTheme ??
-                    Theme.of(context).iconTheme,
-                child: leading!),
+            : IconTheme(data: iconTheme, child: Center(child: leading!)),
         trailing: trailing == null || actions == null
             ? null
             : IconTheme(
-                data: Theme.of(context).appBarTheme.iconTheme ??
-                    Theme.of(context).iconTheme,
+                data: iconTheme,
                 child: actions == null
-                    ? trailing!
+                    ? Center(child: trailing!)
                     : Row(
                         mainAxisSize: MainAxisSize.min,
                         children: actions!,

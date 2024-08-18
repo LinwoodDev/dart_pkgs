@@ -11,6 +11,8 @@ Future<T?> showLeapBottomSheet<T>({
   Widget? trailing,
   List<Widget>? actions,
   List<Widget>? children,
+  double? toolbarHeight,
+  double? spacing,
   bool isDismissible = true,
 }) =>
     showModalBottomSheet<T>(
@@ -33,6 +35,8 @@ Future<T?> showLeapBottomSheet<T>({
                 leading: leading,
                 trailing: trailing,
                 actions: actions,
+                toolbarHeight: toolbarHeight,
+                spacing: spacing,
               ),
               ...?children,
             ],

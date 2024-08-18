@@ -6,7 +6,7 @@ class Header extends StatelessWidget {
   final Widget title;
   final EdgeInsetsGeometry? padding;
   final bool centerTitle;
-  final double? spacing;
+  final double? spacing, toolbarHeight;
 
   const Header({
     super.key,
@@ -15,15 +15,18 @@ class Header extends StatelessWidget {
     this.actions,
     this.padding,
     this.spacing,
+    this.toolbarHeight,
     this.centerTitle = false,
     required this.title,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding:
-          padding ?? const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+    final double toolbarHeight = this.toolbarHeight ??
+        Theme.of(context).appBarTheme.toolbarHeight ??
+        kToolbarHeight;
+    return ConstrainedBox(
+      constraints: BoxConstraints(minHeight: toolbarHeight),
       child: NavigationToolbar(
         middle: DefaultTextStyle(
           style: Theme.of(context).textTheme.headlineSmall ??

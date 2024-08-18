@@ -26,7 +26,7 @@ class Header extends StatelessWidget {
         Theme.of(context).appBarTheme.toolbarHeight ??
         kToolbarHeight;
     return ConstrainedBox(
-      constraints: BoxConstraints(minHeight: toolbarHeight),
+      constraints: BoxConstraints(maxHeight: toolbarHeight),
       child: NavigationToolbar(
         middle: DefaultTextStyle(
           style: Theme.of(context).textTheme.headlineSmall ??

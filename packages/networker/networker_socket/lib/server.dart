@@ -65,7 +65,7 @@ class NetworkerSocketServer extends NetworkerServer<NetworkerSocketInfo> {
         port: _server?.port,
       );
 
-  Future<void> _run() async {
+  void _run() {
     _server?.where(filterConnections ?? (e) => true).listen((request) async {
       try {
         final socket = await WebSocketTransformer.upgrade(request);
@@ -101,7 +101,7 @@ class NetworkerSocketServer extends NetworkerServer<NetworkerSocketInfo> {
             port,
             securityContext!,
           );
-    _onOpen.add(null);
     _run();
+    _onOpen.add(null);
   }
 }

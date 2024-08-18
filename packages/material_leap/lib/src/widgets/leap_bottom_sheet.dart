@@ -8,11 +8,11 @@ Future<T?> showLeapBottomSheet<T>({
   bool centerTitle = true,
   Widget Function(BuildContext, Widget child)? builder,
   Widget? leading,
-  Widget? trailing,
   List<Widget>? actions,
   List<Widget>? children,
   double? toolbarHeight,
   double? spacing,
+  double? leadingWidth,
   bool isDismissible = true,
 }) =>
     showModalBottomSheet<T>(
@@ -33,7 +33,7 @@ Future<T?> showLeapBottomSheet<T>({
                   textAlign: TextAlign.center,
                 ),
                 leading: leading,
-                trailing: trailing,
+                leadingWidth: leadingWidth,
                 actions: actions,
                 toolbarHeight: toolbarHeight,
                 spacing: spacing,

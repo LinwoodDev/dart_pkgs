@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
 
 class Header extends StatelessWidget {
-  final Widget? leading, trailing;
+  final Widget? leading;
   final List<Widget>? actions;
   final Widget title;
   final bool centerTitle;
-  final double? spacing, toolbarHeight;
+  final double? spacing, toolbarHeight, leadingWidth;
 
   const Header({
     super.key,
     this.leading,
-    this.trailing,
     this.actions,
     this.spacing,
     this.toolbarHeight,
+    this.leadingWidth,
     this.centerTitle = true,
     required this.title,
   });
@@ -38,17 +38,21 @@ class Header extends StatelessWidget {
         middleSpacing: spacing ?? 16,
         leading: leading == null
             ? null
-            : IconTheme(data: iconTheme, child: Center(child: leading!)),
-        trailing: trailing == null || actions == null
+            : IconTheme(
+                data: iconTheme,
+                child: ConstrainedBox(
+                    constraints: BoxConstraints.tightFor(
+                        width: leadingWidth ?? kToolbarHeight),
+                    child: Center(child: leading!))),
+        trailing: actions == null
             ? null
             : IconTheme(
                 data: iconTheme,
-                child: actions == null
-                    ? Center(child: trailing!)
-                    : Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: actions!,
-                      ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: actions!,
+                ),
               ),
       ),
     );

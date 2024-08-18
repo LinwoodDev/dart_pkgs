@@ -56,7 +56,7 @@ class NetworkerSocketServer extends NetworkerServer<NetworkerSocketInfo> {
   }
 
   @override
-  bool get isClosed => _server != null;
+  bool get isClosed => _server == null;
 
   @override
   Uri get address => Uri(

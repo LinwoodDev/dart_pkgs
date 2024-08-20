@@ -4,12 +4,12 @@ import 'package:material_leap/material_leap.dart';
 /// Show a Bottom Sheet with a title, actions and children
 Future<T?> showLeapBottomSheet<T>({
   required BuildContext context,
-  String title = '',
   bool centerTitle = true,
   Widget Function(BuildContext, Widget child)? builder,
-  Widget? leading,
-  List<Widget>? actions,
-  List<Widget>? children,
+  WidgetBuilder? leadingBuilder,
+  WidgetBuilder? titleBuilder,
+  List<Widget> Function(BuildContext)? actionsBuilder,
+  List<Widget> Function(BuildContext)? childrenBuilder,
   double? toolbarHeight,
   double? spacing,
   double? leadingWidth,
@@ -28,18 +28,15 @@ Future<T?> showLeapBottomSheet<T>({
             shrinkWrap: true,
             children: [
               Header(
-                title: Text(
-                  title,
-                  textAlign: TextAlign.center,
-                ),
-                leading: leading,
+                title: titleBuilder?.call(ctx) ?? const SizedBox(),
+                leading: leadingBuilder?.call(ctx),
                 leadingWidth: leadingWidth,
-                actions: actions,
+                actions: actionsBuilder?.call(ctx),
                 toolbarHeight: toolbarHeight,
                 spacing: spacing,
                 centerTitle: centerTitle,
               ),
-              ...?children,
+              ...?childrenBuilder?.call(ctx),
             ],
           ),
         );

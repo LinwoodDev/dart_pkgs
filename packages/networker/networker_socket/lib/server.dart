@@ -5,6 +5,7 @@ import 'dart:typed_data';
 import 'package:networker/networker.dart';
 
 class NetworkerSocketInfo extends ConnectionInfo {
+  @override
   final Uri address;
   final WebSocket socket;
 

@@ -5,6 +5,7 @@ abstract class ConnectionInfo {
   void sendMessage(Uint8List data);
   bool get isClosed;
   bool get isOpen => !isClosed;
+  Uri get address;
 }
 
 /// The server abstraction of the networker library

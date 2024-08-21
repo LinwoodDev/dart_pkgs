@@ -16,11 +16,14 @@ abstract class NetworkerServer<T extends ConnectionInfo> extends NetworkerBase {
       StreamController.broadcast();
   final StreamController<Channel> _disconnectController =
       StreamController.broadcast();
+  final StreamController<Set<Channel>> _changeController =
+      StreamController.broadcast();
 
   Stream<Channel> get clientConnect => _connectController.stream;
   Stream<Channel> get clientDisconnect => _disconnectController.stream;
+  Stream<Set<Channel>> get clientChange => _changeController.stream;
 
-  List<Channel> get clientConnections => _connections.keys.toList();
+  Set<Channel> get clientConnections => _connections.keys.toSet();
 
   T? getConnectionInfo(Channel channel) => _connections[channel];
 
@@ -40,6 +43,7 @@ abstract class NetworkerServer<T extends ConnectionInfo> extends NetworkerBase {
     if (id == kAnyChannel) return id;
     _connections[id] = info;
     _connectController.add(id);
+    _changeController.add(clientConnections);
     return id;
   }
 
@@ -47,7 +51,12 @@ abstract class NetworkerServer<T extends ConnectionInfo> extends NetworkerBase {
   bool removeConnection(Channel id) {
     if (_connections.remove(id) == null) return false;
     _disconnectController.add(id);
+    _changeController.add(clientConnections);
     return true;
+  }
+
+  void closeConnection(Channel id) {
+    getConnectionInfo(id)?.close();
   }
 
   void _sendMessage(Uint8List data, Channel channel) =>

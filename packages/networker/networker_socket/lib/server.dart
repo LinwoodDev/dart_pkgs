@@ -20,8 +20,9 @@ class NetworkerSocketInfo extends ConnectionInfo {
   bool get isClosed => socket.closeReason != null;
 
   @override
-  void sendMessage(Uint8List data) {
+  Future<void> sendMessage(Uint8List data) {
     socket.add(data);
+    return socket.done;
   }
 }
 

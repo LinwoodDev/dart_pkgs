@@ -49,8 +49,9 @@ abstract class NetworkerServer<T extends ConnectionInfo> extends NetworkerBase {
 
   @protected
   bool removeConnection(Channel id) {
-    if (_connections.remove(id) == null) return false;
+    if (!_connections.containsKey(id)) return false;
     _disconnectController.add(id);
+    _connections.remove(id);
     _changeController.add(clientConnections);
     return true;
   }

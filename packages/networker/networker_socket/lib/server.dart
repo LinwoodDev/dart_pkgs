@@ -93,7 +93,8 @@ class NetworkerSocketServer extends NetworkerServer<NetworkerSocketInfo> {
     if (isOpen) {
       return;
     }
-    _server = securityContext == null
+    final context = securityContext;
+    _server = context == null
         ? await HttpServer.bind(
             serverAddress,
             port,
@@ -101,7 +102,7 @@ class NetworkerSocketServer extends NetworkerServer<NetworkerSocketInfo> {
         : await HttpServer.bindSecure(
             serverAddress,
             port,
-            securityContext!,
+            context,
           );
     _run();
     _onOpen.add(null);

@@ -12,15 +12,17 @@ abstract class ConnectionInfo {
 /// Please note that connection ids can only be between 2 and 2^16
 abstract class NetworkerServer<T extends ConnectionInfo> extends NetworkerBase {
   final Map<Channel, T> _connections = {};
-  final StreamController<Channel> _connectController =
+  final StreamController<(Channel, ConnectionInfo)> _connectController =
       StreamController.broadcast();
-  final StreamController<Channel> _disconnectController =
+  final StreamController<(Channel, ConnectionInfo)> _disconnectController =
       StreamController.broadcast();
   final StreamController<Set<Channel>> _changeController =
       StreamController.broadcast();
 
-  Stream<Channel> get clientConnect => _connectController.stream;
-  Stream<Channel> get clientDisconnect => _disconnectController.stream;
+  Stream<(Channel, ConnectionInfo)> get clientConnect =>
+      _connectController.stream;
+  Stream<(Channel, ConnectionInfo)> get clientDisconnect =>
+      _disconnectController.stream;
   Stream<Set<Channel>> get clientChange => _changeController.stream;
 
   Set<Channel> get clientConnections => _connections.keys.toSet();
@@ -42,16 +44,16 @@ abstract class NetworkerServer<T extends ConnectionInfo> extends NetworkerBase {
     final id = _findAvailableChannel();
     if (id == kAnyChannel) return id;
     _connections[id] = info;
-    _connectController.add(id);
+    _connectController.add((id, info));
     _changeController.add(clientConnections);
     return id;
   }
 
   @protected
   bool removeConnection(Channel id) {
-    if (!_connections.containsKey(id)) return false;
-    _disconnectController.add(id);
-    _connections.remove(id);
+    final info = _connections.remove(id);
+    if (info == null) return false;
+    _disconnectController.add((id, info));
     _changeController.add(clientConnections);
     return true;
   }

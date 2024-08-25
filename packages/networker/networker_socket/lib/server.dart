@@ -52,8 +52,8 @@ class NetworkerSocketServer extends NetworkerServer<NetworkerSocketInfo> {
   Stream<void> get onOpen => _onOpen.stream;
 
   @override
-  void close() {
-    _server?.close();
+  Future<void> close() async {
+    await _server?.close();
     _server = null;
   }
 
@@ -71,8 +71,13 @@ class NetworkerSocketServer extends NetworkerServer<NetworkerSocketInfo> {
     _server?.where(filterConnections ?? (e) => true).listen((request) async {
       try {
         final socket = await WebSocketTransformer.upgrade(request);
-        final id = addClientConnection(
-            NetworkerSocketInfo(request.requestedUri, socket));
+        final info = request.connectionInfo;
+        final id = addClientConnection(NetworkerSocketInfo(
+            Uri(
+              host: info?.remoteAddress.address,
+              port: info?.remotePort,
+            ),
+            socket));
         // No free space
         if (id == kAnyChannel) socket.close();
         socket.listen((event) {

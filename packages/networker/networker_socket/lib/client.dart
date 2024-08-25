@@ -43,8 +43,8 @@ class NetworkerSocketClient extends NetworkerClient {
   }
 
   @override
-  void close() {
-    _channel?.sink.close();
+  Future<void> close() async {
+    await _channel?.sink.close();
     _channel = null;
   }
 

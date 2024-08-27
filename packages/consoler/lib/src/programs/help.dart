@@ -13,7 +13,7 @@ final class HelpProgram extends ConsoleProgram {
   String getDescription() => "Show an overview about all commands";
 
   @override
-  void run(String? label, List<String> args) {
+  void run(String label, List<String> args) {
     print("-----");
     print(description);
     for (final program in consoler.programs) {

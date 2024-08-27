@@ -103,6 +103,6 @@ final class Consoler<T extends ConsoleProgram> {
     final splitted = _splitBySpaces(input);
     final command = splitted.firstOrNull;
     (_programs[command] ?? _programs[null])
-        ?.run(command, splitted.isEmpty ? const [] : splitted.sublist(1));
+        ?.run(command ?? '', splitted.isEmpty ? const [] : splitted.sublist(1));
   }
 }

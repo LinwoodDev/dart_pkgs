@@ -29,7 +29,15 @@ class AssetLocation with AssetLocationMappable {
 
   String get identifier => isRemote ? '$path@$remote' : path;
 
-  String get fileExtension => p.extension(path);
+  String get fileExtensionWithDot => p.extension(path);
+
+  String get fileExtension {
+    final withDot = fileExtensionWithDot;
+    if (withDot.startsWith('.')) {
+      return withDot.substring(1);
+    }
+    return withDot;
+  }
 
   String get fileName => p.basename(path);
 

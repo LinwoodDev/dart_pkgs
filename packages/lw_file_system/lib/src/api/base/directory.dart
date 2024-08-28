@@ -37,9 +37,10 @@ mixin GeneralDirectoryFileSystem<T> on GeneralFileSystem {
         yield getDir();
       } else {
         await for (final file in fetchAsset(child.path,
-            listLevel: nextLevel,
-            readData: readData,
-            forceRemote: forceRemote)) {
+                listLevel: nextLevel,
+                readData: readData,
+                forceRemote: forceRemote)
+            .handleError((_, __) {})) {
           if (file == null) continue;
           if (index == null) {
             index = assets.length;

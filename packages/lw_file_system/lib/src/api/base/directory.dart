@@ -93,10 +93,10 @@ mixin GeneralDirectoryFileSystem<T> on GeneralFileSystem {
       _findAvailableName(path, hasAsset);
 
   Future<FileSystemFile<T>> createFileWithName(T data,
-      {String? name, String? fileExtension, String? directory}) {
+      {String? name, String? suffix, String? directory}) {
     final path = convertNameToFile(
       name: name,
-      fileExtension: fileExtension,
+      suffix: suffix,
       directory: directory,
     );
     return createFile(path, data);

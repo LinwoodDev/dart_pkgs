@@ -10,10 +10,10 @@ mixin GeneralKeyFileSystem<T> on GeneralFileSystem {
       _findAvailableName(path, hasKey);
 
   Future<String> createFileWithName(T data,
-      {String? name, String? fileExtension, String? directory}) {
+      {String? name, String? suffix, String? directory}) {
     final path = convertNameToFile(
       name: name,
-      fileExtension: fileExtension,
+      suffix: suffix,
       directory: directory,
     );
     return createFile(path, data);
@@ -46,7 +46,7 @@ mixin GeneralKeyFileSystem<T> on GeneralFileSystem {
   Stream<List<FileSystemFile<T>>> fetchFiles() async* {
     final files = <FileSystemFile<T>>[];
     yield files;
-    await for (final file in listFiles()) {
+    await for (final file in listFiles().handleError((_, __) {})) {
       files.add(file);
       yield files;
     }

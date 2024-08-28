@@ -51,16 +51,15 @@ abstract class GeneralFileSystem {
 
   String normalizePath(String path) => _pathContext.canonicalize(path);
 
-  String convertNameToFile(
-      {String? name, String? fileExtension, String? directory}) {
+  String convertNameToFile({String? name, String? suffix, String? directory}) {
     name ??= '';
-    fileExtension ??= '';
+    suffix ??= '';
     directory ??= '';
     if (name.isEmpty) {
       name = config.getUnnamed();
     }
     name = name.replaceAll(RegExp(r'[\\/:\*\?"<>\|\n\0-\x1F\x7F-\xFF]'), '_');
-    return p.join(directory, '$name$fileExtension');
+    return p.join(directory, '$name$suffix');
   }
 
   Future<String> _findAvailableName(

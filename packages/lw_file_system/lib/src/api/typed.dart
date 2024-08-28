@@ -83,7 +83,16 @@ class TypedDirectoryFileSystem<T> extends TypedFileSystem<T>
   FileSystemDirectory<T> _toTypedDirectory(RawFileSystemDirectory directory) =>
       FileSystemDirectory(
         directory.location,
-        assets: directory.assets.map((e) => _toTypedAsset(e)).toList(),
+        assets: directory.assets
+            .map((e) {
+              try {
+                return _toTypedAsset(e);
+              } catch (_) {
+                return null;
+              }
+            })
+            .nonNulls
+            .toList(),
       );
 
   @override

@@ -40,7 +40,7 @@ mixin WebFileSystem on GeneralFileSystem {
     );
     _db = db;
     if (hasDefault() && !isInitialized()) {
-      runDefault();
+      await runDefault();
       html.window.localStorage
           .setItem(config.currentDefaultStorageName, 'true');
     }

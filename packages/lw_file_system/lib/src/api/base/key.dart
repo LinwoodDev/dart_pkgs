@@ -21,9 +21,9 @@ mixin GeneralKeyFileSystem<T> on GeneralFileSystem {
 
   Future<String> createFile(String key, T data) async {
     key = normalizePath(key);
-    final name = findAvailableKey(key);
+    key = await findAvailableKey(key);
     await updateFile(key, data);
-    return name;
+    return key;
   }
 
   Future<bool> hasKey(String key);
@@ -192,8 +192,8 @@ class KeyDirectoryFileSystem extends KeyFileSystem {
 
   @override
   Future<bool> hasKey(String key) async {
-    if (!await fileSystem.hasAsset(key + config.keySuffix)) return false;
-    final asset = await fileSystem.getAsset(key + config.keySuffix);
+    final asset = await fileSystem.getAsset(key + config.keySuffix,
+        listLevel: noListLevel, readData: false);
     return asset is RawFileSystemFile;
   }
 

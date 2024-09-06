@@ -16,7 +16,7 @@ class NetworkerSocketClient extends NetworkerClient {
   }
 
   @override
-  bool get isClosed => channel.closeReason == null;
+  bool get isClosed => channel.closeReason != null;
 
   @override
   Future<void> send(RawData data) {

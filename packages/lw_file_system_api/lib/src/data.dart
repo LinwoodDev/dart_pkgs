@@ -74,6 +74,21 @@ abstract class ArchiveData<T> {
   T removeAsset(String name) => removeAssets([name]);
   T removeAssets(Iterable<String> names) =>
       updateState(state.copyWith(removed: {...state.removed, ...names}));
+
+  Iterable<String> getAssets(String path, [bool removeExtension = false]) => {
+        ...archive.files.map((e) => e.name),
+        ...state.added.keys,
+      }
+          .where((e) => e.startsWith(path))
+          .where((e) => !state.removed.contains(e))
+          .map((e) => e.substring(path.length))
+          .map((e) {
+        if (e.startsWith('/')) e = e.substring(1);
+        if (!removeExtension) return e;
+        final startExtension = e.lastIndexOf('.');
+        if (startExtension == -1) return e;
+        return e.substring(0, startExtension);
+      });
 }
 
 class SimpleArchiveData extends ArchiveData<SimpleArchiveData> {

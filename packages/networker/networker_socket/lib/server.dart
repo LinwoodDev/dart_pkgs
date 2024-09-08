@@ -31,7 +31,8 @@ class NetworkerSocketServer extends NetworkerServer<NetworkerSocketInfo> {
   final SecurityContext? securityContext;
   final dynamic serverAddress;
   final int port;
-  bool Function(HttpRequest event)? filterConnections;
+  FutureOr<bool> Function(HttpRequest event)? filterConnections;
+  final bool overrideStatusCode;
 
   HttpServer? get server => _server;
 
@@ -40,6 +41,7 @@ class NetworkerSocketServer extends NetworkerServer<NetworkerSocketInfo> {
     this.port, {
     this.filterConnections,
     this.securityContext,
+    this.overrideStatusCode = true,
   });
 
   final StreamController<void> _onOpen = StreamController<void>.broadcast(),
@@ -68,8 +70,16 @@ class NetworkerSocketServer extends NetworkerServer<NetworkerSocketInfo> {
       );
 
   void _run() {
-    _server?.where(filterConnections ?? (e) => true).listen((request) async {
+    _server?.listen((request) async {
       try {
+        if (await filterConnections?.call(request) == false) {
+          if (overrideStatusCode) {
+            request.response.statusCode = HttpStatus.forbidden;
+          }
+          request.response.close();
+          return;
+        }
+        request.response.statusCode = HttpStatus.switchingProtocols;
         final socket = await WebSocketTransformer.upgrade(request);
         final info = request.connectionInfo;
         final id = addClientConnection(NetworkerSocketInfo(

@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:dart_mappable/dart_mappable.dart';
+import 'package:path/path.dart' as p;
 
 part 'storage.mapper.dart';
 
@@ -171,18 +172,31 @@ sealed class RemoteStorage extends ExternalStorage with RemoteStorageMappable {
     );
   }
 
+  String buildVariantPath({
+    String variant = '',
+    List<String> path = const [],
+  }) {
+    var currentPath = p.joinAll([
+      getBasePath(),
+      if (variant.isNotEmpty) paths[variant] ?? '',
+      ...path,
+    ]);
+    if (currentPath.startsWith('/')) {
+      currentPath = currentPath.substring(1);
+    }
+    return currentPath;
+  }
+
   Uri? buildVariantUri({
     String variant = '',
     List<String> path = const [],
     Map<String, String> query = const {},
   }) {
-    final current = paths[variant];
-    return current?.isEmpty ?? true
-        ? null
-        : buildUri(
-            path: [...current!.split('/'), ...path],
-            query: query,
-          );
+    final current = buildVariantPath(variant: variant, path: path);
+    return buildUri(
+      path: current.split('/'),
+      query: query,
+    );
   }
 
   @override

@@ -18,14 +18,11 @@ class DavRemoteDirectoryFileSystem extends RemoteDirectoryFileSystem {
 
   @override
   Future<RawFileSystemDirectory> createDirectory(String path) async {
+    path = normalizePath(path);
     if (path.startsWith('/')) {
       path = path.substring(1);
     }
-    if (!path.endsWith('/')) {
-      path = '$path/';
-    }
-    final location = AssetLocation(
-        remote: storage.identifier, path: path.substring(0, path.length - 1));
+    final location = AssetLocation(remote: storage.identifier, path: path);
     final response = await createRequest(path.split('/'), method: 'MKCOL');
     if (response == null) return RawFileSystemDirectory(location);
     if (response.statusCode != 201) {
@@ -36,6 +33,10 @@ class DavRemoteDirectoryFileSystem extends RemoteDirectoryFileSystem {
 
   @override
   Future<void> deleteAsset(String path) async {
+    path = normalizePath(path);
+    if (path.startsWith('/')) {
+      path = path.substring(1);
+    }
     final response = await createRequest(path.split('/'), method: 'DELETE');
     if (response == null) return;
     if (response.statusCode != 204) {
@@ -47,6 +48,9 @@ class DavRemoteDirectoryFileSystem extends RemoteDirectoryFileSystem {
   Future<RawFileSystemEntity?> readAsset(String path,
       {bool readData = true, bool forceRemote = false}) async {
     path = normalizePath(path);
+    if (path.startsWith('/')) {
+      path = path.substring(1);
+    }
     final cached = await getCachedContent(path);
     if (cached != null && !forceRemote) {
       return cached;
@@ -156,6 +160,10 @@ class DavRemoteDirectoryFileSystem extends RemoteDirectoryFileSystem {
 
   @override
   Future<DateTime?> getRemoteFileModified(String path) async {
+    path = normalizePath(path);
+    if (path.startsWith('/')) {
+      path = path.substring(1);
+    }
     final response = await createRequest(path.split('/'), method: 'PROPFIND');
     if (response?.statusCode != 207) {
       return null;
@@ -182,6 +190,10 @@ class DavRemoteDirectoryFileSystem extends RemoteDirectoryFileSystem {
 
   @override
   Future<bool> hasAsset(String path) async {
+    path = normalizePath(path);
+    if (path.startsWith('/')) {
+      path = path.substring(1);
+    }
     final response = await createRequest(path.split('/'));
     return response?.statusCode == 200;
   }

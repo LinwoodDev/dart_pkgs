@@ -65,15 +65,15 @@ abstract class GeneralFileSystem {
   Future<String> _findAvailableName(
       String path, Future<bool> Function(String) hasAsset) async {
     final dir = p.dirname(path);
-    final extension = p.extension(path);
+    final fileExtension = p.extension(path);
     final name = p.basenameWithoutExtension(path);
     var newName = name;
     var i = 1;
-    while (await hasAsset(p.join(dir, '$newName$extension'))) {
+    while (await hasAsset(p.join(dir, '$newName$fileExtension'))) {
       newName = '$name ($i)';
       i++;
     }
-    return p.join(dir, '$newName$extension');
+    return p.join(dir, '$newName$fileExtension');
   }
 
   FutureOr<String> getAbsolutePath(String relativePath) async {

@@ -129,6 +129,13 @@ class TypedDirectoryFileSystem<T> extends TypedFileSystem<T>
   @override
   @protected
   bool hasDefault() => createDefault != defaultCreateDefault;
+
+  @override
+  Future<Uint8List?> loadAbsolute(String path) => fileSystem.loadAbsolute(path);
+
+  @override
+  Future<bool> moveAbsolute(String oldPath, String newPath) =>
+      fileSystem.moveAbsolute(oldPath, newPath);
 }
 
 class TypedKeyFileSystem<T> extends TypedFileSystem<T>

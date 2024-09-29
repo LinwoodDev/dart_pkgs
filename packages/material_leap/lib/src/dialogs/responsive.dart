@@ -1,32 +1,41 @@
 import 'package:flutter/material.dart';
 import 'package:material_leap/material_leap.dart';
 
+typedef ResponsiveWidgetBuilder = Widget Function(
+    BuildContext context, bool isFullWidth);
+
 class ResponsiveDialog extends StatelessWidget {
   final double breakpoint;
-  final Widget child;
+  final Widget? child;
+  final ResponsiveWidgetBuilder? builder;
   final BoxConstraints? constraints;
 
   const ResponsiveDialog({
     super.key,
-    required this.child,
+    this.child,
+    this.builder,
     this.breakpoint = LeapBreakpoints.compact,
     this.constraints,
-  });
+  }) : assert(
+            (child == null && builder != null) ||
+                (child != null && builder == null),
+            'Either child or builder must be provided');
 
   @override
   Widget build(BuildContext context) {
     final currentSize = MediaQuery.sizeOf(context).width;
     if (currentSize < breakpoint) {
       return Dialog.fullscreen(
-        child: child,
+        child: builder?.call(context, true) ?? child,
       );
     } else {
+      final content = builder?.call(context, false) ?? child;
       return Dialog(
         child: constraints == null
-            ? child
+            ? content
             : ConstrainedBox(
                 constraints: constraints!,
-                child: child,
+                child: content,
               ),
       );
     }
@@ -35,7 +44,9 @@ class ResponsiveDialog extends StatelessWidget {
 
 class ResponsiveAlertDialog extends StatelessWidget {
   final double breakpoint;
-  final Widget title, content;
+  final Widget title;
+  final Widget? content;
+  final ResponsiveWidgetBuilder? contentBuilder;
   final Widget? leading;
   final BoxConstraints? constraints;
   final List<Widget>? actions, headerActions;
@@ -48,7 +59,8 @@ class ResponsiveAlertDialog extends StatelessWidget {
 
   const ResponsiveAlertDialog({
     super.key,
-    required this.content,
+    this.content,
+    this.contentBuilder,
     this.breakpoint = LeapBreakpoints.compact,
     this.constraints,
     this.actions,
@@ -62,7 +74,10 @@ class ResponsiveAlertDialog extends StatelessWidget {
     this.leading,
     required this.title,
     this.contentPadding,
-  });
+  }) : assert(
+            (content == null && contentBuilder != null) ||
+                (content != null && contentBuilder == null),
+            'Either content or contentBuilder must be provided');
 
   @override
   Widget build(BuildContext context) {
@@ -71,7 +86,7 @@ class ResponsiveAlertDialog extends StatelessWidget {
     return ResponsiveDialog(
       breakpoint: breakpoint,
       constraints: constraints,
-      child: Column(
+      builder: (context, isFullWidth) => Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -87,7 +102,12 @@ class ResponsiveAlertDialog extends StatelessWidget {
                 Flexible(
                     child: Padding(
                   padding: contentPadding ?? const EdgeInsets.all(16.0),
-                  child: content,
+                  child: Builder(
+                    builder: (context) =>
+                        contentBuilder?.call(context, isFullWidth) ??
+                        content ??
+                        const SizedBox(),
+                  ),
                 )),
               ],
             ),

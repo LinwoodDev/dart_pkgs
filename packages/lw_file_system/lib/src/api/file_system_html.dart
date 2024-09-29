@@ -3,7 +3,6 @@ import 'dart:js_interop';
 
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
-import 'package:idb_shim/idb.dart';
 import 'package:idb_shim/idb_browser.dart';
 import 'package:lw_file_system/lw_file_system.dart';
 import 'package:web/web.dart' as html;

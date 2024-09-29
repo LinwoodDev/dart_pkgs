@@ -7,7 +7,7 @@ void saveToClipboard(BuildContext context, String text,
   Clipboard.setData(ClipboardData(text: text));
   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
     behavior: behavior ?? SnackBarBehavior.floating,
-    content: Row(children: [
+    content: Row(mainAxisSize: MainAxisSize.min, children: [
       if (leading != null) ...[
         leading,
         const SizedBox(width: 8),

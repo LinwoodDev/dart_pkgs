@@ -79,8 +79,8 @@ abstract class ArchiveData<T> {
         ...archive.files.map((e) => e.name),
         ...state.added.keys,
       }
-          .where((e) => e.startsWith(path))
-          .where((e) => !state.removed.contains(e))
+          .where((e) =>
+              e.startsWith(path) && !state.removed.contains(e) && e != path)
           .map((e) => e.substring(path.length))
           .map((e) {
         if (e.startsWith('/')) e = e.substring(1);

@@ -6,7 +6,7 @@ void saveToClipboard(
   BuildContext context,
   String text, {
   Widget? leading,
-  SnackBarBehavior behavior = SnackBarBehavior.floating,
+  SnackBarBehavior? behavior = SnackBarBehavior.floating,
   double? width = 300,
 }) {
   Clipboard.setData(ClipboardData(text: text));

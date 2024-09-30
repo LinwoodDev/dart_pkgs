@@ -11,7 +11,7 @@ mixin GeneralKeyFileSystem<T> on GeneralFileSystem {
 
   Future<String> createFileWithName(T data,
       {String? name, String? suffix, String? directory}) {
-    final path = convertNameToFile(
+    final path = convertNameToFileSystem(
       name: name,
       suffix: suffix,
       directory: directory,

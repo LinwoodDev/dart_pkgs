@@ -95,7 +95,7 @@ mixin GeneralDirectoryFileSystem<T> on GeneralFileSystem {
 
   Future<FileSystemFile<T>> createFileWithName(T data,
       {String? name, String? suffix, String? directory}) {
-    final path = convertNameToFile(
+    final path = convertNameToFileSystem(
       name: name,
       suffix: suffix,
       directory: directory,

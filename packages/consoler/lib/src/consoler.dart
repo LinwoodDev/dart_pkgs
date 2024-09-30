@@ -82,6 +82,11 @@ final class Consoler<T extends ConsoleProgram> {
     stdout.write('\r\n$prefix');
   }
 
+  T runPrintZone<T>(T Function() action) => runZoned(action,
+          zoneSpecification: ZoneSpecification(print: (_, __, ___, message) {
+        print(message);
+      }));
+
   void print(Object? message, {LogLevel? level}) {
     if (level != null && level.index < minLogLevel.index) return;
     stdout.write('\r');
@@ -99,11 +104,11 @@ final class Consoler<T extends ConsoleProgram> {
     return _programs.remove(name) != null;
   }
 
-  void _onInput(String input) {
+  Future<void> _onInput(String input) async {
     final splitted = _splitBySpaces(input);
     final command = splitted.firstOrNull;
-    (_programs[command] ?? _programs[null])
-        ?.run(command ?? '', splitted.isEmpty ? const [] : splitted.sublist(1));
-    sendPrefix();
+
+    runPrintZone(() => (_programs[command] ?? _programs[null])?.run(
+        command ?? '', splitted.isEmpty ? const [] : splitted.sublist(1)));
   }
 }

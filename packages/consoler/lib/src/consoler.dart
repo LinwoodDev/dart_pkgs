@@ -82,7 +82,7 @@ final class Consoler<T extends ConsoleProgram> {
     stdout.write('\r\n$prefix');
   }
 
-  T runPrintZone<T>(T Function() action) => runZoned(action,
+  R runPrintZone<R>(R Function() action) => runZoned(action,
           zoneSpecification: ZoneSpecification(print: (_, __, ___, message) {
         print(message);
       }));

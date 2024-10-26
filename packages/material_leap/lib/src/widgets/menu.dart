@@ -8,17 +8,19 @@ extension MenuControllerToggleExtension on MenuController {
 
 Widget _offsetCalculator(
   BuildContext context,
-  Widget Function(Offset offset) builder, {
+  Widget Function(Offset? Function() offset) builder, {
   bool calculateLocalOffset = true,
 }) {
   if (!calculateLocalOffset) {
-    return builder(Offset.zero);
+    return builder(() => null);
   }
   return Builder(builder: (currentContext) {
-    final RenderBox renderBox = currentContext.findRenderObject() as RenderBox;
-    final localOffset = renderBox.globalToLocal(Offset.zero,
-        ancestor: context.findRenderObject());
-    return builder(localOffset);
+    return builder(() {
+      final RenderBox renderBox =
+          currentContext.findRenderObject() as RenderBox;
+      return renderBox.globalToLocal(Offset.zero,
+          ancestor: context.findRenderObject());
+    });
   });
 }
 
@@ -40,7 +42,8 @@ MenuAnchorChildBuilder defaultMenuButton({
               tooltip: tooltip,
               isSelected:
                   (selectedOnOpen && controller.isOpen) ? true : isSelected,
-              onPressed: enabled ? controller.toggle : null,
+              onPressed:
+                  enabled ? () => controller.toggle(position: offset()) : null,
             ),
         calculateLocalOffset: calculateLocalOffset);
 
@@ -62,7 +65,8 @@ MenuAnchorChildBuilder defaultFilledMenuButton({
               tooltip: tooltip,
               isSelected:
                   (selectedOnOpen && controller.isOpen) ? true : isSelected,
-              onPressed: enabled ? controller.toggle : null,
+              onPressed:
+                  enabled ? () => controller.toggle(position: offset()) : null,
             ),
         calculateLocalOffset: calculateLocalOffset);
 
@@ -84,7 +88,8 @@ MenuAnchorChildBuilder defaultFilledTonalMenuButton({
             tooltip: tooltip,
             isSelected:
                 (selectedOnOpen && controller.isOpen) ? true : isSelected,
-            onPressed: enabled ? controller.toggle : null,
+            onPressed:
+                enabled ? () => controller.toggle(position: offset()) : null,
           ),
           calculateLocalOffset: calculateLocalOffset,
         );
@@ -107,7 +112,8 @@ MenuAnchorChildBuilder defaultOutlinedMenuButton({
             tooltip: tooltip,
             isSelected:
                 (selectedOnOpen && controller.isOpen) ? true : isSelected,
-            onPressed: enabled ? controller.toggle : null,
+            onPressed:
+                enabled ? () => controller.toggle(position: offset()) : null,
           ),
           calculateLocalOffset: calculateLocalOffset,
         );

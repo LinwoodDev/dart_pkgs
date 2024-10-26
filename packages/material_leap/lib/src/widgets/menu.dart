@@ -6,7 +6,7 @@ extension MenuControllerToggleExtension on MenuController {
       isOpen ? close() : open(position: position);
 }
 
-Widget _offsetCalculator(
+Widget offsetCalculator(
   BuildContext context,
   Widget Function(Offset? Function() offset) builder, {
   bool calculateLocalOffset = true,
@@ -18,10 +18,11 @@ Widget _offsetCalculator(
   return Builder(builder: (currentContext) {
     return builder(() {
       final RenderBox renderBox = context.findRenderObject() as RenderBox;
+      final currentRender = currentContext.findRenderObject();
       final offset = renderBox.globalToLocal(Offset.zero,
           ancestor: currentContext.findRenderObject());
-      if (alignment != null) {
-        final size = renderBox.size;
+      if (alignment != null && currentRender is RenderBox) {
+        final size = currentRender.size;
         final alignmentOffset = alignment.resolve(Directionality.of(context));
         return offset + alignmentOffset.alongSize(size);
       } else {
@@ -41,7 +42,7 @@ MenuAnchorChildBuilder defaultMenuButton({
   bool calculateLocalOffset = false,
   AlignmentGeometry? alignment = Alignment.topRight,
 }) =>
-    (context, controller, child) => _offsetCalculator(
+    (context, controller, child) => offsetCalculator(
           context,
           (offset) => IconButton(
             icon: iconBuilder?.call(context, controller, child) ??
@@ -67,7 +68,7 @@ MenuAnchorChildBuilder defaultFilledMenuButton({
   bool calculateLocalOffset = false,
   AlignmentGeometry? alignment = Alignment.topRight,
 }) =>
-    (context, controller, child) => _offsetCalculator(
+    (context, controller, child) => offsetCalculator(
           context,
           (offset) => IconButton.filled(
             icon: iconBuilder?.call(context, controller, child) ??
@@ -93,7 +94,7 @@ MenuAnchorChildBuilder defaultFilledTonalMenuButton({
   bool calculateLocalOffset = false,
   AlignmentGeometry? alignment = Alignment.topRight,
 }) =>
-    (context, controller, child) => _offsetCalculator(
+    (context, controller, child) => offsetCalculator(
           context,
           (offset) => IconButton.filledTonal(
             icon: iconBuilder?.call(context, controller, child) ??
@@ -119,7 +120,7 @@ MenuAnchorChildBuilder defaultOutlinedMenuButton({
   bool calculateLocalOffset = false,
   AlignmentGeometry? alignment = Alignment.topRight,
 }) =>
-    (context, controller, child) => _offsetCalculator(
+    (context, controller, child) => offsetCalculator(
           context,
           (offset) => IconButton.outlined(
             icon: iconBuilder?.call(context, controller, child) ??

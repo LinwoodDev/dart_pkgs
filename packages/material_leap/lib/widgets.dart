@@ -4,6 +4,7 @@ export 'src/widgets/advanced_text_field.dart';
 export 'src/widgets/advanced_switch_list_tile.dart';
 export 'src/widgets/box_tile.dart';
 export 'src/widgets/color_button.dart';
+export 'src/widgets/context_region.dart';
 export 'src/widgets/exact_slider.dart';
 export 'src/widgets/date_time_field.dart';
 export 'src/widgets/header.dart';

@@ -1,3 +1,5 @@
+library;
+
 class NetworkerRtcIceServer {
   final String url;
 

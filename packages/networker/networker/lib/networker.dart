@@ -1,4 +1,4 @@
-library networker;
+library;
 
 export 'src/connection.dart';
 export 'src/plugin/channel.dart';

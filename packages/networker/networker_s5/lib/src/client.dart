@@ -15,6 +15,14 @@ class NetworkerS5 extends NetworkerClient {
   late final S5 s5;
   late final KeyPairEd25519 kp;
   StreamSubscription<SignedStreamMessage>? subscription;
+  final StreamController<void> _onOpen = StreamController<void>.broadcast(),
+      _onClosed = StreamController<void>.broadcast();
+
+  @override
+  Stream<void> get onClosed => _onClosed.stream;
+
+  @override
+  Stream<void> get onOpen => _onOpen.stream;
 
   @override
   Uri get address => Uri(

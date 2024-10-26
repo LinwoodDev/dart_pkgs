@@ -16,10 +16,9 @@ Widget _offsetCalculator(
   }
   return Builder(builder: (currentContext) {
     return builder(() {
-      final RenderBox renderBox =
-          currentContext.findRenderObject() as RenderBox;
+      final RenderBox renderBox = context.findRenderObject() as RenderBox;
       return renderBox.globalToLocal(Offset.zero,
-          ancestor: context.findRenderObject());
+          ancestor: currentContext.findRenderObject());
     });
   });
 }

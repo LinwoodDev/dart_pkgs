@@ -10,7 +10,7 @@ Widget offsetCalculator(
   BuildContext context,
   Widget Function(Offset? Function() offset) builder, {
   bool calculateLocalOffset = true,
-  AlignmentGeometry? alignment = Alignment.topRight,
+  AlignmentGeometry? alignment = Alignment.bottomLeft,
 }) {
   if (!calculateLocalOffset) {
     return builder(() => null);
@@ -40,7 +40,7 @@ MenuAnchorChildBuilder defaultMenuButton({
   bool selectedOnOpen = true,
   String? tooltip,
   bool calculateLocalOffset = false,
-  AlignmentGeometry? alignment = Alignment.topRight,
+  AlignmentGeometry? alignment = Alignment.bottomLeft,
 }) =>
     (context, controller, child) => offsetCalculator(
           context,
@@ -66,7 +66,7 @@ MenuAnchorChildBuilder defaultFilledMenuButton({
   bool selectedOnOpen = true,
   String? tooltip,
   bool calculateLocalOffset = false,
-  AlignmentGeometry? alignment = Alignment.topRight,
+  AlignmentGeometry? alignment = Alignment.bottomLeft,
 }) =>
     (context, controller, child) => offsetCalculator(
           context,
@@ -92,7 +92,7 @@ MenuAnchorChildBuilder defaultFilledTonalMenuButton({
   bool selectedOnOpen = true,
   String? tooltip,
   bool calculateLocalOffset = false,
-  AlignmentGeometry? alignment = Alignment.topRight,
+  AlignmentGeometry? alignment = Alignment.bottomLeft,
 }) =>
     (context, controller, child) => offsetCalculator(
           context,
@@ -118,7 +118,7 @@ MenuAnchorChildBuilder defaultOutlinedMenuButton({
   bool selectedOnOpen = true,
   String? tooltip,
   bool calculateLocalOffset = false,
-  AlignmentGeometry? alignment = Alignment.topRight,
+  AlignmentGeometry? alignment = Alignment.bottomLeft,
 }) =>
     (context, controller, child) => offsetCalculator(
           context,

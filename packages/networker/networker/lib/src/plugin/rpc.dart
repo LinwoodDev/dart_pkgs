@@ -56,7 +56,7 @@ final class RpcNetworkerPacket {
       RpcNetworkerPacket(function: function, data: data, channel: channel);
 }
 
-enum RpcNetworkerMode { authority, any, disabled }
+enum RpcNetworkerMode { authority, selected, any, disabled }
 
 final class RpcFunction {
   final bool canRunLocally;
@@ -69,11 +69,12 @@ final class RpcFunction {
     required this.pipe,
   });
 
-  bool shouldRun(Channel sender, {bool forceLocal = false}) {
+  bool shouldRun(Channel sender, Channel receiver, {bool forceLocal = false}) {
     if (!forceLocal && !canRunLocally && sender != kAnyChannel) return false;
     return switch (mode) {
       RpcNetworkerMode.authority => sender == kAuthorityChannel,
-      RpcNetworkerMode.any => true,
+      RpcNetworkerMode.selected => true,
+      RpcNetworkerMode.any => receiver == kAnyChannel,
       RpcNetworkerMode.disabled => false,
     };
   }
@@ -140,10 +141,11 @@ final class RpcNetworkerPipe
     return true;
   }
 
-  bool isValidCall(int function, Channel sender) {
+  bool isValidCall(int function, Channel sender,
+      [Channel receiver = kAnyChannel]) {
     final rpcFunction = functions[function];
     if (rpcFunction == null) return false;
-    return rpcFunction.shouldRun(sender);
+    return rpcFunction.shouldRun(sender, receiver);
   }
 
   void onData(NetworkerPacket<RpcNetworkerPacket> event) {}
@@ -164,12 +166,17 @@ base mixin NamedRpcNetworkerPipe<T extends RpcFunctionName>
 
   bool unregisterNamedFunction(T name) => unregisterFunction(name.index);
 
-  bool runNamedFunction(T name, Uint8List data, {bool forceLocal = false}) {
-    return callFunction(name.index, data, forceLocal: forceLocal);
+  bool runNamedFunction(RpcNetworkerPacket packet, {bool forceLocal = false}) {
+    return runFunction(packet, forceLocal: forceLocal);
   }
 
-  bool isValidNamedCall(T name, Channel sender) =>
-      isValidCall(name.index, sender);
+  bool callNamedFunction(T name, Uint8List data, Channel sender,
+          {Channel receiver = kAnyChannel, bool forceLocal = false}) =>
+      callFunction(name.index, data, sender: sender, forceLocal: forceLocal);
+
+  bool isValidNamedCall(T name, Channel sender,
+          [Channel receiver = kAnyChannel]) =>
+      isValidCall(name.index, sender, receiver);
 }
 
 final class RpcClientNetworkerPipe extends RpcNetworkerPipe {
@@ -200,7 +207,8 @@ final class RpcServerNetworkerPipe extends RpcNetworkerPipe {
   void onData(NetworkerPacket<RpcNetworkerPacket> event) {
     final receiver = event.data.channel;
     final newPacket = event.data.withChannel(event.channel);
-    if (validate && !isValidCall(newPacket.function, receiver)) {
+    if (validate &&
+        !isValidCall(newPacket.function, receiver, newPacket.channel)) {
       return;
     }
     if (!(filter?.call(newPacket, receiver) ?? false)) {

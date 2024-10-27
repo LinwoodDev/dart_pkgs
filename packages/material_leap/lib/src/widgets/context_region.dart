@@ -84,8 +84,10 @@ class _ContextRegionState extends State<ContextRegion> {
         child: widget.builder(
             context,
             widget.buttonBuilder?.call(context, controller, null) ??
-                defaultMenuButton(calculateLocalOffset: true)(
-                    context, controller, null),
+                defaultMenuButton(
+                  calculateLocalOffset: true,
+                  tooltip: widget.tooltip,
+                )(context, controller, null),
             controller),
       ),
     );

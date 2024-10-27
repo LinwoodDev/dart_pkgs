@@ -20,7 +20,7 @@ mixin GeneralDirectoryFileSystem<T> on GeneralFileSystem {
       {int listLevel = oneListLevel,
       bool readData = true,
       bool forceRemote = false}) async* {
-    final nextLevel = listLevel < 0 ? listLevel : (listLevel - 1);
+    final nextLevel = listLevel <= 0 ? listLevel : (listLevel - 1);
     final asset =
         await readAsset(path, readData: readData, forceRemote: forceRemote);
     if (listLevel == 0 || asset is! FileSystemDirectory<T>) {

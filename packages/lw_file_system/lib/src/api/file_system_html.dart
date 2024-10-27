@@ -123,7 +123,7 @@ class WebDirectoryFileSystem extends DirectoryFileSystem with WebFileSystem {
 
     final store = txn.objectStore(config.storeName);
     var data = await store.getObject(path);
-    if (path == '') {
+    if (path == '/') {
       data = {'type': 'directory'};
     }
     if (data == null) {

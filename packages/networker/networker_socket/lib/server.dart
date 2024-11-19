@@ -93,7 +93,12 @@ class NetworkerSocketServer extends NetworkerServer<NetworkerSocketInfo> {
         // No free space
         if (id == kAnyChannel) socket.close();
         socket.listen((event) {
-          onMessage(event, id);
+          try {
+            if (event is String) {
+              event = Uint8List.fromList(event.codeUnits);
+            }
+            onMessage(event, id);
+          } catch (_) {}
         }, onDone: () {
           removeConnection(id);
         });

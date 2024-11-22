@@ -288,7 +288,7 @@ class WebKeyFileSystem extends KeyFileSystem with WebFileSystem {
     final db = await _getDatabase();
     final txn = db.transaction(config.storeName, 'readwrite');
     final store = txn.objectStore(config.storeName);
-    await store.delete(key);
+    await store.delete(key + config.keySuffix);
     await txn.completed;
   }
 
@@ -298,7 +298,7 @@ class WebKeyFileSystem extends KeyFileSystem with WebFileSystem {
     final db = await _getDatabase();
     final txn = db.transaction(config.storeName, 'readonly');
     final store = txn.objectStore(config.storeName);
-    final data = await store.getObject(key);
+    final data = await store.getObject(key + config.keySuffix);
     await txn.completed;
     if (data == null) {
       return null;
@@ -312,7 +312,7 @@ class WebKeyFileSystem extends KeyFileSystem with WebFileSystem {
     final db = await _getDatabase();
     final txn = db.transaction(config.storeName, 'readwrite');
     final store = txn.objectStore(config.storeName);
-    await store.put(data, key);
+    await store.put(data, key + config.keySuffix);
     await txn.completed;
   }
 
@@ -322,7 +322,7 @@ class WebKeyFileSystem extends KeyFileSystem with WebFileSystem {
     final db = await _getDatabase();
     final txn = db.transaction(config.storeName, 'readonly');
     final store = txn.objectStore(config.storeName);
-    final doc = await store.getObject(key);
+    final doc = await store.getObject(key + config.keySuffix);
     await txn.completed;
     return doc != null;
   }
@@ -333,7 +333,11 @@ class WebKeyFileSystem extends KeyFileSystem with WebFileSystem {
     final txn = db.transaction(config.storeName, 'readonly');
     final store = txn.objectStore(config.storeName);
     final cursor = store.openCursor(autoAdvance: true);
-    final keys = cursor.map((e) => e.key.toString()).toList();
+    final keys = cursor
+        .map((e) => e.key.toString())
+        .where((e) => e.endsWith(config.keySuffix))
+        .map((e) => e.substring(0, e.length - config.keySuffix.length))
+        .toList();
     await txn.completed;
     return keys;
   }

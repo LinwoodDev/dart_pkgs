@@ -286,7 +286,7 @@ abstract class RemoteDirectoryFileSystem extends DirectoryFileSystem
       if (filePath.startsWith('/')) {
         filePath = filePath.substring(1);
       }
-      filePath = p.join(await getDirectory(), filePath);
+      filePath = universalPathContext.join(await getDirectory(), filePath);
       final directory = Directory(filePath);
       if (!(await directory.exists())) {
         await directory.create(recursive: true);

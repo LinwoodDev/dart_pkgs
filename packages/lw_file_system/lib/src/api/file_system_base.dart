@@ -19,8 +19,6 @@ typedef CreateDefaultCallback<T extends GeneralFileSystem> = FutureOr<void>
 
 void defaultCreateDefault(GeneralFileSystem fileSystem) {}
 
-final _pathContext = p.Context(style: p.Style.posix, current: '/');
-
 abstract class GeneralFileSystem {
   final FileSystemConfig config;
 
@@ -49,7 +47,7 @@ abstract class GeneralFileSystem {
 
   ExternalStorage? get storage => null;
 
-  String normalizePath(String path) => _pathContext.canonicalize(path);
+  String normalizePath(String path) => universalPathContext.canonicalize(path);
 
   String convertNameToFileSystem(
           {String? name, String? suffix, String? directory}) =>
@@ -67,11 +65,12 @@ abstract class GeneralFileSystem {
     final name = p.basenameWithoutExtension(path);
     var newName = name;
     var i = 1;
-    while (await hasAsset(p.join(dir, '$newName$fileExtension'))) {
+    while (await hasAsset(
+        universalPathContext.join(dir, '$newName$fileExtension'))) {
       newName = '$name ($i)';
       i++;
     }
-    return p.join(dir, '$newName$fileExtension');
+    return universalPathContext.join(dir, '$newName$fileExtension');
   }
 
   FutureOr<String> getAbsolutePath(String relativePath) async {

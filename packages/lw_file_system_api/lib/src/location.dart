@@ -3,6 +3,8 @@ import 'package:path/path.dart' as p;
 
 part 'location.mapper.dart';
 
+final universalPathContext = p.Context(style: p.Style.posix, current: '/');
+
 @MappableClass()
 class AssetLocation with AssetLocationMappable {
   final String remote;
@@ -41,7 +43,8 @@ class AssetLocation with AssetLocationMappable {
 
   String get fileName => p.basename(path);
 
-  String get fileNameWithoutExtension => p.basenameWithoutExtension(path);
+  String get fileNameWithoutExtension =>
+      universalPathContext.basenameWithoutExtension(path);
 
   String get parent => p.dirname(path);
 
@@ -50,10 +53,12 @@ class AssetLocation with AssetLocationMappable {
   }
 
   AssetLocation buildChildLocation(String child) {
-    return AssetLocation(path: p.join(path, child), remote: remote);
+    return AssetLocation(
+        path: universalPathContext.join(path, child), remote: remote);
   }
 
   AssetLocation buildSiblingLocation(String sibling) {
-    return AssetLocation(path: p.join(parent, sibling), remote: remote);
+    return AssetLocation(
+        path: universalPathContext.join(parent, sibling), remote: remote);
   }
 }

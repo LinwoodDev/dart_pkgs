@@ -1,4 +1,4 @@
-import 'package:path/path.dart' as p;
+import 'package:lw_file_system_api/lw_file_system_api.dart';
 
 const invalidFileName = r'[\\/:\*\?"<>\|\n\0-\x1F\x7F-\xFF]';
 
@@ -15,7 +15,7 @@ String convertNameToFile({
     name = getUnnamed();
   }
   name = name.replaceAll(invalidFileName, '_');
-  return p.join(directory, '$name$suffix');
+  return universalPathContext.join(directory, '$name$suffix');
 }
 
 bool hasInvalidFileName(String name) => RegExp(invalidFileName).hasMatch(name);

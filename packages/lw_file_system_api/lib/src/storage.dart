@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:dart_mappable/dart_mappable.dart';
-import 'package:path/path.dart' as p;
+import 'package:lw_file_system_api/lw_file_system_api.dart';
 
 part 'storage.mapper.dart';
 
@@ -176,7 +176,7 @@ sealed class RemoteStorage extends ExternalStorage with RemoteStorageMappable {
     String variant = '',
     List<String> path = const [],
   }) {
-    var currentPath = p.joinAll([
+    var currentPath = universalPathContext.joinAll([
       getBasePath(),
       if (variant.isNotEmpty) paths[variant] ?? '',
       ...path,

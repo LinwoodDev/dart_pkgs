@@ -1,4 +1,5 @@
 import 'dart:js_interop';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:web/web.dart';
@@ -14,7 +15,8 @@ Future<void> exportFile(
 ) async {
   final a = document.createElement('a') as HTMLAnchorElement;
   // Create data URL
-  final blob = Blob([bytes.toJSBox].toJS, BlobPropertyBag(type: mimeType));
+  final data = Uint8List.fromList(bytes).buffer.toJS;
+  final blob = Blob([data].toJS, BlobPropertyBag(type: mimeType));
   final url = URL.createObjectURL(blob);
   a.href = url;
   a.download = '$fileName.$fileExtension';

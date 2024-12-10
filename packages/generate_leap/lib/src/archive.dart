@@ -18,7 +18,7 @@ Future<Archive> createReproducableArchive(
           return a.path.compareTo(b.path);
         }
       });
-    await Future.wait(files.map((file) async {
+    for (final file in files) {
       if (file is File) {
         final filename = file.path.substring(dir.path.length + 1);
         final fileData = await file.readAsBytes();
@@ -29,7 +29,7 @@ Future<Archive> createReproducableArchive(
         await addDirectory(
             file, '$prefix/${file.path.substring(dir.path.length + 1)}');
       }
-    }));
+    }
   }
 
   await addDirectory(dir, '');

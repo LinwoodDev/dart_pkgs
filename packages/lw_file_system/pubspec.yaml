@@ -11,7 +11,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  archive: ^3.6.0
+  archive: ^4.0.1
   collection: ^1.18.0
   dart_mappable: ^4.2.2
   idb_shim: ^2.4.1+1
@@ -24,7 +24,7 @@ dependencies:
     git:
       url: https://github.com/LinwoodDev/dart_pkgs
       path: packages/lw_file_system_api
-      ref: 44984e1e51d4ba0ed631d2d201e92ea56e112393
+      ref: b9d6c6173bf75247ce5a4d47fab0e48b730a9696
   # path: ^1.8.0
 
 dev_dependencies:

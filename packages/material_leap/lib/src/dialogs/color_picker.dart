@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:material_leap/src/widgets/color_button.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
@@ -15,6 +17,11 @@ class ColorPickerResponse<T> {
 }
 
 typedef ActionsBuilder<T> = List<Widget> Function(void Function(T?) close);
+const kColorBlack = Color(0xFF000000);
+const kColorRed = Color(0xFFFF0000);
+const kColorGreen = Color(0xFF00FF00);
+const kColorBlue = Color(0xFF0000FF);
+const kColorWhite = Color(0xFFFFFFFF);
 
 class ColorPicker<T> extends StatefulWidget {
   final Color defaultColor;
@@ -62,7 +69,7 @@ class _ColorPickerState<T> extends State<ColorPicker<T>> {
     }
     return Dialog(
       child: ConstrainedBox(
-        constraints: const BoxConstraints(maxHeight: 500, maxWidth: 1000),
+        constraints: const BoxConstraints(maxHeight: 550, maxWidth: 1000),
         child: Column(
           children: [
             Header(
@@ -140,28 +147,39 @@ class _ColorPickerState<T> extends State<ColorPicker<T>> {
 
   Widget _buildPreview() => Column(
         children: [
-          Align(
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Container(
-                width: 200,
-                height: 200,
-                color: color,
-              ),
+          ConstrainedBox(
+            constraints: const BoxConstraints(maxHeight: 300, maxWidth: 300),
+            child: Align(
+              child: ColorWheelPicker(
+                  value: color,
+                  onChanged: (value) {
+                    setState(() {
+                      color = value;
+                      _hexController.text =
+                          value.value.toHexColor(alpha: false);
+                    });
+                  }),
             ),
           ),
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-            child: TextField(
-              controller: _hexController,
-              decoration: const InputDecoration(filled: true),
-              onSubmitted: (value) {
-                final valueNumber = value.toColorValue();
-                if (valueNumber == null) return;
-                setState(() {
-                  color = Color(valueNumber).withAlpha(255);
-                });
-              },
+            child: Row(
+              children: [
+                ColorButton(color: color, size: 48),
+                Expanded(
+                  child: TextField(
+                    controller: _hexController,
+                    decoration: const InputDecoration(filled: true),
+                    onSubmitted: (value) {
+                      final valueNumber = value.toColorValue();
+                      if (valueNumber == null) return;
+                      setState(() {
+                        color = Color(valueNumber).withAlpha(255);
+                      });
+                    },
+                  ),
+                ),
+              ],
             ),
           ),
         ],
@@ -175,7 +193,8 @@ class _ColorPickerState<T> extends State<ColorPicker<T>> {
           min: 0,
           max: 255,
           value: color.red.toDouble(),
-          color: Colors.red,
+          color: kColorRed,
+          thumbColor: kColorBlack.withRed(color.red),
           onChanged: (value) => _changeColor(red: value.toInt()),
         ),
         ExactSlider(
@@ -185,7 +204,8 @@ class _ColorPickerState<T> extends State<ColorPicker<T>> {
           min: 0,
           max: 255,
           value: color.green.toDouble(),
-          color: Colors.green,
+          color: kColorGreen,
+          thumbColor: kColorBlack.withGreen(color.green),
           onChanged: (value) => _changeColor(green: value.toInt()),
         ),
         ExactSlider(
@@ -194,8 +214,9 @@ class _ColorPickerState<T> extends State<ColorPicker<T>> {
           defaultValue: 255,
           min: 0,
           max: 255,
-          color: Colors.blue,
           value: color.blue.toDouble(),
+          color: kColorBlue,
+          thumbColor: kColorBlack.withBlue(color.blue),
           onChanged: (value) => _changeColor(blue: value.toInt()),
         ),
         if (widget.suggested.isNotEmpty) ...[
@@ -214,4 +235,151 @@ class _ColorPickerState<T> extends State<ColorPicker<T>> {
           ),
         ],
       ]);
+}
+
+class ColorWheelPicker extends StatelessWidget {
+  final Color value;
+  final void Function(Color) onChanged;
+  final GlobalKey _wheelKey = GlobalKey(), _sliderKey = GlobalKey();
+
+  ColorWheelPicker({super.key, required this.value, required this.onChanged});
+
+  void _onWheelPointer(PointerEvent event) {
+    final ctx = _wheelKey.currentContext;
+    if (ctx == null) return;
+    final RenderBox box = ctx.findRenderObject() as RenderBox;
+    final local = box.globalToLocal(event.position);
+    final radius = min(box.size.width / 2, box.size.height / 2);
+    final center = Offset(box.size.width / 2, box.size.height / 2);
+    final dx = local.dx - center.dx;
+    final dy = local.dy - center.dy;
+    final angle = atan2(dy, dx);
+    final double saturation = min(1.0, sqrt(dx * dx + dy * dy) / radius);
+    final double hue = (angle * 180 / pi + 360) % 360;
+    onChanged(HSVColor.fromAHSV(1, hue, saturation, HSVColor.fromColor(value).value).toColor());
+  }
+
+  void _onSliderPointer(PointerEvent event) {
+    final ctx = _sliderKey.currentContext;
+    if (ctx == null) return;
+    final RenderBox box = ctx.findRenderObject() as RenderBox;
+    final local = box.globalToLocal(event.position);
+    final color = HSVColor.fromColor(value);
+    final hsvValue = min(1.0, max(0.0, local.dx / box.size.width));
+    onChanged(color.withValue(hsvValue).toColor());
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Expanded(
+          child: AspectRatio(
+            aspectRatio: 1,
+            child: Listener(
+              onPointerDown: _onWheelPointer,
+              onPointerMove: _onWheelPointer,
+              child: CustomPaint(
+                key: _wheelKey,
+                painter: _ColorWheelPainter(value),
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(height: 8),
+        SizedBox(
+          height: 48,
+          child: Listener(
+            onPointerDown: _onSliderPointer,
+            onPointerMove: _onSliderPointer,
+            child: CustomPaint(
+              key: _sliderKey,
+              painter: _ColorWheelSliderPainter(value),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _ColorWheelPainter extends CustomPainter {
+  final Color value;
+
+  _ColorWheelPainter(this.value);
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final radius = min(size.width / 2, size.height / 2);
+    final center = Offset(size.width / 2, size.height / 2);
+    final paint = Paint()..style = PaintingStyle.fill;
+    final circle = Rect.fromCircle(center: center, radius: radius);
+
+    // In the middle of the wheel, the saturation is 1
+    // At the edge of the wheel, the saturation is 0
+    for (var i = 0; i < 360; i++) {
+      final hsv = HSVColor.fromAHSV(1, i.toDouble(), 1, 1);
+      paint.color = hsv.toColor();
+      canvas.drawArc(circle, i * pi / 180, pi / 180, true, paint);
+    }
+    // Use blend mode to draw the white circle
+    canvas.drawCircle(
+        center,
+        radius,
+        Paint()
+          ..shader = const RadialGradient(
+            colors: [kColorWhite, Colors.transparent],
+            focalRadius: 1,
+          ).createShader(circle));
+
+    final hsv = HSVColor.fromColor(value);
+    final point = Offset(
+        center.dx + radius * hsv.saturation * cos(hsv.hue * pi / 180),
+        center.dy + radius * hsv.saturation * sin(hsv.hue * pi / 180));
+    canvas.drawCircle(point, 8, Paint()..color = Colors.white);
+    canvas.drawCircle(point, 6, Paint()..color = hsv.withValue(1).toColor());
+  }
+
+  @override
+  bool shouldRepaint(_ColorWheelPainter oldDelegate) {
+    return oldDelegate.value != value;
+  }
+}
+
+class _ColorWheelSliderPainter extends CustomPainter {
+  final Color value;
+
+  _ColorWheelSliderPainter(this.value);
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final hsv = HSVColor.fromColor(value);
+    final rect =
+        Rect.fromPoints(const Offset(0, 0), Offset(size.width, size.height));
+    final paint = Paint()
+      ..shader = const LinearGradient(
+              colors: [Colors.black, Colors.white],
+              stops: [0, 1],
+              begin: Alignment.centerLeft,
+              end: Alignment.centerRight)
+          .createShader(rect)
+      ..style = PaintingStyle.fill;
+
+    canvas.drawRRect(
+        RRect.fromRectAndRadius(rect, const Radius.circular(8)), paint);
+    final point = Offset(size.width * hsv.value, size.height / 2);
+    canvas.drawCircle(
+        point,
+        8,
+        Paint()
+          ..color = kColorWhite
+          ..style = PaintingStyle.fill);
+    canvas.drawCircle(point, 6, Paint()..color = kColorBlack);
+  }
+
+  @override
+  bool shouldRepaint(_ColorWheelSliderPainter oldDelegate) {
+    return oldDelegate.value != value;
+  }
 }

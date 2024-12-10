@@ -1,4 +1,4 @@
-library material_leap;
+library;
 
 export 'package:dart_leap/dart_leap.dart';
 

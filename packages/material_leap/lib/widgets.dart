@@ -1,4 +1,4 @@
-library material_leap;
+library;
 
 export 'src/widgets/advanced_text_field.dart';
 export 'src/widgets/advanced_switch_list_tile.dart';

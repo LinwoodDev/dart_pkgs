@@ -45,5 +45,5 @@ Future<void> zipReproducable(
   final zip = encoder
       .encode(await createReproducableArchive(dir, lastModTime: lastModTime));
   final file = File(path);
-  await file.writeAsBytes(zip!);
+  await file.writeAsBytes(zip);
 }

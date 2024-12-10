@@ -1,3 +1,3 @@
-library material_leap;
+library;
 
 export 'src/models/settings.dart';

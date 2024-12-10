@@ -237,7 +237,7 @@ class WebDirectoryFileSystem extends DirectoryFileSystem with WebFileSystem {
         final reader = html.FileReader();
         reader.onload.add((() {
           try {
-            final result = reader.result as Uint8List;
+            final result = (reader.result as JSUint8Array).toDart;
             completer.complete(Uint8List.fromList(result));
           } catch (e) {
             completer.completeError(e);

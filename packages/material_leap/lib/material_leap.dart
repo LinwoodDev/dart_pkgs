@@ -1,4 +1,4 @@
-library material_leap;
+library;
 
 export 'api.dart';
 export 'dialogs.dart';

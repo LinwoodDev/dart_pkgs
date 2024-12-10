@@ -48,7 +48,7 @@ abstract class ArchiveData<T> {
   }
 
   Uint8List exportAsBytes() =>
-      Uint8List.fromList(ZipEncoder().encode(export()) ?? []);
+      Uint8List.fromList(ZipEncoder().encode(export()));
 
   Uint8List? getAsset(String name) {
     final added = state.added[name];

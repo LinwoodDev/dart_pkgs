@@ -256,7 +256,9 @@ class ColorWheelPicker extends StatelessWidget {
     final angle = atan2(dy, dx);
     final double saturation = min(1.0, sqrt(dx * dx + dy * dy) / radius);
     final double hue = (angle * 180 / pi + 360) % 360;
-    onChanged(HSVColor.fromAHSV(1, hue, saturation, HSVColor.fromColor(value).value).toColor());
+    onChanged(
+        HSVColor.fromAHSV(1, hue, saturation, HSVColor.fromColor(value).value)
+            .toColor());
   }
 
   void _onSliderPointer(PointerEvent event) {

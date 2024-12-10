@@ -12,21 +12,22 @@ class ExactSlider extends StatefulWidget {
   final OnValueChanged? onChanged, onChangeEnd;
   final Color? color, thumbColor;
 
-  const ExactSlider(
-      {super.key,
-      this.label,
-      this.leading,
-      this.bottom,
-      this.fractionDigits = 2,
-      this.defaultValue = 1,
-      this.min = 0,
-      this.max = 100,
-      this.color,
-      this.value,
-      this.header,
-      this.onChangeEnd,
-      this.onChanged,
-      this.thumbColor,});
+  const ExactSlider({
+    super.key,
+    this.label,
+    this.leading,
+    this.bottom,
+    this.fractionDigits = 2,
+    this.defaultValue = 1,
+    this.min = 0,
+    this.max = 100,
+    this.color,
+    this.value,
+    this.header,
+    this.onChangeEnd,
+    this.onChanged,
+    this.thumbColor,
+  });
 
   @override
   _ExactSliderState createState() => _ExactSliderState();
@@ -89,7 +90,8 @@ class _ExactSliderState extends State<ExactSlider> {
                 min: widget.min,
                 max: widget.max,
                 activeColor: widget.color,
-                onChangeEnd: widget.onChangeEnd,thumbColor: widget.thumbColor,
+                onChangeEnd: widget.onChangeEnd,
+                thumbColor: widget.thumbColor,
                 onChanged: (value) {
                   _changeValue(value);
                 },

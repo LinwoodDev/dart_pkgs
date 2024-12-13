@@ -315,30 +315,42 @@ class _ColorWheelPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final radius = min(size.width / 2, size.height / 2);
     final center = Offset(size.width / 2, size.height / 2);
-    final paint = Paint()..style = PaintingStyle.fill;
     final circle = Rect.fromCircle(center: center, radius: radius);
 
-    // In the middle of the wheel, the saturation is 1
-    // At the edge of the wheel, the saturation is 0
-    for (var i = 0; i < 360; i++) {
-      final hsv = HSVColor.fromAHSV(1, i.toDouble(), 1, 1);
-      paint.color = hsv.toColor();
-      canvas.drawArc(circle, i * pi / 180, pi / 180, true, paint);
-    }
-    // Use blend mode to draw the white circle
-    canvas.drawCircle(
-        center,
-        radius,
-        Paint()
-          ..shader = const RadialGradient(
-            colors: [kColorWhite, Colors.transparent],
-            focalRadius: 1,
-          ).createShader(circle));
+    // Paint the color wheel using SweepGradient
+    final paint = Paint()
+      ..shader = SweepGradient(
+        colors: List.generate(
+            360,
+            (i) => HSVColor.fromAHSV(1, i.toDouble(), 1, 1)
+                .toColor()), // Generate smooth hues
+        startAngle: 0,
+        endAngle: 2 * pi,
+      ).createShader(circle);
 
+    canvas.drawCircle(center, radius, paint);
+
+    // Overlay the white-to-transparent radial gradient
+    canvas.drawCircle(
+      center,
+      radius,
+      Paint()
+        ..shader = const RadialGradient(
+      colors: [
+        Colors.white, // White at the center for desaturation
+        Colors.transparent, // Fully saturated at the edges
+      ],
+      stops: [0.0, 1.0], // White at the center, clear at the edges
+      tileMode: TileMode.clamp, // Ensures smooth blending
+        ).createShader(circle),
+    );
+
+    // Draw the current selection indicator
     final hsv = HSVColor.fromColor(value);
     final point = Offset(
-        center.dx + radius * hsv.saturation * cos(hsv.hue * pi / 180),
-        center.dy + radius * hsv.saturation * sin(hsv.hue * pi / 180));
+      center.dx + radius * hsv.saturation * cos(hsv.hue * pi / 180),
+      center.dy + radius * hsv.saturation * sin(hsv.hue * pi / 180),
+    );
     canvas.drawCircle(point, 8, Paint()..color = Colors.white);
     canvas.drawCircle(point, 6, Paint()..color = hsv.withValue(1).toColor());
   }

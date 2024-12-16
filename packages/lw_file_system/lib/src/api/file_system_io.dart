@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:lw_file_system/lw_file_system.dart';
 import 'package:path/path.dart' as p;
@@ -121,7 +120,7 @@ class IODirectoryFileSystem extends DirectoryFileSystem {
               }
               return null;
             })
-            .whereNotNull()
+            .nonNulls
             .toList(),
       );
     }

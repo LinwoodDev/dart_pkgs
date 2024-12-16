@@ -62,7 +62,9 @@ class _DateTimeFieldState extends State<DateTimeField> {
     try {
       final text = _controller.text;
       if ((text.isEmpty && _value == null) ||
-          (_value != null && text == _format(_value!))) return;
+          (_value != null && text == _format(_value!))) {
+        return;
+      }
       final splitted = text.trim().split(' ');
       if (splitted.length != 2) {
         _change(null);

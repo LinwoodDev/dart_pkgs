@@ -285,11 +285,12 @@ class _WindowButtonsState<C extends LeapSettingsBlocBaseMixin<M>,
                               const SizedBox(width: 8),
                               Theme(
                                 data: Theme.of(context).copyWith(
-                                  colorScheme:
-                                      Theme.of(context).colorScheme.copyWith(
-                                            secondaryContainer:
-                                                Colors.red.withOpacity(0.2),
-                                          ),
+                                  colorScheme: Theme.of(context)
+                                      .colorScheme
+                                      .copyWith(
+                                        secondaryContainer:
+                                            Colors.red.withValues(alpha: 0.2),
+                                      ),
                                 ),
                                 child: IconButton.filledTonal(
                                   icon:

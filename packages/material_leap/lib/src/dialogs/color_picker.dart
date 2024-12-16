@@ -1,13 +1,15 @@
+// ignore_for_file: deprecated_member_use
+
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:material_leap/helpers.dart';
 import 'package:material_leap/src/widgets/color_button.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../l10n/leap_localizations.dart';
 import '../widgets/exact_slider.dart';
 import '../widgets/header.dart';
-import '../helpers/color.dart';
 
 class ColorPickerResponse<T> {
   final int color;
@@ -67,10 +69,14 @@ class _ColorPickerState<T> extends State<ColorPicker<T>> {
     if (_hexController.text.toColorValue() != color.value) {
       _hexController.text = color.value.toHexColor(alpha: false);
     }
+    final size = MediaQuery.sizeOf(context);
+    final isMobile = size.width < LeapBreakpoints.medium;
+
     return Dialog(
       child: ConstrainedBox(
-        constraints: const BoxConstraints(maxHeight: 550, maxWidth: 1000),
+        constraints: const BoxConstraints(maxHeight: 1000, maxWidth: 1000),
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
             Header(
               title: Text(LeapLocalizations.of(context).color),
@@ -80,63 +86,61 @@ class _ColorPickerState<T> extends State<ColorPicker<T>> {
               child: Padding(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-                child: LayoutBuilder(builder: (context, constraints) {
-                  var isMobile = constraints.maxWidth < 600;
-                  return Column(
-                    children: [
-                      Expanded(
-                          child: isMobile
-                              ? SingleChildScrollView(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.stretch,
-                                    children: [
-                                      _buildPreview(),
-                                      _buildProperties(),
-                                    ],
-                                  ),
-                                )
-                              : Row(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Flexible(
+                        child: isMobile
+                            ? SingleChildScrollView(
+                                child: Column(
                                   crossAxisAlignment:
                                       CrossAxisAlignment.stretch,
+                                  mainAxisSize: MainAxisSize.min,
                                   children: [
-                                      Expanded(
-                                          flex: 2,
-                                          child: SingleChildScrollView(
-                                            child: _buildPreview(),
-                                          )),
-                                      Expanded(
-                                          flex: 3,
-                                          child: SingleChildScrollView(
-                                            child: _buildProperties(),
-                                          ))
-                                    ])),
-                      const Divider(),
-                      OverflowBar(
-                        alignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          OverflowBar(
-                              children:
-                                  widget.secondaryActions?.call(_close) ?? []),
-                          OverflowBar(children: [
-                            TextButton(
-                                child: Text(MaterialLocalizations.of(context)
-                                    .cancelButtonLabel),
-                                onPressed: () => Navigator.of(context).pop()),
-                            const SizedBox(width: 8),
-                            ...widget.primaryActions?.call(_close) ?? [],
-                            const SizedBox(width: 8),
-                            ElevatedButton(
-                              onPressed: _close,
+                                    _buildPreview(),
+                                    _buildProperties(),
+                                  ],
+                                ),
+                              )
+                            : Row(children: [
+                                Flexible(
+                                  flex: 2,
+                                  child: SingleChildScrollView(
+                                    child: _buildPreview(),
+                                  ),
+                                ),
+                                Flexible(
+                                  flex: 3,
+                                  child: SingleChildScrollView(
+                                    child: _buildProperties(),
+                                  ),
+                                )
+                              ])),
+                    const Divider(),
+                    OverflowBar(
+                      alignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        OverflowBar(
+                            children:
+                                widget.secondaryActions?.call(_close) ?? []),
+                        OverflowBar(children: [
+                          TextButton(
                               child: Text(MaterialLocalizations.of(context)
-                                  .okButtonLabel),
-                            ),
-                          ]),
-                        ],
-                      )
-                    ],
-                  );
-                }),
+                                  .cancelButtonLabel),
+                              onPressed: () => Navigator.of(context).pop()),
+                          const SizedBox(width: 8),
+                          ...widget.primaryActions?.call(_close) ?? [],
+                          const SizedBox(width: 8),
+                          ElevatedButton(
+                            onPressed: _close,
+                            child: Text(MaterialLocalizations.of(context)
+                                .okButtonLabel),
+                          ),
+                        ]),
+                      ],
+                    )
+                  ],
+                ),
               ),
             ),
           ],
@@ -146,6 +150,7 @@ class _ColorPickerState<T> extends State<ColorPicker<T>> {
   }
 
   Widget _buildPreview() => Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
           ConstrainedBox(
             constraints: const BoxConstraints(maxHeight: 300, maxWidth: 300),
@@ -185,7 +190,8 @@ class _ColorPickerState<T> extends State<ColorPicker<T>> {
         ],
       );
 
-  Widget _buildProperties() => Column(children: [
+  Widget _buildProperties() =>
+      Column(mainAxisSize: MainAxisSize.min, children: [
         ExactSlider(
           header: Text(LeapLocalizations.of(context).red),
           fractionDigits: 0,
@@ -244,11 +250,11 @@ class ColorWheelPicker extends StatelessWidget {
 
   ColorWheelPicker({super.key, required this.value, required this.onChanged});
 
-  void _onWheelPointer(PointerEvent event) {
+  void _onWheelPointer(Offset position) {
     final ctx = _wheelKey.currentContext;
     if (ctx == null) return;
     final RenderBox box = ctx.findRenderObject() as RenderBox;
-    final local = box.globalToLocal(event.position);
+    final local = box.globalToLocal(position);
     final radius = min(box.size.width / 2, box.size.height / 2);
     final center = Offset(box.size.width / 2, box.size.height / 2);
     final dx = local.dx - center.dx;
@@ -279,9 +285,11 @@ class ColorWheelPicker extends StatelessWidget {
         Expanded(
           child: AspectRatio(
             aspectRatio: 1,
-            child: Listener(
-              onPointerDown: _onWheelPointer,
-              onPointerMove: _onWheelPointer,
+            child: GestureDetector(
+              onPanUpdate: (details) => _onWheelPointer(details.globalPosition),
+              onPanDown: (details) => _onWheelPointer(details.globalPosition),
+              onPanStart: (details) => _onWheelPointer(details.globalPosition),
+              onPanEnd: (details) => _onWheelPointer(details.globalPosition),
               child: CustomPaint(
                 key: _wheelKey,
                 painter: _ColorWheelPainter(value),
@@ -318,11 +326,12 @@ class _ColorWheelPainter extends CustomPainter {
     final circle = Rect.fromCircle(center: center, radius: radius);
 
     // Paint the color wheel using SweepGradient
+    final hsv = HSVColor.fromColor(value);
     final paint = Paint()
       ..shader = SweepGradient(
         colors: List.generate(
             360,
-            (i) => HSVColor.fromAHSV(1, i.toDouble(), 1, 1)
+            (i) => HSVColor.fromAHSV(1, i.toDouble(), 1, hsv.value)
                 .toColor()), // Generate smooth hues
         startAngle: 0,
         endAngle: 2 * pi,
@@ -335,24 +344,25 @@ class _ColorWheelPainter extends CustomPainter {
       center,
       radius,
       Paint()
-        ..shader = const RadialGradient(
-      colors: [
-        Colors.white, // White at the center for desaturation
-        Colors.transparent, // Fully saturated at the edges
-      ],
-      stops: [0.0, 1.0], // White at the center, clear at the edges
-      tileMode: TileMode.clamp, // Ensures smooth blending
+        ..shader = RadialGradient(
+          colors: [
+            HSVColor.fromColor(Colors.white)
+                .withValue(hsv.value)
+                .toColor(), // White at the center for desaturation
+            Colors.transparent, // Fully saturated at the edges
+          ],
+          stops: [0.0, 1], // White at the center, clear at the edges
+          tileMode: TileMode.clamp, // Ensures smooth blending
         ).createShader(circle),
     );
 
     // Draw the current selection indicator
-    final hsv = HSVColor.fromColor(value);
     final point = Offset(
       center.dx + radius * hsv.saturation * cos(hsv.hue * pi / 180),
       center.dy + radius * hsv.saturation * sin(hsv.hue * pi / 180),
     );
     canvas.drawCircle(point, 8, Paint()..color = Colors.white);
-    canvas.drawCircle(point, 6, Paint()..color = hsv.withValue(1).toColor());
+    canvas.drawCircle(point, 6, Paint()..color = hsv.toColor());
   }
 
   @override

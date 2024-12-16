@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:js_interop';
 
-import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:idb_shim/idb_browser.dart';
 import 'package:lw_file_system/lw_file_system.dart';
@@ -159,7 +158,7 @@ class WebDirectoryFileSystem extends DirectoryFileSystem with WebFileSystem {
         }
         return null;
       })))
-          .whereNotNull()
+          .nonNulls
           .toList();
       return RawFileSystemDirectory(
         location,

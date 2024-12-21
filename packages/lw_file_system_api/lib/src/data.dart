@@ -18,15 +18,18 @@ class ArchiveState with ArchiveStateMappable {
 abstract class ArchiveData<T> {
   final Archive archive;
   final ArchiveState state;
+  String? _password;
 
   ArchiveData(this.archive, {this.state = const ArchiveState()});
 
-  ArchiveData.empty()
+  ArchiveData.empty({String? password})
       : archive = Archive(),
+        _password = password,
         state = ArchiveState();
 
-  ArchiveData.fromBytes(List<int> bytes)
-      : archive = ZipDecoder().decodeBytes(bytes),
+  ArchiveData.fromBytes(List<int> bytes, {String? password})
+      : archive = ZipDecoder().decodeBytes(bytes, password: password),
+        _password = password,
         state = ArchiveState();
 
   Archive export() {
@@ -47,8 +50,18 @@ abstract class ArchiveData<T> {
     return archive;
   }
 
+  void encrypt(String password) {
+    _password = password;
+  }
+
+  void decrypt(String password) {
+    _password = password;
+  }
+
+  bool isEncrypted() => _password != null;
+
   Uint8List exportAsBytes() =>
-      Uint8List.fromList(ZipEncoder().encode(export()));
+      Uint8List.fromList(ZipEncoder(password: _password).encode(export()));
 
   Uint8List? getAsset(String name) {
     final added = state.added[name];
@@ -99,4 +112,16 @@ class SimpleArchiveData extends ArchiveData<SimpleArchiveData> {
   @override
   SimpleArchiveData updateState(ArchiveState state) =>
       SimpleArchiveData(archive, state: state);
+}
+
+bool isZipEncrypted(List<int> bytes) {
+  final stream = InputMemoryStream(bytes);
+  final signature = stream.readUint16();
+  if (signature != ZipFile.zipSignature) {
+    return false;
+  }
+  // Version
+  stream.readUint16();
+  final flags = stream.readUint16();
+  return flags & 1 == 1;
 }

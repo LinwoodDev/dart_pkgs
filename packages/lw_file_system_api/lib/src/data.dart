@@ -20,7 +20,9 @@ abstract class ArchiveData<T> {
   final ArchiveState state;
   String? _password;
 
-  ArchiveData(this.archive, {this.state = const ArchiveState()});
+  ArchiveData(this.archive,
+      {this.state = const ArchiveState(), String? password})
+      : _password = password;
 
   ArchiveData.empty({String? password})
       : archive = Archive(),
@@ -105,9 +107,9 @@ abstract class ArchiveData<T> {
 }
 
 class SimpleArchiveData extends ArchiveData<SimpleArchiveData> {
-  SimpleArchiveData(super.archive, {super.state});
-  SimpleArchiveData.empty() : super.empty();
-  SimpleArchiveData.fromBytes(super.bytes);
+  SimpleArchiveData(super.archive, {super.state, super.password});
+  SimpleArchiveData.empty({super.password}) : super.empty();
+  SimpleArchiveData.fromBytes(super.bytes, {super.password});
 
   @override
   SimpleArchiveData updateState(ArchiveState state) =>

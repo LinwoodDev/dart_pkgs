@@ -118,7 +118,7 @@ class SimpleArchiveData extends ArchiveData<SimpleArchiveData> {
 
 bool isZipEncrypted(List<int> bytes) {
   final stream = InputMemoryStream(bytes);
-  final signature = stream.readUint16();
+  final signature = stream.readUint32();
   if (signature != ZipFile.zipSignature) {
     return false;
   }

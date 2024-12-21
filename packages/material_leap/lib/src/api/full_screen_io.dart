@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:flutter/services.dart';
 import 'package:window_manager/window_manager.dart';
 
-late bool isFullscreen;
+bool isFullscreen = false;
 Future<bool> isFullScreen() async {
   if (Platform.isAndroid || Platform.isIOS) {
     return isFullscreen;

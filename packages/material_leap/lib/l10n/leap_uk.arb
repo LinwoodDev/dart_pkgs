@@ -18,7 +18,7 @@
   "shouldNotEmpty": "Це значення не може бути порожнім",
   "alreadyExists": "Цей елемент уже існує",
   "create": "Створити",
-  "enterName": "Please enter a name",
+  "enterName": "Будь ласка, введіть ім'я",
   "name": "Ім'я",
-  "invalidName": "Invalid name"
+  "invalidName": "Невірне ім'я"
 }

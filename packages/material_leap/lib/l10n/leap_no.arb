@@ -18,7 +18,7 @@
   "shouldNotEmpty": "Denne verdien kan ikke være tom",
   "alreadyExists": "Dette elementet finnes allerede",
   "create": "Opprett",
-  "enterName": "Please enter a name",
+  "enterName": "Vennligst skriv inn et navn",
   "name": "Navn",
-  "invalidName": "Invalid name"
+  "invalidName": "Ugyldig navn"
 }

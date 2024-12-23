@@ -18,7 +18,7 @@
   "shouldNotEmpty": "Este valor não deve ser vazio",
   "alreadyExists": "Este elemento já existe",
   "create": "Crio",
-  "enterName": "Please enter a name",
+  "enterName": "Por favor, digite um nome",
   "name": "Nome:",
-  "invalidName": "Invalid name"
+  "invalidName": "Nome inválido"
 }

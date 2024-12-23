@@ -18,7 +18,7 @@
   "shouldNotEmpty": "Dieser Wert darf nicht leer sein",
   "alreadyExists": "Dieses Element existiert bereits",
   "create": "Anlegen",
-  "enterName": "Please enter a name",
+  "enterName": "Bitte geben Sie einen Namen ein",
   "name": "Name",
-  "invalidName": "Invalid name"
+  "invalidName": "Ungültiger Name"
 }

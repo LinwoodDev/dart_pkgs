@@ -17,8 +17,8 @@
   "reset": "Reset",
   "shouldNotEmpty": "يجب ألا تكون هذه القيمة فارغة",
   "alreadyExists": "هذا العنصر موجود بالفعل",
-  "create": "Create",
-  "enterName": "Please enter a name",
-  "name": "Name",
-  "invalidName": "Invalid name"
+  "create": "إنشاء",
+  "enterName": "الرجاء إدخال اسم",
+  "name": "الاسم",
+  "invalidName": "اسم غير صالح"
 }

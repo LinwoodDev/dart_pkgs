@@ -18,7 +18,7 @@
   "shouldNotEmpty": "Detta värde får inte vara tomt",
   "alreadyExists": "Detta element finns redan",
   "create": "Skapa",
-  "enterName": "Please enter a name",
+  "enterName": "Ange ett namn",
   "name": "Namn",
-  "invalidName": "Invalid name"
+  "invalidName": "Ogiltigt namn"
 }

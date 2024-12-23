@@ -15,10 +15,10 @@
   "restore": "Restaurar",
   "copyMessage": "Copiado al portapapeles",
   "reset": "Reset",
-  "shouldNotEmpty": "This value should not be empty",
+  "shouldNotEmpty": "Este valor no debe estar vacío",
   "alreadyExists": "Este elemento ya existe",
-  "create": "Create",
-  "enterName": "Please enter a name",
-  "name": "Name",
-  "invalidName": "Invalid name"
+  "create": "Crear",
+  "enterName": "Por favor ingrese un nombre",
+  "name": "Nombre",
+  "invalidName": "Nombre inválido"
 }

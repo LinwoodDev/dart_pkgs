@@ -55,20 +55,20 @@ class LeapLocalizationsSv extends LeapLocalizations {
   String get reset => 'Reset';
 
   @override
-  String get shouldNotEmpty => 'This value should not be empty';
+  String get shouldNotEmpty => 'Detta värde får inte vara tomt';
 
   @override
-  String get alreadyExists => 'This element already exists';
+  String get alreadyExists => 'Detta element finns redan';
 
   @override
-  String get create => 'Create';
+  String get create => 'Skapa';
 
   @override
-  String get enterName => 'Please enter a name';
+  String get enterName => 'Ange ett namn';
 
   @override
-  String get name => 'Name';
+  String get name => 'Namn';
 
   @override
-  String get invalidName => 'Invalid name';
+  String get invalidName => 'Ogiltigt namn';
 }

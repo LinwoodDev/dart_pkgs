@@ -55,19 +55,19 @@ class LeapLocalizationsTr extends LeapLocalizations {
   String get reset => 'Sıfırla';
 
   @override
-  String get shouldNotEmpty => 'This value should not be empty';
+  String get shouldNotEmpty => 'Bu değer boş bırakılamaz';
 
   @override
-  String get alreadyExists => 'This element already exists';
+  String get alreadyExists => 'Bu öge zaten mevcut';
 
   @override
-  String get create => 'Create';
+  String get create => 'Oluştur';
 
   @override
   String get enterName => 'Please enter a name';
 
   @override
-  String get name => 'Name';
+  String get name => 'Ad';
 
   @override
   String get invalidName => 'Invalid name';

@@ -55,20 +55,20 @@ class LeapLocalizationsCs extends LeapLocalizations {
   String get reset => 'Reset';
 
   @override
-  String get shouldNotEmpty => 'This value should not be empty';
+  String get shouldNotEmpty => 'Tato hodnota by neměla být prázdná';
 
   @override
-  String get alreadyExists => 'This element already exists';
+  String get alreadyExists => 'Tento prvek již existuje';
 
   @override
-  String get create => 'Create';
+  String get create => 'Vytvořit';
 
   @override
-  String get enterName => 'Please enter a name';
+  String get enterName => 'Zadejte název';
 
   @override
-  String get name => 'Name';
+  String get name => 'Název';
 
   @override
-  String get invalidName => 'Invalid name';
+  String get invalidName => 'Neplatný název';
 }

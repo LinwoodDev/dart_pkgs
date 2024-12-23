@@ -55,22 +55,22 @@ class LeapLocalizationsZh extends LeapLocalizations {
   String get reset => 'Reset';
 
   @override
-  String get shouldNotEmpty => 'This value should not be empty';
+  String get shouldNotEmpty => '此值不应为空';
 
   @override
-  String get alreadyExists => 'This element already exists';
+  String get alreadyExists => '此元素已存在';
 
   @override
-  String get create => 'Create';
+  String get create => '创建';
 
   @override
-  String get enterName => 'Please enter a name';
+  String get enterName => '请输入一个名称';
 
   @override
-  String get name => 'Name';
+  String get name => '名称';
 
   @override
-  String get invalidName => 'Invalid name';
+  String get invalidName => '无效的名称';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -124,4 +124,22 @@ class LeapLocalizationsZhHant extends LeapLocalizationsZh {
 
   @override
   String get reset => '重設';
+
+  @override
+  String get shouldNotEmpty => '此欄位必填';
+
+  @override
+  String get alreadyExists => '此元素已存在';
+
+  @override
+  String get create => '建立';
+
+  @override
+  String get enterName => 'Please enter a name';
+
+  @override
+  String get name => '名稱';
+
+  @override
+  String get invalidName => '名稱無效';
 }

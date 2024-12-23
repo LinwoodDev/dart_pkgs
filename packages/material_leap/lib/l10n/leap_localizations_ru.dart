@@ -55,20 +55,20 @@ class LeapLocalizationsRu extends LeapLocalizations {
   String get reset => 'Reset';
 
   @override
-  String get shouldNotEmpty => 'This value should not be empty';
+  String get shouldNotEmpty => 'Это значение не должно быть пустым';
 
   @override
-  String get alreadyExists => 'This element already exists';
+  String get alreadyExists => 'Этот элемент уже существует';
 
   @override
-  String get create => 'Create';
+  String get create => 'Создать';
 
   @override
-  String get enterName => 'Please enter a name';
+  String get enterName => 'Пожалуйста, введите имя';
 
   @override
-  String get name => 'Name';
+  String get name => 'Наименование';
 
   @override
-  String get invalidName => 'Invalid name';
+  String get invalidName => 'Неверное имя';
 }

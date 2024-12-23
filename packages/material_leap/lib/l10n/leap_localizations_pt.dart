@@ -55,22 +55,22 @@ class LeapLocalizationsPt extends LeapLocalizations {
   String get reset => 'Reset';
 
   @override
-  String get shouldNotEmpty => 'This value should not be empty';
+  String get shouldNotEmpty => 'Este valor não deve ser vazio';
 
   @override
-  String get alreadyExists => 'This element already exists';
+  String get alreadyExists => 'Este elemento já existe';
 
   @override
-  String get create => 'Create';
+  String get create => 'Crio';
 
   @override
-  String get enterName => 'Please enter a name';
+  String get enterName => 'Por favor, digite um nome';
 
   @override
-  String get name => 'Name';
+  String get name => 'Nome:';
 
   @override
-  String get invalidName => 'Invalid name';
+  String get invalidName => 'Nome inválido';
 }
 
 /// The translations for Portuguese, as used in Brazil (`pt_BR`).
@@ -124,4 +124,22 @@ class LeapLocalizationsPtBr extends LeapLocalizationsPt {
 
   @override
   String get reset => 'Reset';
+
+  @override
+  String get shouldNotEmpty => 'Este valor não deve ser vazio';
+
+  @override
+  String get alreadyExists => 'Este elemento já existe';
+
+  @override
+  String get create => 'Crio';
+
+  @override
+  String get enterName => 'Por favor, digite um nome';
+
+  @override
+  String get name => 'Nome:';
+
+  @override
+  String get invalidName => 'Nome inválido';
 }

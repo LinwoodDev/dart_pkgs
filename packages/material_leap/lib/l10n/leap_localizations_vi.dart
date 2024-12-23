@@ -55,19 +55,19 @@ class LeapLocalizationsVi extends LeapLocalizations {
   String get reset => 'Reset';
 
   @override
-  String get shouldNotEmpty => 'This value should not be empty';
+  String get shouldNotEmpty => 'Giá trị này không nên để trống';
 
   @override
   String get alreadyExists => 'This element already exists';
 
   @override
-  String get create => 'Create';
+  String get create => 'Tạo mới';
 
   @override
   String get enterName => 'Please enter a name';
 
   @override
-  String get name => 'Name';
+  String get name => 'Tiêu đề';
 
   @override
   String get invalidName => 'Invalid name';

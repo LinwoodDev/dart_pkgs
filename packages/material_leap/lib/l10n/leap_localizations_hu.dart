@@ -55,19 +55,19 @@ class LeapLocalizationsHu extends LeapLocalizations {
   String get reset => 'Reset';
 
   @override
-  String get shouldNotEmpty => 'This value should not be empty';
+  String get shouldNotEmpty => 'Nem hagyhatja üresen';
 
   @override
   String get alreadyExists => 'This element already exists';
 
   @override
-  String get create => 'Create';
+  String get create => 'Létrehozás';
 
   @override
   String get enterName => 'Please enter a name';
 
   @override
-  String get name => 'Name';
+  String get name => 'Név';
 
   @override
   String get invalidName => 'Invalid name';

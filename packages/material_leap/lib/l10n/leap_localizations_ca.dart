@@ -61,13 +61,13 @@ class LeapLocalizationsCa extends LeapLocalizations {
   String get alreadyExists => 'This element already exists';
 
   @override
-  String get create => 'Create';
+  String get create => 'Crear';
 
   @override
   String get enterName => 'Please enter a name';
 
   @override
-  String get name => 'Name';
+  String get name => 'Nom';
 
   @override
   String get invalidName => 'Invalid name';

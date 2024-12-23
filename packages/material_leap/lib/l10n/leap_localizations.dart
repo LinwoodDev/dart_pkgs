@@ -247,6 +247,42 @@ abstract class LeapLocalizations {
   /// In en, this message translates to:
   /// **'Reset'**
   String get reset;
+
+  /// No description provided for @shouldNotEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'This value should not be empty'**
+  String get shouldNotEmpty;
+
+  /// No description provided for @alreadyExists.
+  ///
+  /// In en, this message translates to:
+  /// **'This element already exists'**
+  String get alreadyExists;
+
+  /// No description provided for @create.
+  ///
+  /// In en, this message translates to:
+  /// **'Create'**
+  String get create;
+
+  /// No description provided for @enterName.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a name'**
+  String get enterName;
+
+  /// No description provided for @name.
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get name;
+
+  /// No description provided for @invalidName.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid name'**
+  String get invalidName;
 }
 
 class _LeapLocalizationsDelegate

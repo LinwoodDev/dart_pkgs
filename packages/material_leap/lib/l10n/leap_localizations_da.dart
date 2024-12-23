@@ -53,4 +53,22 @@ class LeapLocalizationsDa extends LeapLocalizations {
 
   @override
   String get reset => 'Reset';
+
+  @override
+  String get shouldNotEmpty => 'This value should not be empty';
+
+  @override
+  String get alreadyExists => 'This element already exists';
+
+  @override
+  String get create => 'Create';
+
+  @override
+  String get enterName => 'Please enter a name';
+
+  @override
+  String get name => 'Name';
+
+  @override
+  String get invalidName => 'Invalid name';
 }

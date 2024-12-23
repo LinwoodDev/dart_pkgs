@@ -17,8 +17,8 @@
   "reset": "Reset",
   "shouldNotEmpty": "Tato hodnota by neměla být prázdná",
   "alreadyExists": "Tento prvek již existuje",
-  "create": "Create",
-  "enterName": "Please enter a name",
-  "name": "Name",
-  "invalidName": "Invalid name"
+  "create": "Vytvořit",
+  "enterName": "Zadejte název",
+  "name": "Název",
+  "invalidName": "Neplatný název"
 }

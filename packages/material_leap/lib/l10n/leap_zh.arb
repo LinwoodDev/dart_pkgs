@@ -18,7 +18,7 @@
   "shouldNotEmpty": "此值不应为空",
   "alreadyExists": "此元素已存在",
   "create": "创建",
-  "enterName": "Please enter a name",
+  "enterName": "请输入一个名称",
   "name": "名称",
-  "invalidName": "Invalid name"
+  "invalidName": "无效的名称"
 }

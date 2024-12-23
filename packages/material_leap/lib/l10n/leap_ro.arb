@@ -15,10 +15,10 @@
   "restore": "Restaurează",
   "copyMessage": "Copiat în clipboard",
   "reset": "Reset",
-  "shouldNotEmpty": "This value should not be empty",
-  "alreadyExists": "This element already exists",
-  "create": "Create",
-  "enterName": "Please enter a name",
-  "name": "Name",
-  "invalidName": "Invalid name"
+  "shouldNotEmpty": "Această valoare nu trebuie să fie goală",
+  "alreadyExists": "Acest element există deja",
+  "create": "Crează",
+  "enterName": "Te rugăm să introduci un nume",
+  "name": "Nume",
+  "invalidName": "Nume invalid"
 }

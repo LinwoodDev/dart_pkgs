@@ -18,7 +18,7 @@
   "shouldNotEmpty": "Tämä arvo ei saa olla tyhjä",
   "alreadyExists": "Tämä elementti on jo olemassa",
   "create": "Luo",
-  "enterName": "Please enter a name",
+  "enterName": "Anna nimi",
   "name": "Nimi",
-  "invalidName": "Invalid name"
+  "invalidName": "Virheellinen nimi"
 }

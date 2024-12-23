@@ -17,8 +17,8 @@
   "reset": "Reset",
   "shouldNotEmpty": "This value should not be empty",
   "alreadyExists": "This element already exists",
-  "create": "Create",
+  "create": "Crear",
   "enterName": "Please enter a name",
-  "name": "Name",
+  "name": "Nom",
   "invalidName": "Invalid name"
 }

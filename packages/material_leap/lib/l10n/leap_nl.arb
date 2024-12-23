@@ -18,7 +18,7 @@
   "shouldNotEmpty": "Deze waarde mag niet leeg zijn",
   "alreadyExists": "Dit element bestaat al",
   "create": "Aanmaken",
-  "enterName": "Please enter a name",
+  "enterName": "Voer een naam in",
   "name": "naam",
-  "invalidName": "Invalid name"
+  "invalidName": "Ongeldige naam"
 }

@@ -18,7 +18,7 @@
   "shouldNotEmpty": "この値は空にできません",
   "alreadyExists": "この要素は既に存在します",
   "create": "作成",
-  "enterName": "Please enter a name",
+  "enterName": "名前を入力してください",
   "name": "名前",
-  "invalidName": "Invalid name"
+  "invalidName": "無効な名前"
 }

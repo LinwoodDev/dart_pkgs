@@ -34,7 +34,7 @@ extension type const SRGBColor(int value) {
     return SRGBColor(argb);
   }
 
-  factory SRGBColor.parseString(String value, {bool isRGBA = true}) {
+  factory SRGBColor.parse(String value, {bool isRGBA = true}) {
     value = value.trim();
     if (value.startsWith('#')) value = value.substring(1);
     if (value.length == 3) {
@@ -70,9 +70,9 @@ extension type const SRGBColor(int value) {
     return SRGBColor(int.parse(value, radix: 16));
   }
 
-  SRGBColor? tryParseString(String value, {bool isRGBA = true}) {
+  static SRGBColor? tryParse(String value, {bool isRGBA = true}) {
     try {
-      return SRGBColor.parseString(value, isRGBA: isRGBA);
+      return SRGBColor.parse(value, isRGBA: isRGBA);
     } catch (e) {
       return null;
     }

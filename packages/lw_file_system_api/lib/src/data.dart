@@ -60,7 +60,9 @@ abstract class ArchiveData<T> {
     _password = password;
   }
 
-  bool isEncrypted() => _password != null;
+  bool get isEncrypted => _password != null;
+
+  String? get password => _password;
 
   Uint8List exportAsBytes() =>
       Uint8List.fromList(ZipEncoder(password: _password).encode(export()));
@@ -114,6 +116,12 @@ class SimpleArchiveData extends ArchiveData<SimpleArchiveData> {
   @override
   SimpleArchiveData updateState(ArchiveState state) =>
       SimpleArchiveData(archive, state: state);
+}
+
+bool isZip(List<int> bytes) {
+  final stream = InputMemoryStream(bytes);
+  final signature = stream.readUint32();
+  return signature == ZipFile.zipSignature;
 }
 
 bool isZipEncrypted(List<int> bytes) {

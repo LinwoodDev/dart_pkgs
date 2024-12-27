@@ -1,16 +1,8 @@
 // ignore_for_file: deprecated_member_use
 
-import 'package:flutter/material.dart';
+import 'dart:ui';
 
-bool isDarkColor(Color color) {
-  // Berechne die Helligkeit der Farbe basierend auf dem relativen Luminanzwert.
-  double luminance = color.computeLuminance();
-  // Definiere einen Schwellenwert, der angibt, ab welchem Luminanzwert eine Farbe als "dunkel" gilt.
-  const double threshold = 0.5;
-  // Wenn die Helligkeit der Farbe unter dem Schwellenwert liegt, geben wir true zurück (die Farbe ist dunkel).
-  // Andernfalls geben wir false zurück (die Farbe ist hell).
-  return luminance < threshold;
-}
+import 'package:material_leap/helpers.dart';
 
 extension IntColorHelper on int {
   String toHexColor(
@@ -29,9 +21,29 @@ extension IntColorHelper on int {
   }
 }
 
+extension SRGBColorHelper on SRGBColor {
+  Color toColor() => Color.from(
+        red: r / 255,
+        green: g / 255,
+        blue: b / 255,
+        alpha: a / 255,
+      );
+}
+
 extension ColorHelper on Color {
-  String toHexColor({bool leadingHash = true, bool alpha = true}) =>
-      value.toHexColor(leadingHash: leadingHash, alpha: alpha);
+  SRGBColor toSRGB() {
+    final color = withValues(colorSpace: ColorSpace.sRGB);
+    final red = (color.r * 255).round();
+    final green = (color.g * 255).round();
+    final blue = (color.b * 255).round();
+    final alpha = (color.a * 255).round();
+    return SRGBColor.from(r: red, g: green, b: blue, a: alpha);
+  }
+
+  bool isDark({
+    double threshold = 0.5,
+  }) =>
+      computeLuminance() < threshold;
 }
 
 extension StringColorHelper on String {

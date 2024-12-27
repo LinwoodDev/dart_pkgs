@@ -19,7 +19,7 @@ dependencies:
     git:
       url: https://github.com/LinwoodDev/dart_pkgs
       path: packages/dart_leap
-      ref: dfda6c2e3cef2e29511f97e9470fd4deb8e0c573
+      ref: 2325ec71be6691f64725bc78a911cabed68d901b
   window_manager: ">=0.3.9 <0.6.0"
   flutter_bloc: ^8.1.5
   web: ^1.0.0
@@ -27,7 +27,7 @@ dependencies:
     git:
       url: https://github.com/LinwoodDev/dart_pkgs
       path: packages/lw_file_system_api
-      ref: 2036c923bb93afcefaadd8108c7e789513ae7082
+      ref: 2325ec71be6691f64725bc78a911cabed68d901b
 
 dev_dependencies:
   flutter_test:

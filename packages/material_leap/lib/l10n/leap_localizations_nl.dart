@@ -10,12 +10,6 @@ class LeapLocalizationsNl extends LeapLocalizations {
   String get color => 'Kleur';
 
   @override
-  String get pin => 'Vastzetten';
-
-  @override
-  String get delete => 'Verwijderen';
-
-  @override
   String get red => 'Rood';
 
   @override

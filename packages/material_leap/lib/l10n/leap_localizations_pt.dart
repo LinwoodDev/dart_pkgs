@@ -10,12 +10,6 @@ class LeapLocalizationsPt extends LeapLocalizations {
   String get color => 'Cor';
 
   @override
-  String get pin => 'PIN';
-
-  @override
-  String get delete => 'excluir';
-
-  @override
   String get red => 'Vermelho';
 
   @override
@@ -79,12 +73,6 @@ class LeapLocalizationsPtBr extends LeapLocalizationsPt {
 
   @override
   String get color => 'Cor';
-
-  @override
-  String get pin => 'PIN';
-
-  @override
-  String get delete => 'excluir';
 
   @override
   String get red => 'Vermelho';

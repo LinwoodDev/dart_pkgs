@@ -10,12 +10,6 @@ class LeapLocalizationsZh extends LeapLocalizations {
   String get color => '颜色';
 
   @override
-  String get pin => '置顶';
-
-  @override
-  String get delete => '删除';
-
-  @override
   String get red => '红色的';
 
   @override
@@ -79,12 +73,6 @@ class LeapLocalizationsZhHant extends LeapLocalizationsZh {
 
   @override
   String get color => '顏色';
-
-  @override
-  String get pin => '釘選';
-
-  @override
-  String get delete => '刪除';
 
   @override
   String get red => '紅';

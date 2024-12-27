@@ -10,12 +10,6 @@ class LeapLocalizationsUk extends LeapLocalizations {
   String get color => 'Колір';
 
   @override
-  String get pin => 'Закріплення повідомлень';
-
-  @override
-  String get delete => 'Видалити';
-
-  @override
   String get red => 'Червоний';
 
   @override

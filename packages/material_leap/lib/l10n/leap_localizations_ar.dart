@@ -10,12 +10,6 @@ class LeapLocalizationsAr extends LeapLocalizations {
   String get color => 'اللون';
 
   @override
-  String get pin => 'تثبيت';
-
-  @override
-  String get delete => 'حذف';
-
-  @override
   String get red => 'أحمر';
 
   @override

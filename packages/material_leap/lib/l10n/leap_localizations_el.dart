@@ -10,12 +10,6 @@ class LeapLocalizationsEl extends LeapLocalizations {
   String get color => 'Χρώμα';
 
   @override
-  String get pin => 'Καρφίτσα';
-
-  @override
-  String get delete => 'Διαγραφή';
-
-  @override
   String get red => 'Κόκκινο';
 
   @override

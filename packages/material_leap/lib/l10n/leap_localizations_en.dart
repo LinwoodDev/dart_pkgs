@@ -10,12 +10,6 @@ class LeapLocalizationsEn extends LeapLocalizations {
   String get color => 'Color';
 
   @override
-  String get pin => 'Pin';
-
-  @override
-  String get delete => 'Delete';
-
-  @override
   String get red => 'Red';
 
   @override

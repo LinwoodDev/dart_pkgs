@@ -158,18 +158,6 @@ abstract class LeapLocalizations {
   /// **'Color'**
   String get color;
 
-  /// No description provided for @pin.
-  ///
-  /// In en, this message translates to:
-  /// **'Pin'**
-  String get pin;
-
-  /// No description provided for @delete.
-  ///
-  /// In en, this message translates to:
-  /// **'Delete'**
-  String get delete;
-
   /// No description provided for @red.
   ///
   /// In en, this message translates to:

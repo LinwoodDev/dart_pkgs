@@ -10,12 +10,6 @@ class LeapLocalizationsVi extends LeapLocalizations {
   String get color => 'Màu sắc';
 
   @override
-  String get pin => 'Ghim';
-
-  @override
-  String get delete => 'Xóa';
-
-  @override
   String get red => 'Red';
 
   @override

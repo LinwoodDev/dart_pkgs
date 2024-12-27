@@ -10,12 +10,6 @@ class LeapLocalizationsRu extends LeapLocalizations {
   String get color => 'Цвет';
 
   @override
-  String get pin => 'Закрепить';
-
-  @override
-  String get delete => 'Удалить';
-
-  @override
   String get red => 'Красный';
 
   @override

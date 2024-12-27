@@ -10,12 +10,6 @@ class LeapLocalizationsNo extends LeapLocalizations {
   String get color => 'Farge';
 
   @override
-  String get pin => 'Fest';
-
-  @override
-  String get delete => 'Slett';
-
-  @override
   String get red => 'Rød';
 
   @override

@@ -10,12 +10,6 @@ class LeapLocalizationsRo extends LeapLocalizations {
   String get color => 'Culoare';
 
   @override
-  String get pin => 'Fixează';
-
-  @override
-  String get delete => 'Ștergere';
-
-  @override
   String get red => 'Roșu';
 
   @override

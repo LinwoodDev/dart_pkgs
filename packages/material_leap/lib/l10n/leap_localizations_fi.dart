@@ -10,12 +10,6 @@ class LeapLocalizationsFi extends LeapLocalizations {
   String get color => 'Väri';
 
   @override
-  String get pin => 'Kiinnitä';
-
-  @override
-  String get delete => 'Poista';
-
-  @override
   String get red => 'Punainen';
 
   @override

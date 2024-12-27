@@ -10,12 +10,6 @@ class LeapLocalizationsSv extends LeapLocalizations {
   String get color => 'Färg';
 
   @override
-  String get pin => 'Fäst';
-
-  @override
-  String get delete => 'Radera';
-
-  @override
   String get red => 'Röd';
 
   @override

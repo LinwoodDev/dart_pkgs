@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:material_leap/helpers.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 typedef OnValueChanged = void Function(double value);
@@ -28,6 +29,24 @@ class ExactSlider extends StatefulWidget {
     this.onChanged,
     this.thumbColor,
   });
+
+  ExactSlider.srgb({
+    super.key,
+    this.label,
+    this.leading,
+    this.bottom,
+    this.fractionDigits = 2,
+    this.defaultValue = 1,
+    this.min = 0,
+    this.max = 100,
+    required SRGBColor color,
+    this.value,
+    this.header,
+    this.onChangeEnd,
+    this.onChanged,
+    required SRGBColor thumbColor,
+  })  : color = color.toColor(),
+        thumbColor = thumbColor.toColor();
 
   @override
   _ExactSliderState createState() => _ExactSliderState();

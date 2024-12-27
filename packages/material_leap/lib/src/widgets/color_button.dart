@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:material_leap/helpers.dart';
 
 class ColorButton extends StatelessWidget {
   final Color color;
@@ -15,6 +16,16 @@ class ColorButton extends StatelessWidget {
     this.onSecondaryTap,
     this.size,
   });
+
+  ColorButton.srgb({
+    super.key,
+    required SRGBColor color,
+    this.selected = false,
+    this.onTap,
+    this.onLongPress,
+    this.onSecondaryTap,
+    this.size,
+  }) : color = color.toColor();
 
   @override
   Widget build(BuildContext context) {

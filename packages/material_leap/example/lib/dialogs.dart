@@ -13,7 +13,7 @@ class DialogsView extends StatelessWidget {
         ElevatedButton(
             onPressed: () => showDialog(
                   context: context,
-                  builder: (context) => ColorPicker<void>(
+                  builder: (context) => ColorPicker<void>.native(
                     primaryActions: (close) => [
                       TextButton(
                         child: const Text("Primary Action"),

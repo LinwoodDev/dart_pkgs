@@ -1,5 +1,3 @@
-// ignore_for_file: deprecated_member_use
-
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -12,53 +10,66 @@ import '../widgets/exact_slider.dart';
 import '../widgets/header.dart';
 
 class ColorPickerResponse<T> {
-  final int color;
+  final int value;
   final T? action;
 
-  const ColorPickerResponse(this.color, [this.action]);
+  const ColorPickerResponse(this.value, [this.action]);
+
+  SRGBColor toSRGB() => SRGBColor(value);
+  Color toColor() => Color(value);
 }
 
 typedef ActionsBuilder<T> = List<Widget> Function(void Function(T?) close);
-const kColorBlack = Color(0xFF000000);
-const kColorRed = Color(0xFFFF0000);
-const kColorGreen = Color(0xFF00FF00);
-const kColorBlue = Color(0xFF0000FF);
-const kColorWhite = Color(0xFFFFFFFF);
+const kColorBlack = SRGBColor(0xFF000000);
+const kColorRed = SRGBColor(0xFFFF0000);
+const kColorGreen = SRGBColor(0xFF00FF00);
+const kColorBlue = SRGBColor(0xFF0000FF);
+const kColorWhite = SRGBColor(0xFFFFFFFF);
 
 class ColorPicker<T> extends StatefulWidget {
-  final Color defaultColor;
-  final List<Color> suggested;
-  final Color? value;
+  final SRGBColor defaultColor;
+  final List<SRGBColor> suggested;
+  final SRGBColor? value;
   final ActionsBuilder<T>? primaryActions, secondaryActions;
 
   const ColorPicker({
     super.key,
     this.value,
-    this.defaultColor = Colors.white,
+    this.defaultColor = kColorWhite,
     this.primaryActions,
     this.secondaryActions,
     this.suggested = const [],
   });
+
+  ColorPicker.native({
+    super.key,
+    Color value = Colors.white,
+    Color defaultColor = Colors.white,
+    this.primaryActions,
+    this.secondaryActions,
+    List<Color> suggested = const [],
+  })  : defaultColor = value.toSRGB(),
+        value = value.toSRGB(),
+        suggested = suggested.map((e) => e.toSRGB()).toList();
 
   @override
   _ColorPickerState<T> createState() => _ColorPickerState<T>();
 }
 
 class _ColorPickerState<T> extends State<ColorPicker<T>> {
-  late Color color;
+  late SRGBColor color;
   late final TextEditingController _hexController;
 
   @override
   void initState() {
     color = widget.value ?? widget.defaultColor;
     _hexController =
-        TextEditingController(text: color.value.toHexColor(alpha: false));
+        TextEditingController(text: color.toHexString(alpha: false));
     super.initState();
   }
 
   void _changeColor({int? red, int? green, int? blue}) => setState(() {
-        color = Color.fromARGB(
-            255, red ?? color.red, green ?? color.green, blue ?? color.blue);
+        color = color.withValues(a: 255, r: red, g: green, b: blue);
       });
 
   void _close([T? action]) =>
@@ -66,8 +77,8 @@ class _ColorPickerState<T> extends State<ColorPicker<T>> {
 
   @override
   Widget build(BuildContext context) {
-    if (_hexController.text.toColorValue() != color.value) {
-      _hexController.text = color.value.toHexColor(alpha: false);
+    if (SRGBColor.tryParse(_hexController.text)?.value != color.value) {
+      _hexController.text = color.toHexString(alpha: false);
     }
     final size = MediaQuery.sizeOf(context);
     final isMobile = size.width < LeapBreakpoints.medium;
@@ -160,8 +171,7 @@ class _ColorPickerState<T> extends State<ColorPicker<T>> {
                   onChanged: (value) {
                     setState(() {
                       color = value;
-                      _hexController.text =
-                          value.value.toHexColor(alpha: false);
+                      _hexController.text = value.toHexString(alpha: false);
                     });
                   }),
             ),
@@ -170,16 +180,16 @@ class _ColorPickerState<T> extends State<ColorPicker<T>> {
             padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
             child: Row(
               children: [
-                ColorButton(color: color, size: 48),
+                ColorButton.srgb(color: color, size: 48),
                 Expanded(
                   child: TextField(
                     controller: _hexController,
                     decoration: const InputDecoration(filled: true),
                     onSubmitted: (value) {
-                      final valueNumber = value.toColorValue();
+                      final valueNumber = SRGBColor.tryParse(value);
                       if (valueNumber == null) return;
                       setState(() {
-                        color = Color(valueNumber).withAlpha(255);
+                        color = valueNumber.withValues(a: 255);
                       });
                     },
                   ),
@@ -192,37 +202,37 @@ class _ColorPickerState<T> extends State<ColorPicker<T>> {
 
   Widget _buildProperties() =>
       Column(mainAxisSize: MainAxisSize.min, children: [
-        ExactSlider(
+        ExactSlider.srgb(
           header: Text(LeapLocalizations.of(context).red),
           fractionDigits: 0,
           defaultValue: 255,
           min: 0,
           max: 255,
-          value: color.red.toDouble(),
+          value: color.r.toDouble(),
           color: kColorRed,
-          thumbColor: kColorBlack.withRed(color.red),
+          thumbColor: kColorBlack.withValues(r: color.r),
           onChanged: (value) => _changeColor(red: value.toInt()),
         ),
-        ExactSlider(
+        ExactSlider.srgb(
           header: Text(LeapLocalizations.of(context).green),
           fractionDigits: 0,
           defaultValue: 255,
           min: 0,
           max: 255,
-          value: color.green.toDouble(),
+          value: color.g.toDouble(),
           color: kColorGreen,
-          thumbColor: kColorBlack.withGreen(color.green),
+          thumbColor: kColorBlack.withValues(g: color.g),
           onChanged: (value) => _changeColor(green: value.toInt()),
         ),
-        ExactSlider(
+        ExactSlider.srgb(
           header: Text(LeapLocalizations.of(context).blue),
           fractionDigits: 0,
           defaultValue: 255,
           min: 0,
           max: 255,
-          value: color.blue.toDouble(),
+          value: color.b.toDouble(),
           color: kColorBlue,
-          thumbColor: kColorBlack.withBlue(color.blue),
+          thumbColor: kColorBlack.withValues(b: color.b),
           onChanged: (value) => _changeColor(blue: value.toInt()),
         ),
         if (widget.suggested.isNotEmpty) ...[
@@ -232,7 +242,7 @@ class _ColorPickerState<T> extends State<ColorPicker<T>> {
                 .map((e) => SizedBox(
                       height: 64,
                       width: 64,
-                      child: ColorButton(
+                      child: ColorButton.srgb(
                         color: e,
                         onTap: () => setState(() => color = e),
                       ),
@@ -244,8 +254,8 @@ class _ColorPickerState<T> extends State<ColorPicker<T>> {
 }
 
 class ColorWheelPicker extends StatelessWidget {
-  final Color value;
-  final void Function(Color) onChanged;
+  final SRGBColor value;
+  final void Function(SRGBColor) onChanged;
   final GlobalKey _wheelKey = GlobalKey(), _sliderKey = GlobalKey();
 
   ColorWheelPicker({super.key, required this.value, required this.onChanged});
@@ -262,9 +272,9 @@ class ColorWheelPicker extends StatelessWidget {
     final angle = atan2(dy, dx);
     final double saturation = min(1.0, sqrt(dx * dx + dy * dy) / radius);
     final double hue = (angle * 180 / pi + 360) % 360;
-    onChanged(
-        HSVColor.fromAHSV(1, hue, saturation, HSVColor.fromColor(value).value)
-            .toColor());
+    onChanged(HSVColor.fromAHSV(
+            1, hue, saturation, HSVColor.fromColor(value.toColor()).value)
+        .toSRGB());
   }
 
   void _onSliderPointer(PointerEvent event) {
@@ -272,9 +282,9 @@ class ColorWheelPicker extends StatelessWidget {
     if (ctx == null) return;
     final RenderBox box = ctx.findRenderObject() as RenderBox;
     final local = box.globalToLocal(event.position);
-    final color = HSVColor.fromColor(value);
+    final color = HSVColor.fromColor(value.toColor());
     final hsvValue = min(1.0, max(0.0, local.dx / box.size.width));
-    onChanged(color.withValue(hsvValue).toColor());
+    onChanged(color.withValue(hsvValue).toSRGB());
   }
 
   @override
@@ -292,7 +302,7 @@ class ColorWheelPicker extends StatelessWidget {
               onPanEnd: (details) => _onWheelPointer(details.globalPosition),
               child: CustomPaint(
                 key: _wheelKey,
-                painter: _ColorWheelPainter(value),
+                painter: _ColorWheelPainter(value.toColor()),
               ),
             ),
           ),
@@ -305,7 +315,7 @@ class ColorWheelPicker extends StatelessWidget {
             onPointerMove: _onSliderPointer,
             child: CustomPaint(
               key: _sliderKey,
-              painter: _ColorWheelSliderPainter(value),
+              painter: _ColorWheelSliderPainter(value.toColor()),
             ),
           ),
         ),
@@ -397,9 +407,9 @@ class _ColorWheelSliderPainter extends CustomPainter {
         point,
         8,
         Paint()
-          ..color = kColorWhite
+          ..color = kColorWhite.toColor()
           ..style = PaintingStyle.fill);
-    canvas.drawCircle(point, 6, Paint()..color = kColorBlack);
+    canvas.drawCircle(point, 6, Paint()..color = kColorBlack.toColor());
   }
 
   @override

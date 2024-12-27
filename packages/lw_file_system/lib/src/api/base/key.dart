@@ -78,7 +78,7 @@ abstract class KeyFileSystem extends GeneralFileSystem
     this.createDefault = defaultCreateDefault,
   });
 
-  static KeyFileSystem fromPlatform(
+  factory KeyFileSystem.fromPlatform(
     FileSystemConfig config, {
     ExternalStorage? storage,
     CreateDefaultCallback<KeyFileSystem> createDefault = defaultCreateDefault,

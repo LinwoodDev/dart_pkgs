@@ -205,7 +205,7 @@ abstract class DirectoryFileSystem extends GeneralFileSystem
     this.createDefault = defaultCreateDefault,
   });
 
-  static DirectoryFileSystem fromPlatform(
+  factory DirectoryFileSystem.fromPlatform(
     FileSystemConfig config, {
     final ExternalStorage? storage,
     CreateDefaultCallback<DirectoryFileSystem> createDefault =

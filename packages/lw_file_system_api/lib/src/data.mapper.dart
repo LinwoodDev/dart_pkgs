@@ -26,16 +26,22 @@ class ArchiveStateMapper extends ClassMapperBase<ArchiveState> {
   static Set<String> _$removed(ArchiveState v) => v.removed;
   static const Field<ArchiveState, Set<String>> _f$removed =
       Field('removed', _$removed, opt: true, def: const {});
+  static String? _$password(ArchiveState v) => v.password;
+  static const Field<ArchiveState, String> _f$password =
+      Field('password', _$password, opt: true);
 
   @override
   final MappableFields<ArchiveState> fields = const {
     #added: _f$added,
     #removed: _f$removed,
+    #password: _f$password,
   };
 
   static ArchiveState _instantiate(DecodingData data) {
     return ArchiveState(
-        added: data.dec(_f$added), removed: data.dec(_f$removed));
+        added: data.dec(_f$added),
+        removed: data.dec(_f$removed),
+        password: data.dec(_f$password));
   }
 
   @override
@@ -92,7 +98,8 @@ abstract class ArchiveStateCopyWith<$R, $In extends ArchiveState, $Out>
     implements ClassCopyWith<$R, $In, $Out> {
   MapCopyWith<$R, String, Uint8List, ObjectCopyWith<$R, Uint8List, Uint8List>>
       get added;
-  $R call({Map<String, Uint8List>? added, Set<String>? removed});
+  $R call(
+      {Map<String, Uint8List>? added, Set<String>? removed, String? password});
   ArchiveStateCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t);
 }
 
@@ -109,15 +116,20 @@ class _ArchiveStateCopyWithImpl<$R, $Out>
       get added => MapCopyWith($value.added,
           (v, t) => ObjectCopyWith(v, $identity, t), (v) => call(added: v));
   @override
-  $R call({Map<String, Uint8List>? added, Set<String>? removed}) =>
+  $R call(
+          {Map<String, Uint8List>? added,
+          Set<String>? removed,
+          Object? password = $none}) =>
       $apply(FieldCopyWithData({
         if (added != null) #added: added,
-        if (removed != null) #removed: removed
+        if (removed != null) #removed: removed,
+        if (password != $none) #password: password
       }));
   @override
   ArchiveState $make(CopyWithData data) => ArchiveState(
       added: data.get(#added, or: $value.added),
-      removed: data.get(#removed, or: $value.removed));
+      removed: data.get(#removed, or: $value.removed),
+      password: data.get(#password, or: $value.password));
 
   @override
   ArchiveStateCopyWith<$R2, ArchiveState, $Out2> $chain<$R2, $Out2>(

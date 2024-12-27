@@ -9,8 +9,13 @@ part 'data.mapper.dart';
 class ArchiveState with ArchiveStateMappable {
   final Map<String, Uint8List> added;
   final Set<String> removed;
+  final String? password;
 
-  const ArchiveState({this.added = const {}, this.removed = const {}});
+  const ArchiveState({
+    this.added = const {},
+    this.removed = const {},
+    this.password,
+  });
 
   bool get isDirty => added.isNotEmpty || removed.isNotEmpty;
 }
@@ -18,21 +23,23 @@ class ArchiveState with ArchiveStateMappable {
 abstract class ArchiveData<T> {
   final Archive archive;
   final ArchiveState state;
-  String? _password;
 
-  ArchiveData(this.archive,
-      {this.state = const ArchiveState(), String? password})
-      : _password = password;
+  ArchiveData(this.archive, {this.state = const ArchiveState()});
+
+  ArchiveData.build(this.archive,
+      {Map<String, Uint8List> added = const {},
+      Set<String> removed = const {},
+      String? password})
+      : state =
+            ArchiveState(added: added, removed: removed, password: password);
 
   ArchiveData.empty({String? password})
       : archive = Archive(),
-        _password = password,
-        state = ArchiveState();
+        state = ArchiveState(password: password);
 
   ArchiveData.fromBytes(List<int> bytes, {String? password})
       : archive = ZipDecoder().decodeBytes(bytes, password: password),
-        _password = password,
-        state = ArchiveState();
+        state = ArchiveState(password: password);
 
   Archive export() {
     if (!state.isDirty) {
@@ -52,20 +59,17 @@ abstract class ArchiveData<T> {
     return archive;
   }
 
-  void encrypt(String password) {
-    _password = password;
-  }
+  void encrypt(String password) =>
+      updateState(state.copyWith(password: password));
 
-  void decrypt(String password) {
-    _password = password;
-  }
+  T decrypt() => updateState(state.copyWith(password: null));
 
-  bool get isEncrypted => _password != null;
+  bool get isEncrypted => state.password != null;
 
-  String? get password => _password;
+  String? get password => state.password;
 
   Uint8List exportAsBytes() =>
-      Uint8List.fromList(ZipEncoder(password: _password).encode(export()));
+      Uint8List.fromList(ZipEncoder(password: state.password).encode(export()));
 
   Uint8List? getAsset(String name) {
     final added = state.added[name];
@@ -109,9 +113,13 @@ abstract class ArchiveData<T> {
 }
 
 class SimpleArchiveData extends ArchiveData<SimpleArchiveData> {
-  SimpleArchiveData(super.archive, {super.state, super.password});
+  SimpleArchiveData(super.archive, {super.state});
+  SimpleArchiveData.build(super.archive,
+      {super.added, super.password, super.removed})
+      : super.build();
   SimpleArchiveData.empty({super.password}) : super.empty();
-  SimpleArchiveData.fromBytes(super.bytes, {super.password});
+  SimpleArchiveData.fromBytes(super.bytes, {super.password})
+      : super.fromBytes();
 
   @override
   SimpleArchiveData updateState(ArchiveState state) =>

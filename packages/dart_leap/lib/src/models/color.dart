@@ -116,4 +116,12 @@ extension type const SRGBColor(int value) {
     if (alpha && useRGBA) hex += a.toRadixString(16).padLeft(2, '0');
     return hex;
   }
+
+  static const transparent = SRGBColor(0x00000000);
+  static const red = SRGBColor(0xFFFF0000);
+  static const yellow = SRGBColor(0xFFFFFF00);
+  static const green = SRGBColor(0xFF00FF00);
+  static const blue = SRGBColor(0xFF0000FF);
+  static const white = SRGBColor(0xFFFFFFFF);
+  static const black = SRGBColor(0xFF000000);
 }

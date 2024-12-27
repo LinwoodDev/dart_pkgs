@@ -27,7 +27,7 @@ dependencies:
     git:
       url: https://github.com/LinwoodDev/dart_pkgs
       path: packages/lw_file_system_api
-      ref: 2325ec71be6691f64725bc78a911cabed68d901b
+      ref: a0752f136913f64a975cb8b20ccb16fb6ce37737
 
 dev_dependencies:
   flutter_test:

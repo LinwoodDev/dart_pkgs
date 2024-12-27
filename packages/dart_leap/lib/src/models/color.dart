@@ -5,7 +5,7 @@ const _redOffset = 16;
 const _greenOffset = 8;
 const _blueOffset = 0;
 
-extension type SRGBColor(int value) {
+extension type const SRGBColor(int value) {
   factory SRGBColor.from({
     required int r,
     required int g,
@@ -19,6 +19,7 @@ extension type SRGBColor(int value) {
         (b << _blueOffset);
     return SRGBColor(argb);
   }
+
   factory SRGBColor.fromRGBA(int rgba) {
     int r = (rgba >> 24) & 0xFF;
     int g = (rgba >> 16) & 0xFF;

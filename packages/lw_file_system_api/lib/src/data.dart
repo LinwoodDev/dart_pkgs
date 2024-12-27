@@ -59,10 +59,9 @@ abstract class ArchiveData<T> {
     return archive;
   }
 
-  void encrypt(String password) =>
+  T changePassword(String? password) =>
       updateState(state.copyWith(password: password));
-
-  T decrypt() => updateState(state.copyWith(password: null));
+  T unencrypt() => changePassword(null);
 
   bool get isEncrypted => state.password != null;
 

@@ -20,11 +20,6 @@ class ColorPickerResponse<T> {
 }
 
 typedef ActionsBuilder<T> = List<Widget> Function(void Function(T?) close);
-const kColorBlack = SRGBColor(0xFF000000);
-const kColorRed = SRGBColor(0xFFFF0000);
-const kColorGreen = SRGBColor(0xFF00FF00);
-const kColorBlue = SRGBColor(0xFF0000FF);
-const kColorWhite = SRGBColor(0xFFFFFFFF);
 
 class ColorPicker<T> extends StatefulWidget {
   final SRGBColor defaultColor;
@@ -35,7 +30,7 @@ class ColorPicker<T> extends StatefulWidget {
   const ColorPicker({
     super.key,
     this.value,
-    this.defaultColor = kColorWhite,
+    this.defaultColor = SRGBColor.white,
     this.primaryActions,
     this.secondaryActions,
     this.suggested = const [],
@@ -209,8 +204,8 @@ class _ColorPickerState<T> extends State<ColorPicker<T>> {
           min: 0,
           max: 255,
           value: color.r.toDouble(),
-          color: kColorRed,
-          thumbColor: kColorBlack.withValues(r: color.r),
+          color: SRGBColor.red,
+          thumbColor: SRGBColor.black.withValues(r: color.r),
           onChanged: (value) => _changeColor(red: value.toInt()),
         ),
         ExactSlider.srgb(
@@ -220,8 +215,8 @@ class _ColorPickerState<T> extends State<ColorPicker<T>> {
           min: 0,
           max: 255,
           value: color.g.toDouble(),
-          color: kColorGreen,
-          thumbColor: kColorBlack.withValues(g: color.g),
+          color: SRGBColor.green,
+          thumbColor: SRGBColor.black.withValues(g: color.g),
           onChanged: (value) => _changeColor(green: value.toInt()),
         ),
         ExactSlider.srgb(
@@ -231,8 +226,8 @@ class _ColorPickerState<T> extends State<ColorPicker<T>> {
           min: 0,
           max: 255,
           value: color.b.toDouble(),
-          color: kColorBlue,
-          thumbColor: kColorBlack.withValues(b: color.b),
+          color: SRGBColor.blue,
+          thumbColor: SRGBColor.black.withValues(b: color.b),
           onChanged: (value) => _changeColor(blue: value.toInt()),
         ),
         if (widget.suggested.isNotEmpty) ...[
@@ -407,9 +402,9 @@ class _ColorWheelSliderPainter extends CustomPainter {
         point,
         8,
         Paint()
-          ..color = kColorWhite.toColor()
+          ..color = SRGBColor.white.toColor()
           ..style = PaintingStyle.fill);
-    canvas.drawCircle(point, 6, Paint()..color = kColorBlack.toColor());
+    canvas.drawCircle(point, 6, Paint()..color = SRGBColor.black.toColor());
   }
 
   @override

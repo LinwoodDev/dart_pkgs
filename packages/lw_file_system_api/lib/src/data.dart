@@ -54,7 +54,11 @@ abstract class ArchiveData<T> {
           state.added.containsKey(file.name)) {
         continue;
       }
-      archive.addFile(file);
+      if (file.isDirectory) {
+        archive.addFile(ArchiveFile.directory(file.name));
+      } else if (file.isFile) {
+        archive.addFile(ArchiveFile.bytes(file.name, file.content));
+      }
     }
     return archive;
   }

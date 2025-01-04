@@ -4,7 +4,9 @@ class OffsetListTile extends StatefulWidget {
   final Offset value;
   final ValueChanged<Offset> onChanged;
   final Widget? title, subtitle, leading, trailing;
+  final String? xLabel, yLabel;
   final int fractionDigits;
+  final EdgeInsetsGeometry? contentPadding;
 
   const OffsetListTile({
     super.key,
@@ -15,6 +17,9 @@ class OffsetListTile extends StatefulWidget {
     this.leading,
     this.trailing,
     this.fractionDigits = 2,
+    this.xLabel,
+    this.yLabel,
+    this.contentPadding,
   });
 
   @override
@@ -60,6 +65,7 @@ class _OffsetListTileState extends State<OffsetListTile> {
         title: widget.title,
         subtitle: widget.subtitle,
         leading: widget.leading,
+        contentPadding: widget.contentPadding,
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -70,8 +76,8 @@ class _OffsetListTileState extends State<OffsetListTile> {
             SizedBox(
               width: 100,
               child: TextField(
-                decoration: const InputDecoration(
-                  labelText: 'X',
+                decoration: InputDecoration(
+                  labelText: widget.xLabel ?? 'X',
                   filled: true,
                   floatingLabelAlignment: FloatingLabelAlignment.center,
                 ),
@@ -88,8 +94,8 @@ class _OffsetListTileState extends State<OffsetListTile> {
             SizedBox(
               width: 100,
               child: TextField(
-                decoration: const InputDecoration(
-                  labelText: 'Y',
+                decoration: InputDecoration(
+                  labelText: widget.yLabel ?? 'Y',
                   filled: true,
                   floatingLabelAlignment: FloatingLabelAlignment.center,
                 ),

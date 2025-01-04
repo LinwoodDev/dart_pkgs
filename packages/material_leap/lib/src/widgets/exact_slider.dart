@@ -133,62 +133,57 @@ class _ExactSliderState extends State<ExactSlider> {
                       PhosphorIconsLight.clockCounterClockwise));
               final width = constraints.maxWidth;
               if (width < 300) {
-                return Column(
-                  children: [
-                    if (header != null) header,
-                    Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisSize: MainAxisSize.max,
-                        children: [
-                          if (widget.leading != null) widget.leading!,
-                          Flexible(child: textField),
-                          const SizedBox(width: 8),
-                          resetButton,
-                        ]),
-                    slider,
-                  ],
+                return ListTile(
+                  leading: widget.leading,
+                  title: header,
+                  subtitle: Column(
+                    children: [
+                      Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisSize: MainAxisSize.max,
+                          children: [
+                            if (widget.leading != null) widget.leading!,
+                            Flexible(child: textField),
+                            const SizedBox(width: 8),
+                            resetButton,
+                          ]),
+                      slider,
+                    ],
+                  ),
                 );
               }
               if (width < 500) {
-                return Column(
-                  children: [
-                    Row(children: [
-                      if (widget.leading != null) widget.leading!,
-                      if (header != null) Expanded(child: header),
-                      ConstrainedBox(
-                        constraints: const BoxConstraints(maxWidth: 75),
-                        child: textField,
-                      ),
-                    ]),
-                    Row(children: [
-                      Expanded(child: slider),
-                      resetButton,
-                    ]),
-                  ],
+                return ListTile(
+                  leading: widget.leading,
+                  subtitle: Row(children: [
+                    Expanded(child: slider),
+                    resetButton,
+                  ]),
+                  title: Row(children: [
+                    if (header != null) Expanded(child: header),
+                    ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 75),
+                      child: textField,
+                    ),
+                  ]),
                 );
               }
-              return Row(
-                children: [
-                  if (widget.header != null || widget.leading != null)
-                    SizedBox(
-                      width: 200,
-                      child: Row(
-                        children: [
-                          if (widget.leading != null) widget.leading!,
-                          if (widget.header != null) Expanded(child: header!),
-                        ],
-                      ),
+              return ListTile(
+                leading: widget.leading,
+                title: Row(
+                  children: [
+                    if (header != null) header,
+                    const SizedBox(width: 8),
+                    ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 75),
+                      child: textField,
                     ),
-                  const SizedBox(width: 8),
-                  ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 75),
-                    child: textField,
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(child: slider),
-                  resetButton,
-                ],
+                    const SizedBox(width: 8),
+                    Expanded(child: slider),
+                  ],
+                ),
+                trailing: resetButton,
               );
             }),
             DefaultTextStyle(

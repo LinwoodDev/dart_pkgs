@@ -172,7 +172,7 @@ class _ExactSliderState extends State<ExactSlider> {
                 title: Row(
                   children: [
                     if (header != null) ...[
-                      header,
+                      SizedBox(width: 200, child: header),
                       const SizedBox(width: 16),
                     ],
                     ConstrainedBox(

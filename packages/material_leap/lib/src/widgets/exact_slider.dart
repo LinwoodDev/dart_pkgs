@@ -10,6 +10,7 @@ class ExactSlider extends StatefulWidget {
   final Widget? header, leading, bottom;
   final double defaultValue, min, max;
   final double? value;
+  final double? headerWidth;
   final OnValueChanged? onChanged, onChangeEnd;
   final Color? color, thumbColor;
   final EdgeInsets? contentPadding;
@@ -30,6 +31,7 @@ class ExactSlider extends StatefulWidget {
     this.onChanged,
     this.thumbColor,
     this.contentPadding,
+    this.headerWidth,
   });
 
   ExactSlider.srgb({
@@ -48,6 +50,7 @@ class ExactSlider extends StatefulWidget {
     this.onChanged,
     required SRGBColor thumbColor,
     this.contentPadding,
+    this.headerWidth,
   })  : color = color.toColor(),
         thumbColor = thumbColor.toColor();
 
@@ -172,7 +175,7 @@ class _ExactSliderState extends State<ExactSlider> {
                 title: Row(
                   children: [
                     if (header != null) ...[
-                      SizedBox(width: 200, child: header),
+                      SizedBox(width: widget.headerWidth ?? 180, child: header),
                       const SizedBox(width: 16),
                     ],
                     ConstrainedBox(

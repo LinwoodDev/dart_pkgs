@@ -33,6 +33,14 @@ class _OffsetListTileState extends State<OffsetListTile> {
   }
 
   @override
+  void dispose() {
+    super.dispose();
+
+    _xController.dispose();
+    _yController.dispose();
+  }
+
+  @override
   void didUpdateWidget(covariant OffsetListTile oldWidget) {
     super.didUpdateWidget(oldWidget);
 

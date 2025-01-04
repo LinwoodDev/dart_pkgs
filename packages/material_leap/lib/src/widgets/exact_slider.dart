@@ -12,6 +12,7 @@ class ExactSlider extends StatefulWidget {
   final double? value;
   final OnValueChanged? onChanged, onChangeEnd;
   final Color? color, thumbColor;
+  final EdgeInsets? contentPadding;
 
   const ExactSlider({
     super.key,
@@ -28,6 +29,7 @@ class ExactSlider extends StatefulWidget {
     this.onChangeEnd,
     this.onChanged,
     this.thumbColor,
+    this.contentPadding,
   });
 
   ExactSlider.srgb({
@@ -45,6 +47,7 @@ class ExactSlider extends StatefulWidget {
     this.onChangeEnd,
     this.onChanged,
     required SRGBColor thumbColor,
+    this.contentPadding,
   })  : color = color.toColor(),
         thumbColor = thumbColor.toColor();
 
@@ -115,15 +118,7 @@ class _ExactSliderState extends State<ExactSlider> {
                   _changeValue(value);
                 },
               );
-              final header = widget.header == null
-                  ? null
-                  : Padding(
-                      padding: const EdgeInsets.all(8),
-                      child: DefaultTextStyle(
-                        style: Theme.of(context).textTheme.titleMedium!,
-                        child: widget.header!,
-                      ),
-                    );
+              final header = widget.header;
               final resetButton = IconButton(
                   onPressed: () {
                     _changeValue(widget.defaultValue);
@@ -136,6 +131,7 @@ class _ExactSliderState extends State<ExactSlider> {
                 return ListTile(
                   leading: widget.leading,
                   title: header,
+                  contentPadding: widget.contentPadding,
                   subtitle: Column(
                     children: [
                       Row(
@@ -156,6 +152,7 @@ class _ExactSliderState extends State<ExactSlider> {
               if (width < 500) {
                 return ListTile(
                   leading: widget.leading,
+                  contentPadding: widget.contentPadding,
                   subtitle: Row(children: [
                     Expanded(child: slider),
                     resetButton,
@@ -171,10 +168,13 @@ class _ExactSliderState extends State<ExactSlider> {
               }
               return ListTile(
                 leading: widget.leading,
+                contentPadding: widget.contentPadding,
                 title: Row(
                   children: [
-                    if (header != null) header,
-                    const SizedBox(width: 8),
+                    if (header != null) ...[
+                      header,
+                      const SizedBox(width: 16),
+                    ],
                     ConstrainedBox(
                       constraints: const BoxConstraints(maxWidth: 75),
                       child: textField,

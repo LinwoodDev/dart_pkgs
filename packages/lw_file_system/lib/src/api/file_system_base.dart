@@ -93,15 +93,16 @@ abstract class GeneralFileSystem {
 
 Archive exportDirectory(RawFileSystemDirectory directory, {int? lastModTime}) {
   final archive = Archive();
-  void addToArchive(FileSystemEntity asset) {
+  void addToArchive(RawFileSystemEntity asset) {
+    final path = asset.pathWithoutLeadingSlash;
     if (asset is RawFileSystemFile) {
       final data = asset.data;
       if (data == null) return;
-      final size = data.length;
-      final file = ArchiveFile(asset.path, size, data);
+      final file = ArchiveFile.bytes(path, data);
       if (lastModTime != null) file.lastModTime = lastModTime;
       archive.addFile(file);
     } else if (asset is RawFileSystemDirectory) {
+      archive.addFile(ArchiveFile.directory(path));
       var assets = asset.assets;
       for (var current in assets) {
         addToArchive(current);

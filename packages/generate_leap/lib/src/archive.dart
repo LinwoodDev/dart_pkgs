@@ -27,7 +27,7 @@ Future<Archive> createReproducableArchive(
               ..lastModTime = lastModTime);
       } else if (file is Directory) {
         await addDirectory(
-            file, '$prefix${file.path.substring(dir.path.length)}/');
+            file, '$prefix${file.path.substring(dir.path.length + 1)}/');
       }
     }
   }

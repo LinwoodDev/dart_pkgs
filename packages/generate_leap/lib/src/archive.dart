@@ -23,11 +23,11 @@ Future<Archive> createReproducableArchive(
         final filename = file.path.substring(dir.path.length + 1);
         final fileData = await file.readAsBytes();
         archive.addFile(
-            ArchiveFile('$prefix/$filename', fileData.length, fileData)
+            ArchiveFile('$prefix$filename', fileData.length, fileData)
               ..lastModTime = lastModTime);
       } else if (file is Directory) {
         await addDirectory(
-            file, '$prefix/${file.path.substring(dir.path.length + 1)}');
+            file, '$prefix${file.path.substring(dir.path.length)}/');
       }
     }
   }

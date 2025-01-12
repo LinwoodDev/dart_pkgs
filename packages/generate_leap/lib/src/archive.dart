@@ -19,15 +19,16 @@ Future<Archive> createReproducableArchive(
         }
       });
     for (final file in files) {
+      final filename = '$prefix${file.path.substring(dir.path.length + 1)}';
       if (file is File) {
         final filename = file.path.substring(dir.path.length + 1);
         final fileData = await file.readAsBytes();
         archive.addFile(
-            ArchiveFile('$prefix$filename', fileData.length, fileData)
-              ..lastModTime = lastModTime);
+            ArchiveFile.bytes(filename, fileData)..lastModTime = lastModTime);
       } else if (file is Directory) {
-        await addDirectory(
-            file, '$prefix${file.path.substring(dir.path.length + 1)}/');
+        archive.addFile(
+            ArchiveFile.directory(filename)..lastModTime = lastModTime);
+        await addDirectory(file, '$filename/');
       }
     }
   }

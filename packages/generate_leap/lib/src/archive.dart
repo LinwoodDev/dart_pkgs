@@ -7,8 +7,8 @@ Future<Archive> createReproducableArchive(
   int lastModTime = 0,
 }) async {
   final archive = Archive();
-  Future<void> addDirectory(Directory dir, String prefix) async {
-    final files = List.from(await dir.list().toList())
+  Future<void> addDirectory(Directory current) async {
+    final files = List<FileSystemEntity>.from(await current.list().toList())
       ..sort((a, b) {
         if (a is Directory && b is File) {
           return -1;
@@ -19,21 +19,19 @@ Future<Archive> createReproducableArchive(
         }
       });
     for (final file in files) {
-      final filename = '$prefix${file.path.substring(dir.path.length + 1)}';
+      final name = file.path.substring(dir.path.length + 1);
       if (file is File) {
-        final filename = file.path.substring(dir.path.length + 1);
         final fileData = await file.readAsBytes();
         archive.addFile(
-            ArchiveFile.bytes(filename, fileData)..lastModTime = lastModTime);
+            ArchiveFile.bytes(name, fileData)..lastModTime = lastModTime);
       } else if (file is Directory) {
-        archive.addFile(
-            ArchiveFile.directory(filename)..lastModTime = lastModTime);
-        await addDirectory(file, '$filename/');
+        archive.addFile(ArchiveFile.directory(name)..lastModTime = lastModTime);
+        await addDirectory(file);
       }
     }
   }
 
-  await addDirectory(dir, '');
+  await addDirectory(dir);
   return archive;
 }
 

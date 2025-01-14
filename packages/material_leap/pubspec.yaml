@@ -21,7 +21,7 @@ dependencies:
       path: packages/dart_leap
       ref: db69a03082e6811c58dc2d0e5c23d04305e1623f
   window_manager: ">=0.3.9 <0.6.0"
-  flutter_bloc: ^8.1.5
+  flutter_bloc: ">=8.1.5 <10.0.0"
   web: ^1.0.0
   lw_file_system_api:
     git:

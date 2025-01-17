@@ -232,8 +232,7 @@ final class RpcServerNetworkerPipe extends RpcNetworkerPipe {
     final packet = decode(data);
     final receiver = packet.channel.abs();
     final newPacket = packet.withChannel(channel);
-    if (validate &&
-        !isValidCall(newPacket.function, channel, receiver)) {
+    if (validate && !isValidCall(newPacket.function, channel, receiver)) {
       return;
     }
     if (!(filter?.call(newPacket, receiver) ?? true)) {

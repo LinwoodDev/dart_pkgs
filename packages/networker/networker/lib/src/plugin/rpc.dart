@@ -214,7 +214,7 @@ final class RpcServerNetworkerPipe extends RpcNetworkerPipe {
     final receiver = packet.channel;
     final newPacket = packet.withChannel(channel);
     if (validate &&
-        !isValidCall(newPacket.function, receiver, newPacket.channel)) {
+        !isValidCall(newPacket.function, newPacket.channel, receiver)) {
       return;
     }
     if (!(filter?.call(newPacket, receiver) ?? false)) {

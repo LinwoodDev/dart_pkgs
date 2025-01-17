@@ -18,10 +18,12 @@ jobs:
       fail-fast: false
       matrix:
         project:
+          - packages/consoler
           - packages/dart_leap
           - packages/flutter_localizer
           - packages/localizer
           - packages/lw_file_system
+          - packages/lw_file_system_api
           - packages/lw_sysapi
           - packages/generate_leap
           - packages/material_leap

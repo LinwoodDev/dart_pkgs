@@ -140,7 +140,7 @@ final class RpcNetworkerPipe
     bool forceLocal = false,
   }) {
     if (!isValidCall(function, sender)) return false;
-    functions[function]?.pipe.sendMessage(data);
+    functions[function]?.pipe.onMessage(data);
     return true;
   }
 

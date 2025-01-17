@@ -42,7 +42,7 @@ final class RpcNetworkerPacket {
     Channel sender = kAnyChannel;
     sender = bytes[currentOffset] << 8 | bytes[currentOffset + 1];
     currentOffset += 2;
-    final data = bytes.sublist(sender);
+    final data = bytes.sublist(currentOffset);
     return RpcNetworkerPacket(function: function, data: data, channel: sender);
   }
 

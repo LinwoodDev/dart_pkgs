@@ -230,7 +230,7 @@ final class RpcServerNetworkerPipe extends RpcNetworkerPipe {
   void onMessage(Uint8List data, [Channel channel = kAnyChannel]) {
     super.onMessage(data);
     final packet = decode(data);
-    final receiver = packet.channel;
+    final receiver = packet.channel.abs();
     final newPacket = packet.withChannel(channel);
     if (validate &&
         !isValidCall(newPacket.function, newPacket.channel, receiver)) {
@@ -243,7 +243,7 @@ final class RpcServerNetworkerPipe extends RpcNetworkerPipe {
       runFunction(newPacket);
     }
     if (receiver != kAuthorityChannel) {
-      sendMessage(newPacket);
+      sendMessage(newPacket, receiver == kAnyChannel ? -receiver : receiver);
     }
   }
 }

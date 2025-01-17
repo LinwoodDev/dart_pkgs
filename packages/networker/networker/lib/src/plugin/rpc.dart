@@ -90,8 +90,14 @@ final class RpcNetworkerPipe
     extends NetworkerPipe<Uint8List, RpcNetworkerPacket> {
   final RpcConfig config;
   final Map<int, RpcFunction> functions = {};
+  final bool isServer;
+  final Channel? receiverChannel;
 
-  RpcNetworkerPipe({this.config = const RpcConfig()});
+  RpcNetworkerPipe({
+    this.config = const RpcConfig(),
+    required this.isServer,
+    this.receiverChannel,
+  });
 
   @override
   RpcNetworkerPacket decode(Uint8List data) =>
@@ -99,6 +105,9 @@ final class RpcNetworkerPipe
 
   @override
   Uint8List encode(RpcNetworkerPacket data) => data.toBytes(config);
+
+  Channel get defaultReceiverChannel =>
+      receiverChannel ?? (isServer ? kAuthorityChannel : kAnyChannel);
 
   RawNetworkerPipe registerFunction(
     int function, {
@@ -113,17 +122,27 @@ final class RpcNetworkerPipe
       pipe: pipe,
     );
     functions[function] = rpcFunction;
-    pipe.write.listen((packet) => sendMessage(RpcNetworkerPacket(
+    pipe.write.listen((packet) => sendMessage(
+        RpcNetworkerPacket(
           function: function,
           data: packet.data,
-          channel: packet.channel,
-        )));
+          channel: isServer ? defaultReceiverChannel : packet.channel,
+        ),
+        isServer ? packet.channel : defaultReceiverChannel));
     return pipe;
   }
 
   void sendFunction(int function, Uint8List data,
-          {Channel channel = kAnyChannel, bool forceLocal = false}) =>
-      getFunction(function)?.sendMessage(data, channel);
+          {Channel channel = kAnyChannel,
+          Channel? receiver,
+          bool forceLocal = false}) =>
+      sendMessage(
+          RpcNetworkerPacket(
+              function: function,
+              data: data,
+              channel:
+                  isServer ? (receiver ?? defaultReceiverChannel) : channel),
+          isServer ? channel : (receiver ?? defaultReceiverChannel));
 
   RawNetworkerPipe? getFunction(int function) => functions[function]?.pipe;
 
@@ -183,7 +202,7 @@ base mixin NamedRpcNetworkerPipe<T extends RpcFunctionName>
 }
 
 final class RpcClientNetworkerPipe extends RpcNetworkerPipe {
-  RpcClientNetworkerPipe({super.config});
+  RpcClientNetworkerPipe({super.config}) : super(isServer: false);
 
   @override
   void onMessage(Uint8List data, [Channel channel = kAnyChannel]) {
@@ -205,7 +224,7 @@ final class RpcServerNetworkerPipe extends RpcNetworkerPipe {
     super.config,
     this.filter,
     this.validate = true,
-  });
+  }) : super(isServer: true);
 
   @override
   void onMessage(Uint8List data, [Channel channel = kAnyChannel]) {

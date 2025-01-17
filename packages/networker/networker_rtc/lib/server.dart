@@ -1,5 +1,7 @@
 library;
 
+export 'config.dart';
+
 /*
 import 'dart:io';
 

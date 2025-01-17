@@ -26,6 +26,12 @@ final class RpcNetworkerPacket {
     this.channel = kAnyChannel,
   });
 
+  RpcNetworkerPacket.named({
+    required RpcFunctionName name,
+    required this.data,
+    this.channel = kAnyChannel,
+  }) : function = name.index;
+
   factory RpcNetworkerPacket.fromBytes(RpcConfig config, Uint8List bytes) {
     var function = bytes[0];
     int currentOffset = 1;
@@ -70,7 +76,7 @@ final class RpcFunction {
   });
 
   bool shouldRun(Channel sender, Channel receiver, {bool forceLocal = false}) {
-    if (!forceLocal && !canRunLocally && sender != kAnyChannel) return false;
+    if (!forceLocal && !canRunLocally && sender == kAnyChannel) return false;
     return switch (mode) {
       RpcNetworkerMode.authority => sender == kAuthorityChannel,
       RpcNetworkerMode.selected => true,
@@ -114,6 +120,10 @@ final class RpcNetworkerPipe
         )));
     return pipe;
   }
+
+  void sendFunction(int function, Uint8List data,
+          {Channel channel = kAnyChannel, bool forceLocal = false}) =>
+      getFunction(function)?.sendMessage(data, channel);
 
   RawNetworkerPipe? getFunction(int function) => functions[function]?.pipe;
 
@@ -166,6 +176,10 @@ base mixin NamedRpcNetworkerPipe<T extends RpcFunctionName>
   bool isValidNamedCall(T name, Channel sender,
           [Channel receiver = kAnyChannel]) =>
       isValidCall(name.index, sender, receiver);
+
+  void sendNamedFunction(T name, Uint8List data,
+          {Channel channel = kAnyChannel, bool forceLocal = false}) =>
+      getNamedFunction(name)?.sendMessage(data, channel);
 }
 
 final class RpcClientNetworkerPipe extends RpcNetworkerPipe {

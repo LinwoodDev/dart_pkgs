@@ -47,7 +47,7 @@ abstract class ArchiveData<T> {
     }
     final archive = Archive();
     for (final entry in state.added.entries) {
-      archive.addFile(ArchiveFile(entry.key, entry.value.length, entry.value));
+      archive.addFile(ArchiveFile.bytes(entry.key, entry.value));
     }
     for (final file in this.archive) {
       if (state.removed.contains(file.name) ||
@@ -71,8 +71,8 @@ abstract class ArchiveData<T> {
 
   String? get password => state.password;
 
-  Uint8List exportAsBytes() =>
-      Uint8List.fromList(ZipEncoder(password: state.password).encode(export()));
+  Uint8List exportAsBytes() => ZipEncoder(password: state.password)
+      .encodeBytes(export(), autoClose: true);
 
   Uint8List? getAsset(String name) {
     final added = state.added[name];

@@ -1,3 +1,3 @@
-library networker_s5;
+library;
 
 export "src/client.dart";

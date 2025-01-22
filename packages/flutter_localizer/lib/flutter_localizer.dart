@@ -1,5 +1,5 @@
 /// Flutter port of the localizer library.
-library flutter_localizer;
+library;
 
 import 'package:flutter/services.dart';
 import 'package:localizer/localizer.dart';

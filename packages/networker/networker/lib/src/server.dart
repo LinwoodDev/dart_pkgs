@@ -67,8 +67,9 @@ abstract class NetworkerServer<T extends ConnectionInfo> extends NetworkerBase {
 
   @override
   void sendMessage(Uint8List data, [Channel channel = kAnyChannel]) {
-    if (channel == kAnyChannel) {
+    if (channel == kAnyChannel || channel < 0) {
       for (final id in _connections.keys) {
+        if (id == -channel) continue;
         _sendMessage(data, id);
       }
     } else {

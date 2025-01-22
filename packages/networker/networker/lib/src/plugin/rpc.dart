@@ -26,6 +26,12 @@ final class RpcNetworkerPacket {
     this.channel = kAnyChannel,
   });
 
+  RpcNetworkerPacket.named({
+    required RpcFunctionName name,
+    required this.data,
+    this.channel = kAnyChannel,
+  }) : function = name.index;
+
   factory RpcNetworkerPacket.fromBytes(RpcConfig config, Uint8List bytes) {
     var function = bytes[0];
     int currentOffset = 1;
@@ -36,7 +42,7 @@ final class RpcNetworkerPacket {
     Channel sender = kAnyChannel;
     sender = bytes[currentOffset] << 8 | bytes[currentOffset + 1];
     currentOffset += 2;
-    final data = bytes.sublist(sender);
+    final data = bytes.sublist(currentOffset);
     return RpcNetworkerPacket(function: function, data: data, channel: sender);
   }
 
@@ -70,7 +76,7 @@ final class RpcFunction {
   });
 
   bool shouldRun(Channel sender, Channel receiver, {bool forceLocal = false}) {
-    if (!forceLocal && !canRunLocally && sender != kAnyChannel) return false;
+    if (!forceLocal && !canRunLocally && sender == kAnyChannel) return false;
     return switch (mode) {
       RpcNetworkerMode.authority => sender == kAuthorityChannel,
       RpcNetworkerMode.selected => true,
@@ -84,8 +90,14 @@ final class RpcNetworkerPipe
     extends NetworkerPipe<Uint8List, RpcNetworkerPacket> {
   final RpcConfig config;
   final Map<int, RpcFunction> functions = {};
+  final bool isServer;
+  final Channel? receiverChannel;
 
-  RpcNetworkerPipe({this.config = const RpcConfig()});
+  RpcNetworkerPipe({
+    this.config = const RpcConfig(),
+    required this.isServer,
+    this.receiverChannel,
+  });
 
   @override
   RpcNetworkerPacket decode(Uint8List data) =>
@@ -93,6 +105,9 @@ final class RpcNetworkerPipe
 
   @override
   Uint8List encode(RpcNetworkerPacket data) => data.toBytes(config);
+
+  Channel get defaultReceiverChannel =>
+      receiverChannel ?? (isServer ? kAuthorityChannel : kAnyChannel);
 
   RawNetworkerPipe registerFunction(
     int function, {
@@ -107,13 +122,27 @@ final class RpcNetworkerPipe
       pipe: pipe,
     );
     functions[function] = rpcFunction;
-    pipe.write.listen((packet) => sendMessage(RpcNetworkerPacket(
+    pipe.write.listen((packet) => sendMessage(
+        RpcNetworkerPacket(
           function: function,
           data: packet.data,
-          channel: packet.channel,
-        )));
+          channel: isServer ? defaultReceiverChannel : packet.channel,
+        ),
+        isServer ? packet.channel : defaultReceiverChannel));
     return pipe;
   }
+
+  void sendFunction(int function, Uint8List data,
+          {Channel channel = kAnyChannel,
+          Channel? receiver,
+          bool forceLocal = false}) =>
+      sendMessage(
+          RpcNetworkerPacket(
+              function: function,
+              data: data,
+              channel:
+                  isServer ? (receiver ?? defaultReceiverChannel) : channel),
+          isServer ? channel : (receiver ?? defaultReceiverChannel));
 
   RawNetworkerPipe? getFunction(int function) => functions[function]?.pipe;
 
@@ -130,7 +159,7 @@ final class RpcNetworkerPipe
     bool forceLocal = false,
   }) {
     if (!isValidCall(function, sender)) return false;
-    functions[function]?.pipe.sendMessage(data);
+    functions[function]?.pipe.onMessage(data);
     return true;
   }
 
@@ -166,10 +195,14 @@ base mixin NamedRpcNetworkerPipe<T extends RpcFunctionName>
   bool isValidNamedCall(T name, Channel sender,
           [Channel receiver = kAnyChannel]) =>
       isValidCall(name.index, sender, receiver);
+
+  void sendNamedFunction(T name, Uint8List data,
+          {Channel channel = kAnyChannel, bool forceLocal = false}) =>
+      getNamedFunction(name)?.sendMessage(data, channel);
 }
 
 final class RpcClientNetworkerPipe extends RpcNetworkerPipe {
-  RpcClientNetworkerPipe({super.config});
+  RpcClientNetworkerPipe({super.config}) : super(isServer: false);
 
   @override
   void onMessage(Uint8List data, [Channel channel = kAnyChannel]) {
@@ -191,26 +224,26 @@ final class RpcServerNetworkerPipe extends RpcNetworkerPipe {
     super.config,
     this.filter,
     this.validate = true,
-  });
+  }) : super(isServer: true);
 
   @override
   void onMessage(Uint8List data, [Channel channel = kAnyChannel]) {
     super.onMessage(data);
     final packet = decode(data);
-    final receiver = packet.channel;
+    final receiver = packet.channel.abs();
     final newPacket = packet.withChannel(channel);
-    if (validate &&
-        !isValidCall(newPacket.function, receiver, newPacket.channel)) {
+    if (validate && !isValidCall(newPacket.function, channel, receiver)) {
       return;
     }
-    if (!(filter?.call(newPacket, receiver) ?? false)) {
+    if (!(filter?.call(newPacket, receiver) ?? true)) {
       return;
     }
-    if (newPacket.channel == kAuthorityChannel) {
+    if (receiver == kAuthorityChannel || receiver == kAnyChannel) {
       runFunction(newPacket);
-      return;
     }
-    sendMessage(newPacket);
+    if (receiver != kAuthorityChannel) {
+      sendMessage(newPacket, receiver == kAnyChannel ? -channel : receiver);
+    }
   }
 }
 

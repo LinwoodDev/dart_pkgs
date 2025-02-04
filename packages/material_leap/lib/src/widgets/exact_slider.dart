@@ -16,6 +16,7 @@ class ExactSlider extends StatefulWidget {
   final OnValueChanged? onChanged, onChangeEnd;
   final Color? color, thumbColor;
   final EdgeInsets? contentPadding;
+  final bool divide;
 
   const ExactSlider({
     super.key,
@@ -26,6 +27,7 @@ class ExactSlider extends StatefulWidget {
     this.defaultValue = 1,
     this.min = 0,
     this.max = 100,
+    this.divide = false,
     this.color,
     this.value,
     this.header,
@@ -45,6 +47,7 @@ class ExactSlider extends StatefulWidget {
     this.defaultValue = 1,
     this.min = 0,
     this.max = 100,
+    this.divide = false,
     required SRGBColor color,
     this.value,
     this.header,
@@ -113,7 +116,6 @@ class _ExactSliderState extends State<ExactSlider> {
                   onChanged: (value) =>
                       _changeValue(double.tryParse(value) ?? _value));
               final digits = widget.fractionDigits;
-              final divisions = (widget.max - widget.min + 1) * pow(10, digits);
               final slider = Slider(
                 value: _value.clamp(widget.min, widget.max),
                 min: widget.min,
@@ -121,8 +123,9 @@ class _ExactSliderState extends State<ExactSlider> {
                 activeColor: widget.color,
                 onChangeEnd: widget.onChangeEnd,
                 thumbColor: widget.thumbColor,
-                // Calculate distance between max and min and then see frictionDigits
-                divisions: divisions.toInt(),
+                divisions: widget.divide
+                    ? ((widget.max - widget.min + 1) * pow(10, digits)).toInt()
+                    : null,
                 onChanged: (value) {
                   _changeValue(value);
                 },

@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:material_leap/helpers.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
@@ -110,6 +112,8 @@ class _ExactSliderState extends State<ExactSlider> {
                   onEditingComplete: () => widget.onChangeEnd?.call(_value),
                   onChanged: (value) =>
                       _changeValue(double.tryParse(value) ?? _value));
+              final digits = widget.fractionDigits;
+              final divisions = (widget.max - widget.min + 1) * pow(10, digits);
               final slider = Slider(
                 value: _value.clamp(widget.min, widget.max),
                 min: widget.min,
@@ -117,6 +121,8 @@ class _ExactSliderState extends State<ExactSlider> {
                 activeColor: widget.color,
                 onChangeEnd: widget.onChangeEnd,
                 thumbColor: widget.thumbColor,
+                // Calculate distance between max and min and then see frictionDigits
+                divisions: divisions.toInt(),
                 onChanged: (value) {
                   _changeValue(value);
                 },

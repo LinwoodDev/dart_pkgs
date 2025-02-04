@@ -55,8 +55,10 @@ class _OffsetListTileState extends State<OffsetListTile> {
   }
 
   void _updateValue(Offset value) {
-    _xController.text = value.dx.toStringAsFixed(widget.fractionDigits);
-    _yController.text = value.dy.toStringAsFixed(widget.fractionDigits);
+    final x = value.dx.toStringAsFixed(widget.fractionDigits);
+    if (_xController.text != x) _xController.text = x;
+    final y = value.dy.toStringAsFixed(widget.fractionDigits);
+    if (_yController.text != y) _yController.text = y;
   }
 
   @override
@@ -84,10 +86,8 @@ class _OffsetListTileState extends State<OffsetListTile> {
                 textAlign: TextAlign.center,
                 keyboardType: TextInputType.number,
                 controller: _xController,
-                onChanged: (value) {
-                  widget
-                      .onChanged(Offset(double.parse(value), widget.value.dy));
-                },
+                onChanged: (value) => widget
+                    .onChanged(Offset(double.parse(value), widget.value.dy)),
               ),
             ),
             const SizedBox(width: 4),
@@ -102,10 +102,8 @@ class _OffsetListTileState extends State<OffsetListTile> {
                 textAlign: TextAlign.center,
                 keyboardType: TextInputType.number,
                 controller: _yController,
-                onChanged: (value) {
-                  widget
-                      .onChanged(Offset(double.parse(value), widget.value.dy));
-                },
+                onChanged: (value) => widget
+                    .onChanged(Offset(widget.value.dx, double.parse(value))),
               ),
             ),
           ],

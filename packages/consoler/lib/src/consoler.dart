@@ -100,8 +100,16 @@ final class Consoler<T extends ConsoleProgram> {
     _programs[name] = program;
   }
 
+  void registerPrograms(Map<String?, T> programs) {
+    _programs.addAll(programs);
+  }
+
   bool unregisterProgram(String? name) {
     return _programs.remove(name) != null;
+  }
+
+  void resetPrograms() {
+    _programs.clear();
   }
 
   Future<void> _onInput(String input) async {

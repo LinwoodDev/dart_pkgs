@@ -110,9 +110,9 @@ extension type const SRGBColor(int value) {
       hex += '#';
     }
     if (alpha && !useRGBA) hex += a.toRadixString(16).padLeft(2, '0');
-    hex += a.toRadixString(16).padLeft(2, '0');
-    hex += a.toRadixString(16).padLeft(2, '0');
-    hex += a.toRadixString(16).padLeft(2, '0');
+    hex += r.toRadixString(16).padLeft(2, '0');
+    hex += g.toRadixString(16).padLeft(2, '0');
+    hex += b.toRadixString(16).padLeft(2, '0');
     if (alpha && useRGBA) hex += a.toRadixString(16).padLeft(2, '0');
     return hex;
   }

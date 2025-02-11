@@ -1,6 +1,6 @@
 import 'package:lw_file_system_api/lw_file_system_api.dart';
 
-const invalidFileName = r'[\\/:\*\?"<>\|\n\0-\x1F\x7F-\xFF]';
+const invalidFileName = r'[\\/:*?"<>|\x00-\x1F\x7F]';
 
 String convertNameToFile({
   String? name,

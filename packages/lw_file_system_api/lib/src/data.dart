@@ -42,9 +42,11 @@ abstract class ArchiveData<T> {
         state = ArchiveState(password: password);
 
   Archive export() {
-    if (!state.isDirty) {
-      return this.archive;
-    }
+    // Always copy archive since recompressing doesn't work currently
+    // https://github.com/brendan-duncan/archive/issues/374
+    // if (!state.isDirty) {
+    //   return this.archive;
+    // }
     final archive = Archive();
     for (final entry in state.added.entries) {
       archive.addFile(ArchiveFile.bytes(entry.key, entry.value));

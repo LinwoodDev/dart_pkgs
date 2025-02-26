@@ -1,19 +1,22 @@
-name: networker_rtc
+name: networker_crypto
 description: A starting point for Dart libraries or applications.
 version: 1.0.0
 publish_to: none
-# homepage: https://www.example.com
+# repository: https://github.com/my_org/my_repo
 
 environment:
-  sdk: ">=2.19.0 <3.0.0"
+  sdk: ^3.7.0
+
+# Add regular dependencies here.
 dependencies:
   networker:
     git:
       url: https://github.com/LinwoodDev/dart_pkgs.git
       path: packages/networker/networker
       ref: 726c83d377e2ad207147eb7715524c7d0aa899a1
-  flutter_webrtc: ^0.12.1+hotfix.1
+  cryptography: ^2.7.0
+  # path: ^1.8.0
 
 dev_dependencies:
   lints: ^5.0.0
-  test: ^1.24.9
+  test: ^1.24.0

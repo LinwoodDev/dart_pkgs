@@ -205,8 +205,9 @@ final class RpcClientNetworkerPipe extends RpcNetworkerPipe {
   RpcClientNetworkerPipe({super.config}) : super(isServer: false);
 
   @override
-  void onMessage(Uint8List data, [Channel channel = kAnyChannel]) {
-    super.onMessage(data, channel);
+  Future<void> onMessage(Uint8List data,
+      [Channel channel = kAnyChannel]) async {
+    await super.onMessage(data, channel);
     runFunction(decode(data));
   }
 }
@@ -227,8 +228,9 @@ final class RpcServerNetworkerPipe extends RpcNetworkerPipe {
   }) : super(isServer: true);
 
   @override
-  void onMessage(Uint8List data, [Channel channel = kAnyChannel]) {
-    super.onMessage(data);
+  Future<void> onMessage(Uint8List data,
+      [Channel channel = kAnyChannel]) async {
+    await super.onMessage(data);
     final packet = decode(data);
     final receiver = packet.channel.abs();
     final newPacket = packet.withChannel(channel);

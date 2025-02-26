@@ -6,8 +6,8 @@ class EchoPipe<T> extends SimpleNetworkerPipe<T> {
   EchoPipe({this.toChannel});
 
   @override
-  void onMessage(T data, [Channel channel = kAnyChannel]) {
-    super.onMessage(data, channel);
-    super.sendMessage(data, toChannel ?? channel);
+  Future<void> onMessage(T data, [Channel channel = kAnyChannel]) async {
+    await super.onMessage(data, channel);
+    return super.sendMessage(data, toChannel ?? channel);
   }
 }

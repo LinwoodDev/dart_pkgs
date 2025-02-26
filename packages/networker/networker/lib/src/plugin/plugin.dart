@@ -26,12 +26,13 @@ abstract class NetworkerPipe<I, O> {
   Stream<NetworkerPacket<O>> get read => _readController.stream;
   Stream<NetworkerPacket<I>> get write => _writeController.stream;
 
-  O decode(I data);
-  (O, Channel)? decodeChannel(I data, Channel channel) =>
-      (decode(data), channel);
-  I encode(O data);
-  (I, Channel)? encodeChannel(O data, Channel channel) =>
-      (encode(data), channel);
+  FutureOr<O> decode(I data);
+  FutureOr<(O, Channel)?> decodeChannel(I data, Channel channel) async =>
+      (await decode(data), channel);
+
+  FutureOr<I> encode(O data);
+  FutureOr<(I, Channel)?> encodeChannel(O data, Channel channel) async =>
+      (await encode(data), channel);
 
   void connect(NetworkerPipe<O, dynamic> pipe) {
     _pipes[pipe] = pipe._writeController.stream.listen(_sendMessagePacket);
@@ -41,8 +42,8 @@ abstract class NetworkerPipe<I, O> {
     _pipes.remove(pipe)?.cancel();
   }
 
-  void onMessage(I data, [Channel channel = kAnyChannel]) {
-    final result = decodeChannel(data, channel);
+  Future<void> onMessage(I data, [Channel channel = kAnyChannel]) async {
+    final result = await decodeChannel(data, channel);
     if (result == null) return;
     final (rawData, rawChannel) = result;
     _readController.add(NetworkerPacket(rawData, rawChannel));
@@ -56,8 +57,8 @@ abstract class NetworkerPipe<I, O> {
   void _sendMessagePacket(NetworkerPacket packet) =>
       sendMessage(packet.data, packet.channel);
 
-  void sendMessage(O data, [Channel channel = kAnyChannel]) {
-    final result = encodeChannel(data, channel);
+  FutureOr<void> sendMessage(O data, [Channel channel = kAnyChannel]) async {
+    final result = await encodeChannel(data, channel);
     if (result == null) return;
     final (rawData, rawChannel) = result;
     _writeController.add(NetworkerPacket(rawData, rawChannel));

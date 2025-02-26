@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:networker/networker.dart';
 
 final class NetworkerPipeTransformer<I, O> extends NetworkerPipe<I, O> {
@@ -42,10 +44,10 @@ final class ReversedNetworkerPipe<I, O> extends NetworkerPipe<I, O> {
   ReversedNetworkerPipe(this.pipe);
 
   @override
-  O decode(I data) => pipe.encode(data);
+  FutureOr<O> decode(I data) => pipe.encode(data);
 
   @override
-  I encode(O data) => pipe.decode(data);
+  FutureOr<I> encode(O data) => pipe.decode(data);
 }
 
 final class FilteredNetworkerPipe<T> extends SimpleNetworkerPipe<T> {
@@ -58,7 +60,7 @@ final class FilteredNetworkerPipe<T> extends SimpleNetworkerPipe<T> {
   });
 
   @override
-  (T, Channel)? decodeChannel(T data, Channel channel) {
+  FutureOr<(T, Channel)?> decodeChannel(T data, Channel channel) {
     if (!(filterDecoded?.call(data, channel) ?? true)) {
       return null;
     }
@@ -66,7 +68,7 @@ final class FilteredNetworkerPipe<T> extends SimpleNetworkerPipe<T> {
   }
 
   @override
-  (T, Channel)? encodeChannel(T data, Channel channel) {
+  FutureOr<(T, Channel)?> encodeChannel(T data, Channel channel) {
     if (!(filterEncoded?.call(data, channel) ?? true)) {
       return null;
     }

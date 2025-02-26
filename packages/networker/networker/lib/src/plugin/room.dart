@@ -14,10 +14,10 @@ final class RoomNetworkerPlugin<T> extends SimpleNetworkerPipe {
   final Map<String, SimpleNetworkerPipe<T>> _rooms = {};
 
   @override
-  void onMessage(data, [Channel channel = kAnyChannel]) {
-    super.onMessage(data, channel);
+  Future<void> onMessage(data, [Channel channel = kAnyChannel]) async {
+    await super.onMessage(data, channel);
     final message = RoomMessage(data);
-    _rooms[message.room]?.onMessage(message.message, channel);
+    await _rooms[message.room]?.onMessage(message.message, channel);
   }
 
   void addRoom(String room) {

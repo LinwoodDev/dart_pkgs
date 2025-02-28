@@ -79,4 +79,17 @@ abstract class NetworkerServer<T extends ConnectionInfo> extends NetworkerBase {
       _sendMessage(data, channel);
     }
   }
+
+  @protected
+  void clearConnections() {
+    for (final id in _connections.keys) {
+      removeConnection(id);
+    }
+  }
+
+  @override
+  @mustBeOverridden
+  FutureOr<void> close() {
+    clearConnections();
+  }
 }

@@ -40,13 +40,16 @@ abstract class NetworkerServer<T extends ConnectionInfo> extends NetworkerBase {
   }
 
   @protected
-  Channel addClientConnection(T info) {
-    final id = _findAvailableChannel();
-    if (id == kAnyChannel) return id;
-    _connections[id] = info;
-    _connectController.add((id, info));
+  Channel addClientConnection(T info, [Channel? id]) {
+    if (id != null) {
+      closeConnection(id);
+    }
+    final current = id ?? _findAvailableChannel();
+    if (current == kAnyChannel) return current;
+    _connections[current] = info;
+    _connectController.add((current, info));
     _changeController.add(clientConnections);
-    return id;
+    return current;
   }
 
   @protected

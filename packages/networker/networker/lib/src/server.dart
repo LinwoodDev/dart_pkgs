@@ -1,8 +1,8 @@
 part of 'connection.dart';
 
 abstract class ConnectionInfo {
-  void close();
-  void sendMessage(Uint8List data);
+  FutureOr<void> close();
+  FutureOr<void> sendMessage(Uint8List data);
   bool get isClosed;
   bool get isOpen => !isClosed;
   Uri get address;

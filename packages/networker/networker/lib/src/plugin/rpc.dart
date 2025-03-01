@@ -4,9 +4,11 @@ import 'package:networker/networker.dart';
 
 final class RpcConfig {
   final bool extendedFunctionIdentifiers;
+  final bool channelField;
 
   const RpcConfig({
     this.extendedFunctionIdentifiers = false,
+    this.channelField = true,
   });
 }
 
@@ -40,8 +42,10 @@ final class RpcNetworkerPacket {
       currentOffset++;
     }
     Channel sender = kAnyChannel;
-    sender = bytes[currentOffset] << 8 | bytes[currentOffset + 1];
-    currentOffset += 2;
+    if (config.channelField) {
+      sender = bytes[currentOffset] << 8 | bytes[currentOffset + 1];
+      currentOffset += 2;
+    }
     final data = bytes.sublist(currentOffset);
     return RpcNetworkerPacket(function: function, data: data, channel: sender);
   }
@@ -52,8 +56,10 @@ final class RpcNetworkerPacket {
       bytes.addByte(function >> 8);
     }
     bytes.addByte(function);
-    bytes.addByte(channel >> 8);
-    bytes.addByte(channel);
+    if (config.channelField) {
+      bytes.addByte(channel >> 8);
+      bytes.addByte(channel);
+    }
     bytes.add(data);
     return bytes.toBytes();
   }

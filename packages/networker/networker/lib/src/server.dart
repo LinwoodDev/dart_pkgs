@@ -10,7 +10,7 @@ abstract class ConnectionInfo {
 
 /// The server abstraction of the networker library
 /// Please note that connection ids can only be between 2 and 2^16
-abstract class NetworkerServer<T extends ConnectionInfo> extends NetworkerBase {
+mixin NetworkerServerMixin<T extends ConnectionInfo, O> on NetworkerBase<O> {
   final Map<Channel, T> _connections = {};
   final StreamController<(Channel, ConnectionInfo)> _connectController =
       StreamController.broadcast();
@@ -69,7 +69,8 @@ abstract class NetworkerServer<T extends ConnectionInfo> extends NetworkerBase {
       getConnectionInfo(channel)?.sendMessage(data);
 
   @override
-  void sendMessage(Uint8List data, [Channel channel = kAnyChannel]) {
+  @protected
+  Future<void> sendPacket(Uint8List data, Channel channel) async {
     if (channel == kAnyChannel || channel < 0) {
       for (final id in _connections.keys) {
         if (id == -channel) continue;
@@ -93,3 +94,6 @@ abstract class NetworkerServer<T extends ConnectionInfo> extends NetworkerBase {
     clearConnections();
   }
 }
+
+abstract class NetworkerServer extends NetworkerBase<Uint8List>
+    with NetworkerServerMixin<ConnectionInfo, Uint8List> {}

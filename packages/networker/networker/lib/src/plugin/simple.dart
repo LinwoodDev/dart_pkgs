@@ -75,3 +75,11 @@ final class FilteredNetworkerPipe<T> extends SimpleNetworkerPipe<T> {
     return super.encodeChannel(data, channel);
   }
 }
+
+mixin SimpleNetworkerPipeMixin<T> on NetworkerPipe<T, T> {
+  @override
+  FutureOr<T> decode(T data) => data;
+
+  @override
+  FutureOr<T> encode(T data) => data;
+}

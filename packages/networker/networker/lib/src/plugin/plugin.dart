@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:typed_data';
 
+import 'package:meta/meta.dart';
+
 import '../connection.dart';
 
 typedef RawNetworkerPipe = SimpleNetworkerPipe<Uint8List>;
@@ -57,12 +59,16 @@ abstract class NetworkerPipe<I, O> {
   void _sendMessagePacket(NetworkerPacket packet) =>
       sendMessage(packet.data, packet.channel);
 
-  FutureOr<void> sendMessage(O data, [Channel channel = kAnyChannel]) async {
+  Future<void> sendMessage(O data, [Channel channel = kAnyChannel]) async {
     final result = await encodeChannel(data, channel);
     if (result == null) return;
     final (rawData, rawChannel) = result;
     _writeController.add(NetworkerPacket(rawData, rawChannel));
+    await sendPacket(rawData, rawChannel);
   }
+
+  @protected
+  FutureOr<void> sendPacket(I data, Channel channel) {}
 }
 
 class SimpleNetworkerPipe<T> extends NetworkerPipe<T, T> {

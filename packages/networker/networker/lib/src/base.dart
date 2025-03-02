@@ -1,6 +1,6 @@
 part of 'connection.dart';
 
-sealed class NetworkerBase extends RawNetworkerPipe {
+sealed class NetworkerBase<O> extends NetworkerPipe<Uint8List, O> {
   Stream<void> get onOpen;
   Stream<void> get onClosed;
   FutureOr<void> init();

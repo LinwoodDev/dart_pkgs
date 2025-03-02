@@ -96,7 +96,7 @@ mixin RpcNetworkerPipeMixin on NetworkerPipe<Uint8List, RpcNetworkerPacket> {
   final Map<int, RpcFunction> _functions = {};
   RpcConfig get config;
   bool get isServer;
-  Channel? get receiverChannel;
+  Channel? get receiverChannel => null;
 
   @override
   RpcNetworkerPacket decode(Uint8List data) =>

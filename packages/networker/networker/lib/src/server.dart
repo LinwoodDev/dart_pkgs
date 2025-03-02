@@ -95,7 +95,6 @@ mixin NetworkerServerMixin<T extends ConnectionInfo, O> on NetworkerBase<O> {
   }
 }
 
-abstract class NetworkerServer extends RawNetworkerPipe
-    with
-        NetworkerBase<Uint8List>,
-        NetworkerServerMixin<ConnectionInfo, Uint8List> {}
+abstract class NetworkerServer<T extends ConnectionInfo>
+    extends RawNetworkerPipe
+    with NetworkerBase<Uint8List>, NetworkerServerMixin<T, Uint8List> {}

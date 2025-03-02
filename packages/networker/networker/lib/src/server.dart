@@ -89,7 +89,7 @@ mixin NetworkerServerMixin<T extends ConnectionInfo, O> on NetworkerBase<O> {
   }
 
   @override
-  @mustBeOverridden
+  @mustCallSuper
   FutureOr<void> close() {
     clearConnections();
   }

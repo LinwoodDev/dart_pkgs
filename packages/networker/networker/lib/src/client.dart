@@ -1,6 +1,6 @@
 part of 'connection.dart';
 
-mixin NetworkerClientMixin<O> on NetworkerBase<O> {}
+mixin NetworkerClientMixin<O> implements NetworkerBase<O> {}
 
-abstract class NetworkerClient extends NetworkerBase<Uint8List>
-    with NetworkerClientMixin<Uint8List> {}
+abstract class NetworkerClient extends RawNetworkerPipe
+    with NetworkerBase<Uint8List>, NetworkerClientMixin<Uint8List> {}

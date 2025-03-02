@@ -10,7 +10,8 @@ abstract class ConnectionInfo {
 
 /// The server abstraction of the networker library
 /// Please note that connection ids can only be between 2 and 2^16
-mixin NetworkerServerMixin<T extends ConnectionInfo, O> on NetworkerBase<O> {
+mixin NetworkerServerMixin<T extends ConnectionInfo, O>
+    implements NetworkerBase<O> {
   final Map<Channel, T> _connections = {};
   final StreamController<(Channel, ConnectionInfo)> _connectController =
       StreamController.broadcast();
@@ -95,5 +96,5 @@ mixin NetworkerServerMixin<T extends ConnectionInfo, O> on NetworkerBase<O> {
   }
 }
 
-abstract class NetworkerServer extends NetworkerBase<Uint8List>
+abstract class NetworkerServer extends RawNetworkerPipe
     with NetworkerServerMixin<ConnectionInfo, Uint8List> {}

@@ -57,6 +57,7 @@ class NetworkerSocketServer extends NetworkerServer<NetworkerSocketInfo> {
 
   @override
   Future<void> close() async {
+    await super.close();
     await _server?.close();
     _server = null;
   }

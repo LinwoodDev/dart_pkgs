@@ -92,18 +92,11 @@ final class RpcFunction {
   }
 }
 
-final class RpcNetworkerPipe
-    extends NetworkerPipe<Uint8List, RpcNetworkerPacket> {
-  final RpcConfig config;
-  final Map<int, RpcFunction> functions = {};
-  final bool isServer;
-  final Channel? receiverChannel;
-
-  RpcNetworkerPipe({
-    this.config = const RpcConfig(),
-    required this.isServer,
-    this.receiverChannel,
-  });
+mixin RpcNetworkerPipeMixin on NetworkerPipe<Uint8List, RpcNetworkerPacket> {
+  final Map<int, RpcFunction> _functions = {};
+  RpcConfig get config;
+  bool get isServer;
+  Channel? get receiverChannel;
 
   @override
   RpcNetworkerPacket decode(Uint8List data) =>
@@ -120,14 +113,14 @@ final class RpcNetworkerPipe
     bool canRunLocally = false,
     RpcNetworkerMode mode = RpcNetworkerMode.authority,
   }) {
-    if (functions.containsKey(function)) return functions[function]!.pipe;
+    if (_functions.containsKey(function)) return _functions[function]!.pipe;
     final pipe = RawNetworkerPipe();
     final rpcFunction = RpcFunction(
       canRunLocally: canRunLocally,
       mode: mode,
       pipe: pipe,
     );
-    functions[function] = rpcFunction;
+    _functions[function] = rpcFunction;
     pipe.write.listen((packet) => sendMessage(
         RpcNetworkerPacket(
           function: function,
@@ -150,9 +143,9 @@ final class RpcNetworkerPipe
                   isServer ? (receiver ?? defaultReceiverChannel) : channel),
           isServer ? channel : (receiver ?? defaultReceiverChannel));
 
-  RawNetworkerPipe? getFunction(int function) => functions[function]?.pipe;
+  RawNetworkerPipe? getFunction(int function) => _functions[function]?.pipe;
 
-  bool unregisterFunction(int function) => functions.remove(function) != null;
+  bool unregisterFunction(int function) => _functions.remove(function) != null;
 
   bool runFunction(RpcNetworkerPacket packet, {bool forceLocal = false}) =>
       callFunction(packet.function, packet.data,
@@ -165,50 +158,70 @@ final class RpcNetworkerPipe
     bool forceLocal = false,
   }) {
     if (!isValidCall(function, sender)) return false;
-    functions[function]?.pipe.onMessage(data);
+    _functions[function]?.pipe.onMessage(data);
     return true;
   }
 
   bool isValidCall(int function, Channel sender,
       [Channel receiver = kAnyChannel]) {
-    final rpcFunction = functions[function];
+    final rpcFunction = _functions[function];
     if (rpcFunction == null) return false;
     return rpcFunction.shouldRun(sender, receiver);
   }
 }
 
-base mixin NamedRpcNetworkerPipe<T extends RpcFunctionName>
-    on RpcNetworkerPipe {
-  RawNetworkerPipe registerNamedFunction(T name) => registerFunction(name.index,
+sealed class RpcNetworkerPipe
+    extends NetworkerPipe<Uint8List, RpcNetworkerPacket>
+    with RpcNetworkerPipeMixin {
+  @override
+  final RpcConfig config;
+  @override
+  final Channel? receiverChannel;
+
+  RpcNetworkerPipe({
+    this.config = const RpcConfig(),
+    this.receiverChannel,
+  });
+}
+
+mixin NamedRpcNetworkerPipe<I extends RpcFunctionName,
+    O extends RpcFunctionName> on RpcNetworkerPipeMixin {
+  RawNetworkerPipe registerNamedFunction(I name) => registerFunction(name.index,
       canRunLocally: name.canRunLocally, mode: name.mode);
 
-  List<RawNetworkerPipe> registerNamedFunctions(List<T> functions) =>
+  List<RawNetworkerPipe> registerNamedFunctions(List<I> functions) =>
       functions.map((function) {
         return registerNamedFunction(function);
       }).toList();
 
-  RawNetworkerPipe? getNamedFunction(T name) => getFunction(name.index);
+  RawNetworkerPipe? getNamedFunction(I name) => getFunction(name.index);
 
-  bool unregisterNamedFunction(T name) => unregisterFunction(name.index);
+  bool unregisterNamedFunction(I name) => unregisterFunction(name.index);
 
   bool runNamedFunction(RpcNetworkerPacket packet, {bool forceLocal = false}) =>
       runFunction(packet, forceLocal: forceLocal);
 
-  bool callNamedFunction(T name, Uint8List data,
+  bool callNamedFunction(I name, Uint8List data,
           {Channel sender = kAnyChannel, bool forceLocal = false}) =>
       callFunction(name.index, data, sender: sender, forceLocal: forceLocal);
 
-  bool isValidNamedCall(T name, Channel sender,
+  bool isValidNamedCall(I name, Channel sender,
           [Channel receiver = kAnyChannel]) =>
       isValidCall(name.index, sender, receiver);
 
-  void sendNamedFunction(T name, Uint8List data,
-          {Channel channel = kAnyChannel, bool forceLocal = false}) =>
-      getNamedFunction(name)?.sendMessage(data, channel);
+  void sendNamedFunction(O name, Uint8List data,
+          {Channel channel = kAnyChannel,
+          bool forceLocal = false,
+          Channel? receiver}) =>
+      sendFunction(name.index, data,
+          channel: channel, forceLocal: forceLocal, receiver: receiver);
 }
 
 final class RpcClientNetworkerPipe extends RpcNetworkerPipe {
-  RpcClientNetworkerPipe({super.config}) : super(isServer: false);
+  RpcClientNetworkerPipe({super.config});
+
+  @override
+  bool get isServer => false;
 
   @override
   Future<void> onMessage(Uint8List data,
@@ -218,8 +231,9 @@ final class RpcClientNetworkerPipe extends RpcNetworkerPipe {
   }
 }
 
-final class NamedRpcClientNetworkerPipe<T extends RpcFunctionName>
-    extends RpcClientNetworkerPipe with NamedRpcNetworkerPipe<T> {
+final class NamedRpcClientNetworkerPipe<I extends RpcFunctionName,
+        O extends RpcFunctionName> extends RpcClientNetworkerPipe
+    with NamedRpcNetworkerPipe<I, O> {
   NamedRpcClientNetworkerPipe({super.config});
 }
 
@@ -231,7 +245,7 @@ final class RpcServerNetworkerPipe extends RpcNetworkerPipe {
     super.config,
     this.filter,
     this.validate = true,
-  }) : super(isServer: true);
+  });
 
   @override
   Future<void> onMessage(Uint8List data,
@@ -253,10 +267,14 @@ final class RpcServerNetworkerPipe extends RpcNetworkerPipe {
       sendMessage(newPacket, receiver == kAnyChannel ? -channel : receiver);
     }
   }
+
+  @override
+  bool get isServer => true;
 }
 
-final class NamedRpcServerNetworkerPipe<T extends RpcFunctionName>
-    extends RpcServerNetworkerPipe with NamedRpcNetworkerPipe<T> {
+final class NamedRpcServerNetworkerPipe<I extends RpcFunctionName,
+        O extends RpcFunctionName> extends RpcServerNetworkerPipe
+    with NamedRpcNetworkerPipe<I, O> {
   NamedRpcServerNetworkerPipe({
     super.config,
     super.filter,

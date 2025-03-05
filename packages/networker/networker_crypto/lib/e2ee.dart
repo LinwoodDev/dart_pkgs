@@ -1,7 +1,7 @@
 library;
 
 import 'dart:typed_data';
-import 'package:cryptography/cryptography.dart';
+import 'package:cryptography_plus/cryptography_plus.dart';
 import 'package:networker/networker.dart';
 
 /// A NetworkerPipe that encrypts and decrypts Uint8List data using a customizable cipher.

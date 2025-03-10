@@ -159,7 +159,7 @@ mixin RpcNetworkerPipeMixin on NetworkerPipe<Uint8List, RpcNetworkerPacket> {
     bool forceLocal = false,
   }) {
     if (!isValidCall(function, sender)) return false;
-    _functions[function]?.pipe.onMessage(data);
+    _functions[function]?.pipe.onMessage(data, sender);
     return true;
   }
 

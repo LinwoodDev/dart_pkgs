@@ -7,14 +7,14 @@ import 'package:networker/networker.dart';
 /// A NetworkerPipe that encrypts and decrypts Uint8List data using a customizable cipher.
 /// The [cipher] and [secretKey] are provided via the constructor.
 /// The output format is: nonce || ciphertext || MAC.
-final class E2EENetworkerPipe extends NetworkerPipe<Uint8List, List<int>> {
+final class E2EENetworkerPipe extends NetworkerPipe<Uint8List, Uint8List> {
   final Cipher cipher;
   final SecretKey secretKey;
 
   E2EENetworkerPipe({required this.cipher, required this.secretKey});
 
   @override
-  Future<Uint8List> encode(List<int> plaintext) async {
+  Future<Uint8List> encode(Uint8List plaintext) async {
     // Generate a random nonce.
     final nonce = cipher.newNonce();
 

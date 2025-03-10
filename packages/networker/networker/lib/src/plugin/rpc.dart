@@ -147,9 +147,10 @@ mixin RpcNetworkerPipeMixin on NetworkerPipe<Uint8List, RpcNetworkerPacket> {
 
   bool unregisterFunction(int function) => _functions.remove(function) != null;
 
-  bool runFunction(RpcNetworkerPacket packet, {bool forceLocal = false}) =>
+  bool runFunction(RpcNetworkerPacket packet,
+          {bool forceLocal = false, Channel? channel}) =>
       callFunction(packet.function, packet.data,
-          sender: packet.channel, forceLocal: forceLocal);
+          sender: channel ?? packet.channel, forceLocal: forceLocal);
 
   bool callFunction(
     int function,
@@ -198,8 +199,9 @@ mixin NamedRpcNetworkerPipe<I extends RpcFunctionName,
 
   bool unregisterNamedFunction(I name) => unregisterFunction(name.index);
 
-  bool runNamedFunction(RpcNetworkerPacket packet, {bool forceLocal = false}) =>
-      runFunction(packet, forceLocal: forceLocal);
+  bool runNamedFunction(RpcNetworkerPacket packet,
+          {bool forceLocal = false, Channel? channel}) =>
+      runFunction(packet, forceLocal: forceLocal, channel: channel);
 
   bool callNamedFunction(I name, Uint8List data,
           {Channel sender = kAnyChannel, bool forceLocal = false}) =>
@@ -227,7 +229,7 @@ final class RpcClientNetworkerPipe extends RpcNetworkerPipe {
   Future<void> onMessage(Uint8List data,
       [Channel channel = kAnyChannel]) async {
     await super.onMessage(data, channel);
-    runFunction(decode(data));
+    runFunction(decode(data), channel: config.channelField ? null : channel);
   }
 }
 

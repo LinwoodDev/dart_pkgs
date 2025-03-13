@@ -6,6 +6,7 @@ class Header extends StatelessWidget {
   final Widget title;
   final bool centerTitle;
   final double? spacing, toolbarHeight, leadingWidth;
+  final CrossAxisAlignment? actionsAlignment;
 
   const Header({
     super.key,
@@ -16,6 +17,7 @@ class Header extends StatelessWidget {
     this.leadingWidth,
     this.centerTitle = true,
     required this.title,
+    this.actionsAlignment,
   });
 
   @override
@@ -50,7 +52,8 @@ class Header extends StatelessWidget {
                 data: iconTheme,
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.center,
+                  crossAxisAlignment:
+                      actionsAlignment ?? CrossAxisAlignment.center,
                   children: actions!,
                 ),
               ),

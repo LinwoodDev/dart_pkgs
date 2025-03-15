@@ -70,7 +70,7 @@ mixin NetworkerServerMixin<T extends ConnectionInfo, O> on NetworkerBase<O> {
 
   @override
   @protected
-  Future<void> sendPacket(Uint8List data, Channel channel) async {
+  FutureOr<void> sendPacket(Uint8List data, Channel channel) async {
     if (channel == kAnyChannel || channel < 0) {
       for (final id in _connections.keys) {
         if (id == -channel) continue;

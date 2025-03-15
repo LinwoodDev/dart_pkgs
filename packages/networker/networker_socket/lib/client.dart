@@ -54,9 +54,6 @@ class NetworkerSocketClient extends NetworkerClient {
   bool get isClosed => _channel == null || _channel?.closeCode != null;
 
   @override
-  Future<void> sendMessage(Uint8List data, [Channel channel = kAnyChannel]) {
-    super.sendMessage(data);
-    _channel?.sink.add(data);
-    return _channel?.sink.done ?? Future.value();
-  }
+  void sendPacket(Uint8List data, [Channel channel = kAnyChannel]) =>
+      _channel?.sink.add(data);
 }

@@ -13,7 +13,7 @@ dependencies:
     git:
       url: https://github.com/LinwoodDev/dart_pkgs.git
       path: packages/networker/networker
-      ref: e19c3a25196ddbe2517e99bffce951164415a4d3
+      ref: 08928a4dc5ef638809b18c84f4f9bd64108fe18d
   cryptography_plus: ^2.7.1
   # path: ^1.8.0
 

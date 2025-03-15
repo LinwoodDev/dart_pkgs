@@ -3,7 +3,10 @@ import 'dart:typed_data';
 import 'package:networker/networker.dart';
 
 class InternalChannelPipe extends RawNetworkerPipe {
-  InternalChannelPipe();
+  final int bytes;
+  final int? channel;
+
+  InternalChannelPipe({this.bytes = 1, this.channel});
 
   static NetworkerPipe<Uint8List, Uint8List> reversed() {
     return ReversedNetworkerPipe(InternalChannelPipe());
@@ -14,17 +17,19 @@ class InternalChannelPipe extends RawNetworkerPipe {
     if (data.isEmpty) {
       return (data, channel);
     }
-    final rawChannel = data.first;
-    final rawData = data.sublist(1);
+    final rawChannel = data.sublist(0, bytes).buffer.asByteData().getUint8(0);
+    final rawData = data.sublist(bytes);
     return (rawData, rawChannel);
   }
 
   @override
   (Uint8List, Channel) encodeChannel(Uint8List data, Channel channel) {
     final builder = BytesBuilder();
-    builder.addByte(channel);
+    for (int i = bytes - 1; i >= 0; i--) {
+      builder.addByte(channel >> (i * 8) & 0xFF);
+    }
     builder.add(data);
-    return (builder.toBytes(), channel);
+    return (builder.toBytes(), this.channel ?? channel);
   }
 }
 

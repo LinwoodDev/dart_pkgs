@@ -18,3 +18,17 @@ This is a collection of useful flutter plugins.
 * [localizer](packages/localizer) - Easy localization framework (Dart)
 * [flutter_localizer](packages/flutter_localizer) - Flutter localization framework based on localizer (Flutter)
 * [consoler](packages/consoler) - Dart console system (Dart)
+
+## Usage
+
+Use git dependencies to include the plugins in your project.
+I recommend getting the latest commit hash as ref from the plugin directory.
+
+Please note that some of the plugins have dependencies inside the repository.
+
+Read the README.md of the plugin for more information about the selected plugin.
+
+## License
+
+All plugins are licensed under the Apache 2.0 License.
+Read the [LICENSE](LICENSE) file for more information.

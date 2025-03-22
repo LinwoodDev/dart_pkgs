@@ -7,6 +7,8 @@ import 'package:networker/networker.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 class NetworkerSocketClient extends NetworkerClient {
+  static const List<String> supportedSchemes = List.unmodifiable(['ws', 'wss']);
+
   WebSocketChannel? _channel;
 
   @override

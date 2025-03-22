@@ -1,6 +1,6 @@
 # Networker
 
-> Manage connections and send data with a simple API.
+> Manage connections and send data with a simple API
 
 ## Implementations
 

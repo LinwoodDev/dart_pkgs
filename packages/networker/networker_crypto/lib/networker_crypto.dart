@@ -1,6 +1,4 @@
-/// Support for doing something awesome.
-///
-/// More dartdocs go here.
+/// Useful crypto utilities for the networker package
 library;
 
 export 'e2ee.dart';

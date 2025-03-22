@@ -1,6 +1,6 @@
 # Networker Crypto
 
-> Useful crypto utilities for the networker package.
+> Useful crypto utilities for the networker package
 
 See the [networker](../networker) package for more information.
 

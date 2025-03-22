@@ -83,7 +83,8 @@ mixin NetworkerServerMixin<T extends ConnectionInfo, O> on NetworkerBase<O> {
 
   @protected
   void clearConnections() {
-    for (final id in _connections.keys) {
+    final ids = _connections.keys.toList();
+    for (final id in ids) {
       removeConnection(id);
     }
   }

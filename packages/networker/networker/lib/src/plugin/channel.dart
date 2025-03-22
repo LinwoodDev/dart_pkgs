@@ -14,10 +14,13 @@ class InternalChannelPipe extends RawNetworkerPipe {
 
   @override
   (Uint8List, Channel) decodeChannel(Uint8List data, Channel channel) {
-    if (data.isEmpty) {
+    if (data.length < bytes) {
       return (data, channel);
     }
-    final rawChannel = data.sublist(0, bytes).buffer.asByteData().getUint8(0);
+    int rawChannel = 0;
+    for (int i = 0; i < bytes; i++) {
+      rawChannel = (rawChannel << 8) | data[i];
+    }
     final rawData = data.sublist(bytes);
     return (rawData, rawChannel);
   }

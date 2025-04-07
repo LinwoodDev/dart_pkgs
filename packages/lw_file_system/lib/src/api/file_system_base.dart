@@ -81,7 +81,17 @@ abstract class GeneralFileSystem {
         .absolute(relativePath);
   }
 
-  Future<String> getDirectory() async => config.getDirectory(storage);
+  Future<String> getDirectory() async {
+    final storage = this.storage;
+    if (storage is! LocalStorage) {
+      return config.getDirectory(storage);
+    }
+    final variant = storage.getFullPath(config.currentPathVariant);
+    if (variant.isEmpty) {
+      return config.getDirectory(storage);
+    }
+    return variant;
+  }
 
   Future<Uint8List?> loadAbsolute(String path) => Future.value(null);
 

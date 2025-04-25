@@ -3,8 +3,8 @@ import 'dart:typed_data';
 
 import 'package:file_selector/file_selector.dart' as fs;
 import 'package:flutter/material.dart';
-import 'api.dart';
-import 'save.dart';
+import 'package:lw_sysapi/src/api/src/share.dart';
+import '../api.dart';
 
 Future<void> exportFile(
   BuildContext context,
@@ -16,7 +16,13 @@ Future<void> exportFile(
   String label,
 ) async {
   if (Platform.isIOS) {
-    return exportUsingShare(bytes, fileName, fileExtension, mimeType);
+    return exportUsingShare(
+      bytes: bytes,
+      fileName: fileName,
+      fileExtension: fileExtension,
+      mimeType: mimeType,
+      label: label,
+    );
   }
   if (Platform.isAndroid) {
     await platform.invokeMethod('saveFile', {

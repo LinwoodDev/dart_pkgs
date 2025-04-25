@@ -17,7 +17,7 @@ Future<void> exportUsingShare({
       ],
       fileNameOverrides: ['$fileName.$fileExtension'],
       downloadFallbackEnabled: true,
-      text: label,
+      title: label,
     ),
   );
 }

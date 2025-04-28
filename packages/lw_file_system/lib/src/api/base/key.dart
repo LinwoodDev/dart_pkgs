@@ -4,7 +4,7 @@ mixin GeneralKeyFileSystem<T> on GeneralFileSystem {
   Future<T?> getFile(String key);
 
   Future<T?> getDefaultFile(String key) async =>
-      await getFile(key) ?? (await listFiles().first).data;
+      await getFile(key) ?? (await listFiles().firstOrNull)?.data;
 
   Future<String> findAvailableKey(String path) =>
       _findAvailableName(path, hasKey);

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:archive/archive.dart';
+import 'package:async/async.dart';
 import 'package:flutter/foundation.dart';
 import 'package:lw_file_system/lw_file_system.dart';
 import 'package:path/path.dart' as p;

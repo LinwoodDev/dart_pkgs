@@ -23,12 +23,14 @@ class WindowTitleBar<C extends LeapSettingsBlocBaseMixin<M>,
   final bool inView;
   final Color? backgroundColor;
   final double height;
+  final bool titleIgnorePointer;
   final double? leadingWidth;
   final FullScreenMode fullScreenMode;
 
   const WindowTitleBar({
     super.key,
     this.title,
+    this.titleIgnorePointer = true,
     this.leading,
     this.bottom,
     this.leadingWidth,
@@ -36,7 +38,7 @@ class WindowTitleBar<C extends LeapSettingsBlocBaseMixin<M>,
     this.actions = const [],
     this.onlyShowOnDesktop = false,
     this.inView = false,
-    this.height = 70,
+    this.height = kToolbarHeight,
     this.fullScreenMode = FullScreenMode.enabledExitButton,
   });
 
@@ -49,6 +51,12 @@ class WindowTitleBar<C extends LeapSettingsBlocBaseMixin<M>,
           final isDesktop = isWindow && !kIsWeb;
           if (onlyShowOnDesktop && (!isDesktop || settings.nativeTitleBar)) {
             return const SizedBox.shrink();
+          }
+          var title = this.title;
+          if (title != null && titleIgnorePointer) {
+            title = IgnorePointer(
+              child: title,
+            );
           }
           return AppBar(
             title: title,

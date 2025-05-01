@@ -61,11 +61,12 @@ class WindowTitleBar<C extends LeapSettingsBlocBaseMixin<M>,
             flexibleSpace: WindowFreeSpace<C, M>(),
             actions: [
               ...actions,
-              if (isDesktop && !inView)
+              if (isDesktop && !inView) ...[
+                if (actions.isNotEmpty) const VerticalDivider(),
                 WindowButtons<C, M>(
-                  divider: actions.isNotEmpty,
                   fullScreenMode: fullScreenMode,
                 ),
+              ],
             ],
           );
         });
@@ -104,13 +105,11 @@ class WindowFreeSpace<C extends LeapSettingsBlocBaseMixin<M>,
 
 class WindowButtons<C extends LeapSettingsBlocBaseMixin<M>,
     M extends LeapSettings> extends StatefulWidget {
-  final bool divider;
   final FullScreenMode fullScreenMode;
   final bool updateSettings;
 
   const WindowButtons({
     super.key,
-    this.divider = true,
     this.updateSettings = true,
     this.fullScreenMode = FullScreenMode.enabledExitButton,
   });
@@ -186,7 +185,6 @@ class _WindowButtonsState<C extends LeapSettingsBlocBaseMixin<M>,
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        if (widget.divider) const VerticalDivider(),
                         Row(
                           children: [
                             if (fullScreen &&

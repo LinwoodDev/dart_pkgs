@@ -6,6 +6,10 @@ import 'dart:typed_data';
 import 'package:networker/networker.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
+import 'src/web_socket.dart';
+
+export 'src/web_socket.dart';
+
 class NetworkerSocketClient extends NetworkerClient {
   static List<String> supportedSchemes = List.unmodifiable(['ws', 'wss']);
 
@@ -14,6 +18,7 @@ class NetworkerSocketClient extends NetworkerClient {
   @override
   final Uri address;
   final Iterable<String>? protocols;
+  final Duration? pingInterval;
 
   WebSocketChannel? get channel => _channel;
 
@@ -26,15 +31,15 @@ class NetworkerSocketClient extends NetworkerClient {
   @override
   Stream<void> get onOpen => _onOpen.stream;
 
-  NetworkerSocketClient(this.address, {this.protocols});
+  NetworkerSocketClient(this.address, {this.protocols, this.pingInterval});
 
   @override
   Future<void> init() async {
     if (isOpen) {
       return;
     }
-    final channel =
-        _channel = WebSocketChannel.connect(address, protocols: protocols);
+    final channel = _channel = constructWebSocketChannel(address,
+        protocols: protocols, pingInterval: pingInterval);
     channel.stream.listen((event) {
       onMessage(event);
     }, onDone: () {

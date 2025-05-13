@@ -70,7 +70,15 @@ class WindowTitleBar<C extends LeapSettingsBlocBaseMixin<M>,
             actions: [
               ...actions,
               if (isDesktop && !inView) ...[
-                if (actions.isNotEmpty) const VerticalDivider(),
+                if (actions.isNotEmpty)
+                  BlocBuilder<C, M>(
+                    builder: (context, settings) {
+                      if (settings.nativeTitleBar) {
+                        return const SizedBox.shrink();
+                      }
+                      return const VerticalDivider();
+                    },
+                  ),
                 WindowButtons<C, M>(
                   fullScreenMode: fullScreenMode,
                 ),

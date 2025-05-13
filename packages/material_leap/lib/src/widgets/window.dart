@@ -72,6 +72,8 @@ class WindowTitleBar<C extends LeapSettingsBlocBaseMixin<M>,
               if (isDesktop && !inView) ...[
                 if (actions.isNotEmpty)
                   BlocBuilder<C, M>(
+                    buildWhen: (previous, current) =>
+                        previous.nativeTitleBar != current.nativeTitleBar,
                     builder: (context, settings) {
                       if (settings.nativeTitleBar) {
                         return const SizedBox.shrink();

@@ -64,17 +64,19 @@ class DavRemoteDirectoryFileSystem extends RemoteDirectoryFileSystem {
     final rootDirectory =
         storage.buildVariantUri(variant: config.currentPathVariant);
     if (response == null) {
-      return null;
+      throw Exception('Failed to read asset: ${storage.identifier} $path');
     }
     var content = await getBodyString(response);
     if (response.statusCode == 404 && path.isEmpty) {
       await createRequest([], method: 'MKCOL');
       response = await createRequest(path.split('/'), method: 'PROPFIND');
+      content = await getBodyString(response!);
     }
-    if (response?.statusCode != 207 ||
+    if (response.statusCode != 207 ||
         fileName == null ||
         rootDirectory == null) {
-      return null;
+      throw Exception(
+          'Failed to read asset: ${response.statusCode} ${response.reasonPhrase} $path');
     }
     final xml = XmlDocument.parse(content);
     final responses = xml.findAllElements('d:response').where((element) {
@@ -83,7 +85,8 @@ class DavRemoteDirectoryFileSystem extends RemoteDirectoryFileSystem {
     }).toList();
 
     if (responses.isEmpty) {
-      return null;
+      throw Exception(
+          'Failed to read asset: No matching response found for $fileName in $path');
     }
 
     final currentElement = responses.first;
@@ -201,25 +204,19 @@ class DavRemoteDirectoryFileSystem extends RemoteDirectoryFileSystem {
   @override
   Future<void> updateFile(String path, Uint8List data,
       {bool forceSync = false}) async {
-    // Create a copy of the path and remove the leading slash if it exists
-    String modifiedPath = path;
-    if (modifiedPath.startsWith('/')) {
-      modifiedPath = modifiedPath.substring(1);
-    }
-    // Cache check
+    path = normalizePath(path);
+    if (path.startsWith('/')) path = path.substring(1);
     if (!forceSync && storage.hasDocumentCached(path)) {
       cacheContent(path, data);
     }
 
-    // Create directory if not exists
     final directoryPath = p.dirname(path);
     if (!await hasAsset(directoryPath)) {
       await createDirectory(directoryPath);
     }
 
-    // Request to overwrite the file
-    final response = await createRequest(p.split(modifiedPath),
-        method: 'PUT', bodyBytes: data);
+    final response =
+        await createRequest(path.split('/'), method: 'PUT', bodyBytes: data);
     if (response?.statusCode == 200 ||
         response?.statusCode == 201 ||
         response?.statusCode == 204) {

@@ -1,4 +1,3 @@
-
 import 'input_leap_platform_interface.dart';
 
 class InputLeap {

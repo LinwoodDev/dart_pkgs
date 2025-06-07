@@ -12,8 +12,11 @@ final isWindow =
 
 enum FullScreenMode { disabled, enabled, enabledExitButton, enabledHidden }
 
-class WindowTitleBar<C extends LeapSettingsBlocBaseMixin<M>,
-        M extends LeapSettings> extends StatelessWidget
+class WindowTitleBar<
+  C extends LeapSettingsBlocBaseMixin<M>,
+  M extends LeapSettings
+>
+    extends StatelessWidget
     implements PreferredSizeWidget {
   final List<Widget> actions;
   final Widget? title;
@@ -45,49 +48,46 @@ class WindowTitleBar<C extends LeapSettingsBlocBaseMixin<M>,
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<C, M>(
-        buildWhen: (previous, current) =>
-            previous.nativeTitleBar != current.nativeTitleBar,
-        builder: (context, settings) {
-          final isDesktop = isWindow && !kIsWeb;
-          if (onlyShowOnDesktop && (!isDesktop || settings.nativeTitleBar)) {
-            return const SizedBox.shrink();
-          }
-          var title = this.title;
-          if (title != null && titleIgnorePointer) {
-            title = IgnorePointer(
-              child: title,
-            );
-          }
-          return AppBar(
-            title: title,
-            backgroundColor: backgroundColor,
-            automaticallyImplyLeading: !inView,
-            leading: leading,
-            bottom: bottom,
-            leadingWidth: leadingWidth,
-            toolbarHeight: height,
-            flexibleSpace: WindowFreeSpace<C, M>(),
-            actions: [
-              ...actions,
-              if (isDesktop && !inView) ...[
-                if (actions.isNotEmpty)
-                  BlocBuilder<C, M>(
-                    buildWhen: (previous, current) =>
-                        previous.nativeTitleBar != current.nativeTitleBar,
-                    builder: (context, settings) {
-                      if (settings.nativeTitleBar) {
-                        return const SizedBox.shrink();
-                      }
-                      return const VerticalDivider();
-                    },
-                  ),
-                WindowButtons<C, M>(
-                  fullScreenMode: fullScreenMode,
+      buildWhen: (previous, current) =>
+          previous.nativeTitleBar != current.nativeTitleBar,
+      builder: (context, settings) {
+        final isDesktop = isWindow && !kIsWeb;
+        if (onlyShowOnDesktop && (!isDesktop || settings.nativeTitleBar)) {
+          return const SizedBox.shrink();
+        }
+        var title = this.title;
+        if (title != null && titleIgnorePointer) {
+          title = IgnorePointer(child: title);
+        }
+        return AppBar(
+          title: title,
+          backgroundColor: backgroundColor,
+          automaticallyImplyLeading: !inView,
+          leading: leading,
+          bottom: bottom,
+          leadingWidth: leadingWidth,
+          toolbarHeight: height,
+          flexibleSpace: WindowFreeSpace<C, M>(),
+          actions: [
+            ...actions,
+            if (isDesktop && !inView) ...[
+              if (actions.isNotEmpty)
+                BlocBuilder<C, M>(
+                  buildWhen: (previous, current) =>
+                      previous.nativeTitleBar != current.nativeTitleBar,
+                  builder: (context, settings) {
+                    if (settings.nativeTitleBar) {
+                      return const SizedBox.shrink();
+                    }
+                    return const VerticalDivider();
+                  },
                 ),
-              ],
+              WindowButtons<C, M>(fullScreenMode: fullScreenMode),
             ],
-          );
-        });
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -95,34 +95,37 @@ class WindowTitleBar<C extends LeapSettingsBlocBaseMixin<M>,
       Size.fromHeight(height + (bottom?.preferredSize.height ?? 0));
 }
 
-class WindowFreeSpace<C extends LeapSettingsBlocBaseMixin<M>,
-    M extends LeapSettings> extends StatelessWidget {
+class WindowFreeSpace<
+  C extends LeapSettingsBlocBaseMixin<M>,
+  M extends LeapSettings
+>
+    extends StatelessWidget {
   const WindowFreeSpace({super.key});
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<C, M>(
-        buildWhen: (previous, current) =>
-            previous.nativeTitleBar != current.nativeTitleBar,
-        builder: (context, settings) {
-          if (!isWindow || kIsWeb || settings.nativeTitleBar) {
-            return const SizedBox.shrink();
-          }
-          return GestureDetector(
-            child: DragToMoveArea(
-              child: Container(
-                color: Colors.transparent,
-              ),
-            ),
-            onSecondaryTap: () => windowManager.popUpWindowMenu(),
-            onLongPress: () => windowManager.popUpWindowMenu(),
-          );
-        });
+      buildWhen: (previous, current) =>
+          previous.nativeTitleBar != current.nativeTitleBar,
+      builder: (context, settings) {
+        if (!isWindow || kIsWeb || settings.nativeTitleBar) {
+          return const SizedBox.shrink();
+        }
+        return GestureDetector(
+          child: DragToMoveArea(child: Container(color: Colors.transparent)),
+          onSecondaryTap: () => windowManager.popUpWindowMenu(),
+          onLongPress: () => windowManager.popUpWindowMenu(),
+        );
+      },
+    );
   }
 }
 
-class WindowButtons<C extends LeapSettingsBlocBaseMixin<M>,
-    M extends LeapSettings> extends StatefulWidget {
+class WindowButtons<
+  C extends LeapSettingsBlocBaseMixin<M>,
+  M extends LeapSettings
+>
+    extends StatefulWidget {
   final FullScreenMode fullScreenMode;
   final bool updateSettings;
 
@@ -136,8 +139,11 @@ class WindowButtons<C extends LeapSettingsBlocBaseMixin<M>,
   State<WindowButtons<C, M>> createState() => _WindowButtonsState<C, M>();
 }
 
-class _WindowButtonsState<C extends LeapSettingsBlocBaseMixin<M>,
-        M extends LeapSettings> extends State<WindowButtons<C, M>>
+class _WindowButtonsState<
+  C extends LeapSettingsBlocBaseMixin<M>,
+  M extends LeapSettings
+>
+    extends State<WindowButtons<C, M>>
     with WindowListener {
   bool maximized = false, alwaysOnTop = false, fullScreen = false;
 
@@ -184,155 +190,192 @@ class _WindowButtonsState<C extends LeapSettingsBlocBaseMixin<M>,
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<C, M>(
-        buildWhen: (previous, current) =>
-            previous.nativeTitleBar != current.nativeTitleBar,
-        builder: (context, settings) {
-          if (!kIsWeb && isWindow && !settings.nativeTitleBar) {
-            return LayoutBuilder(
-              builder: (context, constraints) => Align(
-                alignment: Alignment.topRight,
-                child: Card(
-                  margin: EdgeInsets.zero,
-                  shape: const RoundedRectangleBorder(
-                    borderRadius: BorderRadius.only(
-                      bottomLeft: Radius.circular(8),
-                    ),
+      buildWhen: (previous, current) =>
+          previous.nativeTitleBar != current.nativeTitleBar,
+      builder: (context, settings) {
+        if (!kIsWeb && isWindow && !settings.nativeTitleBar) {
+          return LayoutBuilder(
+            builder: (context, constraints) => Align(
+              alignment: Alignment.topRight,
+              child: Card(
+                margin: EdgeInsets.zero,
+                shape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.circular(8),
                   ),
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(maxHeight: 42),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Row(
-                          children: [
-                            if (fullScreen &&
-                                widget.fullScreenMode ==
-                                    FullScreenMode.enabledExitButton) ...[
-                              IconButton(
-                                icon: const PhosphorIcon(
-                                    PhosphorIconsLight.arrowsIn),
-                                tooltip: LeapLocalizations.of(context)
-                                    .exitFullScreen,
-                                splashRadius: 20,
-                                onPressed: () async {
-                                  context
-                                      .read<WindowCubit>()
-                                      .changeFullScreen(false);
-                                },
-                              ),
-                            ],
-                            if (!fullScreen ||
-                                widget.fullScreenMode ==
-                                    FullScreenMode.enabled ||
-                                widget.fullScreenMode ==
-                                    FullScreenMode.disabled) ...[
-                              IconButton(
-                                icon: const PhosphorIcon(
-                                    PhosphorIconsLight.minus),
-                                tooltip: LeapLocalizations.of(context).minimize,
-                                splashRadius: 20,
-                                onPressed: () => windowManager.minimize(),
-                              ),
-                              const SizedBox(width: 8),
-                              MenuAnchor(
-                                builder: (context, controller, child) =>
-                                    GestureDetector(
-                                  onLongPress: controller.toggle,
-                                  onSecondaryTap: controller.toggle,
-                                  child: IconButton(
-                                    tooltip: maximized || fullScreen
-                                        ? LeapLocalizations.of(context).restore
-                                        : LeapLocalizations.of(context)
-                                            .maximize,
-                                    icon: PhosphorIcon(
-                                      PhosphorIconsLight.square,
-                                      size: maximized ? 14 : 20,
-                                      color: Theme.of(context).iconTheme.color,
-                                    ),
-                                    onPressed: fullScreen
-                                        ? () {
-                                            context
-                                                .read<WindowCubit>()
-                                                .changeFullScreen(false);
-                                          }
-                                        : () async =>
-                                            await windowManager.isMaximized()
-                                                ? windowManager.unmaximize()
-                                                : windowManager.maximize(),
-                                  ),
-                                ),
-                                menuChildren: [
-                                  MenuItemButton(
-                                    leadingIcon: PhosphorIcon(alwaysOnTop
-                                        ? PhosphorIconsFill.pushPin
-                                        : PhosphorIconsLight.pushPin),
-                                    child: Text(alwaysOnTop
-                                        ? LeapLocalizations.of(context)
-                                            .exitAlwaysOnTop
-                                        : LeapLocalizations.of(context)
-                                            .alwaysOnTop),
-                                    onPressed: () async {
-                                      await windowManager
-                                          .setAlwaysOnTop(!alwaysOnTop);
-                                      setState(
-                                          () => alwaysOnTop = !alwaysOnTop);
-                                    },
-                                  ),
-                                  if (widget.fullScreenMode !=
-                                      FullScreenMode.disabled)
-                                    MenuItemButton(
-                                      leadingIcon: PhosphorIcon(fullScreen
-                                          ? PhosphorIconsLight.arrowsIn
-                                          : PhosphorIconsLight.arrowsOut),
-                                      child: Text(fullScreen
-                                          ? LeapLocalizations.of(context)
-                                              .exitFullScreen
-                                          : LeapLocalizations.of(context)
-                                              .fullScreen),
-                                      onPressed: () {
+                ),
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxHeight: 42),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Row(
+                        children:
+                            [
+                                  if (fullScreen &&
+                                      widget.fullScreenMode ==
+                                          FullScreenMode.enabledExitButton) ...[
+                                    IconButton(
+                                      icon: const PhosphorIcon(
+                                        PhosphorIconsLight.arrowsIn,
+                                      ),
+                                      tooltip: LeapLocalizations.of(
+                                        context,
+                                      ).exitFullScreen,
+                                      splashRadius: 20,
+                                      onPressed: () async {
                                         context
                                             .read<WindowCubit>()
-                                            .toggleFullScreen();
+                                            .changeFullScreen(false);
                                       },
                                     ),
-                                ],
-                              ),
-                              const SizedBox(width: 8),
-                              Theme(
-                                data: Theme.of(context).copyWith(
-                                  colorScheme: Theme.of(context)
-                                      .colorScheme
-                                      .copyWith(
-                                        secondaryContainer:
-                                            Colors.red.withValues(alpha: 0.2),
+                                  ],
+                                  if (!fullScreen ||
+                                      widget.fullScreenMode ==
+                                          FullScreenMode.enabled ||
+                                      widget.fullScreenMode ==
+                                          FullScreenMode.disabled) ...[
+                                    IconButton(
+                                      icon: const PhosphorIcon(
+                                        PhosphorIconsLight.minus,
                                       ),
-                                ),
-                                child: IconButton.filledTonal(
-                                  icon:
-                                      const PhosphorIcon(PhosphorIconsLight.x),
-                                  tooltip: LeapLocalizations.of(context).close,
-                                  color: Colors.red,
-                                  splashRadius: 20,
-                                  onPressed: () async {
-                                    windowManager.close();
-                                  },
-                                ),
-                              ),
-                            ]
-                          ]
-                              .map((e) => e is SizedBox
-                                  ? e
-                                  : AspectRatio(aspectRatio: 1, child: e))
-                              .toList(),
-                        ),
-                      ],
-                    ),
+                                      tooltip: LeapLocalizations.of(
+                                        context,
+                                      ).minimize,
+                                      splashRadius: 20,
+                                      onPressed: () => windowManager.minimize(),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    MenuAnchor(
+                                      builder: (context, controller, child) =>
+                                          GestureDetector(
+                                            onLongPress: controller.toggle,
+                                            onSecondaryTap: controller.toggle,
+                                            child: IconButton(
+                                              tooltip: maximized || fullScreen
+                                                  ? LeapLocalizations.of(
+                                                      context,
+                                                    ).restore
+                                                  : LeapLocalizations.of(
+                                                      context,
+                                                    ).maximize,
+                                              icon: PhosphorIcon(
+                                                PhosphorIconsLight.square,
+                                                size: maximized ? 14 : 20,
+                                                color: Theme.of(
+                                                  context,
+                                                ).iconTheme.color,
+                                              ),
+                                              onPressed: fullScreen
+                                                  ? () {
+                                                      context
+                                                          .read<WindowCubit>()
+                                                          .changeFullScreen(
+                                                            false,
+                                                          );
+                                                    }
+                                                  : () async =>
+                                                        await windowManager
+                                                            .isMaximized()
+                                                        ? windowManager
+                                                              .unmaximize()
+                                                        : windowManager
+                                                              .maximize(),
+                                            ),
+                                          ),
+                                      menuChildren: [
+                                        MenuItemButton(
+                                          leadingIcon: PhosphorIcon(
+                                            alwaysOnTop
+                                                ? PhosphorIconsFill.pushPin
+                                                : PhosphorIconsLight.pushPin,
+                                          ),
+                                          child: Text(
+                                            alwaysOnTop
+                                                ? LeapLocalizations.of(
+                                                    context,
+                                                  ).exitAlwaysOnTop
+                                                : LeapLocalizations.of(
+                                                    context,
+                                                  ).alwaysOnTop,
+                                          ),
+                                          onPressed: () async {
+                                            await windowManager.setAlwaysOnTop(
+                                              !alwaysOnTop,
+                                            );
+                                            setState(
+                                              () => alwaysOnTop = !alwaysOnTop,
+                                            );
+                                          },
+                                        ),
+                                        if (widget.fullScreenMode !=
+                                            FullScreenMode.disabled)
+                                          MenuItemButton(
+                                            leadingIcon: PhosphorIcon(
+                                              fullScreen
+                                                  ? PhosphorIconsLight.arrowsIn
+                                                  : PhosphorIconsLight
+                                                        .arrowsOut,
+                                            ),
+                                            child: Text(
+                                              fullScreen
+                                                  ? LeapLocalizations.of(
+                                                      context,
+                                                    ).exitFullScreen
+                                                  : LeapLocalizations.of(
+                                                      context,
+                                                    ).fullScreen,
+                                            ),
+                                            onPressed: () {
+                                              context
+                                                  .read<WindowCubit>()
+                                                  .toggleFullScreen();
+                                            },
+                                          ),
+                                      ],
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Theme(
+                                      data: Theme.of(context).copyWith(
+                                        colorScheme: Theme.of(context)
+                                            .colorScheme
+                                            .copyWith(
+                                              secondaryContainer: Colors.red
+                                                  .withValues(alpha: 0.2),
+                                            ),
+                                      ),
+                                      child: IconButton.filledTonal(
+                                        icon: const PhosphorIcon(
+                                          PhosphorIconsLight.x,
+                                        ),
+                                        tooltip: LeapLocalizations.of(
+                                          context,
+                                        ).close,
+                                        color: Colors.red,
+                                        splashRadius: 20,
+                                        onPressed: () async {
+                                          windowManager.close();
+                                        },
+                                      ),
+                                    ),
+                                  ],
+                                ]
+                                .map(
+                                  (e) => e is SizedBox
+                                      ? e
+                                      : AspectRatio(aspectRatio: 1, child: e),
+                                )
+                                .toList(),
+                      ),
+                    ],
                   ),
                 ),
               ),
-            );
-          }
-          return Container();
-        });
+            ),
+          );
+        }
+        return Container();
+      },
+    );
   }
 }

@@ -15,7 +15,7 @@ class LocalizerLocale {
   ///
   /// Please use the methods in [Localizer].
   LocalizerLocale(this.name, [Map<String, String> messages = const {}])
-      : _messages = messages;
+    : _messages = messages;
 
   /// Returns the message of the key or the key if the message is not found.
   /// [key] is the key of the message.

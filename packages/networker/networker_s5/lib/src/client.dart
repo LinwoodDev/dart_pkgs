@@ -26,14 +26,17 @@ class NetworkerS5 extends NetworkerClient {
 
   @override
   Uri get address => Uri(
-        scheme: 's5-stream',
-        host: "encrypted",
-        userInfo: base64UrlNoPaddingEncode(secret),
-      );
+    scheme: 's5-stream',
+    host: "encrypted",
+    userInfo: base64UrlNoPaddingEncode(secret),
+  );
 
   NetworkerS5(Map<String, dynamic> config, Uri address, [bool encrypted = true])
-      : this.fromSecret(
-            config, base64UrlNoPaddingDecode(address.userInfo), encrypted);
+    : this.fromSecret(
+        config,
+        base64UrlNoPaddingDecode(address.userInfo),
+        encrypted,
+      );
 
   NetworkerS5.fromSecret(this.config, this.secret, [this.encrypted = true]);
 
@@ -42,9 +45,11 @@ class NetworkerS5 extends NetworkerClient {
     s5 = await S5.create();
     kp = await s5.crypto.newKeyPairEd25519(seed: secret);
     subscription = s5.api.streamSubscribe(kp.publicKey).listen((event) async {
-      onMessage(encrypted
-          ? await decryptMutableBytes(event.data, secret, crypto: s5.crypto)
-          : event.data);
+      onMessage(
+        encrypted
+            ? await decryptMutableBytes(event.data, secret, crypto: s5.crypto)
+            : event.data,
+      );
     });
   }
 
@@ -58,8 +63,10 @@ class NetworkerS5 extends NetworkerClient {
   bool get isClosed => subscription == null;
 
   @override
-  Future<void> sendMessage(Uint8List data,
-      [Channel channel = kAnyChannel]) async {
+  Future<void> sendMessage(
+    Uint8List data, [
+    Channel channel = kAnyChannel,
+  ]) async {
     super.sendMessage(data);
     final msg = await SignedStreamMessage.create(
       kp: kp,

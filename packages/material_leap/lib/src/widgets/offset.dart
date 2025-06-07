@@ -64,49 +64,52 @@ class _OffsetListTileState extends State<OffsetListTile> {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-        title: widget.title,
-        subtitle: widget.subtitle,
-        leading: widget.leading,
-        contentPadding: widget.contentPadding,
-        trailing: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (widget.trailing != null) ...[
-              widget.trailing!,
-              const SizedBox(width: 4),
-            ],
-            SizedBox(
-              width: 100,
-              child: TextField(
-                decoration: InputDecoration(
-                  labelText: widget.xLabel ?? 'X',
-                  filled: true,
-                  floatingLabelAlignment: FloatingLabelAlignment.center,
-                ),
-                textAlign: TextAlign.center,
-                keyboardType: TextInputType.number,
-                controller: _xController,
-                onChanged: (value) => widget
-                    .onChanged(Offset(double.parse(value), widget.value.dy)),
-              ),
-            ),
+      title: widget.title,
+      subtitle: widget.subtitle,
+      leading: widget.leading,
+      contentPadding: widget.contentPadding,
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (widget.trailing != null) ...[
+            widget.trailing!,
             const SizedBox(width: 4),
-            SizedBox(
-              width: 100,
-              child: TextField(
-                decoration: InputDecoration(
-                  labelText: widget.yLabel ?? 'Y',
-                  filled: true,
-                  floatingLabelAlignment: FloatingLabelAlignment.center,
-                ),
-                textAlign: TextAlign.center,
-                keyboardType: TextInputType.number,
-                controller: _yController,
-                onChanged: (value) => widget
-                    .onChanged(Offset(widget.value.dx, double.parse(value))),
+          ],
+          SizedBox(
+            width: 100,
+            child: TextField(
+              decoration: InputDecoration(
+                labelText: widget.xLabel ?? 'X',
+                filled: true,
+                floatingLabelAlignment: FloatingLabelAlignment.center,
+              ),
+              textAlign: TextAlign.center,
+              keyboardType: TextInputType.number,
+              controller: _xController,
+              onChanged: (value) => widget.onChanged(
+                Offset(double.parse(value), widget.value.dy),
               ),
             ),
-          ],
-        ));
+          ),
+          const SizedBox(width: 4),
+          SizedBox(
+            width: 100,
+            child: TextField(
+              decoration: InputDecoration(
+                labelText: widget.yLabel ?? 'Y',
+                filled: true,
+                floatingLabelAlignment: FloatingLabelAlignment.center,
+              ),
+              textAlign: TextAlign.center,
+              keyboardType: TextInputType.number,
+              controller: _yController,
+              onChanged: (value) => widget.onChanged(
+                Offset(widget.value.dx, double.parse(value)),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

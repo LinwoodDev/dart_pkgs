@@ -43,18 +43,20 @@ class BoxTile extends StatelessWidget {
                     child: Container(
                       decoration: BoxDecoration(
                         border: Border.all(
-                            width: selectionWidth,
-                            color: selected
-                                ? Theme.of(context).colorScheme.primary
-                                : Colors.transparent),
+                          width: selectionWidth,
+                          color: selected
+                              ? Theme.of(context).colorScheme.primary
+                              : Colors.transparent,
+                        ),
                         borderRadius: BorderRadius.circular(selectionRadius),
                       ),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
                           IconTheme(
-                            data:
-                                Theme.of(context).iconTheme.copyWith(size: 32),
+                            data: Theme.of(
+                              context,
+                            ).iconTheme.copyWith(size: 32),
                             child: icon,
                           ),
                           Column(
@@ -72,15 +74,9 @@ class BoxTile extends StatelessWidget {
                   ),
                 ),
                 if (leading != null)
-                  Align(
-                    alignment: Alignment.topLeft,
-                    child: leading!,
-                  ),
+                  Align(alignment: Alignment.topLeft, child: leading!),
                 if (trailing != null)
-                  Align(
-                    alignment: Alignment.topRight,
-                    child: trailing!,
-                  ),
+                  Align(alignment: Alignment.topRight, child: trailing!),
               ],
             ),
           ),

@@ -6,22 +6,24 @@ import 'package:lw_sysapi/src/native/lw_sysapi_base.dart';
 typedef _FcInitNative = ffi.Void Function();
 typedef _FcInitDart = void Function();
 typedef _FcPatternCreateNative = ffi.Pointer Function();
-typedef _FcObjectSetBuildNative = ffi.Pointer Function(
-  ffi.Pointer<Utf8> object,
-  ffi.Int32 first,
-);
-typedef _FcObjectSetBuildDart = ffi.Pointer Function(
-  ffi.Pointer<Utf8> object,
-  int first,
-);
-typedef _FcPatternGetStringNative = ffi.Int32 Function(
-  ffi.Pointer pattern,
-  ffi.Pointer<Utf8> object,
-  ffi.Int32 n,
-  ffi.Pointer<ffi.Pointer<ffi.Int8>> value,
-);
-typedef _FcPatternGetStringDart = int Function(ffi.Pointer pattern,
-    ffi.Pointer<Utf8> object, int n, ffi.Pointer<ffi.Pointer<ffi.Int8>> value);
+typedef _FcObjectSetBuildNative =
+    ffi.Pointer Function(ffi.Pointer<Utf8> object, ffi.Int32 first);
+typedef _FcObjectSetBuildDart =
+    ffi.Pointer Function(ffi.Pointer<Utf8> object, int first);
+typedef _FcPatternGetStringNative =
+    ffi.Int32 Function(
+      ffi.Pointer pattern,
+      ffi.Pointer<Utf8> object,
+      ffi.Int32 n,
+      ffi.Pointer<ffi.Pointer<ffi.Int8>> value,
+    );
+typedef _FcPatternGetStringDart =
+    int Function(
+      ffi.Pointer pattern,
+      ffi.Pointer<Utf8> object,
+      int n,
+      ffi.Pointer<ffi.Pointer<ffi.Int8>> value,
+    );
 typedef _FcFontSetDestroyNative = ffi.Void Function(ffi.Pointer fontSet);
 typedef _FcFontSetDestroyDart = void Function(ffi.Pointer fontSet);
 
@@ -41,8 +43,12 @@ final class _FcFontSet extends ffi.Struct {
   external ffi.Pointer<ffi.Pointer> fonts;
 }
 
-typedef _FcFontListNative = ffi.Pointer<_FcFontSet> Function(
-    ffi.Pointer config, ffi.Pointer pattern, ffi.Pointer objectSet);
+typedef _FcFontListNative =
+    ffi.Pointer<_FcFontSet> Function(
+      ffi.Pointer config,
+      ffi.Pointer pattern,
+      ffi.Pointer objectSet,
+    );
 
 class SysAPILinux extends SysAPIPlatform {
   static const String _libPath = 'libfontconfig.so.1';
@@ -56,19 +62,25 @@ class SysAPILinux extends SysAPIPlatform {
 
   SysAPILinux() : _dylib = ffi.DynamicLibrary.open(_libPath) {
     _fcInit = _dylib.lookupFunction<_FcInitNative, _FcInitDart>('FcInit');
-    _fcPatternCreate =
-        _dylib.lookupFunction<_FcPatternCreateNative, _FcPatternCreateNative>(
-            'FcPatternCreate');
-    _fcObjectSetBuild =
-        _dylib.lookupFunction<_FcObjectSetBuildNative, _FcObjectSetBuildDart>(
-            'FcObjectSetBuild');
-    _fcFontList = _dylib
-        .lookupFunction<_FcFontListNative, _FcFontListNative>('FcFontList');
-    _fcPatternGetString = _dylib.lookupFunction<_FcPatternGetStringNative,
-        _FcPatternGetStringDart>('FcPatternGetString');
-    _fcFontSetDestroy =
-        _dylib.lookupFunction<_FcFontSetDestroyNative, _FcFontSetDestroyDart>(
-            'FcFontSetDestroy');
+    _fcPatternCreate = _dylib
+        .lookupFunction<_FcPatternCreateNative, _FcPatternCreateNative>(
+          'FcPatternCreate',
+        );
+    _fcObjectSetBuild = _dylib
+        .lookupFunction<_FcObjectSetBuildNative, _FcObjectSetBuildDart>(
+          'FcObjectSetBuild',
+        );
+    _fcFontList = _dylib.lookupFunction<_FcFontListNative, _FcFontListNative>(
+      'FcFontList',
+    );
+    _fcPatternGetString = _dylib
+        .lookupFunction<_FcPatternGetStringNative, _FcPatternGetStringDart>(
+          'FcPatternGetString',
+        );
+    _fcFontSetDestroy = _dylib
+        .lookupFunction<_FcFontSetDestroyNative, _FcFontSetDestroyDart>(
+          'FcFontSetDestroy',
+        );
   }
 
   @override

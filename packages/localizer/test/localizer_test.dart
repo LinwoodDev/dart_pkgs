@@ -8,20 +8,26 @@ void main() {
     setUp(() {
       // Generate locale files
       File("generated/en.json").writeAsStringSync(
-          '{"hello-world": "Hello world!", "hello": "Hello %s"}');
-      File("generated/es.json").writeAsStringSync(
-          '{"hello-world": "Hola mundo!", "hello": "Hola %s"}');
+        '{"hello-world": "Hello world!", "hello": "Hello %s"}',
+      );
+      File(
+        "generated/es.json",
+      ).writeAsStringSync('{"hello-world": "Hola mundo!", "hello": "Hola %s"}');
       File("generated/fr.json").writeAsStringSync(
-          '{"hello-world": "Bonjour le monde!", "hello": "Bonjour %s"}');
+        '{"hello-world": "Bonjour le monde!", "hello": "Bonjour %s"}',
+      );
       File("generated/de.json").writeAsStringSync(
-          '{"hello-world": "Hallo Welt!", "hello": "Hallo %s"}');
+        '{"hello-world": "Hallo Welt!", "hello": "Hallo %s"}',
+      );
     });
 
     test('Load directory', () async {
       final localizer = Localizer();
       await localizer.loadDirectory('generated');
-      expect(localizer.supportedLocales,
-          unorderedEquals(["en", "es", "fr", "de"]));
+      expect(
+        localizer.supportedLocales,
+        unorderedEquals(["en", "es", "fr", "de"]),
+      );
     });
     test('Load single file', () async {
       final localizer = Localizer();

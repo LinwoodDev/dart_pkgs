@@ -39,8 +39,10 @@ mixin WebFileSystem on GeneralFileSystem {
     _db = db;
     if (hasDefault() && !isInitialized()) {
       await runDefault();
-      html.window.localStorage
-          .setItem(config.currentDefaultStorageName, 'true');
+      html.window.localStorage.setItem(
+        config.currentDefaultStorageName,
+        'true',
+      );
     }
     return db;
   }
@@ -50,7 +52,7 @@ mixin WebFileSystem on GeneralFileSystem {
     final db = await _getDatabase();
     final txn = db.transactionList([
       config.storeName,
-      if (this is DirectoryFileSystem) config.currentDataStoreName
+      if (this is DirectoryFileSystem) config.currentDataStoreName,
     ], 'readwrite');
     final store = txn.objectStore(config.storeName);
     await store.clear();
@@ -72,8 +74,9 @@ mixin WebFileSystem on GeneralFileSystem {
   @override
   bool isInitialized() {
     if (!hasDefault()) return true;
-    final value =
-        html.window.localStorage.getItem(config.currentDefaultStorageName);
+    final value = html.window.localStorage.getItem(
+      config.currentDefaultStorageName,
+    );
     return value == 'true';
   }
 }
@@ -85,8 +88,10 @@ class WebDirectoryFileSystem extends DirectoryFileSystem with WebFileSystem {
   Future<void> deleteAsset(String path) async {
     path = normalizePath(path);
     final db = await _getDatabase();
-    final txn = db.transactionList(
-        [config.storeName, config.currentDataStoreName], 'readwrite');
+    final txn = db.transactionList([
+      config.storeName,
+      config.currentDataStoreName,
+    ], 'readwrite');
     final store = txn.objectStore(config.storeName);
     final data = await store.getObject(path) as Map<dynamic, dynamic>?;
     await store.delete(path);
@@ -105,13 +110,18 @@ class WebDirectoryFileSystem extends DirectoryFileSystem with WebFileSystem {
   }
 
   @override
-  Future<RawFileSystemEntity?> readAsset(String path,
-      {bool readData = true, bool forceRemote = false}) async {
+  Future<RawFileSystemEntity?> readAsset(
+    String path, {
+    bool readData = true,
+    bool forceRemote = false,
+  }) async {
     path = normalizePath(path);
     final db = await _getDatabase();
     final location = AssetLocation.local(path);
-    final txn = db.transaction(
-        [config.storeName, config.currentDataStoreName], 'readonly');
+    final txn = db.transaction([
+      config.storeName,
+      config.currentDataStoreName,
+    ], 'readonly');
 
     Future<Uint8List?> getData(String path) async {
       final dataStore = txn.objectStore(config.currentDataStoreName);
@@ -145,25 +155,24 @@ class WebDirectoryFileSystem extends DirectoryFileSystem with WebFileSystem {
             e != path &&
             !e.substring(path.length + 1).contains('/');
       }).toList();
-      final assets = (await Future.wait(names.map((e) async {
-        final store = txn.objectStore(config.storeName);
-        final data = await store.getObject(e);
-        if (data == null) return null;
-        final map = Map<String, dynamic>.from(data as Map);
-        if (map['type'] == 'file') {
-          return RawFileSystemFile(AssetLocation.local(e),
-              data: await getData(e));
-        } else if (map['type'] == 'directory') {
-          return RawFileSystemDirectory(AssetLocation.local(e));
-        }
-        return null;
-      })))
-          .nonNulls
-          .toList();
-      return RawFileSystemDirectory(
-        location,
-        assets: assets,
-      );
+      final assets = (await Future.wait(
+        names.map((e) async {
+          final store = txn.objectStore(config.storeName);
+          final data = await store.getObject(e);
+          if (data == null) return null;
+          final map = Map<String, dynamic>.from(data as Map);
+          if (map['type'] == 'file') {
+            return RawFileSystemFile(
+              AssetLocation.local(e),
+              data: await getData(e),
+            );
+          } else if (map['type'] == 'directory') {
+            return RawFileSystemDirectory(AssetLocation.local(e));
+          }
+          return null;
+        }),
+      )).nonNulls.toList();
+      return RawFileSystemDirectory(location, assets: assets);
     }
     return null;
   }
@@ -180,18 +189,24 @@ class WebDirectoryFileSystem extends DirectoryFileSystem with WebFileSystem {
   }
 
   @override
-  Future<bool> updateFile(String path, List<int> data,
-      {bool forceSync = false}) async {
+  Future<bool> updateFile(
+    String path,
+    List<int> data, {
+    bool forceSync = false,
+  }) async {
     path = normalizePath(path);
     final pathWithoutSlash = path.substring(1);
     // Create directory if it doesn't exist
     if (pathWithoutSlash.contains('/')) {
       await createDirectory(
-          '/${pathWithoutSlash.substring(0, pathWithoutSlash.lastIndexOf('/'))}');
+        '/${pathWithoutSlash.substring(0, pathWithoutSlash.lastIndexOf('/'))}',
+      );
     }
     final db = await _getDatabase();
-    final txn = db.transactionList(
-        [config.storeName, config.currentDataStoreName], 'readwrite');
+    final txn = db.transactionList([
+      config.storeName,
+      config.currentDataStoreName,
+    ], 'readwrite');
     final store = txn.objectStore(config.storeName);
     await store.put({'type': 'file'}, path);
     final dataStore = txn.objectStore(config.currentDataStoreName);
@@ -234,22 +249,26 @@ class WebDirectoryFileSystem extends DirectoryFileSystem with WebFileSystem {
         _fs = files.first;
         final file = await _fs!.getFile().toDart;
         final reader = html.FileReader();
-        reader.onload.add((() {
-          try {
-            final result = (reader.result as JSUint8Array).toDart;
-            completer.complete(Uint8List.fromList(result));
-          } catch (e) {
-            completer.completeError(e);
-          }
-        }).toJS);
-        reader.onerror.add((() {
-          final error = reader.error;
-          if (error != null) {
-            completer.completeError(error);
-          } else {
-            completer.complete(null);
-          }
-        }).toJS);
+        reader.onload.add(
+          (() {
+            try {
+              final result = (reader.result as JSUint8Array).toDart;
+              completer.complete(Uint8List.fromList(result));
+            } catch (e) {
+              completer.completeError(e);
+            }
+          }).toJS,
+        );
+        reader.onerror.add(
+          (() {
+            final error = reader.error;
+            if (error != null) {
+              completer.completeError(error);
+            } else {
+              completer.complete(null);
+            }
+          }).toJS,
+        );
         reader.readAsArrayBuffer(file);
       }
 
@@ -268,8 +287,10 @@ class WebDirectoryFileSystem extends DirectoryFileSystem with WebFileSystem {
   Future<void> saveAbsolute(String path, Uint8List bytes) async {
     final a = html.document.createElement('a') as html.HTMLAnchorElement;
     // Create data URL
-    final blob =
-        html.Blob([bytes.toJS].toJS, html.BlobPropertyBag(type: 'text/plain'));
+    final blob = html.Blob(
+      [bytes.toJS].toJS,
+      html.BlobPropertyBag(type: 'text/plain'),
+    );
     final url = html.URL.createObjectURL(blob);
     a.href = url;
     a.download = path;

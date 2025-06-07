@@ -9,8 +9,12 @@ mixin GeneralKeyFileSystem<T> on GeneralFileSystem {
   Future<String> findAvailableKey(String path) =>
       _findAvailableName(path, hasKey);
 
-  Future<String> createFileWithName(T data,
-      {String? name, String? suffix, String? directory}) {
+  Future<String> createFileWithName(
+    T data, {
+    String? name,
+    String? suffix,
+    String? directory,
+  }) {
     final path = convertNameToFileSystem(
       name: name,
       suffix: suffix,
@@ -46,7 +50,7 @@ mixin GeneralKeyFileSystem<T> on GeneralFileSystem {
   Stream<List<FileSystemFile<T>>> fetchFiles() async* {
     final files = <FileSystemFile<T>>[];
     yield files;
-    await for (final file in listFiles().handleError((_, __) {})) {
+    await for (final file in listFiles().handleError((_, _) {})) {
       files.add(file);
       yield files;
     }
@@ -86,8 +90,11 @@ abstract class KeyFileSystem extends GeneralFileSystem
     if (kIsWeb) {
       return WebKeyFileSystem(config: config, createDefault: createDefault);
     } else {
-      return KeyDirectoryFileSystem.build(config,
-          storage: storage, createDefault: createDefault);
+      return KeyDirectoryFileSystem.build(
+        config,
+        storage: storage,
+        createDefault: createDefault,
+      );
     }
   }
 
@@ -153,7 +160,9 @@ class KeyDirectoryFileSystem extends KeyFileSystem {
   @override
   Future<List<String>> getKeys() async {
     final directory = await fileSystem.getRootDirectory(
-        listLevel: allListLevel, readData: false);
+      listLevel: allListLevel,
+      readData: false,
+    );
     final assets = <String>[];
     final remaining = [...directory.assets];
     while (remaining.isNotEmpty) {
@@ -173,7 +182,9 @@ class KeyDirectoryFileSystem extends KeyFileSystem {
   @override
   Stream<RawFileSystemFile> listFiles() async* {
     final directory = await fileSystem.getRootDirectory(
-        listLevel: allListLevel, readData: false);
+      listLevel: allListLevel,
+      readData: false,
+    );
     final remaining = [...directory.assets];
     final assets = <RawFileSystemFile>[];
     while (remaining.isNotEmpty) {
@@ -192,8 +203,11 @@ class KeyDirectoryFileSystem extends KeyFileSystem {
 
   @override
   Future<bool> hasKey(String key) async {
-    final asset = await fileSystem.getAsset(key + config.keySuffix,
-        listLevel: noListLevel, readData: false);
+    final asset = await fileSystem.getAsset(
+      key + config.keySuffix,
+      listLevel: noListLevel,
+      readData: false,
+    );
     return asset is RawFileSystemFile;
   }
 
@@ -201,8 +215,12 @@ class KeyDirectoryFileSystem extends KeyFileSystem {
   Future<void> updateFile(String key, Uint8List data) async {
     key = normalizePath(key);
     final parent = key.substring(0, key.lastIndexOf('/'));
-    if ((await fileSystem.getAsset(parent,
-        listLevel: noListLevel, readData: false)) is! RawFileSystemDirectory) {
+    if ((await fileSystem.getAsset(
+          parent,
+          listLevel: noListLevel,
+          readData: false,
+        ))
+        is! RawFileSystemDirectory) {
       await fileSystem.createDirectory(parent);
     }
     return fileSystem.updateFile(key + config.keySuffix, data);

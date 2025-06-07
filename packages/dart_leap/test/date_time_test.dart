@@ -4,12 +4,18 @@ import 'package:test/test.dart';
 void main() {
   group('Test datetime weeks', () {
     test('Test start of weeks', () {
-      expect(DateTime(2024, 1, 1).getStartOfWeek(DateTime.monday),
-          DateTime(2024, 1, 1));
-      expect(DateTime(2024, 05, 19).getStartOfWeek(DateTime.monday),
-          DateTime(2024, 05, 13));
-      expect(DateTime(2024, 05, 19).getStartOfWeek(DateTime.saturday),
-          DateTime(2024, 05, 18));
+      expect(
+        DateTime(2024, 1, 1).getStartOfWeek(DateTime.monday),
+        DateTime(2024, 1, 1),
+      );
+      expect(
+        DateTime(2024, 05, 19).getStartOfWeek(DateTime.monday),
+        DateTime(2024, 05, 13),
+      );
+      expect(
+        DateTime(2024, 05, 19).getStartOfWeek(DateTime.saturday),
+        DateTime(2024, 05, 18),
+      );
     });
     test('Test week number', () {
       expect(DateTime(2024, 05, 19).getWeek(DateTime.saturday), 21);

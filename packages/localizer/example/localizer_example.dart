@@ -3,7 +3,7 @@ import 'package:localizer/localizer.dart';
 void main() {
   var localizer = Localizer();
   localizer.loadMap("en", {
-    "hello": ["Hello world!"]
+    "hello": ["Hello world!"],
   });
   localizer.loadMap("es", {"hello-world": "Hola mundo!"});
   localizer.loadMap("fr", {"hello-world": "Bonjour le monde!"});

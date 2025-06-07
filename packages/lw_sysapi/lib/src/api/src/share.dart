@@ -12,8 +12,11 @@ Future<void> exportUsingShare({
   await SharePlus.instance.share(
     ShareParams(
       files: [
-        XFile.fromData(Uint8List.fromList(bytes),
-            mimeType: mimeType, name: '$fileName.$fileExtension')
+        XFile.fromData(
+          Uint8List.fromList(bytes),
+          mimeType: mimeType,
+          name: '$fileName.$fileExtension',
+        ),
       ],
       fileNameOverrides: ['$fileName.$fileExtension'],
       downloadFallbackEnabled: true,

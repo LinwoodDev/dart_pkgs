@@ -14,33 +14,32 @@ Future<T?> showLeapBottomSheet<T>({
   double? spacing,
   double? leadingWidth,
   bool isDismissible = true,
-}) =>
-    showModalBottomSheet<T>(
-      constraints: const BoxConstraints(maxWidth: 640),
-      context: context,
-      showDragHandle: true,
-      isDismissible: isDismissible,
-      isScrollControlled: true,
-      builder: (ctx) {
-        Widget child = Container(
-          margin: const EdgeInsets.only(bottom: 20),
-          child: ListView(
-            shrinkWrap: true,
-            children: [
-              Header(
-                title: titleBuilder?.call(ctx) ?? const SizedBox(),
-                leading: leadingBuilder?.call(ctx),
-                leadingWidth: leadingWidth,
-                actions: actionsBuilder?.call(ctx),
-                toolbarHeight: toolbarHeight,
-                spacing: spacing,
-                centerTitle: centerTitle,
-              ),
-              ...?childrenBuilder?.call(ctx),
-            ],
+}) => showModalBottomSheet<T>(
+  constraints: const BoxConstraints(maxWidth: 640),
+  context: context,
+  showDragHandle: true,
+  isDismissible: isDismissible,
+  isScrollControlled: true,
+  builder: (ctx) {
+    Widget child = Container(
+      margin: const EdgeInsets.only(bottom: 20),
+      child: ListView(
+        shrinkWrap: true,
+        children: [
+          Header(
+            title: titleBuilder?.call(ctx) ?? const SizedBox(),
+            leading: leadingBuilder?.call(ctx),
+            leadingWidth: leadingWidth,
+            actions: actionsBuilder?.call(ctx),
+            toolbarHeight: toolbarHeight,
+            spacing: spacing,
+            centerTitle: centerTitle,
           ),
-        );
-        child = builder?.call(ctx, child) ?? child;
-        return child;
-      },
+          ...?childrenBuilder?.call(ctx),
+        ],
+      ),
     );
+    child = builder?.call(ctx, child) ?? child;
+    return child;
+  },
+);

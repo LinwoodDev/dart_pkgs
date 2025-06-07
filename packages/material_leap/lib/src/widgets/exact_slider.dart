@@ -56,8 +56,8 @@ class ExactSlider extends StatefulWidget {
     required SRGBColor thumbColor,
     this.contentPadding,
     this.headerWidth,
-  })  : color = color.toColor(),
-        thumbColor = thumbColor.toColor();
+  }) : color = color.toColor(),
+       thumbColor = thumbColor.toColor();
 
   @override
   _ExactSliderState createState() => _ExactSliderState();
@@ -101,20 +101,23 @@ class _ExactSliderState extends State<ExactSlider> {
   @override
   Widget build(BuildContext context) {
     return Align(
-        alignment: Alignment.topCenter,
-        child: Column(
-          children: [
-            LayoutBuilder(builder: (context, constraints) {
+      alignment: Alignment.topCenter,
+      child: Column(
+        children: [
+          LayoutBuilder(
+            builder: (context, constraints) {
               final textField = TextFormField(
-                  decoration: InputDecoration(
-                      filled: true,
-                      labelText: widget.label,
-                      floatingLabelAlignment: FloatingLabelAlignment.center),
-                  textAlign: TextAlign.center,
-                  controller: _controller,
-                  onEditingComplete: () => widget.onChangeEnd?.call(_value),
-                  onChanged: (value) =>
-                      _changeValue(double.tryParse(value) ?? _value));
+                decoration: InputDecoration(
+                  filled: true,
+                  labelText: widget.label,
+                  floatingLabelAlignment: FloatingLabelAlignment.center,
+                ),
+                textAlign: TextAlign.center,
+                controller: _controller,
+                onEditingComplete: () => widget.onChangeEnd?.call(_value),
+                onChanged: (value) =>
+                    _changeValue(double.tryParse(value) ?? _value),
+              );
               final digits = widget.fractionDigits;
               final slider = Slider(
                 value: _value.clamp(widget.min, widget.max),
@@ -132,12 +135,14 @@ class _ExactSliderState extends State<ExactSlider> {
               );
               final header = widget.header;
               final resetButton = IconButton(
-                  onPressed: () {
-                    _changeValue(widget.defaultValue);
-                    widget.onChangeEnd?.call(widget.defaultValue);
-                  },
-                  icon: const PhosphorIcon(
-                      PhosphorIconsLight.clockCounterClockwise));
+                onPressed: () {
+                  _changeValue(widget.defaultValue);
+                  widget.onChangeEnd?.call(widget.defaultValue);
+                },
+                icon: const PhosphorIcon(
+                  PhosphorIconsLight.clockCounterClockwise,
+                ),
+              );
               final width = constraints.maxWidth;
               if (width < 300) {
                 return ListTile(
@@ -147,15 +152,16 @@ class _ExactSliderState extends State<ExactSlider> {
                   subtitle: Column(
                     children: [
                       Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisSize: MainAxisSize.max,
-                          children: [
-                            if (widget.leading != null) widget.leading!,
-                            Flexible(child: textField),
-                            const SizedBox(width: 8),
-                            resetButton,
-                          ]),
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisSize: MainAxisSize.max,
+                        children: [
+                          if (widget.leading != null) widget.leading!,
+                          Flexible(child: textField),
+                          const SizedBox(width: 8),
+                          resetButton,
+                        ],
+                      ),
                       slider,
                     ],
                   ),
@@ -165,17 +171,21 @@ class _ExactSliderState extends State<ExactSlider> {
                 return ListTile(
                   leading: widget.leading,
                   contentPadding: widget.contentPadding,
-                  subtitle: Row(children: [
-                    Expanded(child: slider),
-                    resetButton,
-                  ]),
-                  title: Row(children: [
-                    if (header != null) Expanded(child: header),
-                    ConstrainedBox(
-                      constraints: const BoxConstraints(maxWidth: 75),
-                      child: textField,
-                    ),
-                  ]),
+                  subtitle: Row(
+                    children: [
+                      Expanded(child: slider),
+                      resetButton,
+                    ],
+                  ),
+                  title: Row(
+                    children: [
+                      if (header != null) Expanded(child: header),
+                      ConstrainedBox(
+                        constraints: const BoxConstraints(maxWidth: 75),
+                        child: textField,
+                      ),
+                    ],
+                  ),
                 );
               }
               return ListTile(
@@ -197,12 +207,14 @@ class _ExactSliderState extends State<ExactSlider> {
                 ),
                 trailing: resetButton,
               );
-            }),
-            DefaultTextStyle(
-              style: Theme.of(context).textTheme.bodySmall ?? const TextStyle(),
-              child: widget.bottom ?? const SizedBox(),
-            ),
-          ],
-        ));
+            },
+          ),
+          DefaultTextStyle(
+            style: Theme.of(context).textTheme.bodySmall ?? const TextStyle(),
+            child: widget.bottom ?? const SizedBox(),
+          ),
+        ],
+      ),
+    );
   }
 }

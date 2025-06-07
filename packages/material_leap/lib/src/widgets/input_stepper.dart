@@ -57,75 +57,74 @@ class _InputStepperState extends State<InputStepper> {
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(builder: (context, constraints) {
-      final listTile = ListTile(
-        title: widget.title,
-        subtitle: widget.subtitle,
-      );
-      final resetButton = IconButton(
-        onPressed: () {
-          _changeValue(widget.defaultValue);
-          widget.onChanged?.call(widget.defaultValue);
-        },
-        icon: const PhosphorIcon(PhosphorIconsLight.clockCounterClockwise),
-      );
-      final textField = TextFormField(
-        controller: _controller,
-        keyboardType: TextInputType.number,
-        decoration: InputDecoration(
-          filled: true,
-          labelText: widget.label,
-        ),
-      );
-      final min = IconButton(
-        onPressed: _value <= widget.min
-            ? null
-            : () => _changeValue(_value - widget.step),
-        icon: const PhosphorIcon(PhosphorIconsLight.minusCircle),
-      );
-      final max = IconButton(
-        onPressed: _value >= widget.max
-            ? null
-            : () => _changeValue(_value + widget.step),
-        icon: const PhosphorIcon(PhosphorIconsLight.plusCircle),
-      );
-      if (constraints.maxWidth < 300) {
-        return Column(
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final listTile = ListTile(
+          title: widget.title,
+          subtitle: widget.subtitle,
+        );
+        final resetButton = IconButton(
+          onPressed: () {
+            _changeValue(widget.defaultValue);
+            widget.onChanged?.call(widget.defaultValue);
+          },
+          icon: const PhosphorIcon(PhosphorIconsLight.clockCounterClockwise),
+        );
+        final textField = TextFormField(
+          controller: _controller,
+          keyboardType: TextInputType.number,
+          decoration: InputDecoration(filled: true, labelText: widget.label),
+        );
+        final min = IconButton(
+          onPressed: _value <= widget.min
+              ? null
+              : () => _changeValue(_value - widget.step),
+          icon: const PhosphorIcon(PhosphorIconsLight.minusCircle),
+        );
+        final max = IconButton(
+          onPressed: _value >= widget.max
+              ? null
+              : () => _changeValue(_value + widget.step),
+          icon: const PhosphorIcon(PhosphorIconsLight.plusCircle),
+        );
+        if (constraints.maxWidth < 300) {
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              listTile,
+              const SizedBox(height: 8),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  min,
+                  Expanded(child: textField),
+                  max,
+                  const SizedBox(width: 8),
+                  resetButton,
+                ],
+              ),
+            ],
+          );
+        }
+        return Row(
           mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            listTile,
-            const SizedBox(height: 8),
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                min,
-                Expanded(child: textField),
-                max,
-                const SizedBox(width: 8),
-                resetButton,
-              ],
+            Expanded(child: listTile),
+            const SizedBox(width: 8),
+            min,
+            const SizedBox(width: 4),
+            ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 75),
+              child: textField,
             ),
+            const SizedBox(width: 4),
+            max,
+            const SizedBox(width: 8),
+            resetButton,
           ],
         );
-      }
-      return Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Expanded(child: listTile),
-          const SizedBox(width: 8),
-          min,
-          const SizedBox(width: 4),
-          ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 75),
-            child: textField,
-          ),
-          const SizedBox(width: 4),
-          max,
-          const SizedBox(width: 8),
-          resetButton,
-        ],
-      );
-    });
+      },
+    );
   }
 }

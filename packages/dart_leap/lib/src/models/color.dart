@@ -13,7 +13,8 @@ extension type const SRGBColor(int value) {
     int a = 0xFF,
   }) {
     // Combine to ARGB
-    int argb = (a << _alphaOffset) |
+    int argb =
+        (a << _alphaOffset) |
         (r << _redOffset) |
         (g << _greenOffset) |
         (b << _blueOffset);
@@ -27,7 +28,8 @@ extension type const SRGBColor(int value) {
     int a = rgba & 0xFF;
 
     // Combine to ARGB
-    int argb = (a << _alphaOffset) |
+    int argb =
+        (a << _alphaOffset) |
         (r << _redOffset) |
         (g << _greenOffset) |
         (b << _blueOffset);
@@ -51,7 +53,8 @@ extension type const SRGBColor(int value) {
       }
     }
     if (value.length == 4) {
-      value = value[0] +
+      value =
+          value[0] +
           value[0] +
           value[1] +
           value[1] +
@@ -87,24 +90,21 @@ extension type const SRGBColor(int value) {
 
   int get rgba => (r << 24) | (g << 16) | (b << 8) | a;
 
-  SRGBColor withValues({
-    int? r,
-    int? g,
-    int? b,
-    int? a,
-  }) =>
-      SRGBColor.from(
-        r: r ?? this.r,
-        g: g ?? this.g,
-        b: b ?? this.b,
-        a: a ?? this.a,
-      );
+  SRGBColor withValues({int? r, int? g, int? b, int? a}) => SRGBColor.from(
+    r: r ?? this.r,
+    g: g ?? this.g,
+    b: b ?? this.b,
+    a: a ?? this.a,
+  );
 
   SRGBColor withOpacity(double opacity) =>
       withValues(a: (opacity * 255).round());
 
-  String toHexString(
-      {bool leadingHash = true, bool alpha = true, bool useRGBA = true}) {
+  String toHexString({
+    bool leadingHash = true,
+    bool alpha = true,
+    bool useRGBA = true,
+  }) {
     var hex = '';
     if (leadingHash) {
       hex += '#';

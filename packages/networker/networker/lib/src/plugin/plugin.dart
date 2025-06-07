@@ -19,7 +19,7 @@ class NetworkerPacket<T> {
 
 abstract class NetworkerPipe<I, O> {
   final Map<NetworkerPipe<O, dynamic>, StreamSubscription<NetworkerPacket<O>>>
-      _pipes = {};
+  _pipes = {};
   final StreamController<NetworkerPacket<O>> _readController =
       StreamController<NetworkerPacket<O>>.broadcast();
   final StreamController<NetworkerPacket<I>> _writeController =

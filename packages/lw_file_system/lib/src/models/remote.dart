@@ -7,12 +7,13 @@ class SyncFile {
   final AssetLocation location;
   final DateTime? localLastModified, syncedLastModified, remoteLastModified;
 
-  const SyncFile(
-      {required this.isDirectory,
-      required this.location,
-      required this.localLastModified,
-      required this.syncedLastModified,
-      this.remoteLastModified});
+  const SyncFile({
+    required this.isDirectory,
+    required this.location,
+    required this.localLastModified,
+    required this.syncedLastModified,
+    this.remoteLastModified,
+  });
 
   FileSyncStatus get status {
     if (remoteLastModified == null) {

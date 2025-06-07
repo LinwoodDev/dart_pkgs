@@ -43,9 +43,9 @@ class ColorPicker<T> extends StatefulWidget {
     this.primaryActions,
     this.secondaryActions,
     List<Color> suggested = const [],
-  })  : defaultColor = value.toSRGB(),
-        value = value.toSRGB(),
-        suggested = suggested.map((e) => e.toSRGB()).toList();
+  }) : defaultColor = value.toSRGB(),
+       value = value.toSRGB(),
+       suggested = suggested.map((e) => e.toSRGB()).toList();
 
   @override
   _ColorPickerState<T> createState() => _ColorPickerState<T>();
@@ -58,14 +58,15 @@ class _ColorPickerState<T> extends State<ColorPicker<T>> {
   @override
   void initState() {
     color = widget.value ?? widget.defaultColor;
-    _hexController =
-        TextEditingController(text: color.toHexString(alpha: false));
+    _hexController = TextEditingController(
+      text: color.toHexString(alpha: false),
+    );
     super.initState();
   }
 
   void _changeColor({int? red, int? green, int? blue}) => setState(() {
-        color = color.withValues(a: 255, r: red, g: green, b: blue);
-      });
+    color = color.withValues(a: 255, r: red, g: green, b: blue);
+  });
 
   void _close([T? action]) =>
       Navigator.of(context).pop(ColorPickerResponse(color.value, action));
@@ -90,25 +91,24 @@ class _ColorPickerState<T> extends State<ColorPicker<T>> {
             ),
             Flexible(
               child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 15,
+                ),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Flexible(
-                        child: isMobile
-                            ? SingleChildScrollView(
-                                child: Column(
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.stretch,
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    _buildPreview(),
-                                    _buildProperties(),
-                                  ],
-                                ),
-                              )
-                            : Row(children: [
+                      child: isMobile
+                          ? SingleChildScrollView(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [_buildPreview(), _buildProperties()],
+                              ),
+                            )
+                          : Row(
+                              children: [
                                 Flexible(
                                   flex: 2,
                                   child: SingleChildScrollView(
@@ -120,31 +120,40 @@ class _ColorPickerState<T> extends State<ColorPicker<T>> {
                                   child: SingleChildScrollView(
                                     child: _buildProperties(),
                                   ),
-                                )
-                              ])),
+                                ),
+                              ],
+                            ),
+                    ),
                     const Divider(),
                     OverflowBar(
                       alignment: MainAxisAlignment.spaceBetween,
                       children: [
                         OverflowBar(
-                            children:
-                                widget.secondaryActions?.call(_close) ?? []),
-                        OverflowBar(children: [
-                          TextButton(
-                              child: Text(MaterialLocalizations.of(context)
-                                  .cancelButtonLabel),
-                              onPressed: () => Navigator.of(context).pop()),
-                          const SizedBox(width: 8),
-                          ...widget.primaryActions?.call(_close) ?? [],
-                          const SizedBox(width: 8),
-                          ElevatedButton(
-                            onPressed: _close,
-                            child: Text(MaterialLocalizations.of(context)
-                                .okButtonLabel),
-                          ),
-                        ]),
+                          children: widget.secondaryActions?.call(_close) ?? [],
+                        ),
+                        OverflowBar(
+                          children: [
+                            TextButton(
+                              child: Text(
+                                MaterialLocalizations.of(
+                                  context,
+                                ).cancelButtonLabel,
+                              ),
+                              onPressed: () => Navigator.of(context).pop(),
+                            ),
+                            const SizedBox(width: 8),
+                            ...widget.primaryActions?.call(_close) ?? [],
+                            const SizedBox(width: 8),
+                            ElevatedButton(
+                              onPressed: _close,
+                              child: Text(
+                                MaterialLocalizations.of(context).okButtonLabel,
+                              ),
+                            ),
+                          ],
+                        ),
                       ],
-                    )
+                    ),
                   ],
                 ),
               ),
@@ -156,96 +165,101 @@ class _ColorPickerState<T> extends State<ColorPicker<T>> {
   }
 
   Widget _buildPreview() => Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          ConstrainedBox(
-            constraints: const BoxConstraints(maxHeight: 300, maxWidth: 300),
-            child: Align(
-              child: ColorWheelPicker(
-                  value: color,
-                  onChanged: (value) {
-                    setState(() {
-                      color = value;
-                      _hexController.text = value.toHexString(alpha: false);
-                    });
-                  }),
-            ),
+    mainAxisSize: MainAxisSize.min,
+    children: [
+      ConstrainedBox(
+        constraints: const BoxConstraints(maxHeight: 300, maxWidth: 300),
+        child: Align(
+          child: ColorWheelPicker(
+            value: color,
+            onChanged: (value) {
+              setState(() {
+                color = value;
+                _hexController.text = value.toHexString(alpha: false);
+              });
+            },
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-            child: Row(
-              children: [
-                ColorButton.srgb(color: color, size: 48),
-                Expanded(
-                  child: TextField(
-                    controller: _hexController,
-                    decoration: const InputDecoration(filled: true),
-                    onSubmitted: (value) {
-                      final valueNumber = SRGBColor.tryParse(value);
-                      if (valueNumber == null) return;
-                      setState(() {
-                        color = valueNumber.withValues(a: 255);
-                      });
-                    },
+        ),
+      ),
+      Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+        child: Row(
+          children: [
+            ColorButton.srgb(color: color, size: 48),
+            Expanded(
+              child: TextField(
+                controller: _hexController,
+                decoration: const InputDecoration(filled: true),
+                onSubmitted: (value) {
+                  final valueNumber = SRGBColor.tryParse(value);
+                  if (valueNumber == null) return;
+                  setState(() {
+                    color = valueNumber.withValues(a: 255);
+                  });
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    ],
+  );
+
+  Widget _buildProperties() => Column(
+    mainAxisSize: MainAxisSize.min,
+    children: [
+      ExactSlider.srgb(
+        header: Text(LeapLocalizations.of(context).red),
+        fractionDigits: 0,
+        defaultValue: 255,
+        min: 0,
+        max: 255,
+        value: color.r.toDouble(),
+        color: SRGBColor.red,
+        thumbColor: SRGBColor.black.withValues(r: color.r),
+        onChanged: (value) => _changeColor(red: value.toInt()),
+      ),
+      ExactSlider.srgb(
+        header: Text(LeapLocalizations.of(context).green),
+        fractionDigits: 0,
+        defaultValue: 255,
+        min: 0,
+        max: 255,
+        value: color.g.toDouble(),
+        color: SRGBColor.green,
+        thumbColor: SRGBColor.black.withValues(g: color.g),
+        onChanged: (value) => _changeColor(green: value.toInt()),
+      ),
+      ExactSlider.srgb(
+        header: Text(LeapLocalizations.of(context).blue),
+        fractionDigits: 0,
+        defaultValue: 255,
+        min: 0,
+        max: 255,
+        value: color.b.toDouble(),
+        color: SRGBColor.blue,
+        thumbColor: SRGBColor.black.withValues(b: color.b),
+        onChanged: (value) => _changeColor(blue: value.toInt()),
+      ),
+      if (widget.suggested.isNotEmpty) ...[
+        const SizedBox(height: 16),
+        Wrap(
+          children: widget.suggested
+              .map(
+                (e) => SizedBox(
+                  height: 64,
+                  width: 64,
+                  child: ColorButton.srgb(
+                    color: e,
+                    onTap: () => setState(() => color = e),
                   ),
                 ),
-              ],
-            ),
-          ),
-        ],
-      );
-
-  Widget _buildProperties() =>
-      Column(mainAxisSize: MainAxisSize.min, children: [
-        ExactSlider.srgb(
-          header: Text(LeapLocalizations.of(context).red),
-          fractionDigits: 0,
-          defaultValue: 255,
-          min: 0,
-          max: 255,
-          value: color.r.toDouble(),
-          color: SRGBColor.red,
-          thumbColor: SRGBColor.black.withValues(r: color.r),
-          onChanged: (value) => _changeColor(red: value.toInt()),
+              )
+              .toList(),
         ),
-        ExactSlider.srgb(
-          header: Text(LeapLocalizations.of(context).green),
-          fractionDigits: 0,
-          defaultValue: 255,
-          min: 0,
-          max: 255,
-          value: color.g.toDouble(),
-          color: SRGBColor.green,
-          thumbColor: SRGBColor.black.withValues(g: color.g),
-          onChanged: (value) => _changeColor(green: value.toInt()),
-        ),
-        ExactSlider.srgb(
-          header: Text(LeapLocalizations.of(context).blue),
-          fractionDigits: 0,
-          defaultValue: 255,
-          min: 0,
-          max: 255,
-          value: color.b.toDouble(),
-          color: SRGBColor.blue,
-          thumbColor: SRGBColor.black.withValues(b: color.b),
-          onChanged: (value) => _changeColor(blue: value.toInt()),
-        ),
-        if (widget.suggested.isNotEmpty) ...[
-          const SizedBox(height: 16),
-          Wrap(
-            children: widget.suggested
-                .map((e) => SizedBox(
-                      height: 64,
-                      width: 64,
-                      child: ColorButton.srgb(
-                        color: e,
-                        onTap: () => setState(() => color = e),
-                      ),
-                    ))
-                .toList(),
-          ),
-        ],
-      ]);
+      ],
+    ],
+  );
 }
 
 class ColorWheelPicker extends StatelessWidget {
@@ -267,9 +281,14 @@ class ColorWheelPicker extends StatelessWidget {
     final angle = atan2(dy, dx);
     final double saturation = min(1.0, sqrt(dx * dx + dy * dy) / radius);
     final double hue = (angle * 180 / pi + 360) % 360;
-    onChanged(HSVColor.fromAHSV(
-            1, hue, saturation, HSVColor.fromColor(value.toColor()).value)
-        .toSRGB());
+    onChanged(
+      HSVColor.fromAHSV(
+        1,
+        hue,
+        saturation,
+        HSVColor.fromColor(value.toColor()).value,
+      ).toSRGB(),
+    );
   }
 
   void _onSliderPointer(PointerEvent event) {
@@ -335,9 +354,9 @@ class _ColorWheelPainter extends CustomPainter {
     final paint = Paint()
       ..shader = SweepGradient(
         colors: List.generate(
-            360,
-            (i) => HSVColor.fromAHSV(1, i.toDouble(), 1, hsv.value)
-                .toColor()), // Generate smooth hues
+          360,
+          (i) => HSVColor.fromAHSV(1, i.toDouble(), 1, hsv.value).toColor(),
+        ), // Generate smooth hues
         startAngle: 0,
         endAngle: 2 * pi,
       ).createShader(circle);
@@ -384,26 +403,31 @@ class _ColorWheelSliderPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final hsv = HSVColor.fromColor(value);
-    final rect =
-        Rect.fromPoints(const Offset(0, 0), Offset(size.width, size.height));
+    final rect = Rect.fromPoints(
+      const Offset(0, 0),
+      Offset(size.width, size.height),
+    );
     final paint = Paint()
       ..shader = const LinearGradient(
-              colors: [Colors.black, Colors.white],
-              stops: [0, 1],
-              begin: Alignment.centerLeft,
-              end: Alignment.centerRight)
-          .createShader(rect)
+        colors: [Colors.black, Colors.white],
+        stops: [0, 1],
+        begin: Alignment.centerLeft,
+        end: Alignment.centerRight,
+      ).createShader(rect)
       ..style = PaintingStyle.fill;
 
     canvas.drawRRect(
-        RRect.fromRectAndRadius(rect, const Radius.circular(8)), paint);
+      RRect.fromRectAndRadius(rect, const Radius.circular(8)),
+      paint,
+    );
     final point = Offset(size.width * hsv.value, size.height / 2);
     canvas.drawCircle(
-        point,
-        8,
-        Paint()
-          ..color = SRGBColor.white.toColor()
-          ..style = PaintingStyle.fill);
+      point,
+      8,
+      Paint()
+        ..color = SRGBColor.white.toColor()
+        ..style = PaintingStyle.fill,
+    );
     canvas.drawCircle(point, 6, Paint()..color = SRGBColor.black.toColor());
   }
 

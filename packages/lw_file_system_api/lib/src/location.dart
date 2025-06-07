@@ -10,10 +10,7 @@ class AssetLocation with AssetLocationMappable {
   final String remote;
   final String path;
 
-  const AssetLocation({
-    this.remote = '',
-    required this.path,
-  });
+  const AssetLocation({this.remote = '', required this.path});
 
   factory AssetLocation.local(String path, [bool absolute = false]) =>
       AssetLocation(path: path);
@@ -54,11 +51,15 @@ class AssetLocation with AssetLocationMappable {
 
   AssetLocation buildChildLocation(String child) {
     return AssetLocation(
-        path: universalPathContext.join(path, child), remote: remote);
+      path: universalPathContext.join(path, child),
+      remote: remote,
+    );
   }
 
   AssetLocation buildSiblingLocation(String sibling) {
     return AssetLocation(
-        path: universalPathContext.join(parent, sibling), remote: remote);
+      path: universalPathContext.join(parent, sibling),
+      remote: remote,
+    );
   }
 }

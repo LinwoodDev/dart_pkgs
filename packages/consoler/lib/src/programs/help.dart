@@ -4,10 +4,7 @@ final class HelpProgram extends ConsoleProgram {
   final Consoler consoler;
   final String description;
 
-  HelpProgram(
-    this.consoler, {
-    required this.description,
-  });
+  HelpProgram(this.consoler, {required this.description});
 
   @override
   String getDescription() => "Show an overview about all commands";

@@ -12,8 +12,11 @@ sealed class TypedFileSystem<T> extends GeneralFileSystem {
 
   RemoteFileSystem? get remoteSystem;
 
-  TypedFileSystem(
-      {required this.onEncode, required this.onDecode, required super.config});
+  TypedFileSystem({
+    required this.onEncode,
+    required this.onDecode,
+    required super.config,
+  });
 
   GeneralFileSystem get fileSystem;
 
@@ -74,9 +77,9 @@ class TypedDirectoryFileSystem<T> extends TypedFileSystem<T>
   FileSystemEntity<T> _toTypedAsset(RawFileSystemEntity entity) =>
       switch (entity) {
         RawFileSystemFile file => FileSystemFile(
-            file.location,
-            data: file.data == null ? null : onDecode(file.data!),
-          ),
+          file.location,
+          data: file.data == null ? null : onDecode(file.data!),
+        ),
         RawFileSystemDirectory directory => _toTypedDirectory(directory),
       };
 
@@ -110,11 +113,13 @@ class TypedDirectoryFileSystem<T> extends TypedFileSystem<T>
       fileSystem.updateFile(path, onEncode(data));
 
   @override
-  Future<FileSystemEntity<T>?> readAsset(String path,
-          {bool readData = true, bool forceRemote = false}) =>
-      fileSystem
-          .readAsset(path, readData: readData, forceRemote: forceRemote)
-          .then((entity) => entity == null ? null : _toTypedAsset(entity));
+  Future<FileSystemEntity<T>?> readAsset(
+    String path, {
+    bool readData = true,
+    bool forceRemote = false,
+  }) => fileSystem
+      .readAsset(path, readData: readData, forceRemote: forceRemote)
+      .then((entity) => entity == null ? null : _toTypedAsset(entity));
 
   @override
   FutureOr<bool> isInitialized() => fileSystem.isInitialized();

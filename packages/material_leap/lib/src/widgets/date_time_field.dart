@@ -72,7 +72,8 @@ class _DateTimeFieldState extends State<DateTimeField> {
         final date = _dateFormat.parse(splitted[0]);
         final time = _timeFormat.parse(splitted[1]);
         _change(
-            DateTime(date.year, date.month, date.day, time.hour, time.minute));
+          DateTime(date.year, date.month, date.day, time.hour, time.minute),
+        );
       }
     } catch (_) {
       _change(null);
@@ -94,44 +95,62 @@ class _DateTimeFieldState extends State<DateTimeField> {
           mainAxisSize: MainAxisSize.min,
           children: [
             IconButton(
-                icon: const PhosphorIcon(PhosphorIconsLight.calendarBlank),
-                onPressed: () async {
-                  final result = await showDatePicker(
-                    context: context,
-                    initialDate: useValue,
-                    firstDate: DateTime.fromMicrosecondsSinceEpoch(0),
-                    lastDate: useValue.addYears(200),
+              icon: const PhosphorIcon(PhosphorIconsLight.calendarBlank),
+              onPressed: () async {
+                final result = await showDatePicker(
+                  context: context,
+                  initialDate: useValue,
+                  firstDate: DateTime.fromMicrosecondsSinceEpoch(0),
+                  lastDate: useValue.addYears(200),
+                );
+                if (result != null) {
+                  _change(
+                    DateTime(
+                      result.year,
+                      result.month,
+                      result.day,
+                      useValue.hour,
+                      useValue.minute,
+                    ),
                   );
-                  if (result != null) {
-                    _change(DateTime(result.year, result.month, result.day,
-                        useValue.hour, useValue.minute));
-                  }
-                }),
+                }
+              },
+            ),
             IconButton(
-                icon: const PhosphorIcon(PhosphorIconsLight.clock),
-                onPressed: () async {
-                  final result = await showTimePicker(
-                    context: context,
-                    initialTime: TimeOfDay.fromDateTime(useValue),
-                    builder: (context, child) {
-                      return MediaQuery(
-                        data: MediaQuery.of(context)
-                            .copyWith(alwaysUse24HourFormat: false),
-                        child: child ?? const SizedBox(),
-                      );
-                    },
+              icon: const PhosphorIcon(PhosphorIconsLight.clock),
+              onPressed: () async {
+                final result = await showTimePicker(
+                  context: context,
+                  initialTime: TimeOfDay.fromDateTime(useValue),
+                  builder: (context, child) {
+                    return MediaQuery(
+                      data: MediaQuery.of(
+                        context,
+                      ).copyWith(alwaysUse24HourFormat: false),
+                      child: child ?? const SizedBox(),
+                    );
+                  },
+                );
+                if (result != null) {
+                  _change(
+                    DateTime(
+                      useValue.year,
+                      useValue.month,
+                      useValue.day,
+                      result.hour,
+                      result.minute,
+                    ),
                   );
-                  if (result != null) {
-                    _change(DateTime(useValue.year, useValue.month,
-                        useValue.day, result.hour, result.minute));
-                  }
-                }),
+                }
+              },
+            ),
             if (widget.canBeEmpty)
               IconButton(
-                  icon: const PhosphorIcon(PhosphorIconsLight.x),
-                  onPressed: () {
-                    _change(null);
-                  }),
+                icon: const PhosphorIcon(PhosphorIconsLight.x),
+                onPressed: () {
+                  _change(null);
+                },
+              ),
           ],
         ),
       ),

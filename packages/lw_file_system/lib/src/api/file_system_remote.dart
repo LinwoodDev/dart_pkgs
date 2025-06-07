@@ -14,17 +14,25 @@ mixin RemoteFileSystem on GeneralFileSystem {
 
   final client = HttpClient();
 
-  Future<HttpClientResponse?> createRequest(List<String> path,
-      {String method = 'GET', List<int>? bodyBytes, String? body}) async {
-    final url =
-        storage.buildVariantUri(variant: config.currentPathVariant, path: path);
+  Future<HttpClientResponse?> createRequest(
+    List<String> path, {
+    String method = 'GET',
+    List<int>? bodyBytes,
+    String? body,
+  }) async {
+    final url = storage.buildVariantUri(
+      variant: config.currentPathVariant,
+      path: path,
+    );
     client.badCertificateCallback =
         (X509Certificate cert, String host, int port) =>
             String.fromCharCodes(cert.sha1) == storage.certificateSha1;
     if (url == null) return null;
     final request = await client.openUrl(method, url);
-    request.headers.add('Authorization',
-        'Basic ${base64Encode(utf8.encode('${storage.username}:${await config.passwordStorage.read(storage)}'))}');
+    request.headers.add(
+      'Authorization',
+      'Basic ${base64Encode(utf8.encode('${storage.username}:${await config.passwordStorage.read(storage)}'))}',
+    );
     if (body != null) {
       final bytes = utf8.encode(body);
       request.headers.add('Content-Length', bytes.length.toString());
@@ -74,7 +82,8 @@ mixin RemoteFileSystem on GeneralFileSystem {
               }
               if (e is Directory) {
                 return RawFileSystemDirectory(
-                    AssetLocation(remote: storage.identifier, path: path));
+                  AssetLocation(remote: storage.identifier, path: path),
+                );
               }
               return null;
             })
@@ -132,7 +141,8 @@ mixin RemoteFileSystem on GeneralFileSystem {
     }
     if (retryCount >= maxRetries) {
       throw Exception(
-          'Maximum retry limit reached, directory might still be in use.');
+        'Maximum retry limit reached, directory might still be in use.',
+      );
     }
   }
 
@@ -188,11 +198,12 @@ mixin RemoteFileSystem on GeneralFileSystem {
     final directory = Directory(await getAbsolutePath(path));
 
     return SyncFile(
-        isDirectory: await directory.exists(),
-        location: AssetLocation(remote: storage.identifier, path: path),
-        localLastModified: localLastModified,
-        remoteLastModified: remoteLastModified,
-        syncedLastModified: syncedLastModified);
+      isDirectory: await directory.exists(),
+      location: AssetLocation(remote: storage.identifier, path: path),
+      localLastModified: localLastModified,
+      remoteLastModified: remoteLastModified,
+      syncedLastModified: syncedLastModified,
+    );
   }
 
   Future<List<SyncFile>> getSyncFiles() async {
@@ -209,12 +220,15 @@ mixin RemoteFileSystem on GeneralFileSystem {
         var localLastModified = await file.lastModified();
         var remoteLastModified = await getRemoteFileModified(name);
         var syncedLastModified = storage.lastSynced;
-        files.add(SyncFile(
+        files.add(
+          SyncFile(
             isDirectory: false,
             location: AssetLocation(remote: storage.identifier, path: name),
             localLastModified: localLastModified,
             remoteLastModified: remoteLastModified,
-            syncedLastModified: syncedLastModified));
+            syncedLastModified: syncedLastModified,
+          ),
+        );
       }
     }
     return files;
@@ -223,18 +237,16 @@ mixin RemoteFileSystem on GeneralFileSystem {
 
 abstract class RemoteDirectoryFileSystem extends DirectoryFileSystem
     with RemoteFileSystem {
-  RemoteDirectoryFileSystem({
-    required super.config,
-    super.createDefault,
-  });
+  RemoteDirectoryFileSystem({required super.config, super.createDefault});
 
   List<String> getCachedFilePaths() {
     final files = <String>[];
 
     for (final file
         in storage.cachedDocuments[config.currentCacheVariant] ?? []) {
-      final alreadySyncedFile =
-          files.firstWhereOrNull((file) => file.startsWith(file));
+      final alreadySyncedFile = files.firstWhereOrNull(
+        (file) => file.startsWith(file),
+      );
       if (alreadySyncedFile == file) {
         continue;
       }
@@ -276,8 +288,11 @@ abstract class RemoteDirectoryFileSystem extends DirectoryFileSystem
   }
 
   @override
-  Future<void> updateFile(String path, Uint8List data,
-      {bool forceSync = false});
+  Future<void> updateFile(
+    String path,
+    Uint8List data, {
+    bool forceSync = false,
+  });
 
   Future<void> cache(String path) async {
     final asset = await getAsset(path);

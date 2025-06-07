@@ -15,21 +15,25 @@ Widget offsetCalculator(
   if (!calculateLocalOffset) {
     return builder(() => null);
   }
-  return Builder(builder: (currentContext) {
-    return builder(() {
-      final RenderBox renderBox = context.findRenderObject() as RenderBox;
-      final currentRender = currentContext.findRenderObject();
-      final offset = renderBox.globalToLocal(Offset.zero,
-          ancestor: currentContext.findRenderObject());
-      if (alignment != null && currentRender is RenderBox) {
-        final size = currentRender.size;
-        final alignmentOffset = alignment.resolve(Directionality.of(context));
-        return offset + alignmentOffset.alongSize(size);
-      } else {
-        return offset;
-      }
-    });
-  });
+  return Builder(
+    builder: (currentContext) {
+      return builder(() {
+        final RenderBox renderBox = context.findRenderObject() as RenderBox;
+        final currentRender = currentContext.findRenderObject();
+        final offset = renderBox.globalToLocal(
+          Offset.zero,
+          ancestor: currentContext.findRenderObject(),
+        );
+        if (alignment != null && currentRender is RenderBox) {
+          final size = currentRender.size;
+          final alignmentOffset = alignment.resolve(Directionality.of(context));
+          return offset + alignmentOffset.alongSize(size);
+        } else {
+          return offset;
+        }
+      });
+    },
+  );
 }
 
 MenuAnchorChildBuilder defaultMenuButton({
@@ -43,20 +47,19 @@ MenuAnchorChildBuilder defaultMenuButton({
   AlignmentGeometry? alignment = Alignment.bottomLeft,
 }) =>
     (context, controller, child) => offsetCalculator(
-          context,
-          (offset) => IconButton(
-            icon: iconBuilder?.call(context, controller, child) ??
-                icon ??
-                const PhosphorIcon(PhosphorIconsLight.dotsThreeVertical),
-            tooltip: tooltip,
-            isSelected:
-                (selectedOnOpen && controller.isOpen) ? true : isSelected,
-            onPressed:
-                enabled ? () => controller.toggle(position: offset()) : null,
-          ),
-          calculateLocalOffset: calculateLocalOffset,
-          alignment: alignment,
-        );
+      context,
+      (offset) => IconButton(
+        icon:
+            iconBuilder?.call(context, controller, child) ??
+            icon ??
+            const PhosphorIcon(PhosphorIconsLight.dotsThreeVertical),
+        tooltip: tooltip,
+        isSelected: (selectedOnOpen && controller.isOpen) ? true : isSelected,
+        onPressed: enabled ? () => controller.toggle(position: offset()) : null,
+      ),
+      calculateLocalOffset: calculateLocalOffset,
+      alignment: alignment,
+    );
 
 MenuAnchorChildBuilder defaultFilledMenuButton({
   Widget? icon,
@@ -69,20 +72,19 @@ MenuAnchorChildBuilder defaultFilledMenuButton({
   AlignmentGeometry? alignment = Alignment.bottomLeft,
 }) =>
     (context, controller, child) => offsetCalculator(
-          context,
-          (offset) => IconButton.filled(
-            icon: iconBuilder?.call(context, controller, child) ??
-                icon ??
-                const PhosphorIcon(PhosphorIconsLight.dotsThreeVertical),
-            tooltip: tooltip,
-            isSelected:
-                (selectedOnOpen && controller.isOpen) ? true : isSelected,
-            onPressed:
-                enabled ? () => controller.toggle(position: offset()) : null,
-          ),
-          calculateLocalOffset: calculateLocalOffset,
-          alignment: alignment,
-        );
+      context,
+      (offset) => IconButton.filled(
+        icon:
+            iconBuilder?.call(context, controller, child) ??
+            icon ??
+            const PhosphorIcon(PhosphorIconsLight.dotsThreeVertical),
+        tooltip: tooltip,
+        isSelected: (selectedOnOpen && controller.isOpen) ? true : isSelected,
+        onPressed: enabled ? () => controller.toggle(position: offset()) : null,
+      ),
+      calculateLocalOffset: calculateLocalOffset,
+      alignment: alignment,
+    );
 
 MenuAnchorChildBuilder defaultFilledTonalMenuButton({
   Widget? icon,
@@ -95,20 +97,19 @@ MenuAnchorChildBuilder defaultFilledTonalMenuButton({
   AlignmentGeometry? alignment = Alignment.bottomLeft,
 }) =>
     (context, controller, child) => offsetCalculator(
-          context,
-          (offset) => IconButton.filledTonal(
-            icon: iconBuilder?.call(context, controller, child) ??
-                icon ??
-                const PhosphorIcon(PhosphorIconsLight.dotsThreeVertical),
-            tooltip: tooltip,
-            isSelected:
-                (selectedOnOpen && controller.isOpen) ? true : isSelected,
-            onPressed:
-                enabled ? () => controller.toggle(position: offset()) : null,
-          ),
-          calculateLocalOffset: calculateLocalOffset,
-          alignment: alignment,
-        );
+      context,
+      (offset) => IconButton.filledTonal(
+        icon:
+            iconBuilder?.call(context, controller, child) ??
+            icon ??
+            const PhosphorIcon(PhosphorIconsLight.dotsThreeVertical),
+        tooltip: tooltip,
+        isSelected: (selectedOnOpen && controller.isOpen) ? true : isSelected,
+        onPressed: enabled ? () => controller.toggle(position: offset()) : null,
+      ),
+      calculateLocalOffset: calculateLocalOffset,
+      alignment: alignment,
+    );
 
 MenuAnchorChildBuilder defaultOutlinedMenuButton({
   Widget? icon,
@@ -121,17 +122,16 @@ MenuAnchorChildBuilder defaultOutlinedMenuButton({
   AlignmentGeometry? alignment = Alignment.bottomLeft,
 }) =>
     (context, controller, child) => offsetCalculator(
-          context,
-          (offset) => IconButton.outlined(
-            icon: iconBuilder?.call(context, controller, child) ??
-                icon ??
-                const PhosphorIcon(PhosphorIconsLight.dotsThreeVertical),
-            tooltip: tooltip,
-            isSelected:
-                (selectedOnOpen && controller.isOpen) ? true : isSelected,
-            onPressed:
-                enabled ? () => controller.toggle(position: offset()) : null,
-          ),
-          calculateLocalOffset: calculateLocalOffset,
-          alignment: alignment,
-        );
+      context,
+      (offset) => IconButton.outlined(
+        icon:
+            iconBuilder?.call(context, controller, child) ??
+            icon ??
+            const PhosphorIcon(PhosphorIconsLight.dotsThreeVertical),
+        tooltip: tooltip,
+        isSelected: (selectedOnOpen && controller.isOpen) ? true : isSelected,
+        onPressed: enabled ? () => controller.toggle(position: offset()) : null,
+      ),
+      calculateLocalOffset: calculateLocalOffset,
+      alignment: alignment,
+    );

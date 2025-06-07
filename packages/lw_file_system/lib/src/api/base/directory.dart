@@ -5,24 +5,36 @@ const oneListLevel = 1;
 const noListLevel = 0;
 
 mixin GeneralDirectoryFileSystem<T> on GeneralFileSystem {
-  Future<FileSystemDirectory<T>> getRootDirectory(
-      {int listLevel = oneListLevel,
-      bool readData = true,
-      bool forceRemote = false}) {
-    return getAsset('', listLevel: listLevel, forceRemote: forceRemote)
-        .then((value) => value as FileSystemDirectory<T>);
+  Future<FileSystemDirectory<T>> getRootDirectory({
+    int listLevel = oneListLevel,
+    bool readData = true,
+    bool forceRemote = false,
+  }) {
+    return getAsset(
+      '',
+      listLevel: listLevel,
+      forceRemote: forceRemote,
+    ).then((value) => value as FileSystemDirectory<T>);
   }
 
-  Future<FileSystemEntity<T>?> readAsset(String path,
-      {bool readData = true, bool forceRemote = false});
+  Future<FileSystemEntity<T>?> readAsset(
+    String path, {
+    bool readData = true,
+    bool forceRemote = false,
+  });
 
-  Stream<FileSystemEntity<T>?> fetchAsset(String path,
-      {int listLevel = oneListLevel,
-      bool readData = true,
-      bool forceRemote = false}) async* {
+  Stream<FileSystemEntity<T>?> fetchAsset(
+    String path, {
+    int listLevel = oneListLevel,
+    bool readData = true,
+    bool forceRemote = false,
+  }) async* {
     final nextLevel = listLevel <= 0 ? listLevel : (listLevel - 1);
-    final asset =
-        await readAsset(path, readData: readData, forceRemote: forceRemote);
+    final asset = await readAsset(
+      path,
+      readData: readData,
+      forceRemote: forceRemote,
+    );
     if (listLevel == 0 || asset is! FileSystemDirectory<T>) {
       yield asset;
       return;
@@ -36,11 +48,12 @@ mixin GeneralDirectoryFileSystem<T> on GeneralFileSystem {
         assets.add(child);
         yield getDir();
       } else {
-        await for (final file in fetchAsset(child.path,
-                listLevel: nextLevel,
-                readData: readData,
-                forceRemote: forceRemote)
-            .handleError((_, __) {})) {
+        await for (final file in fetchAsset(
+          child.path,
+          listLevel: nextLevel,
+          readData: readData,
+          forceRemote: forceRemote,
+        ).handleError((_, _) {})) {
           if (file == null) continue;
           if (index == null) {
             index = assets.length;
@@ -54,13 +67,19 @@ mixin GeneralDirectoryFileSystem<T> on GeneralFileSystem {
     }
   }
 
-  Stream<List<FileSystemEntity<T>>> fetchAssets(Stream<String> paths,
-      {int listLevel = oneListLevel, bool forceRemote = false}) {
+  Stream<List<FileSystemEntity<T>>> fetchAssets(
+    Stream<String> paths, {
+    int listLevel = oneListLevel,
+    bool forceRemote = false,
+  }) {
     final files = <FileSystemEntity<T>>[];
     final streams = paths.asyncExpand((e) async* {
       int? index;
-      await for (final file
-          in fetchAsset(e, listLevel: listLevel, forceRemote: forceRemote)) {
+      await for (final file in fetchAsset(
+        e,
+        listLevel: listLevel,
+        forceRemote: forceRemote,
+      )) {
         if (file == null) continue;
         if (index == null) {
           index = files.length;
@@ -74,27 +93,38 @@ mixin GeneralDirectoryFileSystem<T> on GeneralFileSystem {
     return streams.map((event) => files);
   }
 
-  Stream<List<FileSystemEntity<T>>> fetchAssetsSync(Iterable<String> paths,
-          {int listLevel = oneListLevel, bool forceRemote = false}) =>
-      fetchAssets(Stream.fromIterable(paths),
-          listLevel: listLevel, forceRemote: forceRemote);
+  Stream<List<FileSystemEntity<T>>> fetchAssetsSync(
+    Iterable<String> paths, {
+    int listLevel = oneListLevel,
+    bool forceRemote = false,
+  }) => fetchAssets(
+    Stream.fromIterable(paths),
+    listLevel: listLevel,
+    forceRemote: forceRemote,
+  );
 
-  Future<FileSystemEntity<T>?> getAsset(String path,
-          {int listLevel = oneListLevel,
-          bool readData = true,
-          bool forceRemote = false}) =>
-      fetchAsset(path,
-              listLevel: listLevel,
-              readData: readData,
-              forceRemote: forceRemote)
-          .last;
+  Future<FileSystemEntity<T>?> getAsset(
+    String path, {
+    int listLevel = oneListLevel,
+    bool readData = true,
+    bool forceRemote = false,
+  }) => fetchAsset(
+    path,
+    listLevel: listLevel,
+    readData: readData,
+    forceRemote: forceRemote,
+  ).last;
   Future<FileSystemDirectory<T>> createDirectory(String path);
   Future<void> updateFile(String path, T data, {bool forceSync = false});
   Future<String> findAvailableName(String path) =>
       _findAvailableName(path, hasAsset);
 
-  Future<FileSystemFile<T>> createFileWithName(T data,
-      {String? name, String? suffix, String? directory}) {
+  Future<FileSystemFile<T>> createFileWithName(
+    T data, {
+    String? name,
+    String? suffix,
+    String? directory,
+  }) {
     final path = convertNameToFileSystem(
       name: name,
       suffix: suffix,
@@ -103,12 +133,18 @@ mixin GeneralDirectoryFileSystem<T> on GeneralFileSystem {
     return createFile(path, data);
   }
 
-  Future<FileSystemFile<T>> createFile(String path, T data,
-      {bool forceSync = false}) async {
+  Future<FileSystemFile<T>> createFile(
+    String path,
+    T data, {
+    bool forceSync = false,
+  }) async {
     path = normalizePath(path);
     final uniquePath = await findAvailableName(path);
-    return updateFile(uniquePath, data, forceSync: forceSync).then(
-        (_) => FileSystemFile(AssetLocation.local(uniquePath), data: data));
+    return updateFile(
+      uniquePath,
+      data,
+      forceSync: forceSync,
+    ).then((_) => FileSystemFile(AssetLocation.local(uniquePath), data: data));
   }
 
   Future<bool> hasAsset(String path) =>
@@ -126,8 +162,11 @@ mixin GeneralDirectoryFileSystem<T> on GeneralFileSystem {
     return moveAsset(path, newPath);
   }
 
-  Future<FileSystemEntity<T>?> duplicateAsset(String path, String newPath,
-      {bool forceSync = false}) async {
+  Future<FileSystemEntity<T>?> duplicateAsset(
+    String path,
+    String newPath, {
+    bool forceSync = false,
+  }) async {
     path = normalizePath(path);
     final asset = await getAsset(path);
     if (asset == null) return null;
@@ -140,8 +179,10 @@ mixin GeneralDirectoryFileSystem<T> on GeneralFileSystem {
       var newDir = await createDirectory(newPath);
       for (var child in asset.assets) {
         await duplicateAsset(
-            '$path/${child.fileName}', '$newPath/${child.fileName}',
-            forceSync: forceSync);
+          '$path/${child.fileName}',
+          '$newPath/${child.fileName}',
+          forceSync: forceSync,
+        );
       }
       return newDir;
     }
@@ -149,17 +190,19 @@ mixin GeneralDirectoryFileSystem<T> on GeneralFileSystem {
   }
 
   static Stream<List<FileSystemEntity<T>>> fetchAssetsGlobal<T>(
-      Stream<AssetLocation> locations,
-      Map<String, GeneralDirectoryFileSystem<T>> fileSystems,
-      {int listLevel = oneListLevel}) {
+    Stream<AssetLocation> locations,
+    Map<String, GeneralDirectoryFileSystem<T>> fileSystems, {
+    int listLevel = oneListLevel,
+  }) {
     final files = <FileSystemEntity<T>>[];
     final streams = locations.asyncExpand((e) async* {
       final fileSystem = fileSystems[e.remote];
       if (fileSystem == null) return;
       int? index;
-      await for (final file in fileSystem
-          .fetchAsset(e.path, listLevel: listLevel)
-          .whereNotNull()) {
+      await for (final file
+          in fileSystem
+              .fetchAsset(e.path, listLevel: listLevel)
+              .whereNotNull()) {
         if (index == null) {
           index = files.length;
           files.add(file);
@@ -173,14 +216,20 @@ mixin GeneralDirectoryFileSystem<T> on GeneralFileSystem {
   }
 
   static Stream<List<FileSystemEntity<T>>> fetchAssetsGlobalSync<T>(
-          Iterable<AssetLocation> locations,
-          Map<String, GeneralDirectoryFileSystem<T>> fileSystems,
-          {int listLevel = oneListLevel}) =>
-      fetchAssetsGlobal(Stream.fromIterable(locations), fileSystems,
-          listLevel: listLevel);
+    Iterable<AssetLocation> locations,
+    Map<String, GeneralDirectoryFileSystem<T>> fileSystems, {
+    int listLevel = oneListLevel,
+  }) => fetchAssetsGlobal(
+    Stream.fromIterable(locations),
+    fileSystems,
+    listLevel: listLevel,
+  );
 
-  Future<FileSystemEntity<T>?> moveAsset(String path, String newPath,
-      {bool forceSync = false}) async {
+  Future<FileSystemEntity<T>?> moveAsset(
+    String path,
+    String newPath, {
+    bool forceSync = false,
+  }) async {
     var asset = await duplicateAsset(path, newPath, forceSync: forceSync);
     if (asset == null) return null;
     if (path != newPath) await deleteAsset(path);
@@ -213,15 +262,25 @@ abstract class DirectoryFileSystem extends GeneralFileSystem
   }) {
     if (kIsWeb) {
       return WebDirectoryFileSystem(
-          config: config, createDefault: createDefault);
+        config: config,
+        createDefault: createDefault,
+      );
     } else {
       return switch (storage) {
         DavRemoteStorage e => DavRemoteDirectoryFileSystem(
-            config: config, storage: e, createDefault: createDefault),
+          config: config,
+          storage: e,
+          createDefault: createDefault,
+        ),
         LocalStorage e => IODirectoryFileSystem(
-            config: config, storage: e, createDefault: createDefault),
-        _ =>
-          IODirectoryFileSystem(config: config, createDefault: createDefault),
+          config: config,
+          storage: e,
+          createDefault: createDefault,
+        ),
+        _ => IODirectoryFileSystem(
+          config: config,
+          createDefault: createDefault,
+        ),
       };
     }
   }

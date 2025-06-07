@@ -2,12 +2,16 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:material_leap/material_leap.dart';
 
-typedef ContextRegionChildBuilder = Widget Function(
-    BuildContext context, Widget button, MenuController controller);
-typedef ContextRegionChildrenBuidler = List<ContextMenuButtonItem>? Function(
-    BuildContext context);
-typedef ContextRegionButtonBuilder = Widget Function(
-    BuildContext context, MenuController controller);
+typedef ContextRegionChildBuilder =
+    Widget Function(
+      BuildContext context,
+      Widget button,
+      MenuController controller,
+    );
+typedef ContextRegionChildrenBuidler =
+    List<ContextMenuButtonItem>? Function(BuildContext context);
+typedef ContextRegionButtonBuilder =
+    Widget Function(BuildContext context, MenuController controller);
 
 class ContextRegion extends StatefulWidget {
   final ContextRegionChildBuilder builder;
@@ -82,13 +86,14 @@ class _ContextRegionState extends State<ContextRegion> {
         onLongPress: _longPressEnabled ? _onLongPress : null,
         onLongPressStart: _longPressEnabled ? _onLongPressStart : null,
         child: widget.builder(
-            context,
-            widget.buttonBuilder?.call(context, controller, null) ??
-                defaultMenuButton(
-                  calculateLocalOffset: true,
-                  tooltip: widget.tooltip,
-                )(context, controller, null),
-            controller),
+          context,
+          widget.buttonBuilder?.call(context, controller, null) ??
+              defaultMenuButton(
+                calculateLocalOffset: true,
+                tooltip: widget.tooltip,
+              )(context, controller, null),
+          controller,
+        ),
       ),
     );
   }

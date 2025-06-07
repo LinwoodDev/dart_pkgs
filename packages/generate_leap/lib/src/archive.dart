@@ -22,13 +22,17 @@ Future<Archive> createReproducableArchive(
       final name = file.path.substring(dir.path.length + 1);
       if (file is File) {
         final fileData = await file.readAsBytes();
-        archive.addFile(ArchiveFile.bytes(name, fileData)
-          ..lastModTime = lastModTime
-          ..creationTime = lastModTime);
+        archive.addFile(
+          ArchiveFile.bytes(name, fileData)
+            ..lastModTime = lastModTime
+            ..creationTime = lastModTime,
+        );
       } else if (file is Directory) {
-        archive.addFile(ArchiveFile.directory(name)
-          ..lastModTime = lastModTime
-          ..creationTime = lastModTime);
+        archive.addFile(
+          ArchiveFile.directory(name)
+            ..lastModTime = lastModTime
+            ..creationTime = lastModTime,
+        );
         await addDirectory(file);
       }
     }
@@ -44,12 +48,15 @@ Future<void> zipReproducable(
   int lastModTime = 0,
 }) async {
   final encoder = ZipEncoder();
-  final zip = encoder
-      .encode(await createReproducableArchive(dir, lastModTime: lastModTime));
+  final zip = encoder.encode(
+    await createReproducableArchive(dir, lastModTime: lastModTime),
+  );
   final file = File(path);
   await file.writeAsBytes(zip);
-  await file
-      .setLastAccessed(DateTime.fromMicrosecondsSinceEpoch(0, isUtc: true));
-  await file
-      .setLastModified(DateTime.fromMicrosecondsSinceEpoch(0, isUtc: true));
+  await file.setLastAccessed(
+    DateTime.fromMicrosecondsSinceEpoch(0, isUtc: true),
+  );
+  await file.setLastModified(
+    DateTime.fromMicrosecondsSinceEpoch(0, isUtc: true),
+  );
 }

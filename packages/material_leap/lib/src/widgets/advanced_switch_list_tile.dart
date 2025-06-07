@@ -28,23 +28,26 @@ class AdvancedSwitchListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final child =
-        Row(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-      Expanded(
-        child: Align(
+    final child = Row(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Expanded(
+          child: Align(
             child: ListTile(
-          title: title,
-          subtitle: subtitle,
-          onTap: onTap,
-          onLongPress: onLongPress,
-          leading: leading,
-          trailing: trailing,
-          selected: selected ?? value,
-        )),
-      ),
-      const VerticalDivider(),
-      Switch(value: value, onChanged: onChanged)
-    ]);
+              title: title,
+              subtitle: subtitle,
+              onTap: onTap,
+              onLongPress: onLongPress,
+              leading: leading,
+              trailing: trailing,
+              selected: selected ?? value,
+            ),
+          ),
+        ),
+        const VerticalDivider(),
+        Switch(value: value, onChanged: onChanged),
+      ],
+    );
     if (height != null) {
       return SizedBox(height: height, child: child);
     } else {

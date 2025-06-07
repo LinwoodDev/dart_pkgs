@@ -3,18 +3,24 @@ import 'dart:async';
 import 'package:idb_shim/idb.dart';
 import 'package:lw_file_system/lw_file_system.dart';
 
-typedef GetDirectoryCallback = Future<String> Function(
-    ExternalStorage? storage);
+typedef GetDirectoryCallback =
+    Future<String> Function(ExternalStorage? storage);
 typedef InitDatabaseCallback = Future<void> Function(Database database);
 
 Future<void> initConfigStores(
-    VersionChangeEvent event, Iterable<FileSystemConfig> configs) async {
+  VersionChangeEvent event,
+  Iterable<FileSystemConfig> configs,
+) async {
   return initStores(
-      event, configs.expand((e) => [e.storeName, e.currentDataStoreName]));
+    event,
+    configs.expand((e) => [e.storeName, e.currentDataStoreName]),
+  );
 }
 
 Future<void> initStores(
-    VersionChangeEvent event, Iterable<String> stores) async {
+  VersionChangeEvent event,
+  Iterable<String> stores,
+) async {
   if (event.oldVersion < 1) {
     for (final store in stores) {
       event.database.createObjectStore(store);

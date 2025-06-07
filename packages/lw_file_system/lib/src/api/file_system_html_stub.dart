@@ -21,14 +21,20 @@ class WebDirectoryFileSystem extends DirectoryFileSystem {
   }
 
   @override
-  Future<void> updateFile(String path, Uint8List data,
-      {bool forceSync = false}) {
+  Future<void> updateFile(
+    String path,
+    Uint8List data, {
+    bool forceSync = false,
+  }) {
     throw UnimplementedError();
   }
 
   @override
-  Future<FileSystemEntity<Uint8List>?> readAsset(String path,
-      {bool readData = true, bool forceRemote = false}) {
+  Future<FileSystemEntity<Uint8List>?> readAsset(
+    String path, {
+    bool readData = true,
+    bool forceRemote = false,
+  }) {
     throw UnimplementedError();
   }
 

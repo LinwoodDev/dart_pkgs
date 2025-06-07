@@ -22,8 +22,10 @@ Future<void> setFullScreen(bool fullScreen) async {
       await SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
       isFullscreen = true;
     } else {
-      await SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
-          overlays: SystemUiOverlay.values);
+      await SystemChrome.setEnabledSystemUIMode(
+        SystemUiMode.manual,
+        overlays: SystemUiOverlay.values,
+      );
       isFullscreen = false;
     }
   } else {

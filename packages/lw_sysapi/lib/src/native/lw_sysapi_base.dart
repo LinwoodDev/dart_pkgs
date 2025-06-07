@@ -43,7 +43,7 @@ class SysAPI {
   ///Returns null on error
   static FutureOr<List<String>?> getFonts() => _instance.getFonts();
 
-  static FutureOr<ClipboardManager> getClipboardManager(
-          {bool internal = false}) =>
-      InternalClipboardManager();
+  static FutureOr<ClipboardManager> getClipboardManager({
+    bool internal = false,
+  }) => InternalClipboardManager();
 }

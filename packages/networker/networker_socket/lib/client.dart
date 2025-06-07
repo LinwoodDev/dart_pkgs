@@ -38,15 +38,23 @@ class NetworkerSocketClient extends NetworkerClient {
     if (isOpen) {
       return;
     }
-    final channel = _channel = constructWebSocketChannel(address,
-        protocols: protocols, pingInterval: pingInterval);
-    channel.stream.listen((event) {
-      onMessage(event);
-    }, onDone: () {
-      _onClosed.add(null);
-    }, onError: (error) {
-      _onClosed.addError(error);
-    }, cancelOnError: true);
+    final channel = _channel = constructWebSocketChannel(
+      address,
+      protocols: protocols,
+      pingInterval: pingInterval,
+    );
+    channel.stream.listen(
+      (event) {
+        onMessage(event);
+      },
+      onDone: () {
+        _onClosed.add(null);
+      },
+      onError: (error) {
+        _onClosed.addError(error);
+      },
+      cancelOnError: true,
+    );
     await channel.ready;
     _onOpen.add(null);
   }

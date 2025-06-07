@@ -4,12 +4,8 @@ import 'package:flutter/rendering.dart';
 import 'package:material_leap/helpers.dart';
 
 extension SRGBColorHelper on SRGBColor {
-  Color toColor() => Color.from(
-        red: r / 255,
-        green: g / 255,
-        blue: b / 255,
-        alpha: a / 255,
-      );
+  Color toColor() =>
+      Color.from(red: r / 255, green: g / 255, blue: b / 255, alpha: a / 255);
 }
 
 extension HSVColorHelper on HSVColor {
@@ -33,8 +29,5 @@ extension ColorHelper on Color {
     return SRGBColor.from(r: red, g: green, b: blue, a: alpha);
   }
 
-  bool isDark({
-    double threshold = 0.5,
-  }) =>
-      computeLuminance() < threshold;
+  bool isDark({double threshold = 0.5}) => computeLuminance() < threshold;
 }

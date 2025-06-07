@@ -36,9 +36,7 @@ List<String> _splitBySpaces(String input) {
 final class DefaultProgramConfiguration {
   final String description;
 
-  const DefaultProgramConfiguration({
-    required this.description,
-  });
+  const DefaultProgramConfiguration({required this.description});
 }
 
 final class Consoler<T extends ConsoleProgram> {
@@ -57,9 +55,9 @@ final class Consoler<T extends ConsoleProgram> {
     if (defaultProgramConfig != null) {
       registerProgram(null, UnknownProgram() as T);
       registerProgram(
-          'help',
-          HelpProgram(this, description: defaultProgramConfig.description)
-              as T);
+        'help',
+        HelpProgram(this, description: defaultProgramConfig.description) as T,
+      );
     }
   }
 
@@ -82,10 +80,14 @@ final class Consoler<T extends ConsoleProgram> {
     stdout.write('\r\n$prefix');
   }
 
-  R runPrintZone<R>(R Function() action) => runZoned(action,
-          zoneSpecification: ZoneSpecification(print: (_, __, ___, message) {
+  R runPrintZone<R>(R Function() action) => runZoned(
+    action,
+    zoneSpecification: ZoneSpecification(
+      print: (_, _, _, message) {
         print(message);
-      }));
+      },
+    ),
+  );
 
   void print(Object? message, {LogLevel? level}) {
     if (level != null && level.index < minLogLevel.index) return;
@@ -116,7 +118,11 @@ final class Consoler<T extends ConsoleProgram> {
     final splitted = _splitBySpaces(input);
     final command = splitted.firstOrNull;
 
-    runPrintZone(() => (_programs[command] ?? _programs[null])?.run(
-        command ?? '', splitted.isEmpty ? const [] : splitted.sublist(1)));
+    runPrintZone(
+      () => (_programs[command] ?? _programs[null])?.run(
+        command ?? '',
+        splitted.isEmpty ? const [] : splitted.sublist(1),
+      ),
+    );
   }
 }

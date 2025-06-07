@@ -78,8 +78,11 @@ class IODirectoryFileSystem extends DirectoryFileSystem {
   }
 
   @override
-  Future<void> updateFile(String path, Uint8List data,
-      {bool forceSync = false}) async {
+  Future<void> updateFile(
+    String path,
+    Uint8List data, {
+    bool forceSync = false,
+  }) async {
     path = normalizePath(path);
     final file = File(await getAbsolutePath(path));
     if (!await file.exists()) {
@@ -89,8 +92,11 @@ class IODirectoryFileSystem extends DirectoryFileSystem {
   }
 
   @override
-  Future<FileSystemEntity<Uint8List>?> readAsset(String path,
-      {bool readData = true, bool forceRemote = false}) async {
+  Future<FileSystemEntity<Uint8List>?> readAsset(
+    String path, {
+    bool readData = true,
+    bool forceRemote = false,
+  }) async {
     path = normalizePath(path);
     final absolutePath = await getAbsolutePath(path);
     final file = File(absolutePath);
@@ -107,7 +113,9 @@ class IODirectoryFileSystem extends DirectoryFileSystem {
         assets: (await directory.list(followLinks: false).toList())
             .map((e) {
               final current = universalPathContext.join(
-                  path, p.relative(e.path, from: absolutePath));
+                path,
+                p.relative(e.path, from: absolutePath),
+              );
               if (e is File) {
                 return RawFileSystemFile(
                   AssetLocation(path: current, remote: remoteName),

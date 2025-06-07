@@ -14,17 +14,20 @@ class PathHook extends MappingHook {
   dynamic beforeDecode(dynamic value) {
     if (value is Map<String, dynamic>) {
       final paths = value.entries
-          .where((e) =>
-              e.key.endsWith(suffix) || e.key.endsWith(suffix.toLowerCase()))
-          .map((e) => MapEntry(
-              e.key.substring(0, e.key.length - suffix.length), e.value));
+          .where(
+            (e) =>
+                e.key.endsWith(suffix) || e.key.endsWith(suffix.toLowerCase()),
+          )
+          .map(
+            (e) => MapEntry(
+              e.key.substring(0, e.key.length - suffix.length),
+              e.value,
+            ),
+          );
       final Map? remaining = value['paths'];
       return {
         ...value,
-        'paths': {
-          ...Map<String, dynamic>.fromEntries(paths),
-          ...?remaining,
-        },
+        'paths': {...Map<String, dynamic>.fromEntries(paths), ...?remaining},
       };
     }
     return value;
@@ -40,15 +43,14 @@ class TemplateHook extends MappingHook {
     if (value is Map<String, dynamic>) {
       final paths = value.entries
           .where((e) => e.key.startsWith(prefix) && e.key != prefix)
-          .map((e) =>
-              MapEntry(decapitalize(e.key.substring(prefix.length)), e.value));
+          .map(
+            (e) =>
+                MapEntry(decapitalize(e.key.substring(prefix.length)), e.value),
+          );
       final Map? remaining = value['defaults'];
       return {
         ...value,
-        'defaults': {
-          ...Map<String, dynamic>.fromEntries(paths),
-          ...?remaining,
-        },
+        'defaults': {...Map<String, dynamic>.fromEntries(paths), ...?remaining},
       };
     }
     return value;
@@ -68,21 +70,20 @@ class EmptyMapEntryHook extends MappingHook {
   @override
   dynamic beforeDecode(dynamic value) {
     if (value is List) {
-      return {
-        '': value,
-      };
+      return {'': value};
     }
     return value;
   }
 }
 
 @MappableClass(
-    hook: ChainedHook([
-      UnmappedPropertiesHook('extra'),
-      PathHook(),
-      TemplateHook(),
-    ]),
-    discriminatorKey: 'type')
+  hook: ChainedHook([
+    UnmappedPropertiesHook('extra'),
+    PathHook(),
+    TemplateHook(),
+  ]),
+  discriminatorKey: 'type',
+)
 sealed class ExternalStorage with ExternalStorageMappable {
   final String name;
   final Map<String, String> paths;
@@ -157,21 +158,12 @@ sealed class RemoteStorage extends ExternalStorage with RemoteStorageMappable {
       scheme: currentUri.scheme,
       port: currentUri.port,
       host: currentUri.host,
-      queryParameters: {
-        ...currentUri.queryParameters,
-        ...query,
-      },
-      pathSegments: {
-        ...paths,
-        ...path,
-      },
+      queryParameters: {...currentUri.queryParameters, ...query},
+      pathSegments: {...paths, ...path},
     );
   }
 
-  String buildVariantPath({
-    String variant = '',
-    List<String> path = const [],
-  }) {
+  String buildVariantPath({String variant = '', List<String> path = const []}) {
     var currentPath = universalPathContext.joinAll([
       getBasePath(),
       if (variant.isNotEmpty) paths[variant] ?? '',
@@ -189,10 +181,7 @@ sealed class RemoteStorage extends ExternalStorage with RemoteStorageMappable {
     Map<String, String> query = const {},
   }) {
     final current = buildVariantPath(variant: variant, path: path);
-    return buildUri(
-      path: current.split('/'),
-      query: query,
-    );
+    return buildUri(path: current.split('/'), query: query);
   }
 
   @override

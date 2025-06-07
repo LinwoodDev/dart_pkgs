@@ -32,8 +32,11 @@ Future<void> exportFile(
     });
     return;
   }
-  final file = fs.XFile.fromData(Uint8List.fromList(bytes),
-      mimeType: mimeType, name: '$fileName.$fileExtension');
+  final file = fs.XFile.fromData(
+    Uint8List.fromList(bytes),
+    mimeType: mimeType,
+    name: '$fileName.$fileExtension',
+  );
   final result = await fs.getSaveLocation(
     acceptedTypeGroups: [
       fs.XTypeGroup(

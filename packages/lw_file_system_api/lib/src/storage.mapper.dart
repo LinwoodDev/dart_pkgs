@@ -23,24 +23,48 @@ class ExternalStorageMapper extends ClassMapperBase<ExternalStorage> {
   final String id = 'ExternalStorage';
 
   static String _$name(ExternalStorage v) => v.name;
-  static const Field<ExternalStorage, String> _f$name =
-      Field('name', _$name, opt: true, def: '');
+  static const Field<ExternalStorage, String> _f$name = Field(
+    'name',
+    _$name,
+    opt: true,
+    def: '',
+  );
   static Map<String, String> _$paths(ExternalStorage v) => v.paths;
-  static const Field<ExternalStorage, Map<String, String>> _f$paths =
-      Field('paths', _$paths, opt: true, def: const {});
+  static const Field<ExternalStorage, Map<String, String>> _f$paths = Field(
+    'paths',
+    _$paths,
+    opt: true,
+    def: const {},
+  );
   static Map<String, dynamic> _$extra(ExternalStorage v) => v.extra;
-  static const Field<ExternalStorage, Map<String, dynamic>> _f$extra =
-      Field('extra', _$extra, opt: true, def: const {});
+  static const Field<ExternalStorage, Map<String, dynamic>> _f$extra = Field(
+    'extra',
+    _$extra,
+    opt: true,
+    def: const {},
+  );
   static Map<String, List<String>> _$starred(ExternalStorage v) => v.starred;
   static const Field<ExternalStorage, Map<String, List<String>>> _f$starred =
-      Field('starred', _$starred,
-          opt: true, def: const {}, hook: EmptyMapEntryHook());
+      Field(
+        'starred',
+        _$starred,
+        opt: true,
+        def: const {},
+        hook: EmptyMapEntryHook(),
+      );
   static Map<String, String> _$defaults(ExternalStorage v) => v.defaults;
-  static const Field<ExternalStorage, Map<String, String>> _f$defaults =
-      Field('defaults', _$defaults, opt: true, def: const {});
+  static const Field<ExternalStorage, Map<String, String>> _f$defaults = Field(
+    'defaults',
+    _$defaults,
+    opt: true,
+    def: const {},
+  );
   static Uint8List? _$icon(ExternalStorage v) => v.icon;
-  static const Field<ExternalStorage, Uint8List> _f$icon =
-      Field('icon', _$icon, opt: true);
+  static const Field<ExternalStorage, Uint8List> _f$icon = Field(
+    'icon',
+    _$icon,
+    opt: true,
+  );
 
   @override
   final MappableFields<ExternalStorage> fields = const {
@@ -53,11 +77,17 @@ class ExternalStorageMapper extends ClassMapperBase<ExternalStorage> {
   };
 
   @override
-  final MappingHook hook = const ChainedHook(
-      [UnmappedPropertiesHook('extra'), PathHook(), TemplateHook()]);
+  final MappingHook hook = const ChainedHook([
+    UnmappedPropertiesHook('extra'),
+    PathHook(),
+    TemplateHook(),
+  ]);
   static ExternalStorage _instantiate(DecodingData data) {
     throw MapperException.missingSubclass(
-        'ExternalStorage', 'type', '${data.value['type']}');
+      'ExternalStorage',
+      'type',
+      '${data.value['type']}',
+    );
   }
 
   @override
@@ -76,28 +106,35 @@ mixin ExternalStorageMappable {
   String toJson();
   Map<String, dynamic> toMap();
   ExternalStorageCopyWith<ExternalStorage, ExternalStorage, ExternalStorage>
-      get copyWith;
+  get copyWith;
 }
 
 abstract class ExternalStorageCopyWith<$R, $In extends ExternalStorage, $Out>
     implements ClassCopyWith<$R, $In, $Out> {
   MapCopyWith<$R, String, String, ObjectCopyWith<$R, String, String>?>
-      get paths;
+  get paths;
   MapCopyWith<$R, String, dynamic, ObjectCopyWith<$R, dynamic, dynamic>?>
-      get extra;
-  MapCopyWith<$R, String, List<String>,
-      ObjectCopyWith<$R, List<String>, List<String>>?> get starred;
+  get extra;
+  MapCopyWith<
+    $R,
+    String,
+    List<String>,
+    ObjectCopyWith<$R, List<String>, List<String>>?
+  >
+  get starred;
   MapCopyWith<$R, String, String, ObjectCopyWith<$R, String, String>?>
-      get defaults;
-  $R call(
-      {String? name,
-      Map<String, String>? paths,
-      Map<String, dynamic>? extra,
-      Map<String, List<String>>? starred,
-      Map<String, String>? defaults,
-      Uint8List? icon});
+  get defaults;
+  $R call({
+    String? name,
+    Map<String, String>? paths,
+    Map<String, dynamic>? extra,
+    Map<String, List<String>>? starred,
+    Map<String, String>? defaults,
+    Uint8List? icon,
+  });
   ExternalStorageCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(
-      Then<$Out2, $R2> t);
+    Then<$Out2, $R2> t,
+  );
 }
 
 class RemoteStorageMapper extends SubClassMapperBase<RemoteStorage> {
@@ -117,40 +154,77 @@ class RemoteStorageMapper extends SubClassMapperBase<RemoteStorage> {
   final String id = 'RemoteStorage';
 
   static String _$name(RemoteStorage v) => v.name;
-  static const Field<RemoteStorage, String> _f$name =
-      Field('name', _$name, opt: true, def: '');
+  static const Field<RemoteStorage, String> _f$name = Field(
+    'name',
+    _$name,
+    opt: true,
+    def: '',
+  );
   static Map<String, String> _$paths(RemoteStorage v) => v.paths;
-  static const Field<RemoteStorage, Map<String, String>> _f$paths =
-      Field('paths', _$paths, opt: true, def: const {});
+  static const Field<RemoteStorage, Map<String, String>> _f$paths = Field(
+    'paths',
+    _$paths,
+    opt: true,
+    def: const {},
+  );
   static Map<String, dynamic> _$extra(RemoteStorage v) => v.extra;
-  static const Field<RemoteStorage, Map<String, dynamic>> _f$extra =
-      Field('extra', _$extra, opt: true, def: const {});
+  static const Field<RemoteStorage, Map<String, dynamic>> _f$extra = Field(
+    'extra',
+    _$extra,
+    opt: true,
+    def: const {},
+  );
   static Map<String, List<String>> _$starred(RemoteStorage v) => v.starred;
   static const Field<RemoteStorage, Map<String, List<String>>> _f$starred =
-      Field('starred', _$starred,
-          opt: true, def: const {}, hook: EmptyMapEntryHook());
+      Field(
+        'starred',
+        _$starred,
+        opt: true,
+        def: const {},
+        hook: EmptyMapEntryHook(),
+      );
   static Map<String, String> _$defaults(RemoteStorage v) => v.defaults;
-  static const Field<RemoteStorage, Map<String, String>> _f$defaults =
-      Field('defaults', _$defaults, opt: true, def: const {});
+  static const Field<RemoteStorage, Map<String, String>> _f$defaults = Field(
+    'defaults',
+    _$defaults,
+    opt: true,
+    def: const {},
+  );
   static Uint8List? _$icon(RemoteStorage v) => v.icon;
-  static const Field<RemoteStorage, Uint8List> _f$icon =
-      Field('icon', _$icon, opt: true);
+  static const Field<RemoteStorage, Uint8List> _f$icon = Field(
+    'icon',
+    _$icon,
+    opt: true,
+  );
   static String _$username(RemoteStorage v) => v.username;
-  static const Field<RemoteStorage, String> _f$username =
-      Field('username', _$username);
+  static const Field<RemoteStorage, String> _f$username = Field(
+    'username',
+    _$username,
+  );
   static String? _$certificateSha1(RemoteStorage v) => v.certificateSha1;
-  static const Field<RemoteStorage, String> _f$certificateSha1 =
-      Field('certificateSha1', _$certificateSha1, opt: true);
+  static const Field<RemoteStorage, String> _f$certificateSha1 = Field(
+    'certificateSha1',
+    _$certificateSha1,
+    opt: true,
+  );
   static String _$url(RemoteStorage v) => v.url;
   static const Field<RemoteStorage, String> _f$url = Field('url', _$url);
   static DateTime? _$lastSynced(RemoteStorage v) => v.lastSynced;
-  static const Field<RemoteStorage, DateTime> _f$lastSynced =
-      Field('lastSynced', _$lastSynced, opt: true);
+  static const Field<RemoteStorage, DateTime> _f$lastSynced = Field(
+    'lastSynced',
+    _$lastSynced,
+    opt: true,
+  );
   static Map<String, List<String>> _$cachedDocuments(RemoteStorage v) =>
       v.cachedDocuments;
   static const Field<RemoteStorage, Map<String, List<String>>>
-      _f$cachedDocuments = Field('cachedDocuments', _$cachedDocuments,
-          opt: true, def: const {}, hook: EmptyMapEntryHook());
+  _f$cachedDocuments = Field(
+    'cachedDocuments',
+    _$cachedDocuments,
+    opt: true,
+    def: const {},
+    hook: EmptyMapEntryHook(),
+  );
 
   @override
   final MappableFields<RemoteStorage> fields = const {
@@ -176,12 +250,18 @@ class RemoteStorageMapper extends SubClassMapperBase<RemoteStorage> {
       ExternalStorageMapper.ensureInitialized();
 
   @override
-  final MappingHook superHook = const ChainedHook(
-      [UnmappedPropertiesHook('extra'), PathHook(), TemplateHook()]);
+  final MappingHook superHook = const ChainedHook([
+    UnmappedPropertiesHook('extra'),
+    PathHook(),
+    TemplateHook(),
+  ]);
 
   static RemoteStorage _instantiate(DecodingData data) {
     throw MapperException.missingSubclass(
-        'RemoteStorage', 'type', '${data.value['type']}');
+      'RemoteStorage',
+      'type',
+      '${data.value['type']}',
+    );
   }
 
   @override
@@ -200,38 +280,49 @@ mixin RemoteStorageMappable {
   String toJson();
   Map<String, dynamic> toMap();
   RemoteStorageCopyWith<RemoteStorage, RemoteStorage, RemoteStorage>
-      get copyWith;
+  get copyWith;
 }
 
 abstract class RemoteStorageCopyWith<$R, $In extends RemoteStorage, $Out>
     implements ExternalStorageCopyWith<$R, $In, $Out> {
   @override
   MapCopyWith<$R, String, String, ObjectCopyWith<$R, String, String>?>
-      get paths;
+  get paths;
   @override
   MapCopyWith<$R, String, dynamic, ObjectCopyWith<$R, dynamic, dynamic>?>
-      get extra;
+  get extra;
   @override
-  MapCopyWith<$R, String, List<String>,
-      ObjectCopyWith<$R, List<String>, List<String>>?> get starred;
+  MapCopyWith<
+    $R,
+    String,
+    List<String>,
+    ObjectCopyWith<$R, List<String>, List<String>>?
+  >
+  get starred;
   @override
   MapCopyWith<$R, String, String, ObjectCopyWith<$R, String, String>?>
-      get defaults;
-  MapCopyWith<$R, String, List<String>,
-      ObjectCopyWith<$R, List<String>, List<String>>?> get cachedDocuments;
+  get defaults;
+  MapCopyWith<
+    $R,
+    String,
+    List<String>,
+    ObjectCopyWith<$R, List<String>, List<String>>?
+  >
+  get cachedDocuments;
   @override
-  $R call(
-      {String? name,
-      Map<String, String>? paths,
-      Map<String, dynamic>? extra,
-      Map<String, List<String>>? starred,
-      Map<String, String>? defaults,
-      Uint8List? icon,
-      String? username,
-      String? certificateSha1,
-      String? url,
-      DateTime? lastSynced,
-      Map<String, List<String>>? cachedDocuments});
+  $R call({
+    String? name,
+    Map<String, String>? paths,
+    Map<String, dynamic>? extra,
+    Map<String, List<String>>? starred,
+    Map<String, String>? defaults,
+    Uint8List? icon,
+    String? username,
+    String? certificateSha1,
+    String? url,
+    DateTime? lastSynced,
+    Map<String, List<String>>? cachedDocuments,
+  });
   RemoteStorageCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t);
 }
 
@@ -251,40 +342,77 @@ class DavRemoteStorageMapper extends SubClassMapperBase<DavRemoteStorage> {
   final String id = 'DavRemoteStorage';
 
   static String _$name(DavRemoteStorage v) => v.name;
-  static const Field<DavRemoteStorage, String> _f$name =
-      Field('name', _$name, opt: true, def: '');
+  static const Field<DavRemoteStorage, String> _f$name = Field(
+    'name',
+    _$name,
+    opt: true,
+    def: '',
+  );
   static Map<String, String> _$defaults(DavRemoteStorage v) => v.defaults;
-  static const Field<DavRemoteStorage, Map<String, String>> _f$defaults =
-      Field('defaults', _$defaults, opt: true, def: const {});
+  static const Field<DavRemoteStorage, Map<String, String>> _f$defaults = Field(
+    'defaults',
+    _$defaults,
+    opt: true,
+    def: const {},
+  );
   static Uint8List? _$icon(DavRemoteStorage v) => v.icon;
-  static const Field<DavRemoteStorage, Uint8List> _f$icon =
-      Field('icon', _$icon, opt: true);
+  static const Field<DavRemoteStorage, Uint8List> _f$icon = Field(
+    'icon',
+    _$icon,
+    opt: true,
+  );
   static Map<String, String> _$paths(DavRemoteStorage v) => v.paths;
-  static const Field<DavRemoteStorage, Map<String, String>> _f$paths =
-      Field('paths', _$paths, opt: true, def: const {});
+  static const Field<DavRemoteStorage, Map<String, String>> _f$paths = Field(
+    'paths',
+    _$paths,
+    opt: true,
+    def: const {},
+  );
   static Map<String, List<String>> _$starred(DavRemoteStorage v) => v.starred;
   static const Field<DavRemoteStorage, Map<String, List<String>>> _f$starred =
-      Field('starred', _$starred,
-          opt: true, def: const {}, hook: EmptyMapEntryHook());
+      Field(
+        'starred',
+        _$starred,
+        opt: true,
+        def: const {},
+        hook: EmptyMapEntryHook(),
+      );
   static String _$username(DavRemoteStorage v) => v.username;
-  static const Field<DavRemoteStorage, String> _f$username =
-      Field('username', _$username);
+  static const Field<DavRemoteStorage, String> _f$username = Field(
+    'username',
+    _$username,
+  );
   static String? _$certificateSha1(DavRemoteStorage v) => v.certificateSha1;
-  static const Field<DavRemoteStorage, String> _f$certificateSha1 =
-      Field('certificateSha1', _$certificateSha1, opt: true);
+  static const Field<DavRemoteStorage, String> _f$certificateSha1 = Field(
+    'certificateSha1',
+    _$certificateSha1,
+    opt: true,
+  );
   static String _$url(DavRemoteStorage v) => v.url;
   static const Field<DavRemoteStorage, String> _f$url = Field('url', _$url);
   static Map<String, List<String>> _$cachedDocuments(DavRemoteStorage v) =>
       v.cachedDocuments;
   static const Field<DavRemoteStorage, Map<String, List<String>>>
-      _f$cachedDocuments = Field('cachedDocuments', _$cachedDocuments,
-          opt: true, def: const {}, hook: EmptyMapEntryHook());
+  _f$cachedDocuments = Field(
+    'cachedDocuments',
+    _$cachedDocuments,
+    opt: true,
+    def: const {},
+    hook: EmptyMapEntryHook(),
+  );
   static DateTime? _$lastSynced(DavRemoteStorage v) => v.lastSynced;
-  static const Field<DavRemoteStorage, DateTime> _f$lastSynced =
-      Field('lastSynced', _$lastSynced, opt: true);
+  static const Field<DavRemoteStorage, DateTime> _f$lastSynced = Field(
+    'lastSynced',
+    _$lastSynced,
+    opt: true,
+  );
   static Map<String, dynamic> _$extra(DavRemoteStorage v) => v.extra;
-  static const Field<DavRemoteStorage, Map<String, dynamic>> _f$extra =
-      Field('extra', _$extra, opt: true, def: const {});
+  static const Field<DavRemoteStorage, Map<String, dynamic>> _f$extra = Field(
+    'extra',
+    _$extra,
+    opt: true,
+    def: const {},
+  );
 
   @override
   final MappableFields<DavRemoteStorage> fields = const {
@@ -310,22 +438,26 @@ class DavRemoteStorageMapper extends SubClassMapperBase<DavRemoteStorage> {
       RemoteStorageMapper.ensureInitialized();
 
   @override
-  final MappingHook superHook = const ChainedHook(
-      [UnmappedPropertiesHook('extra'), PathHook(), TemplateHook()]);
+  final MappingHook superHook = const ChainedHook([
+    UnmappedPropertiesHook('extra'),
+    PathHook(),
+    TemplateHook(),
+  ]);
 
   static DavRemoteStorage _instantiate(DecodingData data) {
     return DavRemoteStorage(
-        name: data.dec(_f$name),
-        defaults: data.dec(_f$defaults),
-        icon: data.dec(_f$icon),
-        paths: data.dec(_f$paths),
-        starred: data.dec(_f$starred),
-        username: data.dec(_f$username),
-        certificateSha1: data.dec(_f$certificateSha1),
-        url: data.dec(_f$url),
-        cachedDocuments: data.dec(_f$cachedDocuments),
-        lastSynced: data.dec(_f$lastSynced),
-        extra: data.dec(_f$extra));
+      name: data.dec(_f$name),
+      defaults: data.dec(_f$defaults),
+      icon: data.dec(_f$icon),
+      paths: data.dec(_f$paths),
+      starred: data.dec(_f$starred),
+      username: data.dec(_f$username),
+      certificateSha1: data.dec(_f$certificateSha1),
+      url: data.dec(_f$url),
+      cachedDocuments: data.dec(_f$cachedDocuments),
+      lastSynced: data.dec(_f$lastSynced),
+      extra: data.dec(_f$extra),
+    );
   }
 
   @override
@@ -352,65 +484,84 @@ mixin DavRemoteStorageMappable {
   }
 
   DavRemoteStorageCopyWith<DavRemoteStorage, DavRemoteStorage, DavRemoteStorage>
-      get copyWith => _DavRemoteStorageCopyWithImpl(
-          this as DavRemoteStorage, $identity, $identity);
+  get copyWith => _DavRemoteStorageCopyWithImpl(
+    this as DavRemoteStorage,
+    $identity,
+    $identity,
+  );
   @override
   String toString() {
-    return DavRemoteStorageMapper.ensureInitialized()
-        .stringifyValue(this as DavRemoteStorage);
+    return DavRemoteStorageMapper.ensureInitialized().stringifyValue(
+      this as DavRemoteStorage,
+    );
   }
 
   @override
   bool operator ==(Object other) {
-    return DavRemoteStorageMapper.ensureInitialized()
-        .equalsValue(this as DavRemoteStorage, other);
+    return DavRemoteStorageMapper.ensureInitialized().equalsValue(
+      this as DavRemoteStorage,
+      other,
+    );
   }
 
   @override
   int get hashCode {
-    return DavRemoteStorageMapper.ensureInitialized()
-        .hashValue(this as DavRemoteStorage);
+    return DavRemoteStorageMapper.ensureInitialized().hashValue(
+      this as DavRemoteStorage,
+    );
   }
 }
 
 extension DavRemoteStorageValueCopy<$R, $Out>
     on ObjectCopyWith<$R, DavRemoteStorage, $Out> {
   DavRemoteStorageCopyWith<$R, DavRemoteStorage, $Out>
-      get $asDavRemoteStorage =>
-          $base.as((v, t, t2) => _DavRemoteStorageCopyWithImpl(v, t, t2));
+  get $asDavRemoteStorage =>
+      $base.as((v, t, t2) => _DavRemoteStorageCopyWithImpl(v, t, t2));
 }
 
 abstract class DavRemoteStorageCopyWith<$R, $In extends DavRemoteStorage, $Out>
     implements RemoteStorageCopyWith<$R, $In, $Out> {
   @override
   MapCopyWith<$R, String, String, ObjectCopyWith<$R, String, String>>
-      get defaults;
+  get defaults;
   @override
   MapCopyWith<$R, String, String, ObjectCopyWith<$R, String, String>> get paths;
   @override
-  MapCopyWith<$R, String, List<String>,
-      ObjectCopyWith<$R, List<String>, List<String>>> get starred;
+  MapCopyWith<
+    $R,
+    String,
+    List<String>,
+    ObjectCopyWith<$R, List<String>, List<String>>
+  >
+  get starred;
   @override
-  MapCopyWith<$R, String, List<String>,
-      ObjectCopyWith<$R, List<String>, List<String>>> get cachedDocuments;
+  MapCopyWith<
+    $R,
+    String,
+    List<String>,
+    ObjectCopyWith<$R, List<String>, List<String>>
+  >
+  get cachedDocuments;
   @override
   MapCopyWith<$R, String, dynamic, ObjectCopyWith<$R, dynamic, dynamic>>
-      get extra;
+  get extra;
   @override
-  $R call(
-      {String? name,
-      Map<String, String>? defaults,
-      Uint8List? icon,
-      Map<String, String>? paths,
-      Map<String, List<String>>? starred,
-      String? username,
-      String? certificateSha1,
-      String? url,
-      Map<String, List<String>>? cachedDocuments,
-      DateTime? lastSynced,
-      Map<String, dynamic>? extra});
+  $R call({
+    String? name,
+    Map<String, String>? defaults,
+    Uint8List? icon,
+    Map<String, String>? paths,
+    Map<String, List<String>>? starred,
+    String? username,
+    String? certificateSha1,
+    String? url,
+    Map<String, List<String>>? cachedDocuments,
+    DateTime? lastSynced,
+    Map<String, dynamic>? extra,
+  });
   DavRemoteStorageCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(
-      Then<$Out2, $R2> t);
+    Then<$Out2, $R2> t,
+  );
 }
 
 class _DavRemoteStorageCopyWithImpl<$R, $Out>
@@ -423,72 +574,96 @@ class _DavRemoteStorageCopyWithImpl<$R, $Out>
       DavRemoteStorageMapper.ensureInitialized();
   @override
   MapCopyWith<$R, String, String, ObjectCopyWith<$R, String, String>>
-      get defaults => MapCopyWith($value.defaults,
-          (v, t) => ObjectCopyWith(v, $identity, t), (v) => call(defaults: v));
+  get defaults => MapCopyWith(
+    $value.defaults,
+    (v, t) => ObjectCopyWith(v, $identity, t),
+    (v) => call(defaults: v),
+  );
   @override
   MapCopyWith<$R, String, String, ObjectCopyWith<$R, String, String>>
-      get paths => MapCopyWith($value.paths,
-          (v, t) => ObjectCopyWith(v, $identity, t), (v) => call(paths: v));
+  get paths => MapCopyWith(
+    $value.paths,
+    (v, t) => ObjectCopyWith(v, $identity, t),
+    (v) => call(paths: v),
+  );
   @override
-  MapCopyWith<$R, String, List<String>,
-          ObjectCopyWith<$R, List<String>, List<String>>>
-      get starred => MapCopyWith($value.starred,
-          (v, t) => ObjectCopyWith(v, $identity, t), (v) => call(starred: v));
+  MapCopyWith<
+    $R,
+    String,
+    List<String>,
+    ObjectCopyWith<$R, List<String>, List<String>>
+  >
+  get starred => MapCopyWith(
+    $value.starred,
+    (v, t) => ObjectCopyWith(v, $identity, t),
+    (v) => call(starred: v),
+  );
   @override
-  MapCopyWith<$R, String, List<String>,
-          ObjectCopyWith<$R, List<String>, List<String>>>
-      get cachedDocuments => MapCopyWith(
-          $value.cachedDocuments,
-          (v, t) => ObjectCopyWith(v, $identity, t),
-          (v) => call(cachedDocuments: v));
+  MapCopyWith<
+    $R,
+    String,
+    List<String>,
+    ObjectCopyWith<$R, List<String>, List<String>>
+  >
+  get cachedDocuments => MapCopyWith(
+    $value.cachedDocuments,
+    (v, t) => ObjectCopyWith(v, $identity, t),
+    (v) => call(cachedDocuments: v),
+  );
   @override
   MapCopyWith<$R, String, dynamic, ObjectCopyWith<$R, dynamic, dynamic>>
-      get extra => MapCopyWith($value.extra,
-          (v, t) => ObjectCopyWith(v, $identity, t), (v) => call(extra: v));
+  get extra => MapCopyWith(
+    $value.extra,
+    (v, t) => ObjectCopyWith(v, $identity, t),
+    (v) => call(extra: v),
+  );
   @override
-  $R call(
-          {String? name,
-          Map<String, String>? defaults,
-          Object? icon = $none,
-          Map<String, String>? paths,
-          Map<String, List<String>>? starred,
-          String? username,
-          Object? certificateSha1 = $none,
-          String? url,
-          Map<String, List<String>>? cachedDocuments,
-          Object? lastSynced = $none,
-          Map<String, dynamic>? extra}) =>
-      $apply(FieldCopyWithData({
-        if (name != null) #name: name,
-        if (defaults != null) #defaults: defaults,
-        if (icon != $none) #icon: icon,
-        if (paths != null) #paths: paths,
-        if (starred != null) #starred: starred,
-        if (username != null) #username: username,
-        if (certificateSha1 != $none) #certificateSha1: certificateSha1,
-        if (url != null) #url: url,
-        if (cachedDocuments != null) #cachedDocuments: cachedDocuments,
-        if (lastSynced != $none) #lastSynced: lastSynced,
-        if (extra != null) #extra: extra
-      }));
+  $R call({
+    String? name,
+    Map<String, String>? defaults,
+    Object? icon = $none,
+    Map<String, String>? paths,
+    Map<String, List<String>>? starred,
+    String? username,
+    Object? certificateSha1 = $none,
+    String? url,
+    Map<String, List<String>>? cachedDocuments,
+    Object? lastSynced = $none,
+    Map<String, dynamic>? extra,
+  }) => $apply(
+    FieldCopyWithData({
+      if (name != null) #name: name,
+      if (defaults != null) #defaults: defaults,
+      if (icon != $none) #icon: icon,
+      if (paths != null) #paths: paths,
+      if (starred != null) #starred: starred,
+      if (username != null) #username: username,
+      if (certificateSha1 != $none) #certificateSha1: certificateSha1,
+      if (url != null) #url: url,
+      if (cachedDocuments != null) #cachedDocuments: cachedDocuments,
+      if (lastSynced != $none) #lastSynced: lastSynced,
+      if (extra != null) #extra: extra,
+    }),
+  );
   @override
   DavRemoteStorage $make(CopyWithData data) => DavRemoteStorage(
-      name: data.get(#name, or: $value.name),
-      defaults: data.get(#defaults, or: $value.defaults),
-      icon: data.get(#icon, or: $value.icon),
-      paths: data.get(#paths, or: $value.paths),
-      starred: data.get(#starred, or: $value.starred),
-      username: data.get(#username, or: $value.username),
-      certificateSha1: data.get(#certificateSha1, or: $value.certificateSha1),
-      url: data.get(#url, or: $value.url),
-      cachedDocuments: data.get(#cachedDocuments, or: $value.cachedDocuments),
-      lastSynced: data.get(#lastSynced, or: $value.lastSynced),
-      extra: data.get(#extra, or: $value.extra));
+    name: data.get(#name, or: $value.name),
+    defaults: data.get(#defaults, or: $value.defaults),
+    icon: data.get(#icon, or: $value.icon),
+    paths: data.get(#paths, or: $value.paths),
+    starred: data.get(#starred, or: $value.starred),
+    username: data.get(#username, or: $value.username),
+    certificateSha1: data.get(#certificateSha1, or: $value.certificateSha1),
+    url: data.get(#url, or: $value.url),
+    cachedDocuments: data.get(#cachedDocuments, or: $value.cachedDocuments),
+    lastSynced: data.get(#lastSynced, or: $value.lastSynced),
+    extra: data.get(#extra, or: $value.extra),
+  );
 
   @override
   DavRemoteStorageCopyWith<$R2, DavRemoteStorage, $Out2> $chain<$R2, $Out2>(
-          Then<$Out2, $R2> t) =>
-      _DavRemoteStorageCopyWithImpl($value, $cast, t);
+    Then<$Out2, $R2> t,
+  ) => _DavRemoteStorageCopyWithImpl($value, $cast, t);
 }
 
 class LocalStorageMapper extends SubClassMapperBase<LocalStorage> {
@@ -507,24 +682,48 @@ class LocalStorageMapper extends SubClassMapperBase<LocalStorage> {
   final String id = 'LocalStorage';
 
   static String _$name(LocalStorage v) => v.name;
-  static const Field<LocalStorage, String> _f$name =
-      Field('name', _$name, opt: true, def: '');
+  static const Field<LocalStorage, String> _f$name = Field(
+    'name',
+    _$name,
+    opt: true,
+    def: '',
+  );
   static Map<String, String> _$defaults(LocalStorage v) => v.defaults;
-  static const Field<LocalStorage, Map<String, String>> _f$defaults =
-      Field('defaults', _$defaults, opt: true, def: const {});
+  static const Field<LocalStorage, Map<String, String>> _f$defaults = Field(
+    'defaults',
+    _$defaults,
+    opt: true,
+    def: const {},
+  );
   static Map<String, String> _$paths(LocalStorage v) => v.paths;
-  static const Field<LocalStorage, Map<String, String>> _f$paths =
-      Field('paths', _$paths, opt: true, def: const {});
+  static const Field<LocalStorage, Map<String, String>> _f$paths = Field(
+    'paths',
+    _$paths,
+    opt: true,
+    def: const {},
+  );
   static Uint8List? _$icon(LocalStorage v) => v.icon;
-  static const Field<LocalStorage, Uint8List> _f$icon =
-      Field('icon', _$icon, opt: true);
+  static const Field<LocalStorage, Uint8List> _f$icon = Field(
+    'icon',
+    _$icon,
+    opt: true,
+  );
   static Map<String, List<String>> _$starred(LocalStorage v) => v.starred;
   static const Field<LocalStorage, Map<String, List<String>>> _f$starred =
-      Field('starred', _$starred,
-          opt: true, def: const {}, hook: EmptyMapEntryHook());
+      Field(
+        'starred',
+        _$starred,
+        opt: true,
+        def: const {},
+        hook: EmptyMapEntryHook(),
+      );
   static Map<String, dynamic> _$extra(LocalStorage v) => v.extra;
-  static const Field<LocalStorage, Map<String, dynamic>> _f$extra =
-      Field('extra', _$extra, opt: true, def: const {});
+  static const Field<LocalStorage, Map<String, dynamic>> _f$extra = Field(
+    'extra',
+    _$extra,
+    opt: true,
+    def: const {},
+  );
 
   @override
   final MappableFields<LocalStorage> fields = const {
@@ -545,17 +744,21 @@ class LocalStorageMapper extends SubClassMapperBase<LocalStorage> {
       ExternalStorageMapper.ensureInitialized();
 
   @override
-  final MappingHook superHook = const ChainedHook(
-      [UnmappedPropertiesHook('extra'), PathHook(), TemplateHook()]);
+  final MappingHook superHook = const ChainedHook([
+    UnmappedPropertiesHook('extra'),
+    PathHook(),
+    TemplateHook(),
+  ]);
 
   static LocalStorage _instantiate(DecodingData data) {
     return LocalStorage(
-        name: data.dec(_f$name),
-        defaults: data.dec(_f$defaults),
-        paths: data.dec(_f$paths),
-        icon: data.dec(_f$icon),
-        starred: data.dec(_f$starred),
-        extra: data.dec(_f$extra));
+      name: data.dec(_f$name),
+      defaults: data.dec(_f$defaults),
+      paths: data.dec(_f$paths),
+      icon: data.dec(_f$icon),
+      starred: data.dec(_f$starred),
+      extra: data.dec(_f$extra),
+    );
   }
 
   @override
@@ -572,33 +775,39 @@ class LocalStorageMapper extends SubClassMapperBase<LocalStorage> {
 
 mixin LocalStorageMappable {
   String toJson() {
-    return LocalStorageMapper.ensureInitialized()
-        .encodeJson<LocalStorage>(this as LocalStorage);
+    return LocalStorageMapper.ensureInitialized().encodeJson<LocalStorage>(
+      this as LocalStorage,
+    );
   }
 
   Map<String, dynamic> toMap() {
-    return LocalStorageMapper.ensureInitialized()
-        .encodeMap<LocalStorage>(this as LocalStorage);
+    return LocalStorageMapper.ensureInitialized().encodeMap<LocalStorage>(
+      this as LocalStorage,
+    );
   }
 
   LocalStorageCopyWith<LocalStorage, LocalStorage, LocalStorage> get copyWith =>
       _LocalStorageCopyWithImpl(this as LocalStorage, $identity, $identity);
   @override
   String toString() {
-    return LocalStorageMapper.ensureInitialized()
-        .stringifyValue(this as LocalStorage);
+    return LocalStorageMapper.ensureInitialized().stringifyValue(
+      this as LocalStorage,
+    );
   }
 
   @override
   bool operator ==(Object other) {
-    return LocalStorageMapper.ensureInitialized()
-        .equalsValue(this as LocalStorage, other);
+    return LocalStorageMapper.ensureInitialized().equalsValue(
+      this as LocalStorage,
+      other,
+    );
   }
 
   @override
   int get hashCode {
-    return LocalStorageMapper.ensureInitialized()
-        .hashValue(this as LocalStorage);
+    return LocalStorageMapper.ensureInitialized().hashValue(
+      this as LocalStorage,
+    );
   }
 }
 
@@ -612,23 +821,29 @@ abstract class LocalStorageCopyWith<$R, $In extends LocalStorage, $Out>
     implements ExternalStorageCopyWith<$R, $In, $Out> {
   @override
   MapCopyWith<$R, String, String, ObjectCopyWith<$R, String, String>>
-      get defaults;
+  get defaults;
   @override
   MapCopyWith<$R, String, String, ObjectCopyWith<$R, String, String>> get paths;
   @override
-  MapCopyWith<$R, String, List<String>,
-      ObjectCopyWith<$R, List<String>, List<String>>> get starred;
+  MapCopyWith<
+    $R,
+    String,
+    List<String>,
+    ObjectCopyWith<$R, List<String>, List<String>>
+  >
+  get starred;
   @override
   MapCopyWith<$R, String, dynamic, ObjectCopyWith<$R, dynamic, dynamic>>
-      get extra;
+  get extra;
   @override
-  $R call(
-      {String? name,
-      Map<String, String>? defaults,
-      Map<String, String>? paths,
-      Uint8List? icon,
-      Map<String, List<String>>? starred,
-      Map<String, dynamic>? extra});
+  $R call({
+    String? name,
+    Map<String, String>? defaults,
+    Map<String, String>? paths,
+    Uint8List? icon,
+    Map<String, List<String>>? starred,
+    Map<String, dynamic>? extra,
+  });
   LocalStorageCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t);
 }
 
@@ -642,48 +857,67 @@ class _LocalStorageCopyWithImpl<$R, $Out>
       LocalStorageMapper.ensureInitialized();
   @override
   MapCopyWith<$R, String, String, ObjectCopyWith<$R, String, String>>
-      get defaults => MapCopyWith($value.defaults,
-          (v, t) => ObjectCopyWith(v, $identity, t), (v) => call(defaults: v));
+  get defaults => MapCopyWith(
+    $value.defaults,
+    (v, t) => ObjectCopyWith(v, $identity, t),
+    (v) => call(defaults: v),
+  );
   @override
   MapCopyWith<$R, String, String, ObjectCopyWith<$R, String, String>>
-      get paths => MapCopyWith($value.paths,
-          (v, t) => ObjectCopyWith(v, $identity, t), (v) => call(paths: v));
+  get paths => MapCopyWith(
+    $value.paths,
+    (v, t) => ObjectCopyWith(v, $identity, t),
+    (v) => call(paths: v),
+  );
   @override
-  MapCopyWith<$R, String, List<String>,
-          ObjectCopyWith<$R, List<String>, List<String>>>
-      get starred => MapCopyWith($value.starred,
-          (v, t) => ObjectCopyWith(v, $identity, t), (v) => call(starred: v));
+  MapCopyWith<
+    $R,
+    String,
+    List<String>,
+    ObjectCopyWith<$R, List<String>, List<String>>
+  >
+  get starred => MapCopyWith(
+    $value.starred,
+    (v, t) => ObjectCopyWith(v, $identity, t),
+    (v) => call(starred: v),
+  );
   @override
   MapCopyWith<$R, String, dynamic, ObjectCopyWith<$R, dynamic, dynamic>>
-      get extra => MapCopyWith($value.extra,
-          (v, t) => ObjectCopyWith(v, $identity, t), (v) => call(extra: v));
+  get extra => MapCopyWith(
+    $value.extra,
+    (v, t) => ObjectCopyWith(v, $identity, t),
+    (v) => call(extra: v),
+  );
   @override
-  $R call(
-          {String? name,
-          Map<String, String>? defaults,
-          Map<String, String>? paths,
-          Object? icon = $none,
-          Map<String, List<String>>? starred,
-          Map<String, dynamic>? extra}) =>
-      $apply(FieldCopyWithData({
-        if (name != null) #name: name,
-        if (defaults != null) #defaults: defaults,
-        if (paths != null) #paths: paths,
-        if (icon != $none) #icon: icon,
-        if (starred != null) #starred: starred,
-        if (extra != null) #extra: extra
-      }));
+  $R call({
+    String? name,
+    Map<String, String>? defaults,
+    Map<String, String>? paths,
+    Object? icon = $none,
+    Map<String, List<String>>? starred,
+    Map<String, dynamic>? extra,
+  }) => $apply(
+    FieldCopyWithData({
+      if (name != null) #name: name,
+      if (defaults != null) #defaults: defaults,
+      if (paths != null) #paths: paths,
+      if (icon != $none) #icon: icon,
+      if (starred != null) #starred: starred,
+      if (extra != null) #extra: extra,
+    }),
+  );
   @override
   LocalStorage $make(CopyWithData data) => LocalStorage(
-      name: data.get(#name, or: $value.name),
-      defaults: data.get(#defaults, or: $value.defaults),
-      paths: data.get(#paths, or: $value.paths),
-      icon: data.get(#icon, or: $value.icon),
-      starred: data.get(#starred, or: $value.starred),
-      extra: data.get(#extra, or: $value.extra));
+    name: data.get(#name, or: $value.name),
+    defaults: data.get(#defaults, or: $value.defaults),
+    paths: data.get(#paths, or: $value.paths),
+    icon: data.get(#icon, or: $value.icon),
+    starred: data.get(#starred, or: $value.starred),
+    extra: data.get(#extra, or: $value.extra),
+  );
 
   @override
   LocalStorageCopyWith<$R2, LocalStorage, $Out2> $chain<$R2, $Out2>(
-          Then<$Out2, $R2> t) =>
-      _LocalStorageCopyWithImpl($value, $cast, t);
+    Then<$Out2, $R2> t,
+  ) => _LocalStorageCopyWithImpl($value, $cast, t);
 }

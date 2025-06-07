@@ -19,11 +19,8 @@ class WindowState {
 }
 
 class WindowCubit extends Cubit<WindowState> with WindowListener {
-  WindowCubit({
-    required bool fullScreen,
-  }) : super(WindowState(
-          fullScreen: fullScreen,
-        )) {
+  WindowCubit({required bool fullScreen})
+    : super(WindowState(fullScreen: fullScreen)) {
     windowManager.addListener(this);
   }
 

@@ -15,17 +15,15 @@ import 'file_system_html_stub.dart'
 part 'base/directory.dart';
 part 'base/key.dart';
 
-typedef CreateDefaultCallback<T extends GeneralFileSystem> = FutureOr<void>
-    Function(T fileSystem);
+typedef CreateDefaultCallback<T extends GeneralFileSystem> =
+    FutureOr<void> Function(T fileSystem);
 
 void defaultCreateDefault(GeneralFileSystem fileSystem) {}
 
 abstract class GeneralFileSystem {
   final FileSystemConfig config;
 
-  GeneralFileSystem({
-    required this.config,
-  });
+  GeneralFileSystem({required this.config});
 
   FutureOr<bool> isInitialized();
 
@@ -50,24 +48,29 @@ abstract class GeneralFileSystem {
 
   String normalizePath(String path) => universalPathContext.canonicalize(path);
 
-  String convertNameToFileSystem(
-          {String? name, String? suffix, String? directory}) =>
-      convertNameToFile(
-        name: name,
-        suffix: suffix,
-        directory: directory,
-        getUnnamed: config.getUnnamed,
-      );
+  String convertNameToFileSystem({
+    String? name,
+    String? suffix,
+    String? directory,
+  }) => convertNameToFile(
+    name: name,
+    suffix: suffix,
+    directory: directory,
+    getUnnamed: config.getUnnamed,
+  );
 
   Future<String> _findAvailableName(
-      String path, Future<bool> Function(String) hasAsset) async {
+    String path,
+    Future<bool> Function(String) hasAsset,
+  ) async {
     final dir = p.dirname(path);
     final fileExtension = p.extension(path);
     final name = p.basenameWithoutExtension(path);
     var newName = name;
     var i = 1;
     while (await hasAsset(
-        universalPathContext.join(dir, '$newName$fileExtension'))) {
+      universalPathContext.join(dir, '$newName$fileExtension'),
+    )) {
       newName = '$name ($i)';
       i++;
     }
@@ -78,8 +81,10 @@ abstract class GeneralFileSystem {
     relativePath = normalizePath(relativePath);
     if (relativePath.startsWith('/')) relativePath = relativePath.substring(1);
     final root = await getDirectory();
-    return p.Context(style: p.Style.posix, current: root)
-        .absolute(relativePath);
+    return p.Context(
+      style: p.Style.posix,
+      current: root,
+    ).absolute(relativePath);
   }
 
   Future<String> getDirectory() async {

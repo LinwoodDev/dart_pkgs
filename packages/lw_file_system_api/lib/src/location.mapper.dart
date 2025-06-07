@@ -21,8 +21,12 @@ class AssetLocationMapper extends ClassMapperBase<AssetLocation> {
   final String id = 'AssetLocation';
 
   static String _$remote(AssetLocation v) => v.remote;
-  static const Field<AssetLocation, String> _f$remote =
-      Field('remote', _$remote, opt: true, def: '');
+  static const Field<AssetLocation, String> _f$remote = Field(
+    'remote',
+    _$remote,
+    opt: true,
+    def: '',
+  );
   static String _$path(AssetLocation v) => v.path;
   static const Field<AssetLocation, String> _f$path = Field('path', _$path);
 
@@ -50,34 +54,40 @@ class AssetLocationMapper extends ClassMapperBase<AssetLocation> {
 
 mixin AssetLocationMappable {
   String toJson() {
-    return AssetLocationMapper.ensureInitialized()
-        .encodeJson<AssetLocation>(this as AssetLocation);
+    return AssetLocationMapper.ensureInitialized().encodeJson<AssetLocation>(
+      this as AssetLocation,
+    );
   }
 
   Map<String, dynamic> toMap() {
-    return AssetLocationMapper.ensureInitialized()
-        .encodeMap<AssetLocation>(this as AssetLocation);
+    return AssetLocationMapper.ensureInitialized().encodeMap<AssetLocation>(
+      this as AssetLocation,
+    );
   }
 
   AssetLocationCopyWith<AssetLocation, AssetLocation, AssetLocation>
-      get copyWith => _AssetLocationCopyWithImpl(
-          this as AssetLocation, $identity, $identity);
+  get copyWith =>
+      _AssetLocationCopyWithImpl(this as AssetLocation, $identity, $identity);
   @override
   String toString() {
-    return AssetLocationMapper.ensureInitialized()
-        .stringifyValue(this as AssetLocation);
+    return AssetLocationMapper.ensureInitialized().stringifyValue(
+      this as AssetLocation,
+    );
   }
 
   @override
   bool operator ==(Object other) {
-    return AssetLocationMapper.ensureInitialized()
-        .equalsValue(this as AssetLocation, other);
+    return AssetLocationMapper.ensureInitialized().equalsValue(
+      this as AssetLocation,
+      other,
+    );
   }
 
   @override
   int get hashCode {
-    return AssetLocationMapper.ensureInitialized()
-        .hashValue(this as AssetLocation);
+    return AssetLocationMapper.ensureInitialized().hashValue(
+      this as AssetLocation,
+    );
   }
 }
 
@@ -102,15 +112,20 @@ class _AssetLocationCopyWithImpl<$R, $Out>
   late final ClassMapperBase<AssetLocation> $mapper =
       AssetLocationMapper.ensureInitialized();
   @override
-  $R call({String? remote, String? path}) => $apply(FieldCopyWithData(
-      {if (remote != null) #remote: remote, if (path != null) #path: path}));
+  $R call({String? remote, String? path}) => $apply(
+    FieldCopyWithData({
+      if (remote != null) #remote: remote,
+      if (path != null) #path: path,
+    }),
+  );
   @override
   AssetLocation $make(CopyWithData data) => AssetLocation(
-      remote: data.get(#remote, or: $value.remote),
-      path: data.get(#path, or: $value.path));
+    remote: data.get(#remote, or: $value.remote),
+    path: data.get(#path, or: $value.path),
+  );
 
   @override
   AssetLocationCopyWith<$R2, AssetLocation, $Out2> $chain<$R2, $Out2>(
-          Then<$Out2, $R2> t) =>
-      _AssetLocationCopyWithImpl($value, $cast, t);
+    Then<$Out2, $R2> t,
+  ) => _AssetLocationCopyWithImpl($value, $cast, t);
 }

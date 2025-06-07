@@ -66,49 +66,54 @@ class NetworkerSocketServer extends NetworkerServer<NetworkerSocketInfo> {
   bool get isClosed => _server == null;
 
   @override
-  Uri get address => Uri(
-        scheme: 'ws',
-        host: _server?.address.host,
-        port: _server?.port,
-      );
+  Uri get address =>
+      Uri(scheme: 'ws', host: _server?.address.host, port: _server?.port);
 
   void _run() {
-    _server?.listen((request) async {
-      try {
-        if (await filterConnections?.call(request) == false) {
-          if (overrideStatusCode) {
-            request.response.statusCode = HttpStatus.forbidden;
-          }
-          request.response.close();
-          return;
-        }
-        request.response.statusCode = HttpStatus.switchingProtocols;
-        final socket = await WebSocketTransformer.upgrade(request);
-        final info = request.connectionInfo;
-        final id = addClientConnection(NetworkerSocketInfo(
-            Uri(
-              host: info?.remoteAddress.address,
-              port: info?.remotePort,
-            ),
-            socket));
-        // No free space
-        if (id == kAnyChannel) socket.close();
-        socket.listen((event) {
-          try {
-            if (event is String) {
-              event = Uint8List.fromList(event.codeUnits);
+    _server?.listen(
+      (request) async {
+        try {
+          if (await filterConnections?.call(request) == false) {
+            if (overrideStatusCode) {
+              request.response.statusCode = HttpStatus.forbidden;
             }
-            onMessage(event, id);
-          } catch (_) {}
-        }, onDone: () {
-          removeConnection(id);
-        });
-      } catch (_) {}
-    }, onDone: () {
-      _onClosed.add(null);
-    }, onError: (error) {
-      _onClosed.addError(error);
-    }, cancelOnError: true);
+            request.response.close();
+            return;
+          }
+          request.response.statusCode = HttpStatus.switchingProtocols;
+          final socket = await WebSocketTransformer.upgrade(request);
+          final info = request.connectionInfo;
+          final id = addClientConnection(
+            NetworkerSocketInfo(
+              Uri(host: info?.remoteAddress.address, port: info?.remotePort),
+              socket,
+            ),
+          );
+          // No free space
+          if (id == kAnyChannel) socket.close();
+          socket.listen(
+            (event) {
+              try {
+                if (event is String) {
+                  event = Uint8List.fromList(event.codeUnits);
+                }
+                onMessage(event, id);
+              } catch (_) {}
+            },
+            onDone: () {
+              removeConnection(id);
+            },
+          );
+        } catch (_) {}
+      },
+      onDone: () {
+        _onClosed.add(null);
+      },
+      onError: (error) {
+        _onClosed.addError(error);
+      },
+      cancelOnError: true,
+    );
   }
 
   @override
@@ -118,15 +123,8 @@ class NetworkerSocketServer extends NetworkerServer<NetworkerSocketInfo> {
     }
     final context = securityContext;
     _server = context == null
-        ? await HttpServer.bind(
-            serverAddress,
-            port,
-          )
-        : await HttpServer.bindSecure(
-            serverAddress,
-            port,
-            context,
-          );
+        ? await HttpServer.bind(serverAddress, port)
+        : await HttpServer.bindSecure(serverAddress, port, context);
     _run();
     _onOpen.add(null);
   }

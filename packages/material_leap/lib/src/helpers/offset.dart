@@ -14,9 +14,9 @@ extension OffsetHelper on Offset {
   }
 
   Offset scaleFromCenter(double zoom, Offset center) => Offset(
-        (dx - center.dx) * zoom + center.dx,
-        (dy - center.dy) * zoom + center.dy,
-      );
+    (dx - center.dx) * zoom + center.dx,
+    (dy - center.dy) * zoom + center.dy,
+  );
 
   double getRotation(Offset pivot) {
     final x = dx - pivot.dx;

@@ -54,10 +54,7 @@ final class FilteredNetworkerPipe<T> extends SimpleNetworkerPipe<T> {
   final bool Function(T, Channel)? filterEncoded;
   final bool Function(T, Channel)? filterDecoded;
 
-  FilteredNetworkerPipe({
-    this.filterEncoded,
-    this.filterDecoded,
-  });
+  FilteredNetworkerPipe({this.filterEncoded, this.filterDecoded});
 
   @override
   FutureOr<(T, Channel)?> decodeChannel(T data, Channel channel) {

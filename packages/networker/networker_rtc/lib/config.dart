@@ -3,13 +3,9 @@ library;
 class NetworkerRtcIceServer {
   final String url;
 
-  const NetworkerRtcIceServer({
-    required this.url,
-  });
+  const NetworkerRtcIceServer({required this.url});
 
-  Map<String, dynamic> toMap() => {
-        'url': url,
-      };
+  Map<String, dynamic> toMap() => {'url': url};
 }
 
 class NetworkerRtcConfiguration {
@@ -17,12 +13,13 @@ class NetworkerRtcConfiguration {
 
   const NetworkerRtcConfiguration({
     this.iceServers = const [
-      [NetworkerRtcIceServer(url: 'stun:stunserver.stunprotocol.org:3478')]
+      [NetworkerRtcIceServer(url: 'stun:stunserver.stunprotocol.org:3478')],
     ],
   });
 
   Map<String, dynamic> toMap() => {
-        'iceServers':
-            iceServers.map((e) => e.map((e) => e.toMap()).toList()).toList(),
-      };
+    'iceServers': iceServers
+        .map((e) => e.map((e) => e.toMap()).toList())
+        .toList(),
+  };
 }

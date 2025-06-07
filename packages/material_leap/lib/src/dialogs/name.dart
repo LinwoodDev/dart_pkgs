@@ -32,11 +32,13 @@ class NameDialog extends StatelessWidget {
       child: AlertDialog(
         actions: [
           TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: Text(MaterialLocalizations.of(context).cancelButtonLabel)),
+            onPressed: () => Navigator.of(context).pop(),
+            child: Text(MaterialLocalizations.of(context).cancelButtonLabel),
+          ),
           ElevatedButton(
-              onPressed: submit,
-              child: Text(button ?? LeapLocalizations.of(context).create)),
+            onPressed: submit,
+            child: Text(button ?? LeapLocalizations.of(context).create),
+          ),
         ],
         title: Text(title ?? LeapLocalizations.of(context).enterName),
         content: TextFormField(
@@ -57,18 +59,19 @@ class NameDialog extends StatelessWidget {
 }
 
 FormFieldValidator<String> Function(String?) defaultNameValidator(
-    BuildContext context,
-    [List<String> existingNames = const []]) {
+  BuildContext context, [
+  List<String> existingNames = const [],
+]) {
   return (oldName) => (value) {
-        if (value == null || value.isEmpty) {
-          return LeapLocalizations.of(context).shouldNotEmpty;
-        }
-        if (value == oldName) return null;
-        if (existingNames.contains(value)) {
-          return LeapLocalizations.of(context).alreadyExists;
-        }
-        return null;
-      };
+    if (value == null || value.isEmpty) {
+      return LeapLocalizations.of(context).shouldNotEmpty;
+    }
+    if (value == oldName) return null;
+    if (existingNames.contains(value)) {
+      return LeapLocalizations.of(context).alreadyExists;
+    }
+    return null;
+  };
 }
 
 FormFieldValidator<String> Function(String?) defaultFileNameValidator(
@@ -77,14 +80,14 @@ FormFieldValidator<String> Function(String?) defaultFileNameValidator(
 ]) {
   final nameValidator = defaultNameValidator(context, existingNames);
   return (oldName) => (value) {
-        final nameError = nameValidator(oldName)(value);
-        if (nameError != null) return nameError;
-        if (value == null || value.isEmpty) {
-          return LeapLocalizations.of(context).shouldNotEmpty;
-        }
-        if (hasInvalidFileName(value)) {
-          return LeapLocalizations.of(context).invalidName;
-        }
-        return null;
-      };
+    final nameError = nameValidator(oldName)(value);
+    if (nameError != null) return nameError;
+    if (value == null || value.isEmpty) {
+      return LeapLocalizations.of(context).shouldNotEmpty;
+    }
+    if (hasInvalidFileName(value)) {
+      return LeapLocalizations.of(context).invalidName;
+    }
+    return null;
+  };
 }

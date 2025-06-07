@@ -34,11 +34,7 @@ class FileSystemFile<T> extends FileSystemEntity<T> {
   final T? data;
   final bool cached;
 
-  FileSystemFile(
-    super.location, {
-    this.data,
-    this.cached = false,
-  });
+  FileSystemFile(super.location, {this.data, this.cached = false});
 
   bool get hasData => data != null;
 }
@@ -49,10 +45,7 @@ class FileSystemDirectory<T> extends FileSystemEntity<T> {
   FileSystemDirectory(super.location, {this.assets = const []});
 
   FileSystemDirectory<T> withAssets(List<FileSystemEntity<T>> assets) =>
-      FileSystemDirectory(
-        location,
-        assets: assets,
-      );
+      FileSystemDirectory(location, assets: assets);
 }
 
 typedef RawFileSystemEntity = FileSystemEntity<Uint8List>;

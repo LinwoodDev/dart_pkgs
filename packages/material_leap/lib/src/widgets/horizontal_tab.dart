@@ -4,11 +4,7 @@ class HorizontalTab extends StatelessWidget {
   final Widget? icon;
   final Widget label;
 
-  const HorizontalTab({
-    super.key,
-    this.icon,
-    required this.label,
-  });
+  const HorizontalTab({super.key, this.icon, required this.label});
 
   @override
   Widget build(BuildContext context) {
@@ -17,10 +13,7 @@ class HorizontalTab extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          if (icon != null) ...[
-            icon!,
-            const SizedBox(width: 8),
-          ],
+          if (icon != null) ...[icon!, const SizedBox(width: 8)],
           label,
         ],
       ),

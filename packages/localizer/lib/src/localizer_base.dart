@@ -35,8 +35,9 @@ class Localizer {
   /// Get the locale object for the given locale.
   /// If the locale is not supported, it returns null.
   LocalizerLocale? getLocaleOrNull(String name) {
-    return List<LocalizerLocale?>.from(_locales)
-        .firstWhere((locale) => locale?.name == name, orElse: () => null);
+    return List<LocalizerLocale?>.from(
+      _locales,
+    ).firstWhere((locale) => locale?.name == name, orElse: () => null);
   }
 
   /// Load locales from a specific directory.
@@ -156,8 +157,12 @@ class Localizer {
   /// Get the translation for the given key.
   /// If the key is not found, it returns the message in the [defaultLocale] locale. If the key is not found in the [defaultLocale] locale, it returns the key.
   /// Read more at [LocalizerLocale.getOrDefault].
-  String getOrDefault(String locale, String key, String defaultValue,
-      [List args = const []]) {
+  String getOrDefault(
+    String locale,
+    String key,
+    String defaultValue, [
+    List args = const [],
+  ]) {
     final localeData = getLocaleOrNull(locale) ?? getDefaultLocale();
     return localeData.contains(key)
         ? localeData.get(key, args)

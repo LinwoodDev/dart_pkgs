@@ -26,20 +26,20 @@ abstract class ArchiveData<T> {
 
   ArchiveData(this.archive, {this.state = const ArchiveState()});
 
-  ArchiveData.build(this.archive,
-      {Map<String, Uint8List> added = const {},
-      Set<String> removed = const {},
-      String? password})
-      : state =
-            ArchiveState(added: added, removed: removed, password: password);
+  ArchiveData.build(
+    this.archive, {
+    Map<String, Uint8List> added = const {},
+    Set<String> removed = const {},
+    String? password,
+  }) : state = ArchiveState(added: added, removed: removed, password: password);
 
   ArchiveData.empty({String? password})
-      : archive = Archive(),
-        state = ArchiveState(password: password);
+    : archive = Archive(),
+      state = ArchiveState(password: password);
 
   ArchiveData.fromBytes(List<int> bytes, {String? password})
-      : archive = ZipDecoder().decodeBytes(bytes, password: password),
-        state = ArchiveState(password: password);
+    : archive = ZipDecoder().decodeBytes(bytes, password: password),
+      state = ArchiveState(password: password);
 
   Archive export() {
     // Always copy archive since recompressing doesn't work currently
@@ -73,8 +73,9 @@ abstract class ArchiveData<T> {
 
   String? get password => state.password;
 
-  Uint8List exportAsBytes() => ZipEncoder(password: state.password)
-      .encodeBytes(export(), autoClose: true);
+  Uint8List exportAsBytes() => ZipEncoder(
+    password: state.password,
+  ).encodeBytes(export(), autoClose: true);
 
   Uint8List? getAsset(String name) {
     final added = state.added[name];
@@ -93,38 +94,43 @@ abstract class ArchiveData<T> {
 
   T updateState(ArchiveState state);
 
-  T setAsset(String name, Uint8List data) => updateState(state.copyWith(
-        added: {...state.added, name: data},
-        removed: Set.from(state.removed)..remove(name),
-      ));
+  T setAsset(String name, Uint8List data) => updateState(
+    state.copyWith(
+      added: {...state.added, name: data},
+      removed: Set.from(state.removed)..remove(name),
+    ),
+  );
   T removeAsset(String name) => removeAssets([name]);
   T removeAssets(Iterable<String> names) =>
       updateState(state.copyWith(removed: {...state.removed, ...names}));
 
-  Iterable<String> getAssets(String path, [bool removeExtension = false]) => {
-        ...archive.files.map((e) => e.name),
-        ...state.added.keys,
-      }
-          .where((e) =>
-              e.startsWith(path) && !state.removed.contains(e) && e != path)
+  Iterable<String> getAssets(String path, [bool removeExtension = false]) =>
+      {...archive.files.map((e) => e.name), ...state.added.keys}
+          .where(
+            (e) =>
+                e.startsWith(path) && !state.removed.contains(e) && e != path,
+          )
           .map((e) => e.substring(path.length))
           .map((e) {
-        if (e.startsWith('/')) e = e.substring(1);
-        if (!removeExtension) return e;
-        final startExtension = e.lastIndexOf('.');
-        if (startExtension == -1) return e;
-        return e.substring(0, startExtension);
-      });
+            if (e.startsWith('/')) e = e.substring(1);
+            if (!removeExtension) return e;
+            final startExtension = e.lastIndexOf('.');
+            if (startExtension == -1) return e;
+            return e.substring(0, startExtension);
+          });
 }
 
 class SimpleArchiveData extends ArchiveData<SimpleArchiveData> {
   SimpleArchiveData(super.archive, {super.state});
-  SimpleArchiveData.build(super.archive,
-      {super.added, super.password, super.removed})
-      : super.build();
+  SimpleArchiveData.build(
+    super.archive, {
+    super.added,
+    super.password,
+    super.removed,
+  }) : super.build();
   SimpleArchiveData.empty({super.password}) : super.empty();
   SimpleArchiveData.fromBytes(super.bytes, {super.password})
-      : super.fromBytes();
+    : super.fromBytes();
 
   @override
   SimpleArchiveData updateState(ArchiveState state) =>

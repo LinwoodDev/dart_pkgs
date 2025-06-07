@@ -9,7 +9,11 @@ final _fontNames = <String>{};
 
 class SysAPIWindows extends SysAPIPlatform {
   static int _enumerateFonts(
-      Pointer<LOGFONT> logFont, Pointer<TEXTMETRIC> _, int fontType, int ___) {
+    Pointer<LOGFONT> logFont,
+    Pointer<TEXTMETRIC> _,
+    int fontType,
+    int _,
+  ) {
     // Get extended information from the font
     final logFontEx = logFont.cast<ENUMLOGFONTEX>();
     final name = logFontEx.ref.elfFullName;

@@ -45,15 +45,17 @@ abstract class NetworkerPipe<I, O> {
   }
 
   Future<void> onMessage(I data, [Channel channel = kAnyChannel]) async {
-    final result = await decodeChannel(data, channel);
-    if (result == null) return;
-    final (rawData, rawChannel) = result;
-    _readController.add(NetworkerPacket(rawData, rawChannel));
-    for (final plugin in _pipes.keys) {
-      try {
-        plugin.onMessage(rawData, rawChannel);
-      } catch (_) {}
-    }
+    try {
+      final result = await decodeChannel(data, channel);
+      if (result == null) return;
+      final (rawData, rawChannel) = result;
+      _readController.add(NetworkerPacket(rawData, rawChannel));
+      for (final plugin in _pipes.keys) {
+        try {
+          plugin.onMessage(rawData, rawChannel);
+        } catch (_) {}
+      }
+    } catch (_) {}
   }
 
   void _sendMessagePacket(NetworkerPacket packet) =>

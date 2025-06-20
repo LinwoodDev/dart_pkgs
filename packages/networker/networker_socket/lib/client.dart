@@ -68,6 +68,9 @@ class NetworkerSocketClient extends NetworkerClient {
   @override
   bool get isClosed => _channel == null || _channel?.closeCode != null;
 
+  int? get closeCode => _channel?.closeCode;
+  String? get closeReason => _channel?.closeReason;
+
   @override
   void sendPacket(Uint8List data, [Channel channel = kAnyChannel]) =>
       _channel?.sink.add(data);

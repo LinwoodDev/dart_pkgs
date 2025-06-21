@@ -14,8 +14,8 @@ class NetworkerSocketInfo extends ConnectionInfo {
   NetworkerSocketInfo(this.address, this.socket);
 
   @override
-  void close() {
-    socket.close();
+  void close([int? code, String? reason]) {
+    socket.close(code, reason);
   }
 
   @override

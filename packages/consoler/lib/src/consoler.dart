@@ -6,31 +6,71 @@ import 'package:consoler/consoler.dart';
 
 Stream<String> _readLine() =>
     stdin.transform(utf8.decoder).transform(const LineSplitter());
-List<String> _splitBySpaces(String input) {
-  final List<String> words = [];
-  bool inQuotes = false;
-  String currentWord = "";
 
-  for (int i = 0; i < input.length; i++) {
+List<String> _splitBySpaces(String input) {
+  final args = <String>[];
+  final buffer = StringBuffer();
+  bool inQuote = false;
+  String? quoteChar;
+  int braceCount = 0;
+  bool escape = false;
+
+  for (var i = 0; i < input.length; i++) {
     final char = input[i];
 
-    if (char == '"') {
-      inQuotes = !inQuotes;
-    } else if (char == ' ' && !inQuotes) {
-      if (currentWord.isNotEmpty) {
-        words.add(currentWord);
-        currentWord = "";
-      }
-    } else {
-      currentWord += char;
+    if (escape) {
+      buffer.write(char);
+      escape = false;
+      continue;
     }
+
+    // handle escape
+    if (char == r'\') {
+      escape = true;
+      continue;
+    }
+
+    // toggle quote state
+    if ((char == '"' || char == '\'')) {
+      if (!inQuote) {
+        inQuote = true;
+        quoteChar = char;
+      } else if (quoteChar == char) {
+        inQuote = false;
+      }
+      buffer.write(char);
+      continue;
+    }
+
+    // track braces only when not in quotes
+    if (!inQuote && char == '{') {
+      braceCount++;
+      buffer.write(char);
+      continue;
+    }
+    if (!inQuote && char == '}') {
+      braceCount--;
+      buffer.write(char);
+      continue;
+    }
+
+    // split on spaces when not in quotes or braces
+    if (!inQuote && braceCount == 0 && char == ' ') {
+      if (buffer.isNotEmpty) {
+        args.add(buffer.toString());
+        buffer.clear();
+      }
+      continue;
+    }
+
+    buffer.write(char);
   }
 
-  if (currentWord.isNotEmpty) {
-    words.add(currentWord);
+  if (buffer.isNotEmpty) {
+    args.add(buffer.toString());
   }
 
-  return words;
+  return args;
 }
 
 final class DefaultProgramConfiguration {

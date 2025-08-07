@@ -257,6 +257,7 @@ abstract class DirectoryFileSystem extends GeneralFileSystem
   factory DirectoryFileSystem.fromPlatform(
     FileSystemConfig config, {
     final ExternalStorage? storage,
+    bool useIsolates = false,
     CreateDefaultCallback<DirectoryFileSystem> createDefault =
         defaultCreateDefault,
   }) {
@@ -276,10 +277,12 @@ abstract class DirectoryFileSystem extends GeneralFileSystem
           config: config,
           storage: e,
           createDefault: createDefault,
+          useIsolates: useIsolates,
         ),
         _ => IODirectoryFileSystem(
           config: config,
           createDefault: createDefault,
+          useIsolates: useIsolates,
         ),
       };
     }

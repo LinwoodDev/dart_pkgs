@@ -8,11 +8,13 @@ import 'package:path/path.dart' as p;
 class IODirectoryFileSystem extends DirectoryFileSystem {
   @override
   final LocalStorage? storage;
+  final bool useIsolates;
 
   IODirectoryFileSystem({
     this.storage,
     required super.config,
     super.createDefault,
+    this.useIsolates = false,
   });
 
   String get remoteName => storage?.identifier ?? '';
@@ -84,11 +86,20 @@ class IODirectoryFileSystem extends DirectoryFileSystem {
     bool forceSync = false,
   }) async {
     path = normalizePath(path);
-    final file = File(await getAbsolutePath(path));
+    path = await getAbsolutePath(path);
+    if (useIsolates) {
+      await compute(_updateFile, (path, data));
+    } else {
+      await _updateFile((path, data));
+    }
+  }
+
+  Future<void> _updateFile((String, Uint8List) e) async {
+    final file = File(e.$1);
     if (!await file.exists()) {
       await file.create(recursive: true);
     }
-    await file.writeAsBytes(data);
+    await file.writeAsBytes(e.$2);
   }
 
   @override

@@ -89,7 +89,7 @@ import 'leap_localizations_zh.dart';
 /// property.
 abstract class LeapLocalizations {
   LeapLocalizations(String locale)
-    : localeName = intl.Intl.canonicalizedLocale(locale.toString());
+      : localeName = intl.Intl.canonicalizedLocale(locale.toString());
 
   final String localeName;
 
@@ -112,11 +112,11 @@ abstract class LeapLocalizations {
   /// of delegates is preferred or required.
   static const List<LocalizationsDelegate<dynamic>> localizationsDelegates =
       <LocalizationsDelegate<dynamic>>[
-        delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-      ];
+    delegate,
+    GlobalMaterialLocalizations.delegate,
+    GlobalCupertinoLocalizations.delegate,
+    GlobalWidgetsLocalizations.delegate,
+  ];
 
   /// A list of this localizations delegate's supported locales.
   static const List<Locale> supportedLocales = <Locale>[
@@ -149,7 +149,7 @@ abstract class LeapLocalizations {
     Locale('uk'),
     Locale('vi'),
     Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hant'),
-    Locale('zh'),
+    Locale('zh')
   ];
 
   /// No description provided for @color.
@@ -280,41 +280,40 @@ class _LeapLocalizationsDelegate
   @override
   Future<LeapLocalizations> load(Locale locale) {
     return SynchronousFuture<LeapLocalizations>(
-      lookupLeapLocalizations(locale),
-    );
+        lookupLeapLocalizations(locale));
   }
 
   @override
   bool isSupported(Locale locale) => <String>[
-    'af',
-    'ar',
-    'ca',
-    'cs',
-    'da',
-    'de',
-    'el',
-    'en',
-    'es',
-    'fi',
-    'fr',
-    'he',
-    'hu',
-    'it',
-    'ja',
-    'ko',
-    'nl',
-    'no',
-    'pl',
-    'pt',
-    'ro',
-    'ru',
-    'sr',
-    'sv',
-    'tr',
-    'uk',
-    'vi',
-    'zh',
-  ].contains(locale.languageCode);
+        'af',
+        'ar',
+        'ca',
+        'cs',
+        'da',
+        'de',
+        'el',
+        'en',
+        'es',
+        'fi',
+        'fr',
+        'he',
+        'hu',
+        'it',
+        'ja',
+        'ko',
+        'nl',
+        'no',
+        'pl',
+        'pt',
+        'ro',
+        'ru',
+        'sr',
+        'sv',
+        'tr',
+        'uk',
+        'vi',
+        'zh'
+      ].contains(locale.languageCode);
 
   @override
   bool shouldReload(_LeapLocalizationsDelegate old) => false;
@@ -406,9 +405,8 @@ LeapLocalizations lookupLeapLocalizations(Locale locale) {
   }
 
   throw FlutterError(
-    'LeapLocalizations.delegate failed to load unsupported locale "$locale". This is likely '
-    'an issue with the localizations generation tool. Please file an issue '
-    'on GitHub with a reproducible sample app and the gen-l10n configuration '
-    'that was used.',
-  );
+      'LeapLocalizations.delegate failed to load unsupported locale "$locale". This is likely '
+      'an issue with the localizations generation tool. Please file an issue '
+      'on GitHub with a reproducible sample app and the gen-l10n configuration '
+      'that was used.');
 }

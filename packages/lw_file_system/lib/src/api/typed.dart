@@ -52,6 +52,7 @@ class TypedDirectoryFileSystem<T> extends TypedFileSystem<T>
   factory TypedDirectoryFileSystem.build(
     FileSystemConfig config, {
     ExternalStorage? storage,
+    bool useIsolates = false,
     CreateDefaultCallback<TypedDirectoryFileSystem<T>> createDefault =
         defaultCreateDefault,
     required EncodeTypedFileSystemCallback<T> onEncode,
@@ -64,6 +65,7 @@ class TypedDirectoryFileSystem<T> extends TypedFileSystem<T>
       config,
       storage: storage,
       createDefault: createWrappedDefault,
+      useIsolates: useIsolates,
     );
     fileSystem = TypedDirectoryFileSystem._(
       directorySystem,

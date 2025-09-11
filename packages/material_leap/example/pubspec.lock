@@ -78,10 +78,10 @@ packages:
     dependency: transitive
     description:
       name: dart_mappable
-      sha256: "15f41a35da8ee690bbfa0059fa241edeeaea73f89a2ba685b354ece07cd8ada6"
+      sha256: "0e219930c9f7b9e0f14ae7c1de931c401875110fd5c67975b6b9492a6d3a531b"
       url: "https://pub.dev"
     source: hosted
-    version: "4.6.0"
+    version: "4.6.1"
   fake_async:
     dependency: transitive
     description:
@@ -149,10 +149,10 @@ packages:
     dependency: transitive
     description:
       name: leak_tracker
-      sha256: "8dcda04c3fc16c14f48a7bb586d4be1f0d1572731b6d81d51772ef47c02081e0"
+      sha256: "33e2e26bdd85a0112ec15400c8cbffea70d0f9c3407491f672a2fad47915e2de"
       url: "https://pub.dev"
     source: hosted
-    version: "11.0.1"
+    version: "11.0.2"
   leak_tracker_flutter_testing:
     dependency: transitive
     description:

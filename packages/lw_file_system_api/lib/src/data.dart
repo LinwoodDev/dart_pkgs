@@ -101,8 +101,16 @@ abstract class ArchiveData<T> {
     ),
   );
   T removeAsset(String name) => removeAssets([name]);
-  T removeAssets(Iterable<String> names) =>
-      updateState(state.copyWith(removed: {...state.removed, ...names}));
+  T removeAssets(Iterable<String> names) => updateState(
+    state.copyWith(
+      added: Map.from(state.added)
+        ..removeWhere((key, value) => names.contains(key)),
+      removed: {
+        ...state.removed,
+        ...names.where((name) => !state.added.containsKey(name)),
+      },
+    ),
+  );
 
   Iterable<String> getAssets(String path, [bool removeExtension = false]) =>
       {...archive.files.map((e) => e.name), ...state.added.keys}

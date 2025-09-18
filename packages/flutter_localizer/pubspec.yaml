@@ -1,10 +1,11 @@
 name: flutter_localizer
 description: Simple to use flutter package to localize your app.
 version: 1.0.1+1
-homepage: https://github.com/LinwoodCloud/dart_pkgs
-repository: https://github.com/LinwoodCloud/dart_pkgs
-documentation: https://github.com/LinwoodCloud/dart_pkgs
-issue_tracker: https://github.com/LinwoodCloud/dart_pkgs/issues
+homepage: https://github.com/LinwoodDev/dart_pkgs
+repository: https://github.com/LinwoodDev/dart_pkgs
+documentation: https://github.com/LinwoodDev/dart_pkgs
+issue_tracker: https://github.com/LinwoodDev/dart_pkgs/issues
+publish_to: none
 
 environment:
   sdk: '>=3.8.0 <4.0.0'
@@ -12,6 +13,10 @@ environment:
 dependencies: 
   flutter:
     sdk: flutter
-  localizer: ^1.0.2
+  localizer:
+    git:
+      url: https://github.com/LinwoodDev/dart_pkgs.git
+      path: packages/localizer
+      ref: ec6f31ba3eb0da17bdef6a8d66ef6caafcabd908
 dev_dependencies:
   flutter_lints: ^6.0.0

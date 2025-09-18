@@ -5,7 +5,7 @@
 ## Installation
 
 * Install the latest dart beta
-* `dart pub global activate -s https://github.com/LinwoodCloud/dart_pkgs.git --git-path packages/app_tools`
+* `dart pub global activate -s https://github.com/LinwoodDev/dart_pkgs.git --git-path packages/app_tools`
 
 ## Usage
 

@@ -1,7 +1,5 @@
 # Localizer
 
-![Pub Version](https://img.shields.io/pub/v/localizer?style=for-the-badge)
-
 Simple to use dart package to localize your app.
 
 ## Features
@@ -12,17 +10,7 @@ Simple to use dart package to localize your app.
 
 ## Getting started
 
-Add the package to your project.
-
-* Use `flutter pub add <package>` or `dart pub add <package>` to add this package to your project
-* Add the package manually to your project
-  
-  ```yaml
-    dependencies:
-        localizer: latest
-  ```
-
-  Replace latest with the latest version
+Add the package to your project using a git dependency.
 
 ## Usage
 

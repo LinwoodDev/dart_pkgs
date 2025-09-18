@@ -1,10 +1,10 @@
 name: localizer
 description: Simple to use dart package to localize your app.
 version: 1.0.1+1
-homepage: https://github.com/LinwoodCloud/dart_pkgs
-repository: https://github.com/LinwoodCloud/dart_pkgs
-documentation: https://github.com/LinwoodCloud/dart_pkgs
-issue_tracker: https://github.com/LinwoodCloud/dart_pkgs/issues
+homepage: https://github.com/LinwoodDev/dart_pkgs
+repository: https://github.com/LinwoodDev/dart_pkgs
+documentation: https://github.com/LinwoodDev/dart_pkgs
+issue_tracker: https://github.com/LinwoodDev/dart_pkgs/issues
 
 environment:
   sdk: '>=3.8.0 <4.0.0'

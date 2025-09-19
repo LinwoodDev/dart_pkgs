@@ -105,10 +105,7 @@ abstract class ArchiveData<T> {
     state.copyWith(
       added: Map.from(state.added)
         ..removeWhere((key, value) => names.contains(key)),
-      removed: {
-        ...state.removed,
-        ...names.where((name) => !state.added.containsKey(name)),
-      },
+      removed: {...state.removed, ...names},
     ),
   );
 

@@ -1,5 +1,6 @@
 // coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
+// dart format off
 // ignore_for_file: type=lint
 // ignore_for_file: unused_element, unnecessary_cast, override_on_non_overriding_member
 // ignore_for_file: strict_raw_type, inference_failure_on_untyped_parameter
@@ -66,8 +67,11 @@ mixin AssetLocationMappable {
   }
 
   AssetLocationCopyWith<AssetLocation, AssetLocation, AssetLocation>
-  get copyWith =>
-      _AssetLocationCopyWithImpl(this as AssetLocation, $identity, $identity);
+  get copyWith => _AssetLocationCopyWithImpl<AssetLocation, AssetLocation>(
+    this as AssetLocation,
+    $identity,
+    $identity,
+  );
   @override
   String toString() {
     return AssetLocationMapper.ensureInitialized().stringifyValue(
@@ -94,7 +98,7 @@ mixin AssetLocationMappable {
 extension AssetLocationValueCopy<$R, $Out>
     on ObjectCopyWith<$R, AssetLocation, $Out> {
   AssetLocationCopyWith<$R, AssetLocation, $Out> get $asAssetLocation =>
-      $base.as((v, t, t2) => _AssetLocationCopyWithImpl(v, t, t2));
+      $base.as((v, t, t2) => _AssetLocationCopyWithImpl<$R, $Out>(v, t, t2));
 }
 
 abstract class AssetLocationCopyWith<$R, $In extends AssetLocation, $Out>
@@ -127,5 +131,6 @@ class _AssetLocationCopyWithImpl<$R, $Out>
   @override
   AssetLocationCopyWith<$R2, AssetLocation, $Out2> $chain<$R2, $Out2>(
     Then<$Out2, $R2> t,
-  ) => _AssetLocationCopyWithImpl($value, $cast, t);
+  ) => _AssetLocationCopyWithImpl<$R2, $Out2>($value, $cast, t);
 }
+

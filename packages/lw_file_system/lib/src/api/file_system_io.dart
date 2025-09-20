@@ -121,26 +121,25 @@ class IODirectoryFileSystem extends DirectoryFileSystem {
     if (await directory.exists()) {
       return FileSystemDirectory(
         AssetLocation(path: path, remote: remoteName),
-        assets: (await directory.list(followLinks: false).toList())
-            .map((e) {
-              final current = universalPathContext.join(
-                path,
-                p.relative(e.path, from: absolutePath),
+        assets: (await Future.wait(
+          (await directory.list(followLinks: false).toList()).map((e) async {
+            final current = universalPathContext.join(
+              path,
+              p.relative(e.path, from: absolutePath),
+            );
+            if (e is File) {
+              return RawFileSystemFile(
+                AssetLocation(path: current, remote: remoteName),
+                data: readData ? await e.readAsBytes() : null,
               );
-              if (e is File) {
-                return RawFileSystemFile(
-                  AssetLocation(path: current, remote: remoteName),
-                  data: readData ? e.readAsBytesSync() : null,
-                );
-              } else if (e is Directory) {
-                return RawFileSystemDirectory(
-                  AssetLocation(path: current, remote: remoteName),
-                );
-              }
-              return null;
-            })
-            .nonNulls
-            .toList(),
+            } else if (e is Directory) {
+              return RawFileSystemDirectory(
+                AssetLocation(path: current, remote: remoteName),
+              );
+            }
+            return null;
+          }),
+        )).nonNulls.toList(),
       );
     }
     return null;

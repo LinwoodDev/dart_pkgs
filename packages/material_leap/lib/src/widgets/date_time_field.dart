@@ -12,7 +12,6 @@ class DateTimeField extends StatefulWidget {
   final ValueChanged<DateTime?> onChanged;
   final bool filled;
   final bool showTime;
-  final bool showIcon;
 
   const DateTimeField({
     super.key,
@@ -21,9 +20,8 @@ class DateTimeField extends StatefulWidget {
     required this.onChanged,
     this.canBeEmpty = false,
     this.icon,
-    this.filled = false,
+    this.filled = true,
     this.showTime = true,
-    this.showIcon = true,
   });
 
   @override
@@ -108,11 +106,9 @@ class _DateTimeFieldState extends State<DateTimeField> {
       onEditingComplete: _onChanged,
       decoration: InputDecoration(
         labelText: widget.label,
-        icon: widget.showIcon
-            ? (widget.icon ?? const PhosphorIcon(PhosphorIconsLight.calendar))
-            : null,
+        icon: widget.icon,
         filled: widget.filled,
-        suffix: Row(
+        suffixIcon: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
             IconButton(

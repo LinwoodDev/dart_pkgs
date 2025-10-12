@@ -10,6 +10,9 @@ class DateTimeField extends StatefulWidget {
   final Widget? icon;
   final bool canBeEmpty;
   final ValueChanged<DateTime?> onChanged;
+  final bool filled;
+  final bool showTime;
+  final bool showIcon;
 
   const DateTimeField({
     super.key,
@@ -18,6 +21,9 @@ class DateTimeField extends StatefulWidget {
     required this.onChanged,
     this.canBeEmpty = false,
     this.icon,
+    this.filled = false,
+    this.showTime = true,
+    this.showIcon = true,
   });
 
   @override
@@ -55,25 +61,37 @@ class _DateTimeFieldState extends State<DateTimeField> {
     widget.onChanged(value);
   }
 
-  String _format(DateTime value) =>
-      '${_dateFormat.format(value)} ${_timeFormat.format(value)}';
+  String _format(DateTime value) => widget.showTime
+      ? '${_dateFormat.format(value)} ${_timeFormat.format(value)}'
+      : _dateFormat.format(value);
 
   void _onChanged() {
     try {
-      final text = _controller.text;
+      final text = _controller.text.trim();
       if ((text.isEmpty && _value == null) ||
           (_value != null && text == _format(_value!))) {
         return;
       }
-      final splitted = text.trim().split(' ');
-      if (splitted.length != 2) {
+      if (text.isEmpty) {
         _change(null);
+        return;
+      }
+      if (!widget.showTime) {
+        final date = _dateFormat.parse(text);
+        final hour = _value?.hour ?? 0;
+        final minute = _value?.minute ?? 0;
+        _change(DateTime(date.year, date.month, date.day, hour, minute));
       } else {
-        final date = _dateFormat.parse(splitted[0]);
-        final time = _timeFormat.parse(splitted[1]);
-        _change(
-          DateTime(date.year, date.month, date.day, time.hour, time.minute),
-        );
+        final splitted = text.split(' ');
+        if (splitted.length != 2) {
+          _change(null);
+        } else {
+          final date = _dateFormat.parse(splitted[0]);
+          final time = _timeFormat.parse(splitted[1]);
+          _change(
+            DateTime(date.year, date.month, date.day, time.hour, time.minute),
+          );
+        }
       }
     } catch (_) {
       _change(null);
@@ -90,7 +108,10 @@ class _DateTimeFieldState extends State<DateTimeField> {
       onEditingComplete: _onChanged,
       decoration: InputDecoration(
         labelText: widget.label,
-        icon: widget.icon ?? const PhosphorIcon(PhosphorIconsLight.calendar),
+        icon: widget.showIcon
+            ? (widget.icon ?? const PhosphorIcon(PhosphorIconsLight.calendar))
+            : null,
+        filled: widget.filled,
         suffix: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -105,45 +126,54 @@ class _DateTimeFieldState extends State<DateTimeField> {
                 );
                 if (result != null) {
                   _change(
-                    DateTime(
-                      result.year,
-                      result.month,
-                      result.day,
-                      useValue.hour,
-                      useValue.minute,
-                    ),
+                    widget.showTime
+                        ? DateTime(
+                            result.year,
+                            result.month,
+                            result.day,
+                            useValue.hour,
+                            useValue.minute,
+                          )
+                        : DateTime(
+                            result.year,
+                            result.month,
+                            result.day,
+                            _value?.hour ?? 0,
+                            _value?.minute ?? 0,
+                          ),
                   );
                 }
               },
             ),
-            IconButton(
-              icon: const PhosphorIcon(PhosphorIconsLight.clock),
-              onPressed: () async {
-                final result = await showTimePicker(
-                  context: context,
-                  initialTime: TimeOfDay.fromDateTime(useValue),
-                  builder: (context, child) {
-                    return MediaQuery(
-                      data: MediaQuery.of(
-                        context,
-                      ).copyWith(alwaysUse24HourFormat: false),
-                      child: child ?? const SizedBox(),
+            if (widget.showTime)
+              IconButton(
+                icon: const PhosphorIcon(PhosphorIconsLight.clock),
+                onPressed: () async {
+                  final result = await showTimePicker(
+                    context: context,
+                    initialTime: TimeOfDay.fromDateTime(useValue),
+                    builder: (context, child) {
+                      return MediaQuery(
+                        data: MediaQuery.of(
+                          context,
+                        ).copyWith(alwaysUse24HourFormat: false),
+                        child: child ?? const SizedBox(),
+                      );
+                    },
+                  );
+                  if (result != null) {
+                    _change(
+                      DateTime(
+                        useValue.year,
+                        useValue.month,
+                        useValue.day,
+                        result.hour,
+                        result.minute,
+                      ),
                     );
-                  },
-                );
-                if (result != null) {
-                  _change(
-                    DateTime(
-                      useValue.year,
-                      useValue.month,
-                      useValue.day,
-                      result.hour,
-                      result.minute,
-                    ),
-                  );
-                }
-              },
-            ),
+                  }
+                },
+              ),
             if (widget.canBeEmpty)
               IconButton(
                 icon: const PhosphorIcon(PhosphorIconsLight.x),

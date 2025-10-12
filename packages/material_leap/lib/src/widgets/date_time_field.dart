@@ -43,19 +43,35 @@ class _DateTimeFieldState extends State<DateTimeField> {
     WidgetsBinding.instance.addPostFrameCallback((_) => setup());
   }
 
+  @override
+  void didUpdateWidget(covariant DateTimeField oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.initialValue != widget.initialValue) {
+      _value = widget.initialValue;
+      _updateText();
+    }
+    if (oldWidget.showTime != widget.showTime) {
+      _updateText();
+    }
+  }
+
+  void _updateText() {
+    _controller.text = _value == null ? '' : _format(_value!);
+  }
+
   void setup() {
     _locale = Localizations.localeOf(context).languageCode;
     initializeDateFormatting(_locale);
     _dateFormat = DateFormat.yMd(_locale);
     _timeFormat = DateFormat.Hm(_locale);
-    _controller.text = _value == null ? '' : _format(_value!);
+    _updateText();
   }
 
   void _change(DateTime? value) {
     setState(() {
       _value = value;
     });
-    _controller.text = _value == null ? '' : _format(_value!);
+    _updateText();
     widget.onChanged(value);
   }
 

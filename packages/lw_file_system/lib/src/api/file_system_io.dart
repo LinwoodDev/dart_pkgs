@@ -6,6 +6,14 @@ import 'package:lw_file_system/lw_file_system.dart';
 import 'package:path/path.dart' as p;
 import 'package:synchronized/synchronized.dart';
 
+Future<void> _updateFile((String, Uint8List) e) async {
+  final file = File(e.$1);
+  if (!await file.exists()) {
+    await file.create(recursive: true);
+  }
+  await file.writeAsBytes(e.$2);
+}
+
 class IODirectoryFileSystem extends DirectoryFileSystem {
   @override
   final LocalStorage? storage;
@@ -101,14 +109,6 @@ class IODirectoryFileSystem extends DirectoryFileSystem {
         await _updateFile((path, data));
       }
     });
-  }
-
-  Future<void> _updateFile((String, Uint8List) e) async {
-    final file = File(e.$1);
-    if (!await file.exists()) {
-      await file.create(recursive: true);
-    }
-    await file.writeAsBytes(e.$2);
   }
 
   @override

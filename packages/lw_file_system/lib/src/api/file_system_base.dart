@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:lw_file_system/lw_file_system.dart';
 import 'package:path/path.dart' as p;
 import 'package:rxdart/rxdart.dart';
+import 'package:synchronized/synchronized.dart';
 
 import 'file_system_dav.dart';
 import 'file_system_io.dart';
@@ -31,11 +32,15 @@ abstract class GeneralFileSystem {
 
   Future<void> reset();
 
+  final _initializeLock = Lock();
+
   Future<void> initialize({bool force = false}) async {
-    if (force) await reset();
-    if (force || !await isInitialized()) {
-      await runInitialize();
-    }
+    return _initializeLock.synchronized(() async {
+      if (force) await reset();
+      if (force || !await isInitialized()) {
+        await runInitialize();
+      }
+    });
   }
 
   @protected

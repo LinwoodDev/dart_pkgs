@@ -4,11 +4,14 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:lw_file_system/lw_file_system.dart';
 import 'package:path/path.dart' as p;
+import 'package:synchronized/synchronized.dart';
 
 class IODirectoryFileSystem extends DirectoryFileSystem {
   @override
   final LocalStorage? storage;
   final bool useIsolates;
+
+  final _lock = Lock();
 
   IODirectoryFileSystem({
     this.storage,
@@ -62,21 +65,25 @@ class IODirectoryFileSystem extends DirectoryFileSystem {
   @override
   Future<RawFileSystemDirectory> createDirectory(String path) async {
     path = normalizePath(path);
-    final directory = Directory(await getAbsolutePath(path));
-    if (!await directory.exists()) {
-      await directory.create(recursive: true);
-    }
-    return RawFileSystemDirectory(
-      AssetLocation(path: path, remote: remoteName),
-      assets: [],
-    );
+    return _lock.synchronized(() async {
+      final directory = Directory(await getAbsolutePath(path));
+      if (!await directory.exists()) {
+        await directory.create(recursive: true);
+      }
+      return RawFileSystemDirectory(
+        AssetLocation(path: path, remote: remoteName),
+        assets: [],
+      );
+    });
   }
 
   @override
   Future<void> deleteAsset(String path) async {
     path = normalizePath(path);
-    // This removes all types of entities
-    await Directory(await getAbsolutePath(path)).delete(recursive: true);
+    return _lock.synchronized(() async {
+      // This removes all types of entities
+      await Directory(await getAbsolutePath(path)).delete(recursive: true);
+    });
   }
 
   @override
@@ -87,11 +94,13 @@ class IODirectoryFileSystem extends DirectoryFileSystem {
   }) async {
     path = normalizePath(path);
     path = await getAbsolutePath(path);
-    if (useIsolates) {
-      await compute(_updateFile, (path, data));
-    } else {
-      await _updateFile((path, data));
-    }
+    return _lock.synchronized(() async {
+      if (useIsolates) {
+        await compute(_updateFile, (path, data));
+      } else {
+        await _updateFile((path, data));
+      }
+    });
   }
 
   Future<void> _updateFile((String, Uint8List) e) async {

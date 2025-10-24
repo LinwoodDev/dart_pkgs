@@ -230,9 +230,12 @@ mixin GeneralDirectoryFileSystem<T> on GeneralFileSystem {
     String newPath, {
     bool forceSync = false,
   }) async {
+    path = normalizePath(path);
+    newPath = normalizePath(newPath);
+    if (path == newPath) return getAsset(path);
     var asset = await duplicateAsset(path, newPath, forceSync: forceSync);
     if (asset == null) return null;
-    if (path != newPath) await deleteAsset(path);
+    await deleteAsset(path);
     return asset;
   }
 

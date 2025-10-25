@@ -3,7 +3,6 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:lw_file_system/lw_file_system.dart';
-import 'package:path/path.dart' as p;
 import 'package:synchronized/synchronized.dart';
 
 Future<void> _updateFile((String, Uint8List) e) async {
@@ -134,7 +133,7 @@ class IODirectoryFileSystem extends DirectoryFileSystem {
           (await directory.list(followLinks: false).toList()).map((e) async {
             final current = universalPathContext.join(
               path,
-              p.relative(e.path, from: absolutePath),
+              universalPathContext.relative(e.path, from: absolutePath),
             );
             if (e is File) {
               return RawFileSystemFile(

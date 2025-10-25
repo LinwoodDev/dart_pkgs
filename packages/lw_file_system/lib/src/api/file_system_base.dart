@@ -104,6 +104,17 @@ abstract class GeneralFileSystem {
     return variant;
   }
 
+  Future<String?> toRelativePath(String path) async {
+    final root = await getDirectory();
+    if (universalPathContext.isRelative(path)) {
+      return normalizePath(path);
+    }
+    if (universalPathContext.isWithin(root, path)) {
+      return universalPathContext.relative(path, from: root);
+    }
+    return null;
+  }
+
   Future<Uint8List?> loadAbsolute(String path) => Future.value(null);
 
   Future<void> saveAbsolute(String path, Uint8List bytes) => Future.value();

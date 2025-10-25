@@ -189,6 +189,9 @@ class WebDirectoryFileSystem extends DirectoryFileSystem with WebFileSystem {
   }
 
   @override
+  Future<String?> toRelativePath(String path) => Future.value(null);
+
+  @override
   Future<bool> updateFile(
     String path,
     List<int> data, {

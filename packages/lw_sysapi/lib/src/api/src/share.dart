@@ -3,7 +3,7 @@ import 'dart:typed_data';
 import 'package:share_plus/share_plus.dart';
 
 Future<void> exportUsingShare({
-  required List<int> bytes,
+  required Uint8List bytes,
   required String fileName,
   required String fileExtension,
   required String mimeType,
@@ -13,7 +13,7 @@ Future<void> exportUsingShare({
     ShareParams(
       files: [
         XFile.fromData(
-          Uint8List.fromList(bytes),
+          bytes,
           mimeType: mimeType,
           name: '$fileName.$fileExtension',
         ),

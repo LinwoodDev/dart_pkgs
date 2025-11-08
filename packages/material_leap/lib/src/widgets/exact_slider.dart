@@ -113,6 +113,7 @@ class _ExactSliderState extends State<ExactSlider> {
                   floatingLabelAlignment: FloatingLabelAlignment.center,
                 ),
                 textAlign: TextAlign.center,
+                keyboardType: TextInputType.number,
                 controller: _controller,
                 onEditingComplete: () => widget.onChangeEnd?.call(_value),
                 onChanged: (value) =>

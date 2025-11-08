@@ -7,6 +7,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 bool supportsShare() => kIsWeb || !Platform.isLinux;
+bool supportsSave() => kIsWeb || !Platform.isIOS;
 
 Future<void> exportFile({
   required BuildContext context,
@@ -18,7 +19,7 @@ Future<void> exportFile({
   required String label,
   bool share = false,
 }) async {
-  if (share && supportsShare()) {
+  if (share && supportsShare() || (!share && !supportsSave())) {
     return exportUsingShare(
       bytes: bytes,
       fileName: fileName,
@@ -27,12 +28,14 @@ Future<void> exportFile({
       label: label,
     );
   }
-  return save.exportFile(
-    bytes,
-    fileName,
-    fileExtension,
-    mimeType,
-    uniformTypeIdentifier,
-    label,
-  );
+  if (supportsSave()) {
+    return save.exportFile(
+      bytes,
+      fileName,
+      fileExtension,
+      mimeType,
+      uniformTypeIdentifier,
+      label,
+    );
+  }
 }

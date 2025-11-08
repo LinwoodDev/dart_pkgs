@@ -1,6 +1,8 @@
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:file_picker/file_picker.dart';
+import 'package:lw_sysapi/src/api/api.dart';
 
 Future<void> exportFile(
   Uint8List bytes,
@@ -10,11 +12,29 @@ Future<void> exportFile(
   String uniformTypeIdentifier,
   String label,
 ) async {
-  await FilePicker.platform.saveFile(
+  if (Platform.isAndroid) {
+    await platform.invokeMethod('saveFile', {
+      'mime': mimeType,
+      'data': bytes,
+      'name': '$fileName.$fileExtension',
+    });
+    return;
+  }
+  var file = await FilePicker.platform.saveFile(
     dialogTitle: label,
     fileName: '$fileName.$fileExtension',
     bytes: bytes,
     type: FileType.custom,
     allowedExtensions: [fileExtension],
   );
+  if (file == null) return;
+  if (!file.endsWith('.$fileExtension')) {
+    final dotIndex = file.lastIndexOf('.');
+    if (dotIndex != -1) {
+      file = file.substring(0, dotIndex);
+    }
+    file = '$file.$fileExtension';
+  }
+  final outputFile = File(file);
+  await outputFile.writeAsBytes(bytes);
 }

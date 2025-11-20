@@ -51,7 +51,8 @@ abstract class GeneralFileSystem {
 
   ExternalStorage? get storage => null;
 
-  String normalizePath(String path) => universalPathContext.canonicalize(path);
+  String normalizePath(String path) =>
+      universalPathContext.canonicalize(path.replaceAll('\\', '/'));
 
   String convertNameToFileSystem({
     String? name,

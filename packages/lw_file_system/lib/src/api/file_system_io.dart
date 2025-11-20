@@ -44,7 +44,19 @@ class IODirectoryFileSystem extends DirectoryFileSystem {
     if (await oldDirectory.exists()) {
       var files = await oldDirectory.list().toList();
       for (final file in files) {
-        final newEntityPath = '$newPath/${file.path.substring(oldPath.length)}';
+        final filePath = file.path.replaceAll('\\', '/');
+        final oldPathPosix = oldPath.replaceAll('\\', '/');
+        final newPathPosix = newPath.replaceAll('\\', '/');
+
+        final relativePath = universalPathContext.relative(
+          filePath,
+          from: oldPathPosix,
+        );
+        final newEntityPath = universalPathContext.join(
+          newPathPosix,
+          relativePath,
+        );
+
         if (file is File) {
           var newFile = File(newEntityPath);
           final content = await file.readAsBytes();
@@ -53,7 +65,7 @@ class IODirectoryFileSystem extends DirectoryFileSystem {
           await newFile.writeAsBytes(content);
           await file.delete();
         } else if (file is Directory) {
-          await moveAbsolute(file.path, newEntityPath);
+          await moveAbsolute(filePath, newEntityPath);
         }
       }
     }
@@ -147,6 +159,7 @@ class IODirectoryFileSystem extends DirectoryFileSystem {
   }) async {
     path = normalizePath(path);
     final absolutePath = await getAbsolutePath(path);
+    final absolutePathPosix = absolutePath.replaceAll('\\', '/');
     final file = File(absolutePath);
     if (await file.exists()) {
       return FileSystemFile(
@@ -162,7 +175,10 @@ class IODirectoryFileSystem extends DirectoryFileSystem {
           (await directory.list(followLinks: false).toList()).map((e) async {
             final current = universalPathContext.join(
               path,
-              universalPathContext.relative(e.path, from: absolutePath),
+              universalPathContext.relative(
+                e.path.replaceAll('\\', '/'),
+                from: absolutePathPosix,
+              ),
             );
             if (e is File) {
               return RawFileSystemFile(

@@ -32,6 +32,45 @@ class DavRemoteDirectoryFileSystem extends RemoteDirectoryFileSystem {
   }
 
   @override
+  Future<FileSystemEntity<Uint8List>?> moveAsset(
+    String path,
+    String newPath, {
+    bool forceSync = false,
+  }) async {
+    path = normalizePath(path);
+    newPath = normalizePath(newPath);
+    if (path == newPath) return getAsset(path);
+
+    if (path.startsWith('/')) {
+      path = path.substring(1);
+    }
+    if (newPath.startsWith('/')) {
+      newPath = newPath.substring(1);
+    }
+
+    final destinationUri = storage.buildVariantUri(
+      variant: config.currentPathVariant,
+      path: newPath.split('/'),
+    );
+
+    if (destinationUri == null) return null;
+
+    final response = await createRequest(
+      path.split('/'),
+      method: 'MOVE',
+      headers: {'Destination': destinationUri.toString(), 'Overwrite': 'T'},
+    );
+
+    if (response == null) return null;
+
+    if (response.statusCode != 201 && response.statusCode != 204) {
+      throw Exception('Failed to move asset: ${response.statusCode}');
+    }
+
+    return getAsset(newPath);
+  }
+
+  @override
   Future<void> deleteAsset(String path) async {
     path = normalizePath(path);
     if (path.startsWith('/')) {

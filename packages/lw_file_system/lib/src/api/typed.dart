@@ -143,6 +143,16 @@ class TypedDirectoryFileSystem<T> extends TypedFileSystem<T>
   @override
   Future<bool> moveAbsolute(String oldPath, String newPath) =>
       fileSystem.moveAbsolute(oldPath, newPath);
+
+  @override
+  Future<FileSystemEntity<T>?> moveAsset(
+    String path,
+    String newPath, {
+    bool forceSync = false,
+  }) {
+    // TODO: implement moveAsset
+    throw UnimplementedError();
+  }
 }
 
 class TypedKeyFileSystem<T> extends TypedFileSystem<T>

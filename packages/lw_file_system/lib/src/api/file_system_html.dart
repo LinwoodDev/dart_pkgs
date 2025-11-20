@@ -85,6 +85,21 @@ class WebDirectoryFileSystem extends DirectoryFileSystem with WebFileSystem {
   WebDirectoryFileSystem({required super.config, super.createDefault});
 
   @override
+  Future<FileSystemEntity<Uint8List>?> moveAsset(
+    String path,
+    String newPath, {
+    bool forceSync = false,
+  }) async {
+    path = normalizePath(path);
+    newPath = normalizePath(newPath);
+    if (path == newPath) return getAsset(path);
+    var asset = await duplicateAsset(path, newPath, forceSync: forceSync);
+    if (asset == null) return null;
+    await deleteAsset(path);
+    return asset;
+  }
+
+  @override
   Future<void> deleteAsset(String path) async {
     path = normalizePath(path);
     final db = await _getDatabase();

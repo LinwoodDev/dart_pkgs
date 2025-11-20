@@ -19,6 +19,7 @@ mixin RemoteFileSystem on GeneralFileSystem {
     String method = 'GET',
     List<int>? bodyBytes,
     String? body,
+    Map<String, String>? headers,
   }) async {
     final url = storage.buildVariantUri(
       variant: config.currentPathVariant,
@@ -33,6 +34,11 @@ mixin RemoteFileSystem on GeneralFileSystem {
       'Authorization',
       'Basic ${base64Encode(utf8.encode('${storage.username}:${await config.passwordStorage.read(storage)}'))}',
     );
+    if (headers != null) {
+      headers.forEach((key, value) {
+        request.headers.add(key, value);
+      });
+    }
     if (body != null) {
       final bytes = utf8.encode(body);
       request.headers.add('Content-Length', bytes.length.toString());

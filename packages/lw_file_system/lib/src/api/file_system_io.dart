@@ -85,6 +85,35 @@ class IODirectoryFileSystem extends DirectoryFileSystem {
   }
 
   @override
+  Future<FileSystemEntity<Uint8List>?> moveAsset(
+    String path,
+    String newPath, {
+    bool forceSync = false,
+  }) async {
+    path = normalizePath(path);
+    newPath = normalizePath(newPath);
+    if (path == newPath) return getAsset(path);
+
+    return _lock.synchronized(() async {
+      final oldFile = File(await getAbsolutePath(path));
+      final oldDir = Directory(await getAbsolutePath(path));
+      final newAbsolutePath = await getAbsolutePath(newPath);
+
+      if (await oldFile.exists()) {
+        await oldFile.rename(newAbsolutePath);
+        return FileSystemFile(
+          AssetLocation.local(newPath),
+          data: await File(newAbsolutePath).readAsBytes(),
+        );
+      } else if (await oldDir.exists()) {
+        await oldDir.rename(newAbsolutePath);
+        return getAsset(newPath, listLevel: 0);
+      }
+      return null;
+    });
+  }
+
+  @override
   Future<void> deleteAsset(String path) async {
     path = normalizePath(path);
     return _lock.synchronized(() async {

@@ -47,6 +47,16 @@ class WebDirectoryFileSystem extends DirectoryFileSystem {
   Future<void> runInitialize() {
     throw UnimplementedError();
   }
+
+  @override
+  Future<FileSystemEntity<Uint8List>?> moveAsset(
+    String path,
+    String newPath, {
+    bool forceSync = false,
+  }) {
+    // TODO: implement moveAsset
+    throw UnimplementedError();
+  }
 }
 
 class WebKeyFileSystem extends KeyFileSystem {

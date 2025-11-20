@@ -156,8 +156,6 @@ mixin GeneralDirectoryFileSystem<T> on GeneralFileSystem {
     if (newName.startsWith('/')) {
       newName = newName.substring(1);
     }
-    final asset = await getAsset(path);
-    if (asset == null) return null;
     final newPath = '${path.substring(0, path.lastIndexOf('/') + 1)}$newName';
     return moveAsset(path, newPath);
   }
@@ -168,7 +166,7 @@ mixin GeneralDirectoryFileSystem<T> on GeneralFileSystem {
     bool forceSync = false,
   }) async {
     path = normalizePath(path);
-    final asset = await getAsset(path);
+    final asset = await getAsset(path, listLevel: allListLevel);
     if (asset == null) return null;
     if (asset is FileSystemFile<T>) {
       final data = asset.data;
@@ -229,15 +227,7 @@ mixin GeneralDirectoryFileSystem<T> on GeneralFileSystem {
     String path,
     String newPath, {
     bool forceSync = false,
-  }) async {
-    path = normalizePath(path);
-    newPath = normalizePath(newPath);
-    if (path == newPath) return getAsset(path);
-    var asset = await duplicateAsset(path, newPath, forceSync: forceSync);
-    if (asset == null) return null;
-    await deleteAsset(path);
-    return asset;
-  }
+  });
 
   @override
   Future<void> reset() async {

@@ -149,10 +149,9 @@ class TypedDirectoryFileSystem<T> extends TypedFileSystem<T>
     String path,
     String newPath, {
     bool forceSync = false,
-  }) {
-    // TODO: implement moveAsset
-    throw UnimplementedError();
-  }
+  }) => fileSystem
+      .moveAsset(path, newPath, forceSync: forceSync)
+      .then((entity) => entity == null ? null : _toTypedAsset(entity));
 }
 
 class TypedKeyFileSystem<T> extends TypedFileSystem<T>

@@ -140,10 +140,14 @@ class DavRemoteDirectoryFileSystem extends RemoteDirectoryFileSystem {
       throw Exception('Failed to read asset: ${storage.identifier} $path');
     }
     var content = await getBodyString(response);
-    if (response.statusCode == 404 && path.isEmpty) {
-      await createRequest([], method: 'MKCOL');
-      response = await createRequest(path.split('/'), method: 'PROPFIND');
-      content = await getBodyString(response!);
+    if (response.statusCode == 404) {
+      if (path.isEmpty) {
+        await createRequest([], method: 'MKCOL');
+        response = await createRequest(path.split('/'), method: 'PROPFIND');
+        content = await getBodyString(response!);
+      } else {
+        return null;
+      }
     }
     if (response.statusCode != 207 ||
         fileName == null ||

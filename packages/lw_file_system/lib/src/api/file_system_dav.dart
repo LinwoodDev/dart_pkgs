@@ -16,19 +16,42 @@ class DavRemoteDirectoryFileSystem extends RemoteDirectoryFileSystem {
     super.createDefault,
   });
 
-  @override
-  Future<RawFileSystemDirectory> createDirectory(String path) async {
+  String _normalizePath(String path) {
     path = normalizePath(path);
     if (path.startsWith('/')) {
       path = path.substring(1);
     }
+    return path;
+  }
+
+  @override
+  Future<RawFileSystemDirectory> createDirectory(String path) async {
+    path = _normalizePath(path);
     final location = AssetLocation(remote: storage.identifier, path: path);
     final response = await createRequest(path.split('/'), method: 'MKCOL');
-    if (response == null) return RawFileSystemDirectory(location);
-    if (response.statusCode != 201) {
-      throw Exception('Failed to create directory: ${response.statusCode}');
+    if (response == null) {
+      throw FileSystemException(
+        'Failed to create directory: Request failed',
+        path,
+      );
     }
-    return RawFileSystemDirectory(location);
+    if (response.statusCode == 201) {
+      return RawFileSystemDirectory(location);
+    } else if (response.statusCode == 405) {
+      return RawFileSystemDirectory(location);
+    } else if (response.statusCode == 409) {
+      final parent = p.url.dirname(path);
+      if (parent != '.' && parent != '/') {
+        await createDirectory(parent);
+        return createDirectory(path);
+      }
+    }
+
+    throw FileSystemException(
+      'Failed to create directory',
+      path,
+      OSError('${response.statusCode} ${response.reasonPhrase}'),
+    );
   }
 
   @override
@@ -37,16 +60,9 @@ class DavRemoteDirectoryFileSystem extends RemoteDirectoryFileSystem {
     String newPath, {
     bool forceSync = false,
   }) async {
-    path = normalizePath(path);
-    newPath = normalizePath(newPath);
+    path = _normalizePath(path);
+    newPath = _normalizePath(newPath);
     if (path == newPath) return getAsset(path);
-
-    if (path.startsWith('/')) {
-      path = path.substring(1);
-    }
-    if (newPath.startsWith('/')) {
-      newPath = newPath.substring(1);
-    }
 
     final destinationUri = storage.buildVariantUri(
       variant: config.currentPathVariant,
@@ -55,16 +71,30 @@ class DavRemoteDirectoryFileSystem extends RemoteDirectoryFileSystem {
 
     if (destinationUri == null) return null;
 
-    final response = await createRequest(
+    var response = await createRequest(
       path.split('/'),
       method: 'MOVE',
       headers: {'Destination': destinationUri.toString(), 'Overwrite': 'T'},
     );
 
+    if (response != null && response.statusCode == 409) {
+      final parent = p.url.dirname(newPath);
+      await createDirectory(parent);
+      response = await createRequest(
+        path.split('/'),
+        method: 'MOVE',
+        headers: {'Destination': destinationUri.toString(), 'Overwrite': 'T'},
+      );
+    }
+
     if (response == null) return null;
 
     if (response.statusCode != 201 && response.statusCode != 204) {
-      throw Exception('Failed to move asset: ${response.statusCode}');
+      throw FileSystemException(
+        'Failed to move asset',
+        path,
+        OSError('${response.statusCode} ${response.reasonPhrase}'),
+      );
     }
 
     return getAsset(newPath);
@@ -72,14 +102,15 @@ class DavRemoteDirectoryFileSystem extends RemoteDirectoryFileSystem {
 
   @override
   Future<void> deleteAsset(String path) async {
-    path = normalizePath(path);
-    if (path.startsWith('/')) {
-      path = path.substring(1);
-    }
+    path = _normalizePath(path);
     final response = await createRequest(path.split('/'), method: 'DELETE');
     if (response == null) return;
-    if (response.statusCode != 204) {
-      throw Exception('Failed to delete asset: ${response.statusCode}');
+    if (response.statusCode != 204 && response.statusCode != 404) {
+      throw FileSystemException(
+        'Failed to delete asset',
+        path,
+        OSError('${response.statusCode} ${response.reasonPhrase}'),
+      );
     }
   }
 
@@ -89,10 +120,7 @@ class DavRemoteDirectoryFileSystem extends RemoteDirectoryFileSystem {
     bool readData = true,
     bool forceRemote = false,
   }) async {
-    path = normalizePath(path);
-    if (path.startsWith('/')) {
-      path = path.substring(1);
-    }
+    path = _normalizePath(path);
     final cached = await getCachedContent(path);
     if (cached != null && !forceRemote) {
       return cached;
@@ -125,8 +153,13 @@ class DavRemoteDirectoryFileSystem extends RemoteDirectoryFileSystem {
       );
     }
     final xml = XmlDocument.parse(content);
-    final responses = xml.findAllElements('d:response').where((element) {
-      final current = element.getElement('d:href')?.innerText;
+    final responses = xml.findAllElements('response', namespace: '*').where((
+      element,
+    ) {
+      final current = element
+          .findElements('href', namespace: '*')
+          .firstOrNull
+          ?.innerText;
       return current == fileName || current == '$fileName/';
     }).toList();
 
@@ -139,38 +172,47 @@ class DavRemoteDirectoryFileSystem extends RemoteDirectoryFileSystem {
     final currentElement = responses.first;
 
     final resourceType = currentElement
-        .findElements('d:propstat')
+        .findElements('propstat', namespace: '*')
         .first
-        .findElements('d:prop')
+        .findElements('prop', namespace: '*')
         .first
-        .findElements('d:resourcetype')
+        .findElements('resourcetype', namespace: '*')
         .first;
-    if (resourceType.getElement('d:collection') != null) {
+
+    final isCollection = resourceType
+        .findElements('collection', namespace: '*')
+        .isNotEmpty;
+
+    if (isCollection) {
       final assets = await Future.wait(
         xml
-            .findAllElements('d:response')
+            .findAllElements('response', namespace: '*')
             .where(
               (element) =>
                   element
-                      .getElement('d:href')
+                      .findElements('href', namespace: '*')
+                      .firstOrNull
                       ?.innerText
                       .startsWith(fileName) ??
                   false,
             )
             .where((element) {
-              final current = element.getElement('d:href')?.innerText;
+              final current = element
+                  .findElements('href', namespace: '*')
+                  .firstOrNull
+                  ?.innerText;
               return current != fileName && current != '$fileName/';
             })
             .map((e) async {
               final currentResourceType = e
-                  .findElements('d:propstat')
+                  .findElements('propstat', namespace: '*')
                   .first
-                  .findElements('d:prop')
+                  .findElements('prop', namespace: '*')
                   .first
-                  .findElements('d:resourcetype')
+                  .findElements('resourcetype', namespace: '*')
                   .first;
               var path = e
-                  .findElements('d:href')
+                  .findElements('href', namespace: '*')
                   .first
                   .innerText
                   .substring(rootDirectory.path.length);
@@ -181,21 +223,17 @@ class DavRemoteDirectoryFileSystem extends RemoteDirectoryFileSystem {
                 path = '/$path';
               }
               path = Uri.decodeComponent(path);
-              if (currentResourceType.getElement('d:collection') != null) {
+              final isDir = currentResourceType
+                  .findElements('collection', namespace: '*')
+                  .isNotEmpty;
+              if (isDir) {
                 return RawFileSystemDirectory(
                   AssetLocation(remote: storage.identifier, path: path),
                 );
               } else {
-                final dataResponse = await createRequest(
-                  path.split('/'),
-                  method: 'GET',
-                );
-                final fileContent = dataResponse == null
-                    ? null
-                    : await getBodyBytes(dataResponse);
                 return RawFileSystemFile(
                   AssetLocation(remote: storage.identifier, path: path),
-                  data: fileContent,
+                  data: null,
                 );
               }
             })
@@ -204,6 +242,12 @@ class DavRemoteDirectoryFileSystem extends RemoteDirectoryFileSystem {
       return RawFileSystemDirectory(
         AssetLocation(remote: storage.identifier, path: path),
         assets: assets,
+      );
+    }
+    if (!readData) {
+      return RawFileSystemFile(
+        AssetLocation(remote: storage.identifier, path: path),
+        data: null,
       );
     }
     response = await createRequest(path.split('/'), method: 'GET');
@@ -222,10 +266,7 @@ class DavRemoteDirectoryFileSystem extends RemoteDirectoryFileSystem {
 
   @override
   Future<DateTime?> getRemoteFileModified(String path) async {
-    path = normalizePath(path);
-    if (path.startsWith('/')) {
-      path = path.substring(1);
-    }
+    path = _normalizePath(path);
     final response = await createRequest(path.split('/'), method: 'PROPFIND');
     if (response?.statusCode != 207) {
       return null;
@@ -233,13 +274,13 @@ class DavRemoteDirectoryFileSystem extends RemoteDirectoryFileSystem {
     final body = await getBodyString(response!);
     final xml = XmlDocument.parse(body);
     final lastModified = xml
-        .findAllElements('d:response')
+        .findAllElements('response', namespace: '*')
         .firstOrNull
-        ?.findElements('d:propstat')
+        ?.findAllElements('propstat', namespace: '*')
         .firstOrNull
-        ?.findElements('d:prop')
+        ?.findAllElements('prop', namespace: '*')
         .firstOrNull
-        ?.findElements('d:getlastmodified')
+        ?.findAllElements('getlastmodified', namespace: '*')
         .firstOrNull
         ?.innerText;
     if (lastModified == null) {
@@ -252,12 +293,13 @@ class DavRemoteDirectoryFileSystem extends RemoteDirectoryFileSystem {
 
   @override
   Future<bool> hasAsset(String path) async {
-    path = normalizePath(path);
-    if (path.startsWith('/')) {
-      path = path.substring(1);
-    }
-    final response = await createRequest(path.split('/'));
-    return response?.statusCode == 200;
+    path = _normalizePath(path);
+    final response = await createRequest(
+      path.split('/'),
+      method: 'PROPFIND',
+      headers: {'Depth': '0'},
+    );
+    return response?.statusCode == 207 || response?.statusCode == 200;
   }
 
   @override
@@ -266,22 +308,27 @@ class DavRemoteDirectoryFileSystem extends RemoteDirectoryFileSystem {
     Uint8List data, {
     bool forceSync = false,
   }) async {
-    path = normalizePath(path);
-    if (path.startsWith('/')) path = path.substring(1);
+    path = _normalizePath(path);
     if (!forceSync && storage.hasDocumentCached(path)) {
       cacheContent(path, data);
     }
 
-    final directoryPath = p.dirname(path);
-    if (!await hasAsset(directoryPath)) {
-      await createDirectory(directoryPath);
-    }
-
-    final response = await createRequest(
+    var response = await createRequest(
       path.split('/'),
       method: 'PUT',
       bodyBytes: data,
     );
+
+    if (response != null && response.statusCode == 409) {
+      final directoryPath = p.url.dirname(path);
+      await createDirectory(directoryPath);
+      response = await createRequest(
+        path.split('/'),
+        method: 'PUT',
+        bodyBytes: data,
+      );
+    }
+
     if (response?.statusCode == 200 ||
         response?.statusCode == 201 ||
         response?.statusCode == 204) {

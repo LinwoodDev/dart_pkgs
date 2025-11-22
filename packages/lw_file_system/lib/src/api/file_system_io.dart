@@ -40,8 +40,34 @@ class IODirectoryFileSystem extends DirectoryFileSystem {
     if (oldPath == newPath) {
       return false;
     }
-    var oldDirectory = Directory(oldPath);
-    if (await oldDirectory.exists()) {
+
+    final stat = await FileStat.stat(oldPath);
+    final type = stat.type;
+    if (type == FileSystemEntityType.notFound) return false;
+
+    // Try atomic rename first
+    try {
+      if (type == FileSystemEntityType.file) {
+        await File(oldPath).rename(newPath);
+        return true;
+      } else if (type == FileSystemEntityType.directory) {
+        await Directory(oldPath).rename(newPath);
+        return true;
+      }
+    } catch (_) {
+      // Fallback to copy-delete if rename fails (e.g. cross-device)
+    }
+
+    if (type == FileSystemEntityType.file) {
+      final file = File(oldPath);
+      final newFile = File(newPath);
+      await newFile.parent.create(recursive: true);
+      // Use copy which is more efficient than reading bytes
+      await file.copy(newPath);
+      await file.delete();
+      return true;
+    } else if (type == FileSystemEntityType.directory) {
+      var oldDirectory = Directory(oldPath);
       var files = await oldDirectory.list().toList();
       for (final file in files) {
         final filePath = file.path.replaceAll('\\', '/');
@@ -57,19 +83,12 @@ class IODirectoryFileSystem extends DirectoryFileSystem {
           relativePath,
         );
 
-        if (file is File) {
-          var newFile = File(newEntityPath);
-          final content = await file.readAsBytes();
-          await newFile.parent.create(recursive: true);
-          await newFile.create(recursive: true);
-          await newFile.writeAsBytes(content);
-          await file.delete();
-        } else if (file is Directory) {
-          await moveAbsolute(filePath, newEntityPath);
-        }
+        await moveAbsolute(filePath, newEntityPath);
       }
+      await oldDirectory.delete();
+      return true;
     }
-    return true;
+    return false;
   }
 
   @override
@@ -112,13 +131,24 @@ class IODirectoryFileSystem extends DirectoryFileSystem {
       final newAbsolutePath = await getAbsolutePath(newPath);
 
       if (await oldFile.exists()) {
-        await oldFile.rename(newAbsolutePath);
+        try {
+          await oldFile.rename(newAbsolutePath);
+        } catch (_) {
+          await oldFile.copy(newAbsolutePath);
+          await oldFile.delete();
+        }
         return FileSystemFile(
           AssetLocation.local(newPath),
           data: await File(newAbsolutePath).readAsBytes(),
         );
       } else if (await oldDir.exists()) {
-        await oldDir.rename(newAbsolutePath);
+        try {
+          await oldDir.rename(newAbsolutePath);
+        } catch (_) {
+          // Fallback for directories is complex, use moveAbsolute logic or similar
+          // But moveAbsolute works on absolute paths, so we can use it.
+          await moveAbsolute(oldDir.path, newAbsolutePath);
+        }
         return getAsset(newPath, listLevel: 0);
       }
       return null;
@@ -129,8 +159,14 @@ class IODirectoryFileSystem extends DirectoryFileSystem {
   Future<void> deleteAsset(String path) async {
     path = normalizePath(path);
     return _lock.synchronized(() async {
-      // This removes all types of entities
-      await Directory(await getAbsolutePath(path)).delete(recursive: true);
+      final absPath = await getAbsolutePath(path);
+      final stat = await FileStat.stat(absPath);
+      final type = stat.type;
+      if (type == FileSystemEntityType.file) {
+        await File(absPath).delete();
+      } else if (type == FileSystemEntityType.directory) {
+        await Directory(absPath).delete(recursive: true);
+      }
     });
   }
 

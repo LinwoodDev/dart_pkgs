@@ -108,17 +108,27 @@ class WebDirectoryFileSystem extends DirectoryFileSystem with WebFileSystem {
       config.currentDataStoreName,
     ], 'readwrite');
     final store = txn.objectStore(config.storeName);
-    final data = await store.getObject(path) as Map<dynamic, dynamic>?;
-    await store.delete(path);
     final dataStore = txn.objectStore(config.currentDataStoreName);
+
+    final data = await store.getObject(path) as Map<dynamic, dynamic>?;
+
+    // Delete the item itself
+    await store.delete(path);
     await dataStore.delete(path);
+
     if (data?['type'] == 'directory') {
-      // delete all where key starts with path
-      final cursor = store.openCursor();
+      // Efficiently delete all children using a key range
+      // Ensure we only match children (starting with path + /)
+      final range = KeyRange.bound('$path/', '$path/\uffff');
+      final cursor = store.openCursor(range: range);
+
       await cursor.forEach((cursor) {
-        if (cursor.key.toString().startsWith(path)) {
-          deleteAsset(cursor.key.toString());
-        }
+        final key = cursor.key;
+        // Delete content from data store
+        dataStore.delete(key);
+        // Delete metadata from store (cursor.delete() is more efficient if supported/safe during iteration)
+        cursor.delete();
+        cursor.next();
       });
     }
     await txn.completed;

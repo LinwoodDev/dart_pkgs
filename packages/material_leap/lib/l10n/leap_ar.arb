@@ -3,8 +3,8 @@
   "red": "أحمر",
   "green": "أخضر",
   "blue": "أزرق",
-  "minimize": "Minimize",
-  "maximize": "Maximize",
+  "minimize": "صغّر",
+  "maximize": "تكبير",
   "close": "أغلق",
   "exitAlwaysOnTop": "الخروج دائما في الأعلى",
   "alwaysOnTop": "دائما في الأعلى",
@@ -12,11 +12,11 @@
   "fullScreen": "ملء الشاشة",
   "restore": "إستعادة",
   "copyMessage": "نسخ إلى الحافظة",
-  "reset": "Reset",
+  "reset": "إعادة التعيين",
   "shouldNotEmpty": "يجب ألا تكون هذه القيمة فارغة",
   "alreadyExists": "هذا العنصر موجود بالفعل",
   "create": "إنشاء",
-  "enterName": "الرجاء إدخال اسم",
+  "enterName": "يرجى إدخال اسم",
   "name": "الاسم",
-  "invalidName": "اسم غير صالح"
+  "invalidName": "الاسم غير صالح"
 }

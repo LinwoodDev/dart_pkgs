@@ -21,10 +21,10 @@ class LeapLocalizationsNo extends LeapLocalizations {
   String get blue => 'Blå';
 
   @override
-  String get minimize => 'Minimize';
+  String get minimize => 'Minimer';
 
   @override
-  String get maximize => 'Maximize';
+  String get maximize => 'Maksimer';
 
   @override
   String get close => 'Lukk';
@@ -48,7 +48,7 @@ class LeapLocalizationsNo extends LeapLocalizations {
   String get copyMessage => 'Kopiert til utklippstavle';
 
   @override
-  String get reset => 'Reset';
+  String get reset => 'Tilbakestill';
 
   @override
   String get shouldNotEmpty => 'Denne verdien kan ikke være tom';

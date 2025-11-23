@@ -9,62 +9,62 @@ class LeapLocalizationsAf extends LeapLocalizations {
   LeapLocalizationsAf([String locale = 'af']) : super(locale);
 
   @override
-  String get color => 'Color';
+  String get color => 'Kleur';
 
   @override
-  String get red => 'Red';
+  String get red => 'Rooi';
 
   @override
-  String get green => 'Green';
+  String get green => 'Groen';
 
   @override
-  String get blue => 'Blue';
+  String get blue => 'Blou';
 
   @override
-  String get minimize => 'Minimize';
+  String get minimize => 'Minimaliseer';
 
   @override
-  String get maximize => 'Maximize';
+  String get maximize => 'Maksimeer';
 
   @override
-  String get close => 'Close';
+  String get close => 'Maak toe';
 
   @override
-  String get exitAlwaysOnTop => 'Exit Always On Top';
+  String get exitAlwaysOnTop => 'Verlaat Altyd Bo';
 
   @override
-  String get alwaysOnTop => 'Always On Top';
+  String get alwaysOnTop => 'Altyd Bo';
 
   @override
-  String get exitFullScreen => 'Exit Full Screen';
+  String get exitFullScreen => 'Verlaat Volskerm';
 
   @override
-  String get fullScreen => 'Full Screen';
+  String get fullScreen => 'Volskerm';
 
   @override
-  String get restore => 'Restore';
+  String get restore => 'Herstel';
 
   @override
-  String get copyMessage => 'Copied to clipboard';
+  String get copyMessage => 'Gekopieer na knipbord';
 
   @override
-  String get reset => 'Reset';
+  String get reset => 'Herstel';
 
   @override
-  String get shouldNotEmpty => 'This value should not be empty';
+  String get shouldNotEmpty => 'Hierdie waarde moet nie leeg wees nie';
 
   @override
-  String get alreadyExists => 'This element already exists';
+  String get alreadyExists => 'Hierdie element bestaan reeds';
 
   @override
-  String get create => 'Create';
+  String get create => 'Skep';
 
   @override
-  String get enterName => 'Please enter a name';
+  String get enterName => 'Voer asseblief \'n naam in';
 
   @override
-  String get name => 'Name';
+  String get name => 'Naam';
 
   @override
-  String get invalidName => 'Invalid name';
+  String get invalidName => 'Ongeldige naam';
 }

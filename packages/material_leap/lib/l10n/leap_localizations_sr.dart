@@ -9,62 +9,62 @@ class LeapLocalizationsSr extends LeapLocalizations {
   LeapLocalizationsSr([String locale = 'sr']) : super(locale);
 
   @override
-  String get color => 'Color';
+  String get color => 'Боја';
 
   @override
-  String get red => 'Red';
+  String get red => 'Црвена';
 
   @override
-  String get green => 'Green';
+  String get green => 'Зелена';
 
   @override
-  String get blue => 'Blue';
+  String get blue => 'Плава';
 
   @override
-  String get minimize => 'Minimize';
+  String get minimize => 'Умањи';
 
   @override
-  String get maximize => 'Maximize';
+  String get maximize => 'Увећај';
 
   @override
-  String get close => 'Close';
+  String get close => 'Затвори';
 
   @override
-  String get exitAlwaysOnTop => 'Exit Always On Top';
+  String get exitAlwaysOnTop => 'Изађи из Увек на врху';
 
   @override
-  String get alwaysOnTop => 'Always On Top';
+  String get alwaysOnTop => 'Увек на врху';
 
   @override
-  String get exitFullScreen => 'Exit Full Screen';
+  String get exitFullScreen => 'Изађи из целог екрана';
 
   @override
-  String get fullScreen => 'Full Screen';
+  String get fullScreen => 'Цео екран';
 
   @override
-  String get restore => 'Restore';
+  String get restore => 'Врати';
 
   @override
-  String get copyMessage => 'Copied to clipboard';
+  String get copyMessage => 'Копирано у оставу';
 
   @override
-  String get reset => 'Reset';
+  String get reset => 'Ресетуј';
 
   @override
-  String get shouldNotEmpty => 'This value should not be empty';
+  String get shouldNotEmpty => 'Ова вредност не сме бити празна';
 
   @override
-  String get alreadyExists => 'This element already exists';
+  String get alreadyExists => 'Овај елемент већ постоји';
 
   @override
-  String get create => 'Create';
+  String get create => 'Направи';
 
   @override
-  String get enterName => 'Please enter a name';
+  String get enterName => 'Молимо унесите име';
 
   @override
-  String get name => 'Name';
+  String get name => 'Име';
 
   @override
-  String get invalidName => 'Invalid name';
+  String get invalidName => 'Неважеће име';
 }

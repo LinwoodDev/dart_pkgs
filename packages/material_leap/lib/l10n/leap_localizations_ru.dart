@@ -48,7 +48,7 @@ class LeapLocalizationsRu extends LeapLocalizations {
   String get copyMessage => 'Скопировано в буфер обмена';
 
   @override
-  String get reset => 'Reset';
+  String get reset => 'Сброс';
 
   @override
   String get shouldNotEmpty => 'Это значение не должно быть пустым';

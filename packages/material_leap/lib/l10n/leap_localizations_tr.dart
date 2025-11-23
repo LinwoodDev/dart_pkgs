@@ -30,16 +30,16 @@ class LeapLocalizationsTr extends LeapLocalizations {
   String get close => 'Kapat';
 
   @override
-  String get exitAlwaysOnTop => 'Exit Always On Top';
+  String get exitAlwaysOnTop => 'Her Zaman Üstte\'den Çık';
 
   @override
-  String get alwaysOnTop => 'Always On Top';
+  String get alwaysOnTop => 'Her Zaman Üstte';
 
   @override
-  String get exitFullScreen => 'Exit Full Screen';
+  String get exitFullScreen => 'Tam Ekrandan Çık';
 
   @override
-  String get fullScreen => 'Full Screen';
+  String get fullScreen => 'Tam Ekran';
 
   @override
   String get restore => 'Geri Yükle';
@@ -60,11 +60,11 @@ class LeapLocalizationsTr extends LeapLocalizations {
   String get create => 'Oluştur';
 
   @override
-  String get enterName => 'Please enter a name';
+  String get enterName => 'Lütfen bir ad girin';
 
   @override
   String get name => 'Ad';
 
   @override
-  String get invalidName => 'Invalid name';
+  String get invalidName => 'Geçersiz ad';
 }

@@ -9,62 +9,62 @@ class LeapLocalizationsHe extends LeapLocalizations {
   LeapLocalizationsHe([String locale = 'he']) : super(locale);
 
   @override
-  String get color => 'Color';
+  String get color => 'צבע';
 
   @override
-  String get red => 'Red';
+  String get red => 'אדום';
 
   @override
-  String get green => 'Green';
+  String get green => 'ירוק';
 
   @override
-  String get blue => 'Blue';
+  String get blue => 'כחול';
 
   @override
-  String get minimize => 'Minimize';
+  String get minimize => 'מזער';
 
   @override
-  String get maximize => 'Maximize';
+  String get maximize => 'הגדל';
 
   @override
-  String get close => 'Close';
+  String get close => 'סגור';
 
   @override
-  String get exitAlwaysOnTop => 'Exit Always On Top';
+  String get exitAlwaysOnTop => 'צא ממצב תמיד למעלה';
 
   @override
-  String get alwaysOnTop => 'Always On Top';
+  String get alwaysOnTop => 'תמיד למעלה';
 
   @override
-  String get exitFullScreen => 'Exit Full Screen';
+  String get exitFullScreen => 'צא ממסך מלא';
 
   @override
-  String get fullScreen => 'Full Screen';
+  String get fullScreen => 'מסך מלא';
 
   @override
-  String get restore => 'Restore';
+  String get restore => 'שחזר';
 
   @override
-  String get copyMessage => 'Copied to clipboard';
+  String get copyMessage => 'הועתק ללוח';
 
   @override
-  String get reset => 'Reset';
+  String get reset => 'אפס';
 
   @override
-  String get shouldNotEmpty => 'This value should not be empty';
+  String get shouldNotEmpty => 'ערך זה לא יכול להיות ריק';
 
   @override
-  String get alreadyExists => 'This element already exists';
+  String get alreadyExists => 'אלמנט זה כבר קיים';
 
   @override
-  String get create => 'Create';
+  String get create => 'צור';
 
   @override
-  String get enterName => 'Please enter a name';
+  String get enterName => 'נא להזין שם';
 
   @override
-  String get name => 'Name';
+  String get name => 'שם';
 
   @override
-  String get invalidName => 'Invalid name';
+  String get invalidName => 'שם לא חוקי';
 }

@@ -21,10 +21,10 @@ class LeapLocalizationsPl extends LeapLocalizations {
   String get blue => 'Niebieski';
 
   @override
-  String get minimize => 'Minimize';
+  String get minimize => 'Minimalizuj';
 
   @override
-  String get maximize => 'Maximize';
+  String get maximize => 'Maksymalizuj';
 
   @override
   String get close => 'Zamknij';
@@ -48,7 +48,7 @@ class LeapLocalizationsPl extends LeapLocalizations {
   String get copyMessage => 'Skopiowano do schowka';
 
   @override
-  String get reset => 'Reset';
+  String get reset => 'Resetuj';
 
   @override
   String get shouldNotEmpty => 'Ta wartość nie powinna być pusta';

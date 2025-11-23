@@ -48,7 +48,7 @@ class LeapLocalizationsIt extends LeapLocalizations {
   String get copyMessage => 'Copiato negli appunti';
 
   @override
-  String get reset => 'Reset';
+  String get reset => 'Reimposta';
 
   @override
   String get shouldNotEmpty => 'Questo valore non dovrebbe essere vuoto';

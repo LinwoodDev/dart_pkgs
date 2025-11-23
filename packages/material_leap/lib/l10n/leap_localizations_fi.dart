@@ -21,10 +21,10 @@ class LeapLocalizationsFi extends LeapLocalizations {
   String get blue => 'Sininen';
 
   @override
-  String get minimize => 'Minimize';
+  String get minimize => 'Pienennä';
 
   @override
-  String get maximize => 'Maximize';
+  String get maximize => 'Suurenna';
 
   @override
   String get close => 'Sulje';
@@ -48,7 +48,7 @@ class LeapLocalizationsFi extends LeapLocalizations {
   String get copyMessage => 'Kopioitu leikepöydälle';
 
   @override
-  String get reset => 'Reset';
+  String get reset => 'Palauta';
 
   @override
   String get shouldNotEmpty => 'Tämä arvo ei saa olla tyhjä';

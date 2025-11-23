@@ -48,7 +48,7 @@ class LeapLocalizationsFr extends LeapLocalizations {
   String get copyMessage => 'Copié dans le presse-papiers';
 
   @override
-  String get reset => 'Reset';
+  String get reset => 'Réinitialiser';
 
   @override
   String get shouldNotEmpty => 'Cette valeur ne doit pas être vide';

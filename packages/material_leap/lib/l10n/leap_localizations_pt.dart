@@ -21,10 +21,10 @@ class LeapLocalizationsPt extends LeapLocalizations {
   String get blue => 'azul';
 
   @override
-  String get minimize => 'Minimize';
+  String get minimize => 'Minimizar';
 
   @override
-  String get maximize => 'Maximize';
+  String get maximize => 'Maximizar';
 
   @override
   String get close => 'FECHAR';
@@ -48,7 +48,7 @@ class LeapLocalizationsPt extends LeapLocalizations {
   String get copyMessage => 'Copiado para o clipboard';
 
   @override
-  String get reset => 'Reset';
+  String get reset => 'Redefinir';
 
   @override
   String get shouldNotEmpty => 'Este valor não deve ser vazio';
@@ -57,13 +57,13 @@ class LeapLocalizationsPt extends LeapLocalizations {
   String get alreadyExists => 'Este elemento já existe';
 
   @override
-  String get create => 'Crio';
+  String get create => 'Criar';
 
   @override
   String get enterName => 'Por favor, digite um nome';
 
   @override
-  String get name => 'Nome:';
+  String get name => 'Nome';
 
   @override
   String get invalidName => 'Nome inválido';
@@ -86,10 +86,10 @@ class LeapLocalizationsPtBr extends LeapLocalizationsPt {
   String get blue => 'azul';
 
   @override
-  String get minimize => 'Minimize';
+  String get minimize => 'Minimizar';
 
   @override
-  String get maximize => 'Maximize';
+  String get maximize => 'Maximizar';
 
   @override
   String get close => 'Fechar';
@@ -113,7 +113,7 @@ class LeapLocalizationsPtBr extends LeapLocalizationsPt {
   String get copyMessage => 'Copiado para área de transferência';
 
   @override
-  String get reset => 'Reset';
+  String get reset => 'Redefinir';
 
   @override
   String get shouldNotEmpty => 'Este valor não deve ser vazio';
@@ -122,13 +122,13 @@ class LeapLocalizationsPtBr extends LeapLocalizationsPt {
   String get alreadyExists => 'Este elemento já existe';
 
   @override
-  String get create => 'Crio';
+  String get create => 'Criar';
 
   @override
   String get enterName => 'Por favor, digite um nome';
 
   @override
-  String get name => 'Nome:';
+  String get name => 'Nome';
 
   @override
   String get invalidName => 'Nome inválido';

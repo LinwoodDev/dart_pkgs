@@ -15,16 +15,16 @@ class LeapLocalizationsZh extends LeapLocalizations {
   String get red => '红色的';
 
   @override
-  String get green => 'Green';
+  String get green => '绿色';
 
   @override
   String get blue => '蓝色';
 
   @override
-  String get minimize => 'Minimize';
+  String get minimize => '最小化';
 
   @override
-  String get maximize => 'Maximize';
+  String get maximize => '最大化';
 
   @override
   String get close => '关闭';
@@ -48,7 +48,7 @@ class LeapLocalizationsZh extends LeapLocalizations {
   String get copyMessage => '复制到剪贴板';
 
   @override
-  String get reset => 'Reset';
+  String get reset => '重置';
 
   @override
   String get shouldNotEmpty => '此值不应为空';
@@ -95,16 +95,16 @@ class LeapLocalizationsZhHant extends LeapLocalizationsZh {
   String get close => '關閉';
 
   @override
-  String get exitAlwaysOnTop => 'Exit Always On Top';
+  String get exitAlwaysOnTop => '退出置頂';
 
   @override
-  String get alwaysOnTop => 'Always On Top';
+  String get alwaysOnTop => '置頂';
 
   @override
-  String get exitFullScreen => 'Exit Full Screen';
+  String get exitFullScreen => '退出全螢幕';
 
   @override
-  String get fullScreen => 'Full Screen';
+  String get fullScreen => '全螢幕';
 
   @override
   String get restore => '恢復';
@@ -125,7 +125,7 @@ class LeapLocalizationsZhHant extends LeapLocalizationsZh {
   String get create => '建立';
 
   @override
-  String get enterName => 'Please enter a name';
+  String get enterName => '請輸入名稱';
 
   @override
   String get name => '名稱';

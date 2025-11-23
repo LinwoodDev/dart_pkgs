@@ -21,10 +21,10 @@ class LeapLocalizationsEl extends LeapLocalizations {
   String get blue => 'Μπλε';
 
   @override
-  String get minimize => 'Minimize';
+  String get minimize => 'Ελαχιστοποίηση';
 
   @override
-  String get maximize => 'Maximize';
+  String get maximize => 'Μεγιστοποίηση';
 
   @override
   String get close => 'Κλείσιμο';
@@ -48,7 +48,7 @@ class LeapLocalizationsEl extends LeapLocalizations {
   String get copyMessage => 'Αντιγράφηκε στο πρόχειρο';
 
   @override
-  String get reset => 'Reset';
+  String get reset => 'Επαναφορά';
 
   @override
   String get shouldNotEmpty => 'Αυτή η τιμή δεν πρέπει να είναι κενή';

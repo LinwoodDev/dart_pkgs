@@ -12,34 +12,34 @@ class LeapLocalizationsVi extends LeapLocalizations {
   String get color => 'Màu sắc';
 
   @override
-  String get red => 'Red';
+  String get red => 'Đỏ';
 
   @override
-  String get green => 'Green';
+  String get green => 'Xanh lá';
 
   @override
-  String get blue => 'Blue';
+  String get blue => 'Xanh dương';
 
   @override
-  String get minimize => 'Minimize';
+  String get minimize => 'Thu nhỏ';
 
   @override
-  String get maximize => 'Maximize';
+  String get maximize => 'Phóng to';
 
   @override
   String get close => 'Đóng';
 
   @override
-  String get exitAlwaysOnTop => 'Exit Always On Top';
+  String get exitAlwaysOnTop => 'Tắt Luôn ở trên cùng';
 
   @override
-  String get alwaysOnTop => 'Always On Top';
+  String get alwaysOnTop => 'Luôn ở trên cùng';
 
   @override
-  String get exitFullScreen => 'Exit Full Screen';
+  String get exitFullScreen => 'Thoát toàn màn hình';
 
   @override
-  String get fullScreen => 'Full Screen';
+  String get fullScreen => 'Toàn màn hình';
 
   @override
   String get restore => 'Khôi phục';
@@ -48,23 +48,23 @@ class LeapLocalizationsVi extends LeapLocalizations {
   String get copyMessage => 'Đã sao chép vào bộ nhớ tạm';
 
   @override
-  String get reset => 'Reset';
+  String get reset => 'Đặt lại';
 
   @override
   String get shouldNotEmpty => 'Giá trị này không nên để trống';
 
   @override
-  String get alreadyExists => 'This element already exists';
+  String get alreadyExists => 'Phần tử này đã tồn tại';
 
   @override
   String get create => 'Tạo mới';
 
   @override
-  String get enterName => 'Please enter a name';
+  String get enterName => 'Vui lòng nhập tên';
 
   @override
   String get name => 'Tiêu đề';
 
   @override
-  String get invalidName => 'Invalid name';
+  String get invalidName => 'Tên không hợp lệ';
 }

@@ -21,16 +21,16 @@ class LeapLocalizationsJa extends LeapLocalizations {
   String get blue => '青';
 
   @override
-  String get minimize => 'Minimize';
+  String get minimize => '最小化';
 
   @override
-  String get maximize => 'Maximize';
+  String get maximize => '最大化';
 
   @override
   String get close => '閉じる';
 
   @override
-  String get exitAlwaysOnTop => 'Always On Top';
+  String get exitAlwaysOnTop => '常に手前に表示を終了';
 
   @override
   String get alwaysOnTop => '常に一番上に';
@@ -48,7 +48,7 @@ class LeapLocalizationsJa extends LeapLocalizations {
   String get copyMessage => 'クリップボードにコピーしました';
 
   @override
-  String get reset => 'Reset';
+  String get reset => 'リセット';
 
   @override
   String get shouldNotEmpty => 'この値は空にできません';

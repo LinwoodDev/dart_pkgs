@@ -6,17 +6,17 @@
   "minimize": "Küçült",
   "maximize": "Büyüt",
   "close": "Kapat",
-  "exitAlwaysOnTop": "Exit Always On Top",
-  "alwaysOnTop": "Always On Top",
-  "exitFullScreen": "Exit Full Screen",
-  "fullScreen": "Full Screen",
+  "exitAlwaysOnTop": "Her Zaman Üstte'den Çık",
+  "alwaysOnTop": "Her Zaman Üstte",
+  "exitFullScreen": "Tam Ekrandan Çık",
+  "fullScreen": "Tam Ekran",
   "restore": "Geri Yükle",
   "copyMessage": "Panoya kopyalandı",
   "reset": "Sıfırla",
   "shouldNotEmpty": "Bu değer boş bırakılamaz",
   "alreadyExists": "Bu öge zaten mevcut",
   "create": "Oluştur",
-  "enterName": "Please enter a name",
+  "enterName": "Lütfen bir ad girin",
   "name": "Ad",
-  "invalidName": "Invalid name"
+  "invalidName": "Geçersiz ad"
 }

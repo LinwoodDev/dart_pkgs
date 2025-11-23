@@ -21,10 +21,10 @@ class LeapLocalizationsAr extends LeapLocalizations {
   String get blue => 'أزرق';
 
   @override
-  String get minimize => 'Minimize';
+  String get minimize => 'صغّر';
 
   @override
-  String get maximize => 'Maximize';
+  String get maximize => 'تكبير';
 
   @override
   String get close => 'أغلق';
@@ -48,7 +48,7 @@ class LeapLocalizationsAr extends LeapLocalizations {
   String get copyMessage => 'نسخ إلى الحافظة';
 
   @override
-  String get reset => 'Reset';
+  String get reset => 'إعادة التعيين';
 
   @override
   String get shouldNotEmpty => 'يجب ألا تكون هذه القيمة فارغة';
@@ -60,11 +60,11 @@ class LeapLocalizationsAr extends LeapLocalizations {
   String get create => 'إنشاء';
 
   @override
-  String get enterName => 'الرجاء إدخال اسم';
+  String get enterName => 'يرجى إدخال اسم';
 
   @override
   String get name => 'الاسم';
 
   @override
-  String get invalidName => 'اسم غير صالح';
+  String get invalidName => 'الاسم غير صالح';
 }

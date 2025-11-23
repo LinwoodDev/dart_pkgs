@@ -21,10 +21,10 @@ class LeapLocalizationsRo extends LeapLocalizations {
   String get blue => 'Albastru';
 
   @override
-  String get minimize => 'Minimize';
+  String get minimize => 'Minimizează';
 
   @override
-  String get maximize => 'Maximize';
+  String get maximize => 'Maximizează';
 
   @override
   String get close => 'Inchide';
@@ -48,7 +48,7 @@ class LeapLocalizationsRo extends LeapLocalizations {
   String get copyMessage => 'Copiat în clipboard';
 
   @override
-  String get reset => 'Reset';
+  String get reset => 'Resetează';
 
   @override
   String get shouldNotEmpty => 'Această valoare nu trebuie să fie goală';

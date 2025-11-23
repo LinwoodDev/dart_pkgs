@@ -21,10 +21,10 @@ class LeapLocalizationsEs extends LeapLocalizations {
   String get blue => 'Azul';
 
   @override
-  String get minimize => 'Minimize';
+  String get minimize => 'Minimizar';
 
   @override
-  String get maximize => 'Maximize';
+  String get maximize => 'Maximizar';
 
   @override
   String get close => 'Cerrar';
@@ -48,7 +48,7 @@ class LeapLocalizationsEs extends LeapLocalizations {
   String get copyMessage => 'Copiado al portapapeles';
 
   @override
-  String get reset => 'Reset';
+  String get reset => 'Restablecer';
 
   @override
   String get shouldNotEmpty => 'Este valor no debe estar vacío';

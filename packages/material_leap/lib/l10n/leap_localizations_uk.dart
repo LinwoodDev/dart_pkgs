@@ -21,16 +21,16 @@ class LeapLocalizationsUk extends LeapLocalizations {
   String get blue => 'Синій';
 
   @override
-  String get minimize => 'Minimize';
+  String get minimize => 'Згорнути';
 
   @override
-  String get maximize => 'Maximize';
+  String get maximize => 'Розгорнути';
 
   @override
   String get close => 'Закрити';
 
   @override
-  String get exitAlwaysOnTop => 'Вийти Always On вгорі';
+  String get exitAlwaysOnTop => 'Вийти з режиму \"Завжди зверху\"';
 
   @override
   String get alwaysOnTop => 'Завжди вгорі';
@@ -48,7 +48,7 @@ class LeapLocalizationsUk extends LeapLocalizations {
   String get copyMessage => 'Скопійовано до буферу обміну';
 
   @override
-  String get reset => 'Reset';
+  String get reset => 'Скинути';
 
   @override
   String get shouldNotEmpty => 'Це значення не може бути порожнім';

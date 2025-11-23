@@ -12,13 +12,13 @@ class LeapLocalizationsHu extends LeapLocalizations {
   String get color => 'Szín';
 
   @override
-  String get red => 'Red';
+  String get red => 'Piros';
 
   @override
-  String get green => 'Green';
+  String get green => 'Zöld';
 
   @override
-  String get blue => 'Blue';
+  String get blue => 'Kék';
 
   @override
   String get minimize => 'Kis méret';
@@ -30,16 +30,16 @@ class LeapLocalizationsHu extends LeapLocalizations {
   String get close => 'Bezár';
 
   @override
-  String get exitAlwaysOnTop => 'Exit Always On Top';
+  String get exitAlwaysOnTop => 'Kilépés a Mindig felül módból';
 
   @override
-  String get alwaysOnTop => 'Always On Top';
+  String get alwaysOnTop => 'Mindig felül';
 
   @override
-  String get exitFullScreen => 'Exit Full Screen';
+  String get exitFullScreen => 'Kilépés a teljes képernyőből';
 
   @override
-  String get fullScreen => 'Full Screen';
+  String get fullScreen => 'Teljes képernyő';
 
   @override
   String get restore => 'Visszaállítás';
@@ -48,23 +48,23 @@ class LeapLocalizationsHu extends LeapLocalizations {
   String get copyMessage => 'Vágólapra másolva';
 
   @override
-  String get reset => 'Reset';
+  String get reset => 'Visszaállítás';
 
   @override
   String get shouldNotEmpty => 'Nem hagyhatja üresen';
 
   @override
-  String get alreadyExists => 'This element already exists';
+  String get alreadyExists => 'Ez az elem már létezik';
 
   @override
   String get create => 'Létrehozás';
 
   @override
-  String get enterName => 'Please enter a name';
+  String get enterName => 'Kérjük, adjon meg egy nevet';
 
   @override
   String get name => 'Név';
 
   @override
-  String get invalidName => 'Invalid name';
+  String get invalidName => 'Érvénytelen név';
 }

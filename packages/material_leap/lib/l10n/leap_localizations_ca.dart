@@ -12,59 +12,59 @@ class LeapLocalizationsCa extends LeapLocalizations {
   String get color => 'Color';
 
   @override
-  String get red => 'Red';
+  String get red => 'Vermell';
 
   @override
-  String get green => 'Green';
+  String get green => 'Verd';
 
   @override
-  String get blue => 'Blue';
+  String get blue => 'Blau';
 
   @override
-  String get minimize => 'Minimize';
+  String get minimize => 'Minimitzar';
 
   @override
-  String get maximize => 'Maximize';
+  String get maximize => 'Maximitzar';
 
   @override
-  String get close => 'Close';
+  String get close => 'Tancar';
 
   @override
-  String get exitAlwaysOnTop => 'Exit Always On Top';
+  String get exitAlwaysOnTop => 'Sortir de Sempre a dalt';
 
   @override
-  String get alwaysOnTop => 'Always On Top';
+  String get alwaysOnTop => 'Sempre a dalt';
 
   @override
-  String get exitFullScreen => 'Exit Full Screen';
+  String get exitFullScreen => 'Sortir de Pantalla completa';
 
   @override
-  String get fullScreen => 'Full Screen';
+  String get fullScreen => 'Pantalla completa';
 
   @override
-  String get restore => 'Restore';
+  String get restore => 'Restaurar';
 
   @override
-  String get copyMessage => 'Copied to clipboard';
+  String get copyMessage => 'Copiat al porta-retalls';
 
   @override
-  String get reset => 'Reset';
+  String get reset => 'Restablir';
 
   @override
-  String get shouldNotEmpty => 'This value should not be empty';
+  String get shouldNotEmpty => 'Aquest valor no hauria d\'estar buit';
 
   @override
-  String get alreadyExists => 'This element already exists';
+  String get alreadyExists => 'Aquest element ja existeix';
 
   @override
   String get create => 'Crear';
 
   @override
-  String get enterName => 'Please enter a name';
+  String get enterName => 'Si us plau, introduïu un nom';
 
   @override
   String get name => 'Nom';
 
   @override
-  String get invalidName => 'Invalid name';
+  String get invalidName => 'Nom no vàlid';
 }

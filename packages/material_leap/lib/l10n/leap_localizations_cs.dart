@@ -21,10 +21,10 @@ class LeapLocalizationsCs extends LeapLocalizations {
   String get blue => 'Modrá';
 
   @override
-  String get minimize => 'Minimize';
+  String get minimize => 'Minimalizovat';
 
   @override
-  String get maximize => 'Maximize';
+  String get maximize => 'Maximalizovat';
 
   @override
   String get close => 'Zavřít';
@@ -48,7 +48,7 @@ class LeapLocalizationsCs extends LeapLocalizations {
   String get copyMessage => 'Zkopírováno do schránky';
 
   @override
-  String get reset => 'Reset';
+  String get reset => 'Resetovat';
 
   @override
   String get shouldNotEmpty => 'Tato hodnota by neměla být prázdná';

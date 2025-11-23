@@ -39,6 +39,7 @@ class ThemeBox extends StatelessWidget {
         ),
         Row(
           mainAxisSize: MainAxisSize.min,
+          textDirection: TextDirection.ltr,
           children: [
             Container(
               width: size,

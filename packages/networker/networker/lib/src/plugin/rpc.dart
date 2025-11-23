@@ -38,7 +38,7 @@ final class RpcNetworkerPacket {
     var function = bytes[0];
     int currentOffset = 1;
     if (config.extendedFunctionIdentifiers) {
-      function |= bytes[currentOffset] << 8;
+      function = (function << 8) | bytes[currentOffset];
       currentOffset++;
     }
     Channel sender = kAnyChannel;

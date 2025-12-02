@@ -2,3 +2,5 @@ commit_message: '[ci skip]'
 files:
   - source: /packages/material_leap/lib/l10n/leap_en.arb
     translation: /packages/material_leap/lib/l10n/leap_%osx_locale%.arb
+  - source: /packages/keybinder/lib/l10n/keybinder_en.arb
+    translation: /packages/keybinder/lib/l10n/keybinder_%osx_locale%.arb

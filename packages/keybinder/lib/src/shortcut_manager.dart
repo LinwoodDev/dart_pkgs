@@ -11,15 +11,11 @@ abstract class KeybinderStore {
 /// Defines a shortcut with an ID, display name, intent, and default activator.
 class ShortcutDefinition {
   final String id;
-  final String displayName;
   final Intent intent;
   final ShortcutActivator defaultActivator;
 
-  Type get intentType => intent.runtimeType;
-
   const ShortcutDefinition({
     required this.id,
-    required this.displayName,
     required this.intent,
     required this.defaultActivator,
   });
@@ -28,7 +24,6 @@ class ShortcutDefinition {
 /// Manages keyboard shortcuts, including persistence and state management.
 class Keybinder with ChangeNotifier {
   final Map<String, ShortcutDefinition> _definitionsById = {};
-  final Map<Type, ShortcutDefinition> _definitionsByType = {};
   final Map<String, ShortcutActivator> _activators = {};
   final KeybinderStore? _store;
 
@@ -42,22 +37,21 @@ class Keybinder with ChangeNotifier {
   }) : _store = store {
     for (final def in definitions) {
       _definitionsById[def.id] = def;
-      _definitionsByType[def.intentType] = def;
       _activators[def.id] = def.defaultActivator;
     }
     _load();
   }
 
-  /// Returns the current activator for the given Intent type.
-  ShortcutActivator getActivator(Type intentType) {
-    final def = _definitionsByType[intentType];
+  /// Returns the current activator for the given ID.
+  ShortcutActivator getActivator(String id) {
+    final def = _definitionsById[id];
     if (def == null) return const SingleActivator(LogicalKeyboardKey.keyA);
-    return _activators[def.id] ?? def.defaultActivator;
+    return _activators[id] ?? def.defaultActivator;
   }
 
-  /// Returns the definition for the given Intent type.
-  ShortcutDefinition? getDefinition(Type intentType) {
-    return _definitionsByType[intentType];
+  /// Returns the definition for the given ID.
+  ShortcutDefinition? getDefinition(String id) {
+    return _definitionsById[id];
   }
 
   /// Returns all registered definitions.
@@ -65,38 +59,35 @@ class Keybinder with ChangeNotifier {
 
   /// Generates the map of activators to intents for use in the [Shortcuts] widget.
   ///
-  /// [intentTypes] is a list of Intent types that should be active.
-  Map<ShortcutActivator, Intent> getShortcuts([List<Type>? intentTypes]) {
+  /// [ids] is a list of IDs that should be active.
+  Map<ShortcutActivator, Intent> getShortcuts([List<String>? ids]) {
     final result = <ShortcutActivator, Intent>{};
-    for (final type in intentTypes ?? _definitionsByType.keys) {
-      final def = _definitionsByType[type];
+    for (final id in ids ?? _definitionsById.keys) {
+      final def = _definitionsById[id];
       if (def != null) {
-        final activator = _activators[def.id] ?? def.defaultActivator;
+        final activator = _activators[id] ?? def.defaultActivator;
         result[activator] = def.intent;
       }
     }
     return result;
   }
 
-  /// Updates the binding for a specific Intent type.
-  Future<void> updateBinding(
-    Type intentType,
-    SingleActivator newActivator,
-  ) async {
-    final def = _definitionsByType[intentType];
+  /// Updates the binding for a specific ID.
+  Future<void> updateBinding(String id, SingleActivator newActivator) async {
+    final def = _definitionsById[id];
     if (def == null) return;
 
-    _activators[def.id] = newActivator;
+    _activators[id] = newActivator;
     notifyListeners();
     await _save();
   }
 
-  /// Resets the binding for a specific Intent type to its default.
-  Future<void> resetBinding(Type intentType) async {
-    final def = _definitionsByType[intentType];
+  /// Resets the binding for a specific ID to its default.
+  Future<void> resetBinding(String id) async {
+    final def = _definitionsById[id];
     if (def == null) return;
 
-    _activators[def.id] = def.defaultActivator;
+    _activators[id] = def.defaultActivator;
     notifyListeners();
     await _save();
   }

@@ -32,13 +32,11 @@ class _MyAppState extends State<MyApp> {
       definitions: [
         const ShortcutDefinition(
           id: 'increment',
-          displayName: 'Increment Counter',
           intent: IncrementIntent(),
           defaultActivator: SingleActivator(LogicalKeyboardKey.arrowUp),
         ),
         const ShortcutDefinition(
           id: 'decrement',
-          displayName: 'Decrement Counter',
           intent: DecrementIntent(),
           defaultActivator: SingleActivator(LogicalKeyboardKey.arrowDown),
         ),
@@ -100,27 +98,27 @@ class HomePage extends StatelessWidget {
             const SizedBox(height: 20),
             const Text("Increment Key:"),
             KeyRecorderButton(
-              currentActivator: keybinder.getActivator(IncrementIntent),
+              currentActivator: keybinder.getActivator('increment'),
               onNewKey: (newKey) =>
-                  keybinder.updateBinding(IncrementIntent, newKey),
-              onReset: () => keybinder.resetBinding(IncrementIntent),
+                  keybinder.updateBinding('increment', newKey),
+              onReset: () => keybinder.resetBinding('increment'),
             ),
             const SizedBox(height: 20),
             const Text("Decrement Key:"),
             KeyRecorderButton(
-              currentActivator: keybinder.getActivator(DecrementIntent),
+              currentActivator: keybinder.getActivator('decrement'),
               onNewKey: (newKey) =>
-                  keybinder.updateBinding(DecrementIntent, newKey),
-              onReset: () => keybinder.resetBinding(DecrementIntent),
+                  keybinder.updateBinding('decrement', newKey),
+              onReset: () => keybinder.resetBinding('decrement'),
             ),
             const SizedBox(height: 20),
             const Text("List Tile Example:"),
             KeyRecorderListTile(
               title: const Text("Increment (Tile)"),
-              currentActivator: keybinder.getActivator(IncrementIntent),
+              currentActivator: keybinder.getActivator('increment'),
               onNewKey: (newKey) =>
-                  keybinder.updateBinding(IncrementIntent, newKey),
-              onReset: () => keybinder.resetBinding(IncrementIntent),
+                  keybinder.updateBinding('increment', newKey),
+              onReset: () => keybinder.resetBinding('increment'),
             ),
             const SizedBox(height: 20),
             ElevatedButton(

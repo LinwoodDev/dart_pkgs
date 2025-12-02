@@ -45,14 +45,12 @@ final keybinder = Keybinder(
   definitions: [
     ShortcutDefinition(
       id: 'increment',
-      displayName: 'Increment Counter',
-      intentType: IncrementIntent,
+      intent: IncrementIntent(),
       defaultActivator: const SingleActivator(LogicalKeyboardKey.arrowUp),
     ),
     ShortcutDefinition(
       id: 'decrement',
-      displayName: 'Decrement Counter',
-      intentType: DecrementIntent,
+      intent: DecrementIntent(),
       defaultActivator: const SingleActivator(LogicalKeyboardKey.arrowDown),
     ),
   ],
@@ -75,10 +73,7 @@ class MyApp extends StatelessWidget {
           localizationsDelegates: KeybinderLocalizations.localizationsDelegates,
           supportedLocales: KeybinderLocalizations.supportedLocales,
           home: Shortcuts(
-            shortcuts: keybinder.getShortcuts([
-              IncrementIntent,
-              DecrementIntent,
-            ]),
+            shortcuts: keybinder.getShortcuts(),
             child: Actions(
               actions: <Type, Action<Intent>>{
                 IncrementIntent: CallbackAction<IncrementIntent>(onInvoke: (_) => print("Increment!")),
@@ -100,7 +95,7 @@ Use the `KeyRecorder` widget in your settings page.
 
 ```dart
 KeyRecorder(
-  currentActivator: keybinder.getActivator(IncrementIntent),
-  onNewKey: (newKey) => keybinder.updateBinding(IncrementIntent, newKey),
+  currentActivator: keybinder.getActivator('increment'),
+  onNewKey: (newKey) => keybinder.updateBinding('increment', newKey),
 )
 ```

@@ -1,7 +1,7 @@
 {
   "clickToSet": "クリックして設定",
   "pressAnyKey": "キーを押してください...",
-  "controlKey": "Ctrl",
+  "controlKey": "(Ctrl)",
   "shiftKey": "Shift",
   "altKey": "Alt",
   "metaKey": "Meta"

@@ -18,6 +18,7 @@ import 'leap_localizations_fi.dart';
 import 'leap_localizations_fr.dart';
 import 'leap_localizations_he.dart';
 import 'leap_localizations_hu.dart';
+import 'leap_localizations_id.dart';
 import 'leap_localizations_it.dart';
 import 'leap_localizations_ja.dart';
 import 'leap_localizations_ko.dart';
@@ -133,6 +134,7 @@ abstract class LeapLocalizations {
     Locale('fr'),
     Locale('he'),
     Locale('hu'),
+    Locale('id'),
     Locale('it'),
     Locale('ja'),
     Locale('ko'),
@@ -299,6 +301,7 @@ class _LeapLocalizationsDelegate
     'fr',
     'he',
     'hu',
+    'id',
     'it',
     'ja',
     'ko',
@@ -373,6 +376,8 @@ LeapLocalizations lookupLeapLocalizations(Locale locale) {
       return LeapLocalizationsHe();
     case 'hu':
       return LeapLocalizationsHu();
+    case 'id':
+      return LeapLocalizationsId();
     case 'it':
       return LeapLocalizationsIt();
     case 'ja':

@@ -1,0 +1,22 @@
+{
+  "color": "Warna",
+  "red": "Merah",
+  "green": "Hijau",
+  "blue": "Biru",
+  "minimize": "Minimalkan",
+  "maximize": "Maksimalkan",
+  "close": "Tutup",
+  "exitAlwaysOnTop": "Keluar dari Selalu di Atas",
+  "alwaysOnTop": "Selalu di Atas",
+  "exitFullScreen": "Keluar dari Layar Penuh",
+  "fullScreen": "Layar Penuh",
+  "restore": "Pulihkan",
+  "copyMessage": "Disalin ke papan klip",
+  "reset": "Atur Ulang",
+  "shouldNotEmpty": "Nilai ini tidak boleh kosong",
+  "alreadyExists": "Elemen ini sudah ada",
+  "create": "Buat",
+  "enterName": "Silakan masukkan nama",
+  "name": "Nama",
+  "invalidName": "Nama tidak valid"
+}

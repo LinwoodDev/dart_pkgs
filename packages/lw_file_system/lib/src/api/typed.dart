@@ -41,7 +41,8 @@ class TypedDirectoryFileSystem<T> extends TypedFileSystem<T>
     return null;
   }
 
-  TypedDirectoryFileSystem._(
+  @protected
+  TypedDirectoryFileSystem.raw(
     this.fileSystem, {
     required super.onDecode,
     required super.onEncode,
@@ -67,7 +68,7 @@ class TypedDirectoryFileSystem<T> extends TypedFileSystem<T>
       createDefault: createWrappedDefault,
       useIsolates: useIsolates,
     );
-    fileSystem = TypedDirectoryFileSystem._(
+    fileSystem = TypedDirectoryFileSystem.raw(
       directorySystem,
       onEncode: onEncode,
       onDecode: onDecode,
@@ -170,7 +171,8 @@ class TypedKeyFileSystem<T> extends TypedFileSystem<T>
     return null;
   }
 
-  TypedKeyFileSystem._(
+  @protected
+  TypedKeyFileSystem.raw(
     this.fileSystem, {
     required super.onDecode,
     required super.onEncode,
@@ -194,7 +196,7 @@ class TypedKeyFileSystem<T> extends TypedFileSystem<T>
       storage: storage,
       createDefault: createWrappedDefault,
     );
-    fileSystem = TypedKeyFileSystem._(
+    fileSystem = TypedKeyFileSystem.raw(
       keySystem,
       onEncode: onEncode,
       onDecode: onDecode,

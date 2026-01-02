@@ -228,3 +228,75 @@ class MockKeyFileSystem extends KeyFileSystem {
     return _files.keys.toList();
   }
 }
+
+class MockTypedDirectoryFileSystem<T> extends TypedDirectoryFileSystem<T> {
+  MockTypedDirectoryFileSystem._(
+    MockFileSystem super.mockFileSystem, {
+    required super.onEncode,
+    required super.onDecode,
+    required super.config,
+    super.createDefault,
+  }) : super.raw();
+
+  factory MockTypedDirectoryFileSystem({
+    required EncodeTypedFileSystemCallback<T> onEncode,
+    required DecodeTypedFileSystemCallback<T> onDecode,
+    required FileSystemConfig config,
+    CreateDefaultCallback<TypedDirectoryFileSystem<T>> createDefault =
+        defaultCreateDefault,
+  }) {
+    MockTypedDirectoryFileSystem<T>? fs;
+    final mock = MockFileSystem(
+      config: config,
+      createDefault: (_) async {
+        if (fs != null) {
+          await fs.runDefault();
+        }
+      },
+    );
+    fs = MockTypedDirectoryFileSystem._(
+      mock,
+      onEncode: onEncode,
+      onDecode: onDecode,
+      config: config,
+      createDefault: createDefault,
+    );
+    return fs;
+  }
+}
+
+class MockTypedKeyFileSystem<T> extends TypedKeyFileSystem<T> {
+  MockTypedKeyFileSystem._(
+    MockKeyFileSystem super.mockFileSystem, {
+    required super.onEncode,
+    required super.onDecode,
+    required super.config,
+    super.createDefault,
+  }) : super.raw();
+
+  factory MockTypedKeyFileSystem({
+    required EncodeTypedFileSystemCallback<T> onEncode,
+    required DecodeTypedFileSystemCallback<T> onDecode,
+    required FileSystemConfig config,
+    CreateDefaultCallback<TypedKeyFileSystem<T>> createDefault =
+        defaultCreateDefault,
+  }) {
+    MockTypedKeyFileSystem<T>? fs;
+    final mock = MockKeyFileSystem(
+      config: config,
+      createDefault: (_) async {
+        if (fs != null) {
+          await fs.runDefault();
+        }
+      },
+    );
+    fs = MockTypedKeyFileSystem._(
+      mock,
+      onEncode: onEncode,
+      onDecode: onDecode,
+      config: config,
+      createDefault: createDefault,
+    );
+    return fs;
+  }
+}

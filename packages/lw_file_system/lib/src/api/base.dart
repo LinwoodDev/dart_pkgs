@@ -8,10 +8,9 @@ import 'package:path/path.dart' as p;
 import 'package:rxdart/rxdart.dart';
 import 'package:synchronized/synchronized.dart';
 
-import 'file_system_dav.dart';
-import 'file_system_io.dart';
-import 'file_system_html_stub.dart'
-    if (dart.library.js_interop) 'file_system_html.dart';
+import 'dav.dart';
+import 'io.dart';
+import 'html_stub.dart' if (dart.library.js_interop) 'html.dart';
 
 part 'base/directory.dart';
 part 'base/key.dart';

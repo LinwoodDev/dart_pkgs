@@ -29,7 +29,7 @@ Future<void> initStores(
 }
 
 class FileSystemConfig {
-  final PasswordStorage passwordStorage;
+  final PasswordStorage? passwordStorage;
   final String Function() getUnnamed;
   final String storeName, variant;
   final String? cacheVariant, pathVariant, dataStoreName, defaultStorageKey;
@@ -45,8 +45,8 @@ class FileSystemConfig {
     return '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
   }
 
-  FileSystemConfig({
-    required this.passwordStorage,
+  const FileSystemConfig({
+    this.passwordStorage,
     required this.storeName,
     required this.getDirectory,
     this.getUnnamed = FileSystemConfig.unnamedDate,

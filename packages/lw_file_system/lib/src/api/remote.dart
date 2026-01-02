@@ -33,7 +33,7 @@ mixin RemoteFileSystem on GeneralFileSystem {
     final request = await client.openUrl(method, url);
     request.headers.add(
       'Authorization',
-      'Basic ${base64Encode(utf8.encode('${storage.username}:${await config.passwordStorage.read(storage)}'))}',
+      'Basic ${base64Encode(utf8.encode('${storage.username}:${await config.passwordStorage?.read(storage)}'))}',
     );
     if (headers != null) {
       headers.forEach((key, value) {

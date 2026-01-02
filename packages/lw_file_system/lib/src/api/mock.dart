@@ -7,7 +7,10 @@ class MockFileSystem extends DirectoryFileSystem {
   final Map<String, Uint8List> _files = {};
   bool _initialized = false;
 
-  MockFileSystem({required super.config, super.createDefault});
+  MockFileSystem({
+    super.config = const MockFileSystemConfig(),
+    super.createDefault,
+  });
 
   @override
   FutureOr<bool> isInitialized() => _initialized;
@@ -166,7 +169,10 @@ class MockKeyFileSystem extends KeyFileSystem {
   final Map<String, Uint8List> _files = {};
   bool _initialized = false;
 
-  MockKeyFileSystem({required super.config, super.createDefault});
+  MockKeyFileSystem({
+    super.config = const MockFileSystemConfig(),
+    super.createDefault,
+  });
 
   @override
   FutureOr<bool> isInitialized() => _initialized;
@@ -241,10 +247,11 @@ class MockTypedDirectoryFileSystem<T> extends TypedDirectoryFileSystem<T> {
   factory MockTypedDirectoryFileSystem({
     required EncodeTypedFileSystemCallback<T> onEncode,
     required DecodeTypedFileSystemCallback<T> onDecode,
-    required FileSystemConfig config,
+    FileSystemConfig? config,
     CreateDefaultCallback<TypedDirectoryFileSystem<T>> createDefault =
         defaultCreateDefault,
   }) {
+    config ??= const MockFileSystemConfig();
     MockTypedDirectoryFileSystem<T>? fs;
     final mock = MockFileSystem(
       config: config,
@@ -277,10 +284,11 @@ class MockTypedKeyFileSystem<T> extends TypedKeyFileSystem<T> {
   factory MockTypedKeyFileSystem({
     required EncodeTypedFileSystemCallback<T> onEncode,
     required DecodeTypedFileSystemCallback<T> onDecode,
-    required FileSystemConfig config,
+    FileSystemConfig? config,
     CreateDefaultCallback<TypedKeyFileSystem<T>> createDefault =
         defaultCreateDefault,
   }) {
+    config ??= MockFileSystemConfig();
     MockTypedKeyFileSystem<T>? fs;
     final mock = MockKeyFileSystem(
       config: config,
@@ -299,4 +307,17 @@ class MockTypedKeyFileSystem<T> extends TypedKeyFileSystem<T> {
     );
     return fs;
   }
+}
+
+Future<String> _mockGetDirectory(ExternalStorage? storage) async =>
+    '/lw_file_system';
+
+class MockFileSystemConfig extends FileSystemConfig {
+  const MockFileSystemConfig()
+    : super(
+        storeName: 'mock',
+        getDirectory: _mockGetDirectory,
+        database: 'mock_db',
+        databaseVersion: 1,
+      );
 }

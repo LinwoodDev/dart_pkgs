@@ -25,9 +25,8 @@ class DavRemoteDirectoryFileSystem extends RemoteDirectoryFileSystem {
   }
 
   @override
-  Future<RawFileSystemDirectory> createDirectory(String path) async {
+  Future<void> createRemoteDirectory(String path) async {
     path = _normalizePath(path);
-    final location = AssetLocation(remote: storage.identifier, path: path);
     final response = await createRequest(path.split('/'), method: 'MKCOL');
     if (response == null) {
       throw FileSystemException(
@@ -36,14 +35,14 @@ class DavRemoteDirectoryFileSystem extends RemoteDirectoryFileSystem {
       );
     }
     if (response.statusCode == 201) {
-      return RawFileSystemDirectory(location);
+      return;
     } else if (response.statusCode == 405) {
-      return RawFileSystemDirectory(location);
+      return;
     } else if (response.statusCode == 409) {
       final parent = p.url.dirname(path);
       if (parent != '.' && parent != '/') {
-        await createDirectory(parent);
-        return createDirectory(path);
+        await createRemoteDirectory(parent);
+        return createRemoteDirectory(path);
       }
     }
 
@@ -55,21 +54,17 @@ class DavRemoteDirectoryFileSystem extends RemoteDirectoryFileSystem {
   }
 
   @override
-  Future<FileSystemEntity<Uint8List>?> moveAsset(
-    String path,
-    String newPath, {
-    bool forceSync = false,
-  }) async {
+  Future<void> moveRemoteAsset(String path, String newPath) async {
     path = _normalizePath(path);
     newPath = _normalizePath(newPath);
-    if (path == newPath) return getAsset(path);
+    if (path == newPath) return;
 
     final destinationUri = storage.buildVariantUri(
       variant: config.currentPathVariant,
       path: newPath.split('/'),
     );
 
-    if (destinationUri == null) return null;
+    if (destinationUri == null) return;
 
     var response = await createRequest(
       path.split('/'),
@@ -79,7 +74,7 @@ class DavRemoteDirectoryFileSystem extends RemoteDirectoryFileSystem {
 
     if (response != null && response.statusCode == 409) {
       final parent = p.url.dirname(newPath);
-      await createDirectory(parent);
+      await createRemoteDirectory(parent);
       response = await createRequest(
         path.split('/'),
         method: 'MOVE',
@@ -87,7 +82,7 @@ class DavRemoteDirectoryFileSystem extends RemoteDirectoryFileSystem {
       );
     }
 
-    if (response == null) return null;
+    if (response == null) return;
 
     if (response.statusCode != 201 && response.statusCode != 204) {
       throw FileSystemException(
@@ -96,12 +91,10 @@ class DavRemoteDirectoryFileSystem extends RemoteDirectoryFileSystem {
         OSError('${response.statusCode} ${response.reasonPhrase}'),
       );
     }
-
-    return getAsset(newPath);
   }
 
   @override
-  Future<void> deleteAsset(String path) async {
+  Future<void> deleteRemoteAsset(String path) async {
     path = _normalizePath(path);
     final response = await createRequest(path.split('/'), method: 'DELETE');
     if (response == null) return;
@@ -307,15 +300,8 @@ class DavRemoteDirectoryFileSystem extends RemoteDirectoryFileSystem {
   }
 
   @override
-  Future<void> updateFile(
-    String path,
-    Uint8List data, {
-    bool forceSync = false,
-  }) async {
+  Future<void> uploadFile(String path, Uint8List data) async {
     path = _normalizePath(path);
-    if (!forceSync && storage.hasDocumentCached(path)) {
-      cacheContent(path, data);
-    }
 
     var response = await createRequest(
       path.split('/'),
@@ -325,7 +311,7 @@ class DavRemoteDirectoryFileSystem extends RemoteDirectoryFileSystem {
 
     if (response != null && response.statusCode == 409) {
       final directoryPath = p.url.dirname(path);
-      await createDirectory(directoryPath);
+      await createRemoteDirectory(directoryPath);
       response = await createRequest(
         path.split('/'),
         method: 'PUT',

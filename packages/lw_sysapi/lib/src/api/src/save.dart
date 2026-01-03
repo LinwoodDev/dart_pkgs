@@ -1,7 +1,7 @@
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/foundation.dart';
 import 'package:lw_sysapi/src/api/api.dart';
 
 Future<void> exportFile(
@@ -12,7 +12,7 @@ Future<void> exportFile(
   String uniformTypeIdentifier,
   String label,
 ) async {
-  if (Platform.isAndroid) {
+  if (!kIsWeb && Platform.isAndroid) {
     await platform.invokeMethod('saveFile', {
       'mime': mimeType,
       'data': bytes,

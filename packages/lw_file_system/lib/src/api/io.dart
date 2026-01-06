@@ -236,7 +236,7 @@ class IODirectoryFileSystem extends DirectoryFileSystem {
 
   @override
   Future<bool> isInitialized() async =>
-      Directory(await config.getDirectory(storage)).exists();
+      Directory(await getDirectory()).exists();
 
   @override
   Future<void> runInitialize() async {

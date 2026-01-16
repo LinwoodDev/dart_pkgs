@@ -9,6 +9,12 @@ class ResponsiveDialog extends StatelessWidget {
   final Widget? child;
   final ResponsiveWidgetBuilder? builder;
   final BoxConstraints? constraints;
+  final ShapeBorder? shape;
+  final Color? backgroundColor;
+  final double? elevation;
+  final EdgeInsets? insetPadding;
+  final Clip clipBehavior;
+  final AlignmentGeometry? alignment;
 
   const ResponsiveDialog({
     super.key,
@@ -16,6 +22,12 @@ class ResponsiveDialog extends StatelessWidget {
     this.builder,
     this.breakpoint = LeapBreakpoints.compact,
     this.constraints,
+    this.shape,
+    this.backgroundColor,
+    this.elevation,
+    this.insetPadding,
+    this.clipBehavior = Clip.none,
+    this.alignment,
   }) : assert(
          (child == null && builder != null) ||
              (child != null && builder == null),
@@ -26,10 +38,19 @@ class ResponsiveDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     final currentSize = MediaQuery.sizeOf(context).width;
     if (currentSize < breakpoint) {
-      return Dialog.fullscreen(child: builder?.call(context, true) ?? child);
+      return Dialog.fullscreen(
+        backgroundColor: backgroundColor,
+        child: builder?.call(context, true) ?? child,
+      );
     } else {
       final content = builder?.call(context, false) ?? child;
       return Dialog(
+        shape: shape,
+        backgroundColor: backgroundColor,
+        elevation: elevation,
+        insetPadding: insetPadding,
+        clipBehavior: clipBehavior,
+        alignment: alignment,
         child: constraints == null
             ? content
             : ConstrainedBox(constraints: constraints!, child: content),
@@ -52,6 +73,12 @@ class ResponsiveAlertDialog extends StatelessWidget {
   final EdgeInsets? actionsPadding, contentPadding;
   final VerticalDirection? actionsOverflowDirection;
   final EdgeInsetsGeometry? buttonPadding;
+  final ShapeBorder? shape;
+  final Color? backgroundColor;
+  final double? elevation;
+  final EdgeInsets? insetPadding;
+  final Clip clipBehavior;
+  final AlignmentGeometry? alignment;
 
   const ResponsiveAlertDialog({
     super.key,
@@ -70,6 +97,12 @@ class ResponsiveAlertDialog extends StatelessWidget {
     this.leading,
     required this.title,
     this.contentPadding,
+    this.shape,
+    this.backgroundColor,
+    this.elevation,
+    this.insetPadding,
+    this.clipBehavior = Clip.none,
+    this.alignment,
   }) : assert(
          (content == null && contentBuilder != null) ||
              (content != null && contentBuilder == null),
@@ -83,6 +116,12 @@ class ResponsiveAlertDialog extends StatelessWidget {
     return ResponsiveDialog(
       breakpoint: breakpoint,
       constraints: constraints,
+      shape: shape,
+      backgroundColor: backgroundColor,
+      elevation: elevation,
+      insetPadding: insetPadding,
+      clipBehavior: clipBehavior,
+      alignment: alignment,
       builder: (context, isFullWidth) => Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         mainAxisSize: MainAxisSize.min,

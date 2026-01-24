@@ -66,9 +66,7 @@ abstract class RemoteFileSystem extends DirectoryFileSystem {
   @override
   RemoteStorage get storage;
 
-  RemoteFileSystem({required super.config, super.createDefault}) {
-    _loadQueue();
-  }
+  RemoteFileSystem({required super.config, super.createDefault});
 
   final client = HttpClient();
 
@@ -396,47 +394,6 @@ abstract class RemoteFileSystem extends DirectoryFileSystem {
       .where((op) => op.status == SyncOperationStatus.permanentlyFailed)
       .length;
 
-  Future<File> get _queueFile async {
-    final dir = await getDirectory();
-    return File(p.join(dir, '.sync_queue.json'));
-  }
-
-  Future<void> _loadQueue() async {
-    try {
-      final file = await _queueFile;
-      if (await file.exists()) {
-        final content = await file.readAsString();
-        final List<dynamic> list = jsonDecode(content);
-        _syncQueue.clear();
-        _syncQueue.addAll(list.map((e) => SyncOperation.fromJson(e)));
-        // Reset in-progress operations to pending on load
-        for (final op in _syncQueue) {
-          if (op.status == SyncOperationStatus.inProgress) {
-            op.resetForRetry();
-          }
-        }
-        _triggerSync();
-      }
-    } catch (e) {
-      debugPrint('Error loading sync queue: $e');
-    }
-  }
-
-  Future<void> _saveQueue() async {
-    try {
-      final file = await _queueFile;
-      // Only save operations that aren't completed
-      final pendingOps = _syncQueue
-          .where((op) => op.status != SyncOperationStatus.completed)
-          .toList();
-      await file.writeAsString(
-        jsonEncode(pendingOps.map((e) => e.toJson()).toList()),
-      );
-    } catch (e) {
-      debugPrint('Error saving sync queue: $e');
-    }
-  }
-
   Future<void> _addToQueue(SyncOperation op) async {
     // Remove duplicate update operations for the same path
     if (op.type == SyncOperationType.update) {
@@ -452,7 +409,6 @@ abstract class RemoteFileSystem extends DirectoryFileSystem {
       });
     }
     _syncQueue.add(op);
-    await _saveQueue();
     _triggerSync();
   }
 
@@ -492,7 +448,7 @@ abstract class RemoteFileSystem extends DirectoryFileSystem {
   }
 
   /// Force retry all failed operations
-  Future<void> retryFailedOperations() async {
+  void retryFailedOperations() {
     for (final op in _syncQueue) {
       if (op.status == SyncOperationStatus.failed ||
           op.status == SyncOperationStatus.permanentlyFailed) {
@@ -500,16 +456,14 @@ abstract class RemoteFileSystem extends DirectoryFileSystem {
         op.resetForRetry();
       }
     }
-    await _saveQueue();
     _triggerSync();
   }
 
   /// Clear all permanently failed operations
-  Future<void> clearFailedOperations() async {
+  void clearFailedOperations() {
     _syncQueue.removeWhere(
       (op) => op.status == SyncOperationStatus.permanentlyFailed,
     );
-    await _saveQueue();
   }
 
   /// Get next operation to process, respecting priority and retry delays
@@ -562,7 +516,6 @@ abstract class RemoteFileSystem extends DirectoryFileSystem {
           await _executeOperation(op);
           op.markCompleted();
           _syncQueue.remove(op);
-          await _saveQueue();
 
           _syncEventController.add(
             SyncEvent(
@@ -573,7 +526,6 @@ abstract class RemoteFileSystem extends DirectoryFileSystem {
           );
         } catch (e) {
           op.markFailed(e.toString());
-          await _saveQueue();
 
           _syncEventController.add(
             SyncEvent(

@@ -208,17 +208,24 @@ sealed class RemoteStorage extends ExternalStorage with RemoteStorageMappable {
 
   /// Check if a path is pinned for offline caching
   bool isPathPinned(String name, {String variant = ''}) {
-    if (!name.startsWith('/')) {
-      name = '/$name';
+    if (name.startsWith('/')) {
+      name = name.substring(1);
     }
     return pinnedPaths[variant]?.any((pinnedPath) {
+          if (pinnedPath.startsWith('/')) {
+            pinnedPath = pinnedPath.substring(1);
+          }
+
           if (pinnedPath == name) {
             return true;
           }
           // Check if name is inside a pinned folder (recursive)
-          if (name.startsWith(pinnedPath) && name.length > pinnedPath.length) {
-            final remaining = name.substring(pinnedPath.length);
-            return remaining.startsWith('/');
+          if (name.startsWith(pinnedPath)) {
+            if (pinnedPath.isEmpty) return true;
+            if (name.length > pinnedPath.length &&
+                name[pinnedPath.length] == '/') {
+              return true;
+            }
           }
           return false;
         }) ??

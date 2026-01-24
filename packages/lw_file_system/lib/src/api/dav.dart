@@ -182,7 +182,9 @@ class DavRemoteDirectoryFileSystem extends RemoteFileSystem {
         .findElements('prop', namespace: '*')
         .first;
 
-    final resourceType = prop.findElements('resourcetype', namespace: '*').first;
+    final resourceType = prop
+        .findElements('resourcetype', namespace: '*')
+        .first;
 
     final isCollection = resourceType
         .findElements('collection', namespace: '*')

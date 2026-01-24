@@ -1074,8 +1074,23 @@ abstract class RemoteFileSystem extends DirectoryFileSystem {
     } else if (asset is RawFileSystemDirectory && recursive) {
       final absolutePath = await getAbsolutePath(path);
       await Directory(absolutePath).create(recursive: true);
+      final remotePaths = <String>{};
       for (final child in asset.assets) {
+        remotePaths.add(normalizePath(child.path));
         await pullFromRemote(child.path, recursive: true);
+      }
+
+      final localDir = Directory(absolutePath);
+      if (await localDir.exists()) {
+        final localFiles = localDir.listSync();
+        for (final file in localFiles) {
+          final fileName = p.basename(file.path);
+          final childPath = normalizePath(p.url.join(path, fileName));
+
+          if (!remotePaths.contains(childPath)) {
+            await file.delete(recursive: true);
+          }
+        }
       }
     }
   }

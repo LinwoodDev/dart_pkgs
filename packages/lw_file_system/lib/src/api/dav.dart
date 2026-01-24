@@ -247,7 +247,11 @@ class DavRemoteDirectoryFileSystem extends RemoteDirectoryFileSystem {
         data: null,
       );
     }
-    response = await createRequest(path.split('/'), method: 'GET');
+    response = await createRequest(
+      path.split('/'),
+      method: 'GET',
+      timeout: RemoteFileSystem.transferTimeout,
+    );
     if (response == null) {
       return null;
     }
@@ -307,6 +311,7 @@ class DavRemoteDirectoryFileSystem extends RemoteDirectoryFileSystem {
       path.split('/'),
       method: 'PUT',
       bodyBytes: data,
+      timeout: RemoteFileSystem.transferTimeout,
     );
 
     if (response != null && response.statusCode == 409) {
@@ -316,6 +321,7 @@ class DavRemoteDirectoryFileSystem extends RemoteDirectoryFileSystem {
         path.split('/'),
         method: 'PUT',
         bodyBytes: data,
+        timeout: RemoteFileSystem.transferTimeout,
       );
     }
 
@@ -324,23 +330,56 @@ class DavRemoteDirectoryFileSystem extends RemoteDirectoryFileSystem {
         response?.statusCode == 204) {
       // File overwritten successfully
       return;
+    } else if (response?.statusCode == 401 || response?.statusCode == 403) {
+      throw NetworkException(
+        'Authentication failed',
+        type: NetworkErrorType.authentication,
+        statusCode: response?.statusCode,
+      );
+    } else if (response != null && response.statusCode >= 500) {
+      throw NetworkException(
+        'Server error: ${response.statusCode} ${response.reasonPhrase}',
+        type: NetworkErrorType.server,
+        statusCode: response.statusCode,
+      );
     } else {
-      // Management of error cases
-      throw Exception(
-        'Failed to update document: ${response?.statusCode} ${response?.reasonPhrase}',
+      throw NetworkException(
+        'Failed to upload document: ${response?.statusCode} ${response?.reasonPhrase}',
+        type: NetworkErrorType.client,
+        statusCode: response?.statusCode,
       );
     }
   }
 
   @override
   Future<bool> isInitialized() async {
-    final response = await createRequest([]);
-    return response?.statusCode == 200;
+    try {
+      final response = await createRequest([]);
+      return response?.statusCode == 200;
+    } on NetworkException {
+      return false;
+    }
   }
 
   @override
   Future<void> runInitialize() async {
     await createDirectory('');
     await createDefault(this);
+  }
+
+  /// Check if the remote storage is reachable
+  Future<bool> checkConnectivity() async {
+    try {
+      final response = await createRequest(
+        [],
+        method: 'OPTIONS',
+        timeout: const Duration(seconds: 10),
+      );
+      return response != null && response.statusCode < 400;
+    } on NetworkException {
+      return false;
+    } catch (_) {
+      return false;
+    }
   }
 }

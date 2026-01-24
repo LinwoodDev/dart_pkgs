@@ -111,6 +111,8 @@ class DavRemoteDirectoryFileSystem extends RemoteFileSystem {
   Future<RawFileSystemEntity?> fetchRemoteAsset(
     String path, {
     bool readData = true,
+    DateTime? currentLastModified,
+    int? currentSize,
   }) async {
     path = _normalizePath(path);
 
@@ -174,17 +176,39 @@ class DavRemoteDirectoryFileSystem extends RemoteFileSystem {
 
     final currentElement = responses.first;
 
-    final resourceType = currentElement
+    final prop = currentElement
         .findElements('propstat', namespace: '*')
         .first
         .findElements('prop', namespace: '*')
-        .first
-        .findElements('resourcetype', namespace: '*')
         .first;
+
+    final resourceType = prop.findElements('resourcetype', namespace: '*').first;
 
     final isCollection = resourceType
         .findElements('collection', namespace: '*')
         .isNotEmpty;
+
+    if (!isCollection && currentSize != null && currentLastModified != null) {
+      final contentLengthStr = prop
+          .findElements('getcontentlength', namespace: '*')
+          .firstOrNull
+          ?.innerText;
+      final lastModifiedStr = prop
+          .findElements('getlastmodified', namespace: '*')
+          .firstOrNull
+          ?.innerText;
+
+      if (contentLengthStr != null && lastModifiedStr != null) {
+        final len = int.tryParse(contentLengthStr);
+        final mod = HttpDate.parse(lastModifiedStr);
+
+        // Allow 2 seconds of difference for modification time
+        if (len == currentSize &&
+            mod.difference(currentLastModified).abs().inSeconds < 2) {
+          throw NotModifiedException();
+        }
+      }
+    }
 
     if (isCollection) {
       final assets = await Future.wait(

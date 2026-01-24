@@ -62,6 +62,8 @@ class NetworkException implements Exception {
   String toString() => 'NetworkException: $message (type: $type)';
 }
 
+class NotModifiedException implements Exception {}
+
 abstract class RemoteFileSystem extends DirectoryFileSystem {
   @override
   RemoteStorage get storage;
@@ -79,6 +81,8 @@ abstract class RemoteFileSystem extends DirectoryFileSystem {
   Future<RawFileSystemEntity?> fetchRemoteAsset(
     String path, {
     bool readData = true,
+    DateTime? currentLastModified,
+    int? currentSize,
   });
 
   @override
@@ -97,8 +101,25 @@ abstract class RemoteFileSystem extends DirectoryFileSystem {
     RawFileSystemEntity? asset;
 
     if (isOnline) {
+      DateTime? currentLastModified;
+      int? currentSize;
+
+      if (cached != null &&
+          cached is RawFileSystemFile &&
+          cached.data != null) {
+        currentSize = cached.data!.length;
+        currentLastModified = await getCachedFileModified(path);
+      }
+
       try {
-        asset = await fetchRemoteAsset(path, readData: readData);
+        asset = await fetchRemoteAsset(
+          path,
+          readData: readData,
+          currentLastModified: currentLastModified,
+          currentSize: currentSize,
+        );
+      } on NotModifiedException {
+        if (cached != null) return cached;
       } on NetworkException catch (e) {
         error = e;
       }
@@ -247,7 +268,11 @@ abstract class RemoteFileSystem extends DirectoryFileSystem {
     return null;
   }
 
-  Future<void> cacheContent(String path, Uint8List content) async {
+  Future<void> cacheContent(
+    String path,
+    Uint8List content, {
+    DateTime? modified,
+  }) async {
     var absolutePath = await getAbsolutePath(path);
     var file = File(absolutePath);
     final directory = Directory(absolutePath);
@@ -256,6 +281,9 @@ abstract class RemoteFileSystem extends DirectoryFileSystem {
       await file.create(recursive: true);
     }
     await file.writeAsBytes(content);
+    if (modified != null) {
+      await file.setLastModified(modified);
+    }
   }
 
   Future<void> deleteCachedContent(String path) async {
@@ -648,7 +676,8 @@ abstract class RemoteFileSystem extends DirectoryFileSystem {
     bool recursive = true,
   }) async {
     final results = <SyncResult>[];
-    final syncFile = await getSyncFile(path);
+    var syncFile = await getSyncFile(path);
+    RawFileSystemEntity? downloadedAsset;
 
     switch (syncFile.status) {
       case FileSyncStatus.synced:
@@ -669,8 +698,20 @@ abstract class RemoteFileSystem extends DirectoryFileSystem {
         // Download remote changes to local
         try {
           final asset = await readAsset(path, forceRemote: true);
+          downloadedAsset = asset;
           if (asset is RawFileSystemFile && asset.data != null) {
-            await cacheContent(path, asset.data!);
+            await cacheContent(
+              path,
+              asset.data!,
+              modified: syncFile.remoteLastModified,
+            );
+          } else if (asset is RawFileSystemDirectory) {
+            var absolutePath = await getAbsolutePath(path);
+            var dir = Directory(absolutePath);
+            if (!await dir.exists()) {
+              await dir.create(recursive: true);
+            }
+            syncFile = syncFile.copyWith(isDirectory: true);
           }
           results.add(
             SyncResult(
@@ -692,7 +733,13 @@ abstract class RemoteFileSystem extends DirectoryFileSystem {
         break;
 
       case FileSyncStatus.conflict:
-        results.add(await _resolveConflict(path, conflictResolution));
+        results.add(
+          await _resolveConflict(
+            path,
+            conflictResolution,
+            remoteModified: syncFile.remoteLastModified,
+          ),
+        );
         break;
 
       case FileSyncStatus.offline:
@@ -709,17 +756,34 @@ abstract class RemoteFileSystem extends DirectoryFileSystem {
 
     // Handle recursive sync for directories
     if (recursive && syncFile.isDirectory) {
-      final asset = await getAsset(path);
-      if (asset is RawFileSystemDirectory) {
-        for (final child in asset.assets) {
-          results.addAll(
-            await syncPath(
-              child.path,
-              conflictResolution: conflictResolution,
-              recursive: true,
-            ),
-          );
-        }
+      final childPaths = <String>{};
+
+      if (downloadedAsset is RawFileSystemDirectory) {
+        childPaths.addAll(downloadedAsset.assets.map((e) => e.path));
+      }
+
+      final localAsset = await getAsset(path);
+      if (localAsset is RawFileSystemDirectory) {
+        childPaths.addAll(localAsset.assets.map((e) => e.path));
+      }
+
+      if (downloadedAsset == null && isOnline) {
+        try {
+          final remoteAsset = await readAsset(path, forceRemote: true);
+          if (remoteAsset is RawFileSystemDirectory) {
+            childPaths.addAll(remoteAsset.assets.map((e) => e.path));
+          }
+        } catch (_) {}
+      }
+
+      for (final childPath in childPaths) {
+        results.addAll(
+          await syncPath(
+            childPath,
+            conflictResolution: conflictResolution,
+            recursive: true,
+          ),
+        );
       }
     }
 
@@ -729,8 +793,9 @@ abstract class RemoteFileSystem extends DirectoryFileSystem {
   /// Resolve a sync conflict based on the resolution strategy
   Future<SyncResult> _resolveConflict(
     String path,
-    ConflictResolution resolution,
-  ) async {
+    ConflictResolution resolution, {
+    DateTime? remoteModified,
+  }) async {
     switch (resolution) {
       case ConflictResolution.keepLocal:
         await uploadCachedContent(path);
@@ -744,7 +809,7 @@ abstract class RemoteFileSystem extends DirectoryFileSystem {
       case ConflictResolution.keepRemote:
         final asset = await readAsset(path, forceRemote: true);
         if (asset is RawFileSystemFile && asset.data != null) {
-          await cacheContent(path, asset.data!);
+          await cacheContent(path, asset.data!, modified: remoteModified);
         }
         return SyncResult(
           path: path,
@@ -770,7 +835,7 @@ abstract class RemoteFileSystem extends DirectoryFileSystem {
         // Download remote version
         final asset = await readAsset(path, forceRemote: true);
         if (asset is RawFileSystemFile && asset.data != null) {
-          await cacheContent(path, asset.data!);
+          await cacheContent(path, asset.data!, modified: remoteModified);
         }
         return SyncResult(
           path: path,
@@ -931,7 +996,11 @@ abstract class RemoteFileSystem extends DirectoryFileSystem {
     // If we have a conflict resolver callback, use it
     if (onConflict != null) {
       final resolution = await onConflict!(conflict);
-      return _resolveConflict(path, resolution);
+      return _resolveConflict(
+        path,
+        resolution,
+        remoteModified: syncFile.remoteLastModified,
+      );
     } else {
       // Queue the conflict for manual resolution
       _pendingConflicts[path] = conflict;
@@ -962,7 +1031,11 @@ abstract class RemoteFileSystem extends DirectoryFileSystem {
       );
     }
 
-    final result = await _resolveConflict(path, resolution);
+    final result = await _resolveConflict(
+      path,
+      resolution,
+      remoteModified: conflict.remoteModified,
+    );
 
     _progressController.add(
       _progressController.value.copyWith(
@@ -993,6 +1066,7 @@ abstract class RemoteFileSystem extends DirectoryFileSystem {
     if (asset == null) return;
 
     if (asset is RawFileSystemFile) {
+      if (asset.cached) return;
       final data = asset.data;
       if (data != null) {
         await cacheContent(path, data);

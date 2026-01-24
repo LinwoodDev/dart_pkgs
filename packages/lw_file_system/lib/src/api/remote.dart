@@ -879,12 +879,7 @@ abstract class RemoteFileSystem extends DirectoryFileSystem {
     if (paths != null) {
       pathsToSync = paths;
     } else {
-      final cachedPaths = getCachedFilePaths();
-      final pinnedPaths = getPinnedPaths();
-      pathsToSync = [
-        ...cachedPaths.where((p) => !isPathPinned(p)),
-        ...pinnedPaths,
-      ];
+      pathsToSync = getPinnedPaths();
     }
 
     _syncEventController.add(const SyncEvent(type: SyncEventType.started));
@@ -1116,29 +1111,8 @@ abstract class RemoteFileSystem extends DirectoryFileSystem {
     return storage.getPinnedPaths(variant: config.currentCacheVariant);
   }
 
-  List<String> getCachedFilePaths() {
-    final files = <String>[];
-
-    for (final file
-        in storage.cachedDocuments[config.currentCacheVariant] ?? []) {
-      final alreadySyncedFile = files.firstWhereOrNull(
-        (existingFile) => existingFile.startsWith(file),
-      );
-      if (alreadySyncedFile == file) {
-        continue;
-      }
-      if (alreadySyncedFile != null &&
-          alreadySyncedFile.startsWith(file) &&
-          !alreadySyncedFile.substring(file.length + 1).contains('/')) {
-        files.remove(alreadySyncedFile);
-      }
-      files.add(file);
-    }
-    return files;
-  }
-
   Future<List<SyncFile>> getAllSyncFiles() async {
-    final paths = getCachedFilePaths();
+    final paths = getPinnedPaths();
     final files = <SyncFile>[];
     for (final path in paths) {
       final asset = await getAsset(path);

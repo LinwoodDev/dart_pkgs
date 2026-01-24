@@ -128,6 +128,10 @@ sealed class RemoteStorage extends ExternalStorage with RemoteStorageMappable {
   @MappableField(hook: EmptyMapEntryHook())
   final Map<String, List<String>> cachedDocuments;
 
+  /// Paths that should always be cached locally (folders are cached recursively)
+  @MappableField(hook: EmptyMapEntryHook())
+  final Map<String, List<String>> pinnedPaths;
+
   const RemoteStorage({
     super.name,
     super.paths,
@@ -140,6 +144,7 @@ sealed class RemoteStorage extends ExternalStorage with RemoteStorageMappable {
     required this.url,
     this.lastSynced,
     this.cachedDocuments = const {},
+    this.pinnedPaths = const {},
   });
 
   Uri get uri => Uri.parse(url);
@@ -200,6 +205,30 @@ sealed class RemoteStorage extends ExternalStorage with RemoteStorageMappable {
         }) ??
         false;
   }
+
+  /// Check if a path is pinned for offline caching
+  bool isPathPinned(String name, {String variant = ''}) {
+    if (!name.startsWith('/')) {
+      name = '/$name';
+    }
+    return pinnedPaths[variant]?.any((pinnedPath) {
+          if (pinnedPath == name) {
+            return true;
+          }
+          // Check if name is inside a pinned folder (recursive)
+          if (name.startsWith(pinnedPath) && name.length > pinnedPath.length) {
+            final remaining = name.substring(pinnedPath.length);
+            return remaining.startsWith('/');
+          }
+          return false;
+        }) ??
+        false;
+  }
+
+  /// Get all pinned paths for a variant
+  List<String> getPinnedPaths({String variant = ''}) {
+    return pinnedPaths[variant] ?? [];
+  }
 }
 
 @MappableClass(discriminatorValue: 'dav')
@@ -215,6 +244,7 @@ final class DavRemoteStorage extends RemoteStorage
     super.certificateSha1,
     required super.url,
     super.cachedDocuments,
+    super.pinnedPaths,
     super.lastSynced,
     super.extra,
   });

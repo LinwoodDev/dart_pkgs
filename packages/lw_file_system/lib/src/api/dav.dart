@@ -6,7 +6,7 @@ import 'package:lw_file_system/lw_file_system.dart';
 import 'package:path/path.dart' as p;
 import 'package:xml/xml.dart';
 
-class DavRemoteDirectoryFileSystem extends RemoteDirectoryFileSystem {
+class DavRemoteDirectoryFileSystem extends RemoteFileSystem {
   @override
   final DavRemoteStorage storage;
 

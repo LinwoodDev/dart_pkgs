@@ -35,9 +35,9 @@ class TypedDirectoryFileSystem<T> extends TypedFileSystem<T>
   final CreateDefaultCallback<TypedDirectoryFileSystem<T>> createDefault;
 
   @override
-  RemoteDirectoryFileSystem? get remoteSystem {
+  RemoteFileSystem? get remoteSystem {
     final fs = fileSystem;
-    if (fs is RemoteDirectoryFileSystem) return fs;
+    if (fs is RemoteFileSystem) return fs;
     return null;
   }
 
@@ -166,7 +166,7 @@ class TypedKeyFileSystem<T> extends TypedFileSystem<T>
     final fs = fileSystem;
     if (fs is KeyDirectoryFileSystem) {
       final remote = fs.fileSystem;
-      if (remote is RemoteDirectoryFileSystem) return remote;
+      if (remote is RemoteFileSystem) return remote;
     }
     return null;
   }

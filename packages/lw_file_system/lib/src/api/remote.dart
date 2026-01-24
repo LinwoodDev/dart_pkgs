@@ -62,9 +62,13 @@ class NetworkException implements Exception {
   String toString() => 'NetworkException: $message (type: $type)';
 }
 
-mixin RemoteFileSystem on GeneralFileSystem {
+abstract class RemoteFileSystem extends DirectoryFileSystem {
   @override
   RemoteStorage get storage;
+
+  RemoteFileSystem({required super.config, super.createDefault}) {
+    _loadQueue();
+  }
 
   final client = HttpClient();
 
@@ -331,13 +335,6 @@ mixin RemoteFileSystem on GeneralFileSystem {
       }
     }
     return files;
-  }
-}
-
-abstract class RemoteDirectoryFileSystem extends DirectoryFileSystem
-    with RemoteFileSystem {
-  RemoteDirectoryFileSystem({required super.config, super.createDefault}) {
-    _loadQueue();
   }
 
   final List<SyncOperation> _syncQueue = [];

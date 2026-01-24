@@ -134,7 +134,10 @@ abstract class RemoteFileSystem extends DirectoryFileSystem {
 
     // Try to recover from cache (directories)
     final cachedDir = await getCachedContent(path, includeDirectories: true);
-    if (cachedDir != null) return cachedDir;
+    if (cachedDir != null) {
+      if (forceRemote && error != null) throw error;
+      return cachedDir;
+    }
 
     if (error != null) throw error;
 
@@ -1206,15 +1209,31 @@ abstract class RemoteFileSystem extends DirectoryFileSystem {
 
   Future<void> cache(String path) async {
     final asset = await getAsset(path);
-    if (asset is FileSystemDirectory) {
-      var filePath = path;
-      if (filePath.startsWith('/')) {
-        filePath = filePath.substring(1);
-      }
-      filePath = universalPathContext.join(await getDirectory(), filePath);
-      final directory = Directory(filePath);
-      if (!(await directory.exists())) {
-        await directory.create(recursive: true);
+    if (asset is RawFileSystemDirectory) {
+      final absolutePath = await getAbsolutePath(path);
+      if (!await Directory(absolutePath).exists()) {
+        await Directory(absolutePath).create(recursive: true);
+
+        final remotePaths = <String>{};
+        for (final child in asset.assets) {
+          remotePaths.add(normalizePath(child.path));
+          await cache(child.path);
+        }
+
+        final localDir = Directory(absolutePath);
+        if (await localDir.exists()) {
+          final localFiles = localDir.listSync();
+          for (final file in localFiles) {
+            final fileName = p.basename(file.path);
+            final childPath = normalizePath(p.url.join(path, fileName));
+
+            if (!remotePaths.contains(childPath)) {
+              await file.delete(recursive: true);
+            }
+          }
+        }
+      } else {
+        await pullFromRemote(path, recursive: true);
       }
     } else if (asset is RawFileSystemFile) {
       final data = asset.data;

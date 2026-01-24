@@ -76,6 +76,50 @@ abstract class RemoteFileSystem extends DirectoryFileSystem {
   /// Timeout for file upload/download operations (longer)
   static const Duration transferTimeout = Duration(minutes: 5);
 
+  Future<RawFileSystemEntity?> fetchRemoteAsset(
+    String path, {
+    bool readData = true,
+  });
+
+  @override
+  Future<RawFileSystemEntity?> readAsset(
+    String path, {
+    bool readData = true,
+    bool forceRemote = false,
+  }) async {
+    path = normalizePath(path);
+    final cached = await getCachedContent(path);
+    if (cached != null && !forceRemote) {
+      return cached;
+    }
+
+    NetworkException? error;
+    RawFileSystemEntity? asset;
+
+    if (isOnline) {
+      try {
+        asset = await fetchRemoteAsset(path, readData: readData);
+      } on NetworkException catch (e) {
+        error = e;
+      }
+    } else {
+      error = const NetworkException(
+        'Offline',
+        type: NetworkErrorType.connection,
+      );
+    }
+
+    if (asset != null) return asset;
+
+    // Try to recover from cache (directories)
+    final cachedDir = await getCachedContent(path, includeDirectories: true);
+    if (cachedDir != null) return cachedDir;
+
+    if (error != null) throw error;
+
+    return null;
+  }
+
   Future<HttpClientResponse?> createRequest(
     List<String> path, {
     String method = 'GET',
@@ -155,10 +199,15 @@ abstract class RemoteFileSystem extends DirectoryFileSystem {
     return utf8.decode(await getBodyBytes(response));
   }
 
-  Future<RawFileSystemEntity?> getCachedContent(String path) async {
-    if (!storage.hasDocumentCached(path)) return null;
+  Future<RawFileSystemEntity?> getCachedContent(
+    String path, {
+    bool includeDirectories = false,
+  }) async {
     final absolutePath = await getAbsolutePath(path);
     final file = File(absolutePath);
+    // Only return cached content for files, not directories (unless requested).
+    // Directories should always be fetched from remote to get the full listing,
+    // otherwise we'd only see locally cached files and miss remote-only files.
     if (await file.exists()) {
       return RawFileSystemFile(
         AssetLocation(remote: storage.identifier, path: path),
@@ -166,31 +215,34 @@ abstract class RemoteFileSystem extends DirectoryFileSystem {
         cached: true,
       );
     }
-    final directory = Directory(absolutePath);
-    if (await directory.exists()) {
-      final cacheDir = await getDirectory();
-      return RawFileSystemDirectory(
-        AssetLocation(remote: storage.identifier, path: path),
-        assets: await directory
-            .list()
-            .map((e) {
-              final childPath = p.relative(e.path, from: cacheDir);
-              if (e is File) {
-                return RawFileSystemFile(
-                  AssetLocation(remote: storage.identifier, path: childPath),
-                  cached: true,
-                );
-              }
-              if (e is Directory) {
-                return RawFileSystemDirectory(
-                  AssetLocation(remote: storage.identifier, path: childPath),
-                );
-              }
-              return null;
-            })
-            .whereNotNull()
-            .toList(),
-      );
+
+    if (includeDirectories) {
+      final directory = Directory(absolutePath);
+      if (await directory.exists()) {
+        final cacheDir = await getDirectory();
+        return RawFileSystemDirectory(
+          AssetLocation(remote: storage.identifier, path: path),
+          assets: await directory
+              .list()
+              .map((e) {
+                final childPath = p.relative(e.path, from: cacheDir);
+                if (e is File) {
+                  return RawFileSystemFile(
+                    AssetLocation(remote: storage.identifier, path: childPath),
+                    cached: true,
+                  );
+                }
+                if (e is Directory) {
+                  return RawFileSystemDirectory(
+                    AssetLocation(remote: storage.identifier, path: childPath),
+                  );
+                }
+                return null;
+              })
+              .whereNotNull()
+              .toList(),
+        );
+      }
     }
     return null;
   }
@@ -758,7 +810,17 @@ abstract class RemoteFileSystem extends DirectoryFileSystem {
   }) async {
     final startTime = DateTime.now();
     final allResults = <SyncResult>[];
-    final pathsToSync = paths ?? getCachedFilePaths();
+    List<String> pathsToSync;
+    if (paths != null) {
+      pathsToSync = paths;
+    } else {
+      final cachedPaths = getCachedFilePaths();
+      final pinnedPaths = getPinnedPaths();
+      pathsToSync = [
+        ...cachedPaths.where((p) => !isPathPinned(p)),
+        ...pinnedPaths,
+      ];
+    }
 
     _syncEventController.add(const SyncEvent(type: SyncEventType.started));
     _pendingConflicts.clear();
@@ -942,6 +1004,27 @@ abstract class RemoteFileSystem extends DirectoryFileSystem {
         await pullFromRemote(child.path, recursive: true);
       }
     }
+  }
+
+  /// Sync all pinned paths - downloads them to local cache
+  /// This should be called periodically or when connectivity is restored
+  Future<void> syncPinnedPaths() async {
+    final pinnedPaths = storage.getPinnedPaths(
+      variant: config.currentCacheVariant,
+    );
+    for (final path in pinnedPaths) {
+      await pullFromRemote(path, recursive: true);
+    }
+  }
+
+  /// Check if a path is pinned for offline caching
+  bool isPathPinned(String path) {
+    return storage.isPathPinned(path, variant: config.currentCacheVariant);
+  }
+
+  /// Get all pinned paths for the current variant
+  List<String> getPinnedPaths() {
+    return storage.getPinnedPaths(variant: config.currentCacheVariant);
   }
 
   List<String> getCachedFilePaths() {

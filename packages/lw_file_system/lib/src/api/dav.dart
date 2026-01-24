@@ -108,18 +108,26 @@ class DavRemoteDirectoryFileSystem extends RemoteFileSystem {
   }
 
   @override
-  Future<RawFileSystemEntity?> readAsset(
+  Future<RawFileSystemEntity?> fetchRemoteAsset(
     String path, {
     bool readData = true,
-    bool forceRemote = false,
   }) async {
     path = _normalizePath(path);
-    final cached = await getCachedContent(path);
-    if (cached != null && !forceRemote) {
-      return cached;
+
+    HttpClientResponse? response;
+    try {
+      response = await createRequest(path.split('/'), method: 'PROPFIND');
+    } catch (e) {
+      rethrow;
     }
 
-    var response = await createRequest(path.split('/'), method: 'PROPFIND');
+    if (response == null) {
+      // If response is null here, it means createRequest returned null (invalid URL?)
+      // or we caught something that wasn't a NetworkException? No we rethrow others.
+      // createRequest returns null if url is null.
+      throw Exception('Failed to read asset: ${storage.identifier} $path');
+    }
+
     final fileName = storage
         .buildVariantUri(
           path: path.split('/'),
@@ -129,9 +137,7 @@ class DavRemoteDirectoryFileSystem extends RemoteFileSystem {
     final rootDirectory = storage.buildVariantUri(
       variant: config.currentPathVariant,
     );
-    if (response == null) {
-      throw Exception('Failed to read asset: ${storage.identifier} $path');
-    }
+
     var content = await getBodyString(response);
     if (response.statusCode == 404) {
       if (path.isEmpty) {

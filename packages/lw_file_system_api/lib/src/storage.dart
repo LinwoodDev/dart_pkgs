@@ -126,10 +126,6 @@ sealed class RemoteStorage extends ExternalStorage with RemoteStorageMappable {
   final String url;
   final DateTime? lastSynced;
   @MappableField(hook: EmptyMapEntryHook())
-  final Map<String, List<String>> cachedDocuments;
-
-  /// Paths that should always be cached locally (folders are cached recursively)
-  @MappableField(hook: EmptyMapEntryHook())
   final Map<String, List<String>> pinnedPaths;
 
   const RemoteStorage({
@@ -143,7 +139,6 @@ sealed class RemoteStorage extends ExternalStorage with RemoteStorageMappable {
     this.certificateSha1,
     required this.url,
     this.lastSynced,
-    this.cachedDocuments = const {},
     this.pinnedPaths = const {},
   });
 
@@ -187,23 +182,6 @@ sealed class RemoteStorage extends ExternalStorage with RemoteStorageMappable {
   }) {
     final current = buildVariantPath(variant: variant, path: path);
     return buildUri(path: current.split('/'), query: query);
-  }
-
-  @override
-  bool hasDocumentCached(String name, {String variant = ''}) {
-    if (!name.startsWith('/')) {
-      name = '/$name';
-    }
-    return cachedDocuments[variant]?.any((doc) {
-          if (doc == name) {
-            return true;
-          }
-          if (name.startsWith(doc)) {
-            return !name.substring(doc.length + 1).contains('/');
-          }
-          return false;
-        }) ??
-        false;
   }
 
   /// Check if a path is pinned for offline caching
@@ -250,7 +228,6 @@ final class DavRemoteStorage extends RemoteStorage
     required super.username,
     super.certificateSha1,
     required super.url,
-    super.cachedDocuments,
     super.pinnedPaths,
     super.lastSynced,
     super.extra,

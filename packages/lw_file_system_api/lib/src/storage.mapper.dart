@@ -216,16 +216,6 @@ class RemoteStorageMapper extends SubClassMapperBase<RemoteStorage> {
     _$lastSynced,
     opt: true,
   );
-  static Map<String, List<String>> _$cachedDocuments(RemoteStorage v) =>
-      v.cachedDocuments;
-  static const Field<RemoteStorage, Map<String, List<String>>>
-  _f$cachedDocuments = Field(
-    'cachedDocuments',
-    _$cachedDocuments,
-    opt: true,
-    def: const {},
-    hook: EmptyMapEntryHook(),
-  );
   static Map<String, List<String>> _$pinnedPaths(RemoteStorage v) =>
       v.pinnedPaths;
   static const Field<RemoteStorage, Map<String, List<String>>> _f$pinnedPaths =
@@ -249,7 +239,6 @@ class RemoteStorageMapper extends SubClassMapperBase<RemoteStorage> {
     #certificateSha1: _f$certificateSha1,
     #url: _f$url,
     #lastSynced: _f$lastSynced,
-    #cachedDocuments: _f$cachedDocuments,
     #pinnedPaths: _f$pinnedPaths,
   };
 
@@ -320,13 +309,6 @@ abstract class RemoteStorageCopyWith<$R, $In extends RemoteStorage, $Out>
     List<String>,
     ObjectCopyWith<$R, List<String>, List<String>>?
   >
-  get cachedDocuments;
-  MapCopyWith<
-    $R,
-    String,
-    List<String>,
-    ObjectCopyWith<$R, List<String>, List<String>>?
-  >
   get pinnedPaths;
   @override
   $R call({
@@ -340,7 +322,6 @@ abstract class RemoteStorageCopyWith<$R, $In extends RemoteStorage, $Out>
     String? certificateSha1,
     String? url,
     DateTime? lastSynced,
-    Map<String, List<String>>? cachedDocuments,
     Map<String, List<String>>? pinnedPaths,
   });
   RemoteStorageCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t);
@@ -410,16 +391,6 @@ class DavRemoteStorageMapper extends SubClassMapperBase<DavRemoteStorage> {
   );
   static String _$url(DavRemoteStorage v) => v.url;
   static const Field<DavRemoteStorage, String> _f$url = Field('url', _$url);
-  static Map<String, List<String>> _$cachedDocuments(DavRemoteStorage v) =>
-      v.cachedDocuments;
-  static const Field<DavRemoteStorage, Map<String, List<String>>>
-  _f$cachedDocuments = Field(
-    'cachedDocuments',
-    _$cachedDocuments,
-    opt: true,
-    def: const {},
-    hook: EmptyMapEntryHook(),
-  );
   static Map<String, List<String>> _$pinnedPaths(DavRemoteStorage v) =>
       v.pinnedPaths;
   static const Field<DavRemoteStorage, Map<String, List<String>>>
@@ -454,7 +425,6 @@ class DavRemoteStorageMapper extends SubClassMapperBase<DavRemoteStorage> {
     #username: _f$username,
     #certificateSha1: _f$certificateSha1,
     #url: _f$url,
-    #cachedDocuments: _f$cachedDocuments,
     #pinnedPaths: _f$pinnedPaths,
     #lastSynced: _f$lastSynced,
     #extra: _f$extra,
@@ -485,7 +455,6 @@ class DavRemoteStorageMapper extends SubClassMapperBase<DavRemoteStorage> {
       username: data.dec(_f$username),
       certificateSha1: data.dec(_f$certificateSha1),
       url: data.dec(_f$url),
-      cachedDocuments: data.dec(_f$cachedDocuments),
       pinnedPaths: data.dec(_f$pinnedPaths),
       lastSynced: data.dec(_f$lastSynced),
       extra: data.dec(_f$extra),
@@ -574,14 +543,6 @@ abstract class DavRemoteStorageCopyWith<$R, $In extends DavRemoteStorage, $Out>
     List<String>,
     ObjectCopyWith<$R, List<String>, List<String>>
   >
-  get cachedDocuments;
-  @override
-  MapCopyWith<
-    $R,
-    String,
-    List<String>,
-    ObjectCopyWith<$R, List<String>, List<String>>
-  >
   get pinnedPaths;
   @override
   MapCopyWith<$R, String, dynamic, ObjectCopyWith<$R, dynamic, dynamic>>
@@ -596,7 +557,6 @@ abstract class DavRemoteStorageCopyWith<$R, $In extends DavRemoteStorage, $Out>
     String? username,
     String? certificateSha1,
     String? url,
-    Map<String, List<String>>? cachedDocuments,
     Map<String, List<String>>? pinnedPaths,
     DateTime? lastSynced,
     Map<String, dynamic>? extra,
@@ -647,18 +607,6 @@ class _DavRemoteStorageCopyWithImpl<$R, $Out>
     List<String>,
     ObjectCopyWith<$R, List<String>, List<String>>
   >
-  get cachedDocuments => MapCopyWith(
-    $value.cachedDocuments,
-    (v, t) => ObjectCopyWith(v, $identity, t),
-    (v) => call(cachedDocuments: v),
-  );
-  @override
-  MapCopyWith<
-    $R,
-    String,
-    List<String>,
-    ObjectCopyWith<$R, List<String>, List<String>>
-  >
   get pinnedPaths => MapCopyWith(
     $value.pinnedPaths,
     (v, t) => ObjectCopyWith(v, $identity, t),
@@ -681,7 +629,6 @@ class _DavRemoteStorageCopyWithImpl<$R, $Out>
     String? username,
     Object? certificateSha1 = $none,
     String? url,
-    Map<String, List<String>>? cachedDocuments,
     Map<String, List<String>>? pinnedPaths,
     Object? lastSynced = $none,
     Map<String, dynamic>? extra,
@@ -695,7 +642,6 @@ class _DavRemoteStorageCopyWithImpl<$R, $Out>
       if (username != null) #username: username,
       if (certificateSha1 != $none) #certificateSha1: certificateSha1,
       if (url != null) #url: url,
-      if (cachedDocuments != null) #cachedDocuments: cachedDocuments,
       if (pinnedPaths != null) #pinnedPaths: pinnedPaths,
       if (lastSynced != $none) #lastSynced: lastSynced,
       if (extra != null) #extra: extra,
@@ -711,7 +657,6 @@ class _DavRemoteStorageCopyWithImpl<$R, $Out>
     username: data.get(#username, or: $value.username),
     certificateSha1: data.get(#certificateSha1, or: $value.certificateSha1),
     url: data.get(#url, or: $value.url),
-    cachedDocuments: data.get(#cachedDocuments, or: $value.cachedDocuments),
     pinnedPaths: data.get(#pinnedPaths, or: $value.pinnedPaths),
     lastSynced: data.get(#lastSynced, or: $value.lastSynced),
     extra: data.get(#extra, or: $value.extra),

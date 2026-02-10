@@ -3,6 +3,7 @@ library;
 import 'dart:async';
 import 'dart:typed_data';
 
+import 'package:meta/meta.dart';
 import 'package:networker/networker.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
@@ -38,14 +39,10 @@ class NetworkerSocketClient extends NetworkerClient {
     if (isOpen) {
       return;
     }
-    final channel = _channel = constructWebSocketChannel(
-      address,
-      protocols: protocols,
-      pingInterval: pingInterval,
-    );
+    final channel = _channel = createWebSocketChannel();
     channel.stream.listen(
       (event) {
-        onMessage(event);
+        handleData(event);
       },
       onDone: () {
         _onClosed.add(null);
@@ -59,10 +56,34 @@ class NetworkerSocketClient extends NetworkerClient {
     _onOpen.add(null);
   }
 
+  /// Creates the [WebSocketChannel] used for the connection.
+  ///
+  /// Override this method to customize channel creation, such as
+  /// providing custom headers or a different WebSocket implementation.
+  @protected
+  WebSocketChannel createWebSocketChannel() {
+    return constructWebSocketChannel(
+      address,
+      protocols: protocols,
+      pingInterval: pingInterval,
+    );
+  }
+
+  /// Processes incoming data from the server.
+  ///
+  /// Override this method to add custom message processing, logging,
+  /// or filtering before the standard [onMessage] pipeline.
+  @protected
+  void handleData(dynamic event) {
+    onMessage(event);
+  }
+
   @override
   Future<void> close() async {
     await _channel?.sink.close();
     _channel = null;
+    _onOpen.close();
+    _onClosed.close();
   }
 
   @override

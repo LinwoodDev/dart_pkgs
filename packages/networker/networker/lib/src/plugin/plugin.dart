@@ -71,6 +71,17 @@ abstract class NetworkerPipe<I, O> {
 
   @protected
   FutureOr<void> sendPacket(I data, Channel channel) {}
+
+  /// Disposes all stream controllers and disconnects all connected pipes.
+  @mustCallSuper
+  void dispose() {
+    for (final subscription in _pipes.values) {
+      subscription.cancel();
+    }
+    _pipes.clear();
+    _readController.close();
+    _writeController.close();
+  }
 }
 
 class SimpleNetworkerPipe<T> extends NetworkerPipe<T, T> {

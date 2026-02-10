@@ -29,9 +29,11 @@ mixin NetworkerServerMixin<T extends ConnectionInfo, O> on NetworkerBase<O> {
 
   T? getConnectionInfo(Channel channel) => _connections[channel];
 
+  static const int _maxChannel = 65536;
+
   Channel _findAvailableChannel() {
-    final keys = _connections.keys.toList();
-    for (var i = 2; i < 2 ^ 16; i++) {
+    final keys = _connections.keys.toSet();
+    for (var i = 2; i < _maxChannel; i++) {
       if (!keys.contains(i)) {
         return i;
       }
@@ -47,6 +49,7 @@ mixin NetworkerServerMixin<T extends ConnectionInfo, O> on NetworkerBase<O> {
     final current = id ?? _findAvailableChannel();
     if (current == kAnyChannel) return current;
     _connections[current] = info;
+    onClientConnected(current, info);
     _connectController.add((current, info));
     _changeController.add(clientConnections);
     return current;
@@ -56,10 +59,21 @@ mixin NetworkerServerMixin<T extends ConnectionInfo, O> on NetworkerBase<O> {
   bool removeConnection(Channel id) {
     final info = _connections.remove(id);
     if (info == null) return false;
+    onClientDisconnected(id, info);
     _disconnectController.add((id, info));
     _changeController.add(clientConnections);
     return true;
   }
+
+  /// Called when a new client connection is added.
+  /// Override this to perform custom logic on connection.
+  @protected
+  void onClientConnected(Channel id, T info) {}
+
+  /// Called when a client disconnects.
+  /// Override this to perform custom logic on disconnection.
+  @protected
+  void onClientDisconnected(Channel id, T info) {}
 
   void closeConnection(Channel id) {
     getConnectionInfo(id)?.close();
@@ -93,6 +107,9 @@ mixin NetworkerServerMixin<T extends ConnectionInfo, O> on NetworkerBase<O> {
   @mustCallSuper
   FutureOr<void> close() {
     clearConnections();
+    _connectController.close();
+    _disconnectController.close();
+    _changeController.close();
   }
 }
 

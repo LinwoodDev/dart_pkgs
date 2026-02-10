@@ -10,11 +10,16 @@ mixin GeneralDirectoryFileSystem<T> on GeneralFileSystem {
     bool readData = true,
     bool forceRemote = false,
   }) {
-    return getAsset(
-      '',
-      listLevel: listLevel,
-      forceRemote: forceRemote,
-    ).then((value) => value as FileSystemDirectory<T>);
+    return getAsset('', listLevel: listLevel, forceRemote: forceRemote).then((
+      value,
+    ) {
+      if (value is FileSystemDirectory<T>) {
+        return value;
+      }
+      return FileSystemDirectory<T>(
+        AssetLocation(path: '', remote: storage?.identifier ?? ''),
+      );
+    });
   }
 
   Future<FileSystemEntity<T>?> readAsset(

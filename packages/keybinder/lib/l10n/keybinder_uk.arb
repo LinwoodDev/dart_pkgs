@@ -1,8 +1,8 @@
 {
   "clickToSet": "Натисніть, щоб встановити",
   "pressAnyKey": "Натисніть будь-яку клавішу...",
-  "controlKey": "Ctrl",
-  "shiftKey": "Shift",
+  "controlKey": "Сtrl",
+  "shiftKey": "Зсув",
   "altKey": "Alt",
   "metaKey": "Meta"
 }

@@ -41,7 +41,7 @@ class KeybinderLocalizationsPtBr extends KeybinderLocalizationsPt {
   String get controlKey => 'Ctrl';
 
   @override
-  String get shiftKey => 'Shift';
+  String get shiftKey => 'Turno';
 
   @override
   String get altKey => 'Alt';

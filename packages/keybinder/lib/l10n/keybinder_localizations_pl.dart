@@ -18,7 +18,7 @@ class KeybinderLocalizationsPl extends KeybinderLocalizations {
   String get controlKey => 'Ctrl';
 
   @override
-  String get shiftKey => 'Shift';
+  String get shiftKey => 'Zmiana';
 
   @override
   String get altKey => 'Alt';

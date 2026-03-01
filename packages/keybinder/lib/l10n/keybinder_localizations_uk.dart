@@ -15,10 +15,10 @@ class KeybinderLocalizationsUk extends KeybinderLocalizations {
   String get pressAnyKey => 'Натисніть будь-яку клавішу...';
 
   @override
-  String get controlKey => 'Ctrl';
+  String get controlKey => 'Сtrl';
 
   @override
-  String get shiftKey => 'Shift';
+  String get shiftKey => 'Зсув';
 
   @override
   String get altKey => 'Alt';

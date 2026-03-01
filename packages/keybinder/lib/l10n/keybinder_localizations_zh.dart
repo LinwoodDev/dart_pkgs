@@ -18,7 +18,7 @@ class KeybinderLocalizationsZh extends KeybinderLocalizations {
   String get controlKey => 'Ctrl';
 
   @override
-  String get shiftKey => 'Shift';
+  String get shiftKey => '偏移';
 
   @override
   String get altKey => 'Alt';

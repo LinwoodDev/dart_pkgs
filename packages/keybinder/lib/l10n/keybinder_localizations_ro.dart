@@ -18,7 +18,7 @@ class KeybinderLocalizationsRo extends KeybinderLocalizations {
   String get controlKey => 'Ctrl';
 
   @override
-  String get shiftKey => 'Shift';
+  String get shiftKey => 'Schimb';
 
   @override
   String get altKey => 'Alt';

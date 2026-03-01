@@ -30,10 +30,10 @@ class LeapLocalizationsAr extends LeapLocalizations {
   String get close => 'أغلق';
 
   @override
-  String get exitAlwaysOnTop => 'الخروج دائما في الأعلى';
+  String get exitAlwaysOnTop => 'الخروج من البقاء فوق النوافذ الاخرى';
 
   @override
-  String get alwaysOnTop => 'دائما في الأعلى';
+  String get alwaysOnTop => 'البقاء فوق النوافذ الاخرى';
 
   @override
   String get exitFullScreen => 'الخروج من ملء الشاشة';

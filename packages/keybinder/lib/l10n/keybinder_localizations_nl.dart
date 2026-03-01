@@ -18,7 +18,7 @@ class KeybinderLocalizationsNl extends KeybinderLocalizations {
   String get controlKey => 'Ctrl';
 
   @override
-  String get shiftKey => 'Shift';
+  String get shiftKey => 'Verschuiving';
 
   @override
   String get altKey => 'Alt';

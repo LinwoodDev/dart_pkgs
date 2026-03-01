@@ -4,8 +4,16 @@ import 'location.dart';
 
 sealed class FileSystemEntity<T> {
   final AssetLocation location;
+  final DateTime? lastModified;
+  final DateTime? creationTime;
+  final int? size;
 
-  FileSystemEntity(this.location);
+  FileSystemEntity(
+    this.location, {
+    this.lastModified,
+    this.creationTime,
+    this.size,
+  });
 
   String get path => location.path;
 
@@ -34,7 +42,14 @@ class FileSystemFile<T> extends FileSystemEntity<T> {
   final T? data;
   final bool cached;
 
-  FileSystemFile(super.location, {this.data, this.cached = false});
+  FileSystemFile(
+    super.location, {
+    this.data,
+    this.cached = false,
+    super.lastModified,
+    super.creationTime,
+    super.size,
+  });
 
   bool get hasData => data != null;
 }
@@ -42,10 +57,22 @@ class FileSystemFile<T> extends FileSystemEntity<T> {
 class FileSystemDirectory<T> extends FileSystemEntity<T> {
   final List<FileSystemEntity<T>> assets;
 
-  FileSystemDirectory(super.location, {this.assets = const []});
+  FileSystemDirectory(
+    super.location, {
+    this.assets = const [],
+    super.lastModified,
+    super.creationTime,
+    super.size,
+  });
 
   FileSystemDirectory<T> withAssets(List<FileSystemEntity<T>> assets) =>
-      FileSystemDirectory(location, assets: assets);
+      FileSystemDirectory(
+        location,
+        assets: assets,
+        lastModified: lastModified,
+        creationTime: creationTime,
+        size: size,
+      );
 }
 
 typedef RawFileSystemEntity = FileSystemEntity<Uint8List>;

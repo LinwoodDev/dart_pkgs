@@ -92,7 +92,7 @@ abstract class RemoteFileSystem extends DirectoryFileSystem {
     bool forceRemote = false,
   }) async {
     path = normalizePath(path);
-    final cached = await getCachedContent(path);
+    final cached = await getCachedContent(path, readData: readData);
     if (cached != null && !forceRemote) {
       return cached;
     }
@@ -105,10 +105,9 @@ abstract class RemoteFileSystem extends DirectoryFileSystem {
       int? currentSize;
 
       if (cached != null &&
-          cached is RawFileSystemFile &&
-          cached.data != null) {
-        currentSize = cached.data!.length;
-        currentLastModified = await getCachedFileModified(path);
+          cached is RawFileSystemFile) {
+        currentSize = cached.size ?? cached.data?.length;
+        currentLastModified = cached.lastModified ?? await getCachedFileModified(path);
       }
 
       try {
@@ -133,7 +132,7 @@ abstract class RemoteFileSystem extends DirectoryFileSystem {
     if (asset != null) return asset;
 
     // Try to recover from cache (directories)
-    final cachedDir = await getCachedContent(path, includeDirectories: true);
+    final cachedDir = await getCachedContent(path, includeDirectories: true, readData: readData);
     if (cachedDir != null) {
       if (forceRemote && error != null) throw error;
       return cachedDir;
@@ -208,6 +207,12 @@ abstract class RemoteFileSystem extends DirectoryFileSystem {
         type: NetworkErrorType.ssl,
         originalException: e,
       );
+    } on HttpException catch (e) {
+      throw NetworkException(
+        'HTTP error: ${e.message}',
+        type: NetworkErrorType.connection,
+        originalException: e,
+      );
     }
   }
 
@@ -226,47 +231,50 @@ abstract class RemoteFileSystem extends DirectoryFileSystem {
   Future<RawFileSystemEntity?> getCachedContent(
     String path, {
     bool includeDirectories = false,
+    bool readData = true,
   }) async {
     final absolutePath = await getAbsolutePath(path);
     final file = File(absolutePath);
+    final stat = await file.stat();
+    
     // Only return cached content for files, not directories (unless requested).
     // Directories should always be fetched from remote to get the full listing,
     // otherwise we'd only see locally cached files and miss remote-only files.
-    if (await file.exists()) {
+    if (stat.type == FileSystemEntityType.file) {
       return RawFileSystemFile(
         AssetLocation(remote: storage.identifier, path: path),
-        data: await file.readAsBytes(),
+        data: readData ? await file.readAsBytes() : null,
         cached: true,
+        lastModified: stat.modified,
+        size: stat.size,
       );
     }
 
-    if (includeDirectories) {
+    if (includeDirectories && stat.type == FileSystemEntityType.directory) {
       final directory = Directory(absolutePath);
-      if (await directory.exists()) {
-        final cacheDir = await getDirectory();
-        return RawFileSystemDirectory(
-          AssetLocation(remote: storage.identifier, path: path),
-          assets: await directory
-              .list()
-              .map((e) {
-                final childPath = p.relative(e.path, from: cacheDir);
-                if (e is File) {
-                  return RawFileSystemFile(
-                    AssetLocation(remote: storage.identifier, path: childPath),
-                    cached: true,
-                  );
-                }
-                if (e is Directory) {
-                  return RawFileSystemDirectory(
-                    AssetLocation(remote: storage.identifier, path: childPath),
-                  );
-                }
-                return null;
-              })
-              .whereNotNull()
-              .toList(),
-        );
-      }
+      final cacheDir = await getDirectory();
+      return RawFileSystemDirectory(
+        AssetLocation(remote: storage.identifier, path: path),
+        assets: await directory
+            .list()
+            .map((e) {
+              final childPath = p.relative(e.path, from: cacheDir);
+              if (e is File) {
+                return RawFileSystemFile(
+                  AssetLocation(remote: storage.identifier, path: childPath),
+                  cached: true,
+                );
+              }
+              if (e is Directory) {
+                return RawFileSystemDirectory(
+                  AssetLocation(remote: storage.identifier, path: childPath),
+                );
+              }
+              return null;
+            })
+            .whereNotNull()
+            .toList(),
+      );
     }
     return null;
   }

@@ -266,7 +266,9 @@ class DavRemoteDirectoryFileSystem extends RemoteFileSystem {
           .findElements('href', namespace: '*')
           .firstOrNull
           ?.innerText;
-      return current == fileName || current == '$fileName/';
+      if (current == null) return false;
+      final currentPath = Uri.parse(current).path;
+      return currentPath == fileName || currentPath == '$fileName/';
     }).toList();
 
     if (responses.isEmpty) {
@@ -303,21 +305,23 @@ class DavRemoteDirectoryFileSystem extends RemoteFileSystem {
       final assets = await Future.wait(
         xml
             .findAllElements('response', namespace: '*')
-            .where(
-              (element) =>
-                  element
-                      .findElements('href', namespace: '*')
-                      .firstOrNull
-                      ?.innerText
-                      .startsWith(fileName) ??
-                  false,
-            )
             .where((element) {
               final current = element
                   .findElements('href', namespace: '*')
                   .firstOrNull
                   ?.innerText;
-              return current != fileName && current != '$fileName/';
+              if (current == null) return false;
+              final currentPath = Uri.parse(current).path;
+              return currentPath.startsWith(fileName);
+            })
+            .where((element) {
+              final current = element
+                  .findElements('href', namespace: '*')
+                  .firstOrNull
+                  ?.innerText;
+              if (current == null) return false;
+              final currentPath = Uri.parse(current).path;
+              return currentPath != fileName && currentPath != '$fileName/';
             })
             .map((e) async {
               final childProp = e
@@ -327,11 +331,8 @@ class DavRemoteDirectoryFileSystem extends RemoteFileSystem {
                   .first;
               final meta = _DavMetadata.fromProp(childProp);
 
-              var childPath = e
-                  .findElements('href', namespace: '*')
-                  .first
-                  .innerText
-                  .substring(rootDirectory.path.length);
+              final href = e.findElements('href', namespace: '*').first.innerText;
+              var childPath = Uri.parse(href).path.substring(rootDirectory.path.length);
               if (childPath.endsWith('/')) {
                 childPath = childPath.substring(0, childPath.length - 1);
               }
@@ -348,9 +349,25 @@ class DavRemoteDirectoryFileSystem extends RemoteFileSystem {
                   size: meta.size,
                 );
               } else {
+                final cached = await getCachedContent(childPath, readData: readData);
+                bool isUpToDate = false;
+                if (cached is RawFileSystemFile && (cached.data != null || !readData)) {
+                  if (meta.size == cached.size &&
+                      meta.lastModified != null &&
+                      cached.lastModified != null) {
+                    if (meta.lastModified!
+                            .difference(cached.lastModified!)
+                            .abs()
+                            .inSeconds <
+                        2) {
+                      isUpToDate = true;
+                    }
+                  }
+                }
                 return RawFileSystemFile(
                   AssetLocation(remote: storage.identifier, path: childPath),
-                  data: null,
+                  data: isUpToDate && readData ? (cached as RawFileSystemFile).data : null,
+                  cached: isUpToDate,
                   lastModified: meta.lastModified,
                   creationTime: meta.creationTime,
                   size: meta.size,

@@ -6,6 +6,60 @@ import 'package:lw_file_system/lw_file_system.dart';
 import 'package:path/path.dart' as p;
 import 'package:xml/xml.dart';
 
+class _DavMetadata {
+  final bool isCollection;
+  final DateTime? lastModified;
+  final DateTime? creationTime;
+  final int? size;
+
+  _DavMetadata({
+    required this.isCollection,
+    this.lastModified,
+    this.creationTime,
+    this.size,
+  });
+
+  static _DavMetadata fromProp(XmlElement prop) {
+    final resourceType = prop
+        .findElements('resourcetype', namespace: '*')
+        .firstOrNull;
+    final isCollection =
+        resourceType?.findElements('collection', namespace: '*').isNotEmpty ??
+        false;
+
+    final lastModifiedStr = prop
+        .findElements('getlastmodified', namespace: '*')
+        .firstOrNull
+        ?.innerText;
+    final creationDateStr = prop
+        .findElements('creationdate', namespace: '*')
+        .firstOrNull
+        ?.innerText;
+    final contentLengthStr = prop
+        .findElements('getcontentlength', namespace: '*')
+        .firstOrNull
+        ?.innerText;
+
+    DateTime? lastModified;
+    if (lastModifiedStr != null) {
+      try {
+        lastModified = HttpDate.parse(lastModifiedStr);
+      } catch (_) {
+        lastModified = DateTime.tryParse(lastModifiedStr);
+      }
+    }
+
+    return _DavMetadata(
+      isCollection: isCollection,
+      lastModified: lastModified,
+      creationTime: creationDateStr != null
+          ? DateTime.tryParse(creationDateStr)
+          : null,
+      size: contentLengthStr != null ? int.tryParse(contentLengthStr) : null,
+    );
+  }
+}
+
 class DavRemoteDirectoryFileSystem extends RemoteFileSystem {
   @override
   final DavRemoteStorage storage;
@@ -116,6 +170,53 @@ class DavRemoteDirectoryFileSystem extends RemoteFileSystem {
   }) async {
     path = _normalizePath(path);
 
+    if (readData && currentLastModified != null && currentSize != null) {
+      try {
+        final response = await createRequest(
+          path.split('/'),
+          method: 'GET',
+          headers: {'If-Modified-Since': HttpDate.format(currentLastModified)},
+          timeout: RemoteFileSystem.transferTimeout,
+        );
+
+        if (response != null) {
+          if (response.statusCode == 304) {
+            throw NotModifiedException();
+          } else if (response.statusCode == 404) {
+            return null;
+          } else if (response.statusCode == 200) {
+            final fileContent = await getBodyBytes(response);
+
+            final lastModifiedStr = response.headers.value('last-modified');
+            final contentLengthStr = response.headers.value('content-length');
+
+            DateTime? lastModified;
+            if (lastModifiedStr != null) {
+              try {
+                lastModified = HttpDate.parse(lastModifiedStr);
+              } catch (_) {
+                lastModified = DateTime.tryParse(lastModifiedStr);
+              }
+            }
+            int? size;
+            if (contentLengthStr != null) {
+              size = int.tryParse(contentLengthStr);
+            }
+
+            return RawFileSystemFile(
+              AssetLocation(remote: storage.identifier, path: path),
+              data: fileContent,
+              lastModified: lastModified,
+              size: size,
+            );
+          }
+        }
+      } on NotModifiedException {
+        rethrow;
+      } catch (e) {
+        // Fall back to PROPFIND if GET fails
+      }
+    }
     HttpClientResponse? response;
     try {
       response = await createRequest(path.split('/'), method: 'PROPFIND');
@@ -182,37 +283,23 @@ class DavRemoteDirectoryFileSystem extends RemoteFileSystem {
         .findElements('prop', namespace: '*')
         .first;
 
-    final resourceType = prop
-        .findElements('resourcetype', namespace: '*')
-        .first;
+    final currentMeta = _DavMetadata.fromProp(prop);
 
-    final isCollection = resourceType
-        .findElements('collection', namespace: '*')
-        .isNotEmpty;
-
-    if (!isCollection && currentSize != null && currentLastModified != null) {
-      final contentLengthStr = prop
-          .findElements('getcontentlength', namespace: '*')
-          .firstOrNull
-          ?.innerText;
-      final lastModifiedStr = prop
-          .findElements('getlastmodified', namespace: '*')
-          .firstOrNull
-          ?.innerText;
-
-      if (contentLengthStr != null && lastModifiedStr != null) {
-        final len = int.tryParse(contentLengthStr);
-        final mod = HttpDate.parse(lastModifiedStr);
-
-        // Allow 2 seconds of difference for modification time
-        if (len == currentSize &&
-            mod.difference(currentLastModified).abs().inSeconds < 2) {
-          throw NotModifiedException();
-        }
+    if (!currentMeta.isCollection &&
+        currentSize != null &&
+        currentLastModified != null) {
+      if (currentMeta.size == currentSize &&
+          currentMeta.lastModified != null &&
+          currentMeta.lastModified!
+                  .difference(currentLastModified)
+                  .abs()
+                  .inSeconds <
+              2) {
+        throw NotModifiedException();
       }
     }
 
-    if (isCollection) {
+    if (currentMeta.isCollection) {
       final assets = await Future.wait(
         xml
             .findAllElements('response', namespace: '*')
@@ -233,36 +320,40 @@ class DavRemoteDirectoryFileSystem extends RemoteFileSystem {
               return current != fileName && current != '$fileName/';
             })
             .map((e) async {
-              final currentResourceType = e
+              final childProp = e
                   .findElements('propstat', namespace: '*')
                   .first
                   .findElements('prop', namespace: '*')
-                  .first
-                  .findElements('resourcetype', namespace: '*')
                   .first;
-              var path = e
+              final meta = _DavMetadata.fromProp(childProp);
+
+              var childPath = e
                   .findElements('href', namespace: '*')
                   .first
                   .innerText
                   .substring(rootDirectory.path.length);
-              if (path.endsWith('/')) {
-                path = path.substring(0, path.length - 1);
+              if (childPath.endsWith('/')) {
+                childPath = childPath.substring(0, childPath.length - 1);
               }
-              if (!path.startsWith('/')) {
-                path = '/$path';
+              if (!childPath.startsWith('/')) {
+                childPath = '/$childPath';
               }
-              path = Uri.decodeComponent(path);
-              final isDir = currentResourceType
-                  .findElements('collection', namespace: '*')
-                  .isNotEmpty;
-              if (isDir) {
+              childPath = Uri.decodeComponent(childPath);
+
+              if (meta.isCollection) {
                 return RawFileSystemDirectory(
-                  AssetLocation(remote: storage.identifier, path: path),
+                  AssetLocation(remote: storage.identifier, path: childPath),
+                  lastModified: meta.lastModified,
+                  creationTime: meta.creationTime,
+                  size: meta.size,
                 );
               } else {
                 return RawFileSystemFile(
-                  AssetLocation(remote: storage.identifier, path: path),
+                  AssetLocation(remote: storage.identifier, path: childPath),
                   data: null,
+                  lastModified: meta.lastModified,
+                  creationTime: meta.creationTime,
+                  size: meta.size,
                 );
               }
             })
@@ -271,12 +362,18 @@ class DavRemoteDirectoryFileSystem extends RemoteFileSystem {
       return RawFileSystemDirectory(
         AssetLocation(remote: storage.identifier, path: path),
         assets: assets,
+        lastModified: currentMeta.lastModified,
+        creationTime: currentMeta.creationTime,
+        size: currentMeta.size,
       );
     }
     if (!readData) {
       return RawFileSystemFile(
         AssetLocation(remote: storage.identifier, path: path),
         data: null,
+        lastModified: currentMeta.lastModified,
+        creationTime: currentMeta.creationTime,
+        size: currentMeta.size,
       );
     }
     response = await createRequest(
@@ -294,6 +391,9 @@ class DavRemoteDirectoryFileSystem extends RemoteFileSystem {
     return RawFileSystemFile(
       AssetLocation(remote: storage.identifier, path: path),
       data: fileContent,
+      lastModified: currentMeta.lastModified,
+      creationTime: currentMeta.creationTime,
+      size: currentMeta.size,
     );
   }
 

@@ -104,10 +104,10 @@ abstract class RemoteFileSystem extends DirectoryFileSystem {
       DateTime? currentLastModified;
       int? currentSize;
 
-      if (cached != null &&
-          cached is RawFileSystemFile) {
+      if (cached != null && cached is RawFileSystemFile) {
         currentSize = cached.size ?? cached.data?.length;
-        currentLastModified = cached.lastModified ?? await getCachedFileModified(path);
+        currentLastModified =
+            cached.lastModified ?? await getCachedFileModified(path);
       }
 
       try {
@@ -132,7 +132,11 @@ abstract class RemoteFileSystem extends DirectoryFileSystem {
     if (asset != null) return asset;
 
     // Try to recover from cache (directories)
-    final cachedDir = await getCachedContent(path, includeDirectories: true, readData: readData);
+    final cachedDir = await getCachedContent(
+      path,
+      includeDirectories: true,
+      readData: readData,
+    );
     if (cachedDir != null) {
       if (forceRemote && error != null) throw error;
       return cachedDir;
@@ -236,7 +240,7 @@ abstract class RemoteFileSystem extends DirectoryFileSystem {
     final absolutePath = await getAbsolutePath(path);
     final file = File(absolutePath);
     final stat = await file.stat();
-    
+
     // Only return cached content for files, not directories (unless requested).
     // Directories should always be fetched from remote to get the full listing,
     // otherwise we'd only see locally cached files and miss remote-only files.

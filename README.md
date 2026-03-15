@@ -31,6 +31,7 @@ graph TD
   lw_file_system --> lw_file_system_api
   localizer[localizer]
   flutter_localizer --> localizer
+  keybinder[keybinder] --> material_leap
 ```
 
 Keep commit refs for these pairs synchronized with the versions declared in each package's pubspec.yaml.

@@ -331,8 +331,13 @@ class DavRemoteDirectoryFileSystem extends RemoteFileSystem {
                   .first;
               final meta = _DavMetadata.fromProp(childProp);
 
-              final href = e.findElements('href', namespace: '*').first.innerText;
-              var childPath = Uri.parse(href).path.substring(rootDirectory.path.length);
+              final href = e
+                  .findElements('href', namespace: '*')
+                  .first
+                  .innerText;
+              var childPath = Uri.parse(
+                href,
+              ).path.substring(rootDirectory.path.length);
               if (childPath.endsWith('/')) {
                 childPath = childPath.substring(0, childPath.length - 1);
               }
@@ -349,9 +354,13 @@ class DavRemoteDirectoryFileSystem extends RemoteFileSystem {
                   size: meta.size,
                 );
               } else {
-                final cached = await getCachedContent(childPath, readData: readData);
+                final cached = await getCachedContent(
+                  childPath,
+                  readData: readData,
+                );
                 bool isUpToDate = false;
-                if (cached is RawFileSystemFile && (cached.data != null || !readData)) {
+                if (cached is RawFileSystemFile &&
+                    (cached.data != null || !readData)) {
                   if (meta.size == cached.size &&
                       meta.lastModified != null &&
                       cached.lastModified != null) {
@@ -366,7 +375,9 @@ class DavRemoteDirectoryFileSystem extends RemoteFileSystem {
                 }
                 return RawFileSystemFile(
                   AssetLocation(remote: storage.identifier, path: childPath),
-                  data: isUpToDate && readData ? (cached as RawFileSystemFile).data : null,
+                  data: isUpToDate && readData
+                      ? (cached as RawFileSystemFile).data
+                      : null,
                   cached: isUpToDate,
                   lastModified: meta.lastModified,
                   creationTime: meta.creationTime,

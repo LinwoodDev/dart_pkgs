@@ -13,16 +13,18 @@ class KeyRecorder extends StatefulWidget {
   final Widget Function(
     BuildContext context,
     bool isRecording,
-    VoidCallback startRecording,
+    VoidCallback toggleRecording,
   )
   builder;
   final FocusNode? focusNode;
+  final LogicalKeyboardKey? cancelKey;
 
   const KeyRecorder({
     super.key,
     required this.onNewKey,
     required this.builder,
     this.focusNode,
+    this.cancelKey,
   });
 
   @override
@@ -58,11 +60,13 @@ class _KeyRecorderState extends State<KeyRecorder> {
     super.dispose();
   }
 
-  void _startRecording() {
+  void _toggleRecording() {
     setState(() {
-      _isRecording = true;
+      _isRecording = !_isRecording;
     });
-    _focusNode.requestFocus();
+    if (_isRecording) {
+      _focusNode.requestFocus();
+    }
   }
 
   @override
@@ -73,6 +77,14 @@ class _KeyRecorderState extends State<KeyRecorder> {
         if (!_isRecording) return KeyEventResult.ignored;
 
         if (event is KeyDownEvent) {
+          if (widget.cancelKey != null &&
+              event.logicalKey == widget.cancelKey) {
+            setState(() {
+              _isRecording = false;
+            });
+            return KeyEventResult.handled;
+          }
+
           // Ignore standalone modifier presses (e.g. just pressing Ctrl)
           if (event.logicalKey == LogicalKeyboardKey.controlLeft ||
               event.logicalKey == LogicalKeyboardKey.controlRight ||
@@ -101,7 +113,7 @@ class _KeyRecorderState extends State<KeyRecorder> {
         }
         return KeyEventResult.handled;
       },
-      child: widget.builder(context, _isRecording, _startRecording),
+      child: widget.builder(context, _isRecording, _toggleRecording),
     );
   }
 }
@@ -112,6 +124,7 @@ class KeyRecorderButton extends StatelessWidget {
   final ValueChanged<SingleActivator> onNewKey;
   final Color recordingColor, recordingTextColor;
   final VoidCallback? onReset;
+  final LogicalKeyboardKey? cancelKey;
 
   const KeyRecorderButton({
     super.key,
@@ -120,13 +133,15 @@ class KeyRecorderButton extends StatelessWidget {
     this.recordingColor = Colors.redAccent,
     this.recordingTextColor = Colors.white,
     this.onReset,
+    this.cancelKey,
   });
 
   @override
   Widget build(BuildContext context) {
     return KeyRecorder(
       onNewKey: onNewKey,
-      builder: (context, isRecording, startRecording) {
+      cancelKey: cancelKey,
+      builder: (context, isRecording, toggleRecording) {
         final l10n = KeybinderLocalizations.of(context);
         String label = l10n.clickToSet;
         if (isRecording) {
@@ -140,7 +155,7 @@ class KeyRecorderButton extends StatelessWidget {
             backgroundColor: isRecording ? recordingColor : null,
             foregroundColor: isRecording ? recordingTextColor : null,
           ),
-          onPressed: startRecording,
+          onPressed: toggleRecording,
           child: Text(label),
         );
 
@@ -174,6 +189,7 @@ class KeyRecorderListTile extends StatelessWidget {
   final Widget? leading;
   final Color recordingColor, recordingTextColor;
   final VoidCallback? onReset;
+  final LogicalKeyboardKey? cancelKey;
 
   const KeyRecorderListTile({
     super.key,
@@ -185,13 +201,15 @@ class KeyRecorderListTile extends StatelessWidget {
     this.recordingColor = Colors.redAccent,
     this.recordingTextColor = Colors.white,
     this.onReset,
+    this.cancelKey,
   });
 
   @override
   Widget build(BuildContext context) {
     return KeyRecorder(
       onNewKey: onNewKey,
-      builder: (context, isRecording, startRecording) {
+      cancelKey: cancelKey,
+      builder: (context, isRecording, toggleRecording) {
         final l10n = KeybinderLocalizations.of(context);
         String label = l10n.clickToSet;
         if (isRecording) {
@@ -226,7 +244,7 @@ class KeyRecorderListTile extends StatelessWidget {
           subtitle: subtitle,
           leading: leading,
           trailing: trailing,
-          onTap: startRecording,
+          onTap: toggleRecording,
           selected: isRecording,
         );
       },

@@ -1,6 +1,7 @@
 name: keybinder
 description: "A new Flutter package project."
 version: 0.0.1
+publish_to: none
 
 environment:
   sdk: ^3.9.2

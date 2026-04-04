@@ -43,7 +43,7 @@ Minimal (not recommended for production):
 ```yaml
 some_package:
   git:
-    url: https://github.com/<your-org-or-user>/dart_pkgs.git
+    url: https://github.com/LinwoodDev/dart_pkgs.git
     path: packages/some_package
 ```
 
@@ -52,7 +52,7 @@ Pinned (recommended):
 ```yaml
 some_package:
   git:
-    url: https://github.com/<your-org-or-user>/dart_pkgs.git
+    url: https://github.com/LinwoodDev/dart_pkgs.git
     path: packages/some_package
     ref: <commit-hash>
 ```

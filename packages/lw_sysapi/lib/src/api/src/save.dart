@@ -20,7 +20,7 @@ Future<void> exportFile(
     });
     return;
   }
-  var file = await FilePicker.platform.saveFile(
+  var file = await FilePicker.saveFile(
     dialogTitle: label,
     fileName: '$fileName.$fileExtension',
     bytes: bytes,

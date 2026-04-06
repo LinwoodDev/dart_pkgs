@@ -36,6 +36,7 @@ class _WidgetsViewState extends State<WidgetsView>
         const SizedBox(height: 8),
         const ExactSlider(
           header: Text("Slider Header"),
+          subtitle: Text("Slider Subtitle"),
         ),
         const SizedBox(height: 8),
         Text("Advanced switch list tile",

@@ -10,7 +10,7 @@ typedef OnValueChanged = void Function(double value);
 class ExactSlider extends StatefulWidget {
   final String? label;
   final int fractionDigits;
-  final Widget? header, leading, bottom;
+  final Widget? header, subtitle, leading, bottom;
   final double value, min, max;
   final double? defaultValue;
   final double? headerWidth;
@@ -24,6 +24,7 @@ class ExactSlider extends StatefulWidget {
     this.label,
     this.leading,
     this.bottom,
+    this.subtitle,
     this.fractionDigits = 2,
     this.defaultValue,
     this.min = 0,
@@ -45,6 +46,7 @@ class ExactSlider extends StatefulWidget {
     this.label,
     this.leading,
     this.bottom,
+    this.subtitle,
     this.fractionDigits = 2,
     this.defaultValue,
     this.min = 0,
@@ -133,6 +135,15 @@ class _ExactSliderState extends State<ExactSlider> {
 
   @override
   Widget build(BuildContext context) {
+    final ListTileThemeData tileTheme = ListTileTheme.of(context);
+    final titleStyle =
+        tileTheme.titleTextStyle ??
+        TextTheme.of(context).bodyLarge ??
+        const TextStyle();
+    final subtitleStyle =
+        tileTheme.subtitleTextStyle ??
+        TextTheme.of(context).bodyMedium ??
+        const TextStyle();
     return Align(
       alignment: Alignment.topCenter,
       child: Column(
@@ -179,6 +190,7 @@ class _ExactSliderState extends State<ExactSlider> {
                 },
               );
               final header = widget.header;
+              final subtitle = widget.subtitle;
               final resetButton = widget.defaultValue == null
                   ? null
                   : IconButton(
@@ -199,7 +211,14 @@ class _ExactSliderState extends State<ExactSlider> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      header ?? const SizedBox.shrink(),
+                      DefaultTextStyle(
+                        style: titleStyle,
+                        child: widget.header ?? const SizedBox(),
+                      ),
+                      if (subtitle != null) ...[
+                        const SizedBox(height: 4),
+                        DefaultTextStyle(style: subtitleStyle, child: subtitle),
+                      ],
                       const SizedBox(height: 6),
                       Row(
                         children: [
@@ -218,10 +237,16 @@ class _ExactSliderState extends State<ExactSlider> {
                 return ListTile(
                   leading: widget.leading,
                   contentPadding: widget.contentPadding,
-                  subtitle: Row(
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      Expanded(child: slider),
-                      ?resetButton,
+                      ?subtitle,
+                      Row(
+                        children: [
+                          Expanded(child: slider),
+                          ?resetButton,
+                        ],
+                      ),
                     ],
                   ),
                   title: Row(
@@ -238,20 +263,30 @@ class _ExactSliderState extends State<ExactSlider> {
               return ListTile(
                 leading: widget.leading,
                 contentPadding: widget.contentPadding,
-                title: Row(
+                title: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    if (header != null) ...[
-                      SizedBox(width: widget.headerWidth ?? 180, child: header),
-                      const SizedBox(width: 16),
-                    ],
-                    ConstrainedBox(
-                      constraints: const BoxConstraints(maxWidth: 75),
-                      child: textField,
+                    Row(
+                      children: [
+                        if (header != null) ...[
+                          SizedBox(
+                            width: widget.headerWidth ?? 180,
+                            child: header,
+                          ),
+                          const SizedBox(width: 16),
+                        ],
+                        ConstrainedBox(
+                          constraints: const BoxConstraints(maxWidth: 75),
+                          child: textField,
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(child: slider),
+                      ],
                     ),
-                    const SizedBox(width: 8),
-                    Expanded(child: slider),
                   ],
                 ),
+                subtitle: subtitle,
                 trailing: resetButton,
               );
             },

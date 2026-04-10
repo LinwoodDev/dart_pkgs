@@ -3,9 +3,11 @@ import 'dart:typed_data';
 import 'package:archive/archive.dart';
 import 'package:dart_mappable/dart_mappable.dart';
 
+import 'uint8_list_mapper.dart';
+
 part 'data.mapper.dart';
 
-@MappableClass()
+@MappableClass(includeCustomMappers: [Uint8ListMapper()])
 class ArchiveState with ArchiveStateMappable {
   final Map<String, Uint8List> added;
   final Set<String> removed;

@@ -4,6 +4,8 @@ import 'dart:typed_data';
 import 'package:dart_mappable/dart_mappable.dart';
 import 'package:lw_file_system_api/lw_file_system_api.dart';
 
+import 'uint8_list_mapper.dart';
+
 part 'storage.mapper.dart';
 
 class PathHook extends MappingHook {
@@ -77,6 +79,7 @@ class EmptyMapEntryHook extends MappingHook {
 }
 
 @MappableClass(
+  includeCustomMappers: [Uint8ListMapper()],
   hook: ChainedHook([
     UnmappedPropertiesHook('extra'),
     PathHook(),

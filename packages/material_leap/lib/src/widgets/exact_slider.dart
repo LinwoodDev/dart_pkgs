@@ -128,7 +128,10 @@ class _ExactSliderState extends State<ExactSlider> {
     if (oldWidget.value != widget.value) {
       setState(() {
         _value = _clamp(widget.value);
-        _updateText(_value);
+        final currentTextValue = double.tryParse(_controller.text);
+        if (currentTextValue != _value) {
+          _updateText(_value);
+        }
       });
     }
   }

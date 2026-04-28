@@ -54,7 +54,7 @@ class TypedDirectoryFileSystem<T> extends TypedFileSystem<T>
     FileSystemConfig config, {
     ExternalStorage? storage,
     bool useIsolates = false,
-    bool useAndroidSaf = true,
+    bool useAndroidSaf = false,
     CreateDefaultCallback<TypedDirectoryFileSystem<T>> createDefault =
         defaultCreateDefault,
     required EncodeTypedFileSystemCallback<T> onEncode,
@@ -185,7 +185,7 @@ class TypedKeyFileSystem<T> extends TypedFileSystem<T>
   factory TypedKeyFileSystem.build(
     FileSystemConfig config, {
     ExternalStorage? storage,
-    bool useAndroidSaf = true,
+    bool useAndroidSaf = false,
     CreateDefaultCallback<TypedKeyFileSystem<T>> createDefault =
         defaultCreateDefault,
     required EncodeTypedFileSystemCallback<T> onEncode,

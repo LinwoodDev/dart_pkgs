@@ -17,7 +17,7 @@ void main() {
       ),
       true,
     );
-    expect(fileSystem.isSaf, isTrue);
+    expect(await fileSystem.isSaf(), isTrue);
     expect(await fileSystem.getDirectory(), 'content://tree/root');
   });
 
@@ -29,7 +29,7 @@ void main() {
         storage: const LocalStorage(paths: {'': '/tmp/lw_file_system'}),
       );
 
-      expect(fileSystem.isSaf, isFalse);
+      expect(await fileSystem.isSaf(), isFalse);
       expect(await fileSystem.getDirectory(), '/tmp/lw_file_system');
     },
   );
@@ -37,7 +37,7 @@ void main() {
   test('Android wrapper delegates null storage to IO behavior', () async {
     final fileSystem = AndroidSafDirectoryFileSystem(config: _config);
 
-    expect(fileSystem.isSaf, isFalse);
+    expect(await fileSystem.isSaf(), isFalse);
     expect(await fileSystem.getDirectory(), '/tmp/lw_file_system');
   });
 
@@ -51,7 +51,7 @@ void main() {
         ),
       );
 
-      expect(fileSystem.isSaf, isTrue);
+      expect(await fileSystem.isSaf(), isTrue);
       expect(await fileSystem.getDirectory(), 'content://tree/root/Documents');
     },
   );
@@ -64,7 +64,7 @@ void main() {
       ),
     );
 
-    expect(fileSystem.isSaf, isTrue);
+    expect(await fileSystem.isSaf(), isTrue);
     expect(await fileSystem.getDirectory(), 'content://tree/root');
   });
 
@@ -100,7 +100,7 @@ void main() {
       ),
     );
 
-    expect(fileSystem.isSaf, isTrue);
+    expect(await fileSystem.isSaf(), isTrue);
     expect(await fileSystem.getDirectory(), 'content://tree/root');
   });
 
@@ -110,7 +110,7 @@ void main() {
       storage: const LocalStorage(paths: {'': 'content://tree/root'}),
     );
 
-    expect(fileSystem.isSaf, isFalse);
+    expect(await fileSystem.isSaf(), isFalse);
     expect(await fileSystem.getDirectory(), '/tmp/lw_file_system');
     expect(await fileSystem.readAsset('missing'), isNull);
   });

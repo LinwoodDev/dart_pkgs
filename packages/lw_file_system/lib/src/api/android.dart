@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/services.dart';
 import 'package:lw_file_system/lw_file_system.dart';
 import 'package:synchronized/synchronized.dart';
@@ -35,111 +37,44 @@ class AndroidSafDirectoryFileSystem extends DirectoryFileSystem {
   Future<bool> isSaf() async => isSafStorage(await getDirectory());
 
   @override
-  Future<String> getDirectory() async {
-    final storage = this.storage;
-    if (storage is! LocalStorage) return config.getDirectory(storage);
-
-    final variant = config.currentPathVariant;
-    final variantPath = storage.paths[variant];
-    final basePath = storage.getBasePath();
-
-    String path;
-    if (variantPath != null && isSafStorage(variantPath)) {
-      path = variantPath;
-    } else if (variantPath != null && isSafStorage(basePath)) {
-      path = _joinSafPath(basePath, variantPath);
-    } else {
-      path = storage.getFullPath(variant);
+  Future<String?> toRelativePath(String path) async {
+    final root = await getDirectory();
+    if (!isSafStorage(root)) {
+      if (isSafStorage(path)) {
+        return null;
+      }
+      return super.toRelativePath(path);
     }
-
-    if (path.isEmpty) return config.getDirectory(storage);
-    return path;
-  }
-
-  String _getSafRootUri() {
-    final storage = this.storage;
-    if (storage == null) return '';
-
-    final variantPath = storage.paths[config.currentPathVariant];
-    if (variantPath != null && isSafStorage(variantPath)) return variantPath;
-
-    final basePath = storage.getBasePath();
-    return isSafStorage(basePath) ? basePath : '';
-  }
-
-  Future<String> _getSafRootPath() async {
-    final directory = await getDirectory();
-    final rootUri = _getSafRootUri();
-    if (directory.isEmpty || rootUri.isEmpty || directory == rootUri) return '';
-    if (!directory.startsWith('$rootUri/')) return '';
-    return _normalizeSafPath(directory.substring(rootUri.length + 1));
-  }
-
-  Future<String> _toSafPath(String path) async {
-    path = _normalizeSafPath(path);
-    final rootPath = await _getSafRootPath();
-    if (rootPath.isEmpty) return path;
-    return _normalizeSafPath(universalPathContext.join(rootPath, path));
-  }
-
-  Future<String> _fromSafPath(String path) async {
-    path = _normalizeSafPath(path);
-    final rootPath = await _getSafRootPath();
-    if (rootPath.isEmpty) return path;
-    if (path == rootPath) return '';
-    if (path.startsWith('$rootPath/')) {
-      return _normalizeSafPath(path.substring(rootPath.length + 1));
+    if (isSafStorage(path)) {
+      if (path.startsWith(root)) {
+        return path.substring(root.length).replaceFirst(RegExp(r'^/'), '');
+      }
+      return null;
     }
     return path;
-  }
-
-  String _normalizeSafPath(String path) {
-    path = normalizePath(path);
-    while (path.startsWith('/')) {
-      path = path.substring(1);
-    }
-    return path;
-  }
-
-  String _joinSafPath(String root, String path) {
-    path = _normalizeSafPath(path);
-    if (path.isEmpty) return root;
-    while (root.endsWith('/')) {
-      root = root.substring(0, root.length - 1);
-    }
-    return '$root/$path';
   }
 
   @override
   Future<String> getAbsolutePath(String relativePath) async {
-    final rootUri = await getDirectory();
-    if (!isSafStorage(rootUri)) return _io.getAbsolutePath(relativePath);
-    if (isSafStorage(relativePath)) return relativePath;
-    return _joinSafPath(rootUri, relativePath);
-  }
-
-  @override
-  Future<String?> toRelativePath(String path) async {
-    final rootUri = await getDirectory();
-    if (!isSafStorage(rootUri)) return _io.toRelativePath(path);
-    if (!isSafStorage(path)) return normalizePath(path);
-    if (path == rootUri) return '';
-    if (path.startsWith('$rootUri/')) {
-      return _normalizeSafPath(path.substring(rootUri.length + 1));
+    if (isSafStorage(relativePath)) {
+      return relativePath;
     }
-    return null;
+    final directory = await getDirectory();
+    if (isSafStorage(directory)) {
+      return '$directory/${relativePath.replaceFirst(RegExp(r'^/'), '')}';
+    }
+    return super.getAbsolutePath(relativePath);
   }
 
   @override
   Future<RawFileSystemDirectory> createDirectory(String path) async {
     final directory = await getDirectory();
     if (!isSafStorage(directory)) return _io.createDirectory(path);
-    final rootUri = _getSafRootUri();
     path = normalizePath(path);
     await _lock.synchronized(
       () async => _channel.invokeMethod<void>('safCreateDirectory', {
-        'rootUri': rootUri,
-        'path': await _toSafPath(path),
+        'rootUri': directory,
+        'path': await toRelativePath(path),
       }),
     );
     return RawFileSystemDirectory(
@@ -152,12 +87,11 @@ class AndroidSafDirectoryFileSystem extends DirectoryFileSystem {
   Future<void> deleteAsset(String path) async {
     final directory = await getDirectory();
     if (!isSafStorage(directory)) return _io.deleteAsset(path);
-    final rootUri = _getSafRootUri();
     path = normalizePath(path);
     await _lock.synchronized(
       () async => _channel.invokeMethod<void>('safDeleteAsset', {
-        'rootUri': rootUri,
-        'path': await _toSafPath(path),
+        'rootUri': directory,
+        'path': await toRelativePath(path),
       }),
     );
   }
@@ -166,12 +100,11 @@ class AndroidSafDirectoryFileSystem extends DirectoryFileSystem {
   Future<bool> hasAsset(String path) async {
     final directory = await getDirectory();
     if (!isSafStorage(directory)) return _io.hasAsset(path);
-    final rootUri = _getSafRootUri();
     path = normalizePath(path);
     return _channel
         .invokeMethod<bool>('safExists', {
-          'rootUri': rootUri,
-          'path': await _toSafPath(path),
+          'rootUri': directory,
+          'path': await toRelativePath(path),
         })
         .then((value) => value ?? false);
   }
@@ -186,12 +119,11 @@ class AndroidSafDirectoryFileSystem extends DirectoryFileSystem {
     if (!isSafStorage(directory)) {
       return _io.updateFile(path, data, forceSync: forceSync);
     }
-    final rootUri = _getSafRootUri();
     path = normalizePath(path);
     await _lock.synchronized(
       () async => _channel.invokeMethod<void>('safWriteFile', {
-        'rootUri': rootUri,
-        'path': await _toSafPath(path),
+        'rootUri': directory,
+        'path': await toRelativePath(path),
         'data': data,
       }),
     );
@@ -207,12 +139,11 @@ class AndroidSafDirectoryFileSystem extends DirectoryFileSystem {
     if (!isSafStorage(directory)) {
       return _io.readAsset(path, readData: readData, forceRemote: forceRemote);
     }
-    final rootUri = _getSafRootUri();
     path = normalizePath(path);
-    final safPath = await _toSafPath(path);
+    final safPath = await toRelativePath(path);
     final map = await _channel.invokeMapMethod<String, Object?>(
       'safReadAsset',
-      {'rootUri': rootUri, 'path': safPath, 'readData': readData},
+      {'rootUri': directory, 'path': safPath, 'readData': readData},
     );
     return map == null ? null : await _entityFromMap(map);
   }
@@ -258,23 +189,22 @@ class AndroidSafDirectoryFileSystem extends DirectoryFileSystem {
   Future<bool> moveAbsolute(String oldPath, String newPath) async {
     final directory = await getDirectory();
     if (!isSafStorage(directory)) return _io.moveAbsolute(oldPath, newPath);
-    final rootUri = _getSafRootUri();
     if (oldPath == newPath) return false;
-    if (oldPath == rootUri && newPath.startsWith('content://')) {
+    if (oldPath == directory && isSafStorage(newPath)) {
       return await _channel.invokeMethod<bool>('copySafToSaf', {
             'sourceRootUri': oldPath,
             'targetRootUri': newPath,
           }) ??
           false;
     }
-    if (oldPath == rootUri) {
+    if (oldPath == directory) {
       return await _channel.invokeMethod<bool>('exportSafToPath', {
             'rootUri': oldPath,
             'targetPath': newPath,
           }) ??
           false;
     }
-    if (newPath == rootUri) {
+    if (newPath == directory) {
       return await _channel.invokeMethod<bool>('importPathToSaf', {
             'sourcePath': oldPath,
             'rootUri': newPath,
@@ -288,10 +218,8 @@ class AndroidSafDirectoryFileSystem extends DirectoryFileSystem {
   Future<bool> isInitialized() async {
     final directory = await getDirectory();
     if (!isSafStorage(directory)) return _io.isInitialized();
-    final rootUri = _getSafRootUri();
-    final rootPath = await _getSafRootPath();
     return _channel
-        .invokeMethod<bool>('safExists', {'rootUri': rootUri, 'path': rootPath})
+        .invokeMethod<bool>('safExists', {'rootUri': directory})
         .then((value) => value ?? false);
   }
 
@@ -323,9 +251,9 @@ class AndroidSafDirectoryFileSystem extends DirectoryFileSystem {
   }
 
   Future<RawFileSystemEntity> _entityFromMap(Map<String, Object?> map) async {
-    final path = await _fromSafPath(map['path'] as String? ?? '');
+    final path = await toRelativePath(map['path'] as String? ?? '');
     final location = AssetLocation(
-      path: path,
+      path: path ?? '',
       remote: storage?.identifier ?? '',
     );
     final lastModified = _dateFromMillis(map['lastModified']);

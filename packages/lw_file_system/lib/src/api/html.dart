@@ -166,8 +166,8 @@ class WebDirectoryFileSystem extends DirectoryFileSystem with WebFileSystem {
     }
     final map = Map<String, dynamic>.from(data as Map);
     if (map['type'] == 'file') {
-      final data = await getData(path);
-      if (data == null) {
+      final data = readData ? await getData(path) : null;
+      if (readData && data == null) {
         return null;
       }
       final file = FileSystemFile(location, data: data);
@@ -206,8 +206,8 @@ class WebDirectoryFileSystem extends DirectoryFileSystem with WebFileSystem {
   Future<bool> hasAsset(String path) async {
     path = normalizePath(path);
     final db = await _getDatabase();
-    final txn = db.transaction('documents', 'readonly');
-    final store = txn.objectStore('documents');
+    final txn = db.transaction(config.storeName, 'readonly');
+    final store = txn.objectStore(config.storeName);
     final doc = await store.getObject(path);
     await txn.completed;
     return doc != null;

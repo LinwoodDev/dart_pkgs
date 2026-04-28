@@ -703,10 +703,21 @@ abstract class RemoteFileSystem extends DirectoryFileSystem {
 
       case FileSyncStatus.localLatest:
         // Upload local changes to remote
-        await uploadCachedContent(path);
-        results.add(
-          SyncResult(path: path, action: SyncAction.uploaded, success: true),
-        );
+        try {
+          await uploadCachedContent(path);
+          results.add(
+            SyncResult(path: path, action: SyncAction.uploaded, success: true),
+          );
+        } catch (e) {
+          results.add(
+            SyncResult(
+              path: path,
+              action: SyncAction.uploaded,
+              success: false,
+              error: e.toString(),
+            ),
+          );
+        }
         break;
 
       case FileSyncStatus.remoteLatest:
@@ -762,7 +773,7 @@ abstract class RemoteFileSystem extends DirectoryFileSystem {
           SyncResult(
             path: path,
             action: SyncAction.none,
-            success: true,
+            success: false,
             message: const SyncMessage(SyncMessageType.offlineSyncSkipped),
           ),
         );
@@ -783,12 +794,10 @@ abstract class RemoteFileSystem extends DirectoryFileSystem {
       }
 
       if (downloadedAsset == null && isOnline) {
-        try {
-          final remoteAsset = await readAsset(path, forceRemote: true);
-          if (remoteAsset is RawFileSystemDirectory) {
-            childPaths.addAll(remoteAsset.assets.map((e) => e.path));
-          }
-        } catch (_) {}
+        final remoteAsset = await readAsset(path, forceRemote: true);
+        if (remoteAsset is RawFileSystemDirectory) {
+          childPaths.addAll(remoteAsset.assets.map((e) => e.path));
+        }
       }
 
       for (final childPath in childPaths) {
@@ -1143,13 +1152,18 @@ abstract class RemoteFileSystem extends DirectoryFileSystem {
   }
 
   Future<void> uploadCachedContent(String path) async {
-    final content = await getCachedContent(path);
+    final content = await getCachedContent(path, includeDirectories: true);
     if (content == null) {
-      return;
+      throw FileSystemException('No cached content to upload', path);
     }
     if (content is RawFileSystemFile) {
       final data = content.data;
-      if (data != null) await updateFile(path, data, forceSync: true);
+      if (data == null) {
+        throw FileSystemException('No cached file data to upload', path);
+      }
+      await updateFile(path, data, forceSync: true);
+    } else if (content is RawFileSystemDirectory) {
+      await createRemoteDirectory(path);
     }
   }
 

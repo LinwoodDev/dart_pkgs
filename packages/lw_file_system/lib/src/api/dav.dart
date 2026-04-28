@@ -118,7 +118,12 @@ class DavRemoteDirectoryFileSystem extends RemoteFileSystem {
       path: newPath.split('/'),
     );
 
-    if (destinationUri == null) return;
+    if (destinationUri == null) {
+      throw FileSystemException(
+        'Failed to move asset: Invalid destination',
+        path,
+      );
+    }
 
     var response = await createRequest(
       path.split('/'),
@@ -136,7 +141,9 @@ class DavRemoteDirectoryFileSystem extends RemoteFileSystem {
       );
     }
 
-    if (response == null) return;
+    if (response == null) {
+      throw FileSystemException('Failed to move asset: Request failed', path);
+    }
 
     if (response.statusCode != 201 && response.statusCode != 204) {
       throw FileSystemException(
@@ -151,7 +158,9 @@ class DavRemoteDirectoryFileSystem extends RemoteFileSystem {
   Future<void> deleteRemoteAsset(String path) async {
     path = _normalizePath(path);
     final response = await createRequest(path.split('/'), method: 'DELETE');
-    if (response == null) return;
+    if (response == null) {
+      throw FileSystemException('Failed to delete asset: Request failed', path);
+    }
     if (response.statusCode != 204 && response.statusCode != 404) {
       throw FileSystemException(
         'Failed to delete asset',

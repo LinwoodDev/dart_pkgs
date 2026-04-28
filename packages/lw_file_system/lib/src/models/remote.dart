@@ -3,6 +3,8 @@ import 'package:lw_file_system/lw_file_system.dart';
 enum FileSyncStatus { localLatest, remoteLatest, synced, conflict, offline }
 
 class SyncFile {
+  static const Duration _modifiedTolerance = Duration(seconds: 2);
+
   final bool isDirectory;
   final AssetLocation location;
   final DateTime? localLastModified, syncedLastModified, remoteLastModified;
@@ -16,28 +18,46 @@ class SyncFile {
   });
 
   FileSyncStatus get status {
+    bool isAfter(DateTime value, DateTime other) =>
+        value.difference(other) > _modifiedTolerance;
+    bool sameModified(DateTime value, DateTime other) =>
+        value.difference(other).abs() <= _modifiedTolerance;
+
     if (remoteLastModified == null) {
       return FileSyncStatus.offline;
     }
-    if (localLastModified == null || syncedLastModified == null) {
+    if (localLastModified == null) {
       return FileSyncStatus.remoteLatest;
     }
-    if (syncedLastModified!.isBefore(remoteLastModified!)) {
-      if (localLastModified!.isBefore(remoteLastModified!)) {
-        return FileSyncStatus.remoteLatest;
-      }
-      if (!isDirectory) {
-        return FileSyncStatus.conflict;
-      }
-      return FileSyncStatus.localLatest;
-    }
-    if (!localLastModified!.isAfter(syncedLastModified!)) {
+
+    if (sameModified(localLastModified!, remoteLastModified!)) {
       return FileSyncStatus.synced;
     }
-    if (localLastModified!.isAfter(syncedLastModified!)) {
+
+    if (syncedLastModified == null) {
+      return isAfter(localLastModified!, remoteLastModified!)
+          ? FileSyncStatus.localLatest
+          : FileSyncStatus.remoteLatest;
+    }
+
+    final localChanged = isAfter(localLastModified!, syncedLastModified!);
+    final remoteChanged = isAfter(remoteLastModified!, syncedLastModified!);
+
+    if (localChanged && remoteChanged) {
+      if (!isDirectory &&
+          !sameModified(localLastModified!, remoteLastModified!)) {
+        return FileSyncStatus.conflict;
+      }
+    }
+
+    if (isAfter(localLastModified!, remoteLastModified!)) {
       return FileSyncStatus.localLatest;
     }
-    return FileSyncStatus.remoteLatest;
+    if (isAfter(remoteLastModified!, localLastModified!)) {
+      return FileSyncStatus.remoteLatest;
+    }
+
+    return FileSyncStatus.synced;
   }
 
   String get path => location.path;

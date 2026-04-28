@@ -107,8 +107,16 @@ sealed class ExternalStorage with ExternalStorageMappable {
 
   String getFullPath(String variant) {
     final path = paths[variant];
+    if (path == null) return '';
+    if (path.startsWith('content://')) return path;
+
     final basePath = getBasePath();
-    return path == null ? '' : universalPathContext.join(basePath, path);
+    if (basePath.startsWith('content://')) {
+      if (path.isEmpty) return basePath;
+      if (path.startsWith('content://')) return path;
+      return '$basePath${basePath.endsWith('/') ? '' : '/'}$path';
+    }
+    return universalPathContext.join(basePath, path);
   }
 
   bool hasDocumentCached(String name) => true;

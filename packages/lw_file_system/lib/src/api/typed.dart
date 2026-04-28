@@ -54,6 +54,7 @@ class TypedDirectoryFileSystem<T> extends TypedFileSystem<T>
     FileSystemConfig config, {
     ExternalStorage? storage,
     bool useIsolates = false,
+    bool useAndroidSaf = true,
     CreateDefaultCallback<TypedDirectoryFileSystem<T>> createDefault =
         defaultCreateDefault,
     required EncodeTypedFileSystemCallback<T> onEncode,
@@ -67,6 +68,7 @@ class TypedDirectoryFileSystem<T> extends TypedFileSystem<T>
       storage: storage,
       createDefault: createWrappedDefault,
       useIsolates: useIsolates,
+      useAndroidSaf: useAndroidSaf,
     );
     fileSystem = TypedDirectoryFileSystem.raw(
       directorySystem,
@@ -183,6 +185,7 @@ class TypedKeyFileSystem<T> extends TypedFileSystem<T>
   factory TypedKeyFileSystem.build(
     FileSystemConfig config, {
     ExternalStorage? storage,
+    bool useAndroidSaf = true,
     CreateDefaultCallback<TypedKeyFileSystem<T>> createDefault =
         defaultCreateDefault,
     required EncodeTypedFileSystemCallback<T> onEncode,
@@ -194,6 +197,7 @@ class TypedKeyFileSystem<T> extends TypedFileSystem<T>
     final keySystem = KeyFileSystem.fromPlatform(
       config,
       storage: storage,
+      useAndroidSaf: useAndroidSaf,
       createDefault: createWrappedDefault,
     );
     fileSystem = TypedKeyFileSystem.raw(

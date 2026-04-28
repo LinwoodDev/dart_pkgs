@@ -85,6 +85,7 @@ abstract class KeyFileSystem extends GeneralFileSystem
   factory KeyFileSystem.fromPlatform(
     FileSystemConfig config, {
     ExternalStorage? storage,
+    bool useAndroidSaf = true,
     CreateDefaultCallback<KeyFileSystem> createDefault = defaultCreateDefault,
   }) {
     if (kIsWeb) {
@@ -93,6 +94,7 @@ abstract class KeyFileSystem extends GeneralFileSystem
       return KeyDirectoryFileSystem.build(
         config,
         storage: storage,
+        useAndroidSaf: useAndroidSaf,
         createDefault: createDefault,
       );
     }
@@ -127,6 +129,7 @@ class KeyDirectoryFileSystem extends KeyFileSystem {
   factory KeyDirectoryFileSystem.build(
     FileSystemConfig config, {
     ExternalStorage? storage,
+    bool useAndroidSaf = true,
     CreateDefaultCallback<KeyFileSystem> createDefault = defaultCreateDefault,
   }) {
     KeyDirectoryFileSystem? fileSystem;
@@ -137,6 +140,7 @@ class KeyDirectoryFileSystem extends KeyFileSystem {
       config,
       createDefault: createWrappedDefault,
       storage: storage,
+      useAndroidSaf: useAndroidSaf,
     );
     fileSystem = KeyDirectoryFileSystem._(
       config: config,

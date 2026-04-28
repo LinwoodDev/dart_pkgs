@@ -256,6 +256,7 @@ abstract class DirectoryFileSystem extends GeneralFileSystem
     FileSystemConfig config, {
     final ExternalStorage? storage,
     bool useIsolates = false,
+    bool useAndroidSaf = false,
     CreateDefaultCallback<DirectoryFileSystem> createDefault =
         defaultCreateDefault,
   }) {
@@ -263,6 +264,13 @@ abstract class DirectoryFileSystem extends GeneralFileSystem
       return WebDirectoryFileSystem(
         config: config,
         createDefault: createDefault,
+      );
+    } else if (useAndroidSaf && !kIsWeb && Platform.isAndroid) {
+      return AndroidSafDirectoryFileSystem(
+        config: config,
+        storage: storage is LocalStorage ? storage : null,
+        createDefault: createDefault,
+        useIsolates: useIsolates,
       );
     } else {
       return switch (storage) {

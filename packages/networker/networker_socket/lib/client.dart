@@ -75,7 +75,13 @@ class NetworkerSocketClient extends NetworkerClient {
   /// or filtering before the standard [onMessage] pipeline.
   @protected
   void handleData(dynamic event) {
-    onMessage(event);
+    if (event is String) {
+      onMessage(Uint8List.fromList(event.codeUnits));
+    } else if (event is Uint8List) {
+      onMessage(event);
+    } else if (event is List<int>) {
+      onMessage(Uint8List.fromList(event));
+    }
   }
 
   @override

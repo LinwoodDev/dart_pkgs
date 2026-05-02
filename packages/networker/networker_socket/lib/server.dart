@@ -20,12 +20,11 @@ class NetworkerSocketInfo extends ConnectionInfo {
   }
 
   @override
-  bool get isClosed => socket.closeReason != null;
+  bool get isClosed => socket.closeCode != null;
 
   @override
-  Future<void> sendMessage(Uint8List data) {
+  void sendMessage(Uint8List data) {
     socket.add(data);
-    return socket.done;
   }
 }
 
@@ -37,6 +36,7 @@ class NetworkerSocketServer extends NetworkerServer<NetworkerSocketInfo> {
   FutureOr<bool> Function(HttpRequest event)? filterConnections;
   final bool overrideStatusCode;
   final bool _ownsServer;
+  StreamSubscription<HttpRequest>? _subscription;
 
   HttpServer? get server => _server;
 
@@ -74,6 +74,8 @@ class NetworkerSocketServer extends NetworkerServer<NetworkerSocketInfo> {
   @override
   Future<void> close() async {
     await super.close();
+    await _subscription?.cancel();
+    _subscription = null;
     if (_ownsServer) {
       await _server?.close();
     }
@@ -90,17 +92,25 @@ class NetworkerSocketServer extends NetworkerServer<NetworkerSocketInfo> {
       Uri(scheme: 'ws', host: _server?.address.host, port: _server?.port);
 
   void _run() {
-    _server?.listen(
+    if (_subscription != null) {
+      return;
+    }
+    _subscription = _server?.listen(
       (request) async {
         try {
           await handleRequest(request);
         } catch (_) {}
       },
       onDone: () {
-        _onClosed.add(null);
+        _subscription = null;
+        if (!_onClosed.isClosed) {
+          _onClosed.add(null);
+        }
       },
       onError: (error) {
-        _onClosed.addError(error);
+        if (!_onClosed.isClosed) {
+          _onClosed.addError(error);
+        }
       },
       cancelOnError: true,
     );
@@ -163,6 +173,8 @@ class NetworkerSocketServer extends NetworkerServer<NetworkerSocketInfo> {
         try {
           if (event is String) {
             event = Uint8List.fromList(event.codeUnits);
+          } else if (event is List<int> && event is! Uint8List) {
+            event = Uint8List.fromList(event);
           }
           handleData(event, id);
         } catch (_) {}
@@ -184,13 +196,15 @@ class NetworkerSocketServer extends NetworkerServer<NetworkerSocketInfo> {
 
   @override
   Future<void> init() async {
-    if (isOpen) {
+    if (_subscription != null) {
       return;
     }
-    final context = securityContext;
-    _server = context == null
-        ? await HttpServer.bind(serverAddress, port)
-        : await HttpServer.bindSecure(serverAddress, port, context);
+    if (_server == null) {
+      final context = securityContext;
+      _server = context == null
+          ? await HttpServer.bind(serverAddress, port)
+          : await HttpServer.bindSecure(serverAddress, port, context);
+    }
     _run();
     _onOpen.add(null);
   }

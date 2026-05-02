@@ -63,8 +63,15 @@ class Localizer {
       throw FileSystemException('File $path does not exist');
     }
     final content = await file.readAsString();
-    final name = file.path.split('/').last.split('.').first;
-    loadYaml(name, content);
+    final segments = file.path.split(RegExp(r'[/\\]'));
+    final fileName = segments.last;
+    final name = locale ?? fileName.split('.').first;
+    final extension = fileName.split('.').last.toLowerCase();
+    if (extension == 'json') {
+      loadJson(name, content);
+    } else {
+      loadYaml(name, content);
+    }
   }
 
   /// Load locale [locale] from a specific string.
@@ -78,11 +85,13 @@ class Localizer {
         localeData[prefix] = value;
       } else if (value is yaml.YamlMap) {
         value.forEach((key, value) {
-          load('$prefix.$key', value);
+          final current = prefix.isEmpty ? key.toString() : '$prefix.$key';
+          load(current, value);
         });
       } else if (value is yaml.YamlList) {
         value.asMap().forEach((index, value) {
-          load('$prefix.$index', value);
+          final current = prefix.isEmpty ? '$index' : '$prefix.$index';
+          load(current, value);
         });
       }
     }
@@ -117,7 +126,7 @@ class Localizer {
         value.toList().asMap().forEach((index, value) {
           var current = index.toString();
           if (prefix != '') current = '$prefix.$current';
-          load('$prefix.$index', value);
+          load(current, value);
         });
       }
     }

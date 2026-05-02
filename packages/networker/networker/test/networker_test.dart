@@ -1,5 +1,6 @@
 import 'package:networker/networker.dart';
 import 'package:test/test.dart';
+import 'dart:typed_data';
 
 const secondPluginPrefix = 'secondPlugin';
 
@@ -70,6 +71,48 @@ void main() {
       }),
     );
     secondPlugin.sendMessage('${secondPluginPrefix}test');
+  });
+
+  test('reconnecting the same plugin does not duplicate messages', () async {
+    final messenger = SimpleNetworkerPipe<String>();
+    final plugin = SimpleNetworkerPipe<String>();
+    final messages = <String>[];
+    messenger.write.listen((data) => messages.add(data.data));
+
+    messenger.connect(plugin);
+    messenger.connect(plugin);
+    plugin.sendMessage('test');
+
+    await pumpEventQueue();
+    expect(messages, ['test']);
+  });
+
+  test('rpc packets reject truncated headers', () {
+    expect(
+      () => RpcNetworkerPacket.fromBytes(
+        const RpcConfig(channelField: true),
+        Uint8List.fromList([1]),
+      ),
+      throwsFormatException,
+    );
+  });
+
+  test('rpc packets reject values that do not fit the configured header', () {
+    expect(
+      () => RpcNetworkerPacket(
+        function: 256,
+        data: Uint8List(0),
+      ).toBytes(const RpcConfig(extendedFunctionIdentifiers: false)),
+      throwsRangeError,
+    );
+    expect(
+      () => RpcNetworkerPacket(
+        function: 1,
+        channel: 0x10000,
+        data: Uint8List(0),
+      ).toBytes(const RpcConfig(channelField: true)),
+      throwsRangeError,
+    );
   });
 }
 

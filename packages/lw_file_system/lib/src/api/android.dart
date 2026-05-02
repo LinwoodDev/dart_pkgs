@@ -56,7 +56,7 @@ class AndroidSafDirectoryFileSystem extends DirectoryFileSystem {
       if (path.startsWith(root)) {
         return normalizePath(
           path.substring(root.length).replaceFirst(RegExp(r'^/'), ''),
-        );
+        ).replaceFirst(RegExp(r'^/'), '');
       }
 
       return null;
@@ -74,7 +74,9 @@ class AndroidSafDirectoryFileSystem extends DirectoryFileSystem {
     final directory = await getDirectory();
 
     if (isSafStorage(directory)) {
-      final normalizedRelativePath = normalizePath(relativePath);
+      final normalizedRelativePath = normalizePath(
+        relativePath,
+      ).replaceFirst(RegExp(r'^/'), '');
 
       if (normalizedRelativePath.isEmpty) {
         return directory;

@@ -5,7 +5,14 @@ import 'package:test/test.dart';
 
 void main() {
   group('Localizer load', () {
+    final generatedDirectory = Directory("generated");
+
     setUp(() {
+      if (generatedDirectory.existsSync()) {
+        generatedDirectory.deleteSync(recursive: true);
+      }
+      generatedDirectory.createSync(recursive: true);
+
       // Generate locale files
       File("generated/en.json").writeAsStringSync(
         '{"hello-world": "Hello world!", "hello": "Hello %s"}',
@@ -19,6 +26,12 @@ void main() {
       File("generated/de.json").writeAsStringSync(
         '{"hello-world": "Hallo Welt!", "hello": "Hallo %s"}',
       );
+    });
+
+    tearDown(() {
+      if (generatedDirectory.existsSync()) {
+        generatedDirectory.deleteSync(recursive: true);
+      }
     });
 
     test('Load directory', () async {

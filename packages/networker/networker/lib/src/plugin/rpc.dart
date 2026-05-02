@@ -35,6 +35,14 @@ final class RpcNetworkerPacket {
   }) : function = name.index;
 
   factory RpcNetworkerPacket.fromBytes(RpcConfig config, Uint8List bytes) {
+    final headerLength =
+        (config.extendedFunctionIdentifiers ? 2 : 1) +
+        (config.channelField ? 2 : 0);
+    if (bytes.length < headerLength) {
+      throw FormatException(
+        'RPC packet is too short: expected at least $headerLength bytes, got ${bytes.length}.',
+      );
+    }
     var function = bytes[0];
     int currentOffset = 1;
     if (config.extendedFunctionIdentifiers) {
@@ -51,14 +59,26 @@ final class RpcNetworkerPacket {
   }
 
   Uint8List toBytes(RpcConfig config) {
+    if (function < 0 ||
+        function > (config.extendedFunctionIdentifiers ? 0xFFFF : 0xFF)) {
+      throw RangeError.range(
+        function,
+        0,
+        config.extendedFunctionIdentifiers ? 0xFFFF : 0xFF,
+        'function',
+      );
+    }
+    if (config.channelField && (channel < 0 || channel > 0xFFFF)) {
+      throw RangeError.range(channel, 0, 0xFFFF, 'channel');
+    }
     final bytes = BytesBuilder();
     if (config.extendedFunctionIdentifiers) {
-      bytes.addByte(function >> 8);
+      bytes.addByte((function >> 8) & 0xFF);
     }
-    bytes.addByte(function);
+    bytes.addByte(function & 0xFF);
     if (config.channelField) {
-      bytes.addByte(channel >> 8);
-      bytes.addByte(channel);
+      bytes.addByte((channel >> 8) & 0xFF);
+      bytes.addByte(channel & 0xFF);
     }
     bytes.add(data);
     return bytes.toBytes();

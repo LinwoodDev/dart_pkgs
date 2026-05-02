@@ -37,6 +37,7 @@ abstract class NetworkerPipe<I, O> {
       (await encode(data), channel);
 
   void connect(NetworkerPipe<O, dynamic> pipe) {
+    disconnect(pipe);
     _pipes[pipe] = pipe._writeController.stream.listen(_sendMessagePacket);
   }
 
@@ -50,9 +51,9 @@ abstract class NetworkerPipe<I, O> {
       if (result == null) return;
       final (rawData, rawChannel) = result;
       _readController.add(NetworkerPacket(rawData, rawChannel));
-      for (final plugin in _pipes.keys) {
+      for (final plugin in _pipes.keys.toList()) {
         try {
-          plugin.onMessage(rawData, rawChannel);
+          await plugin.onMessage(rawData, rawChannel);
         } catch (_) {}
       }
     } catch (_) {}

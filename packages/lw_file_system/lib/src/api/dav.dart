@@ -21,24 +21,22 @@ class _DavMetadata {
 
   static _DavMetadata fromProp(XmlElement prop) {
     final resourceType = prop
-        .findElements('resourcetype', namespaceUri: '*')
+        .findElements('resourcetype', namespace: '*')
         .firstOrNull;
     final isCollection =
-        resourceType
-            ?.findElements('collection', namespaceUri: '*')
-            .isNotEmpty ??
+        resourceType?.findElements('collection', namespace: '*').isNotEmpty ??
         false;
 
     final lastModifiedStr = prop
-        .findElements('getlastmodified', namespaceUri: '*')
+        .findElements('getlastmodified', namespace: '*')
         .firstOrNull
         ?.innerText;
     final creationDateStr = prop
-        .findElements('creationdate', namespaceUri: '*')
+        .findElements('creationdate', namespace: '*')
         .firstOrNull
         ?.innerText;
     final contentLengthStr = prop
-        .findElements('getcontentlength', namespaceUri: '*')
+        .findElements('getcontentlength', namespace: '*')
         .firstOrNull
         ?.innerText;
 
@@ -270,11 +268,11 @@ class DavRemoteDirectoryFileSystem extends RemoteFileSystem {
       );
     }
     final xml = XmlDocument.parse(content);
-    final responses = xml.findAllElements('response', namespaceUri: '*').where((
+    final responses = xml.findAllElements('response', namespace: '*').where((
       element,
     ) {
       final current = element
-          .findElements('href', namespaceUri: '*')
+          .findElements('href', namespace: '*')
           .firstOrNull
           ?.innerText;
       if (current == null) return false;
@@ -291,9 +289,9 @@ class DavRemoteDirectoryFileSystem extends RemoteFileSystem {
     final currentElement = responses.first;
 
     final prop = currentElement
-        .findElements('propstat', namespaceUri: '*')
+        .findElements('propstat', namespace: '*')
         .first
-        .findElements('prop', namespaceUri: '*')
+        .findElements('prop', namespace: '*')
         .first;
 
     final currentMeta = _DavMetadata.fromProp(prop);
@@ -315,10 +313,10 @@ class DavRemoteDirectoryFileSystem extends RemoteFileSystem {
     if (currentMeta.isCollection) {
       final assets = await Future.wait(
         xml
-            .findAllElements('response', namespaceUri: '*')
+            .findAllElements('response', namespace: '*')
             .where((element) {
               final current = element
-                  .findElements('href', namespaceUri: '*')
+                  .findElements('href', namespace: '*')
                   .firstOrNull
                   ?.innerText;
               if (current == null) return false;
@@ -327,7 +325,7 @@ class DavRemoteDirectoryFileSystem extends RemoteFileSystem {
             })
             .where((element) {
               final current = element
-                  .findElements('href', namespaceUri: '*')
+                  .findElements('href', namespace: '*')
                   .firstOrNull
                   ?.innerText;
               if (current == null) return false;
@@ -336,14 +334,14 @@ class DavRemoteDirectoryFileSystem extends RemoteFileSystem {
             })
             .map((e) async {
               final childProp = e
-                  .findElements('propstat', namespaceUri: '*')
+                  .findElements('propstat', namespace: '*')
                   .first
-                  .findElements('prop', namespaceUri: '*')
+                  .findElements('prop', namespace: '*')
                   .first;
               final meta = _DavMetadata.fromProp(childProp);
 
               final href = e
-                  .findElements('href', namespaceUri: '*')
+                  .findElements('href', namespace: '*')
                   .first
                   .innerText;
               var childPath = Uri.parse(
@@ -446,13 +444,13 @@ class DavRemoteDirectoryFileSystem extends RemoteFileSystem {
     final body = await getBodyString(response!);
     final xml = XmlDocument.parse(body);
     final lastModified = xml
-        .findAllElements('response', namespaceUri: '*')
+        .findAllElements('response', namespace: '*')
         .firstOrNull
-        ?.findAllElements('propstat', namespaceUri: '*')
+        ?.findAllElements('propstat', namespace: '*')
         .firstOrNull
-        ?.findAllElements('prop', namespaceUri: '*')
+        ?.findAllElements('prop', namespace: '*')
         .firstOrNull
-        ?.findAllElements('getlastmodified', namespaceUri: '*')
+        ?.findAllElements('getlastmodified', namespace: '*')
         .firstOrNull
         ?.innerText;
     if (lastModified == null) {

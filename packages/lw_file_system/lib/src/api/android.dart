@@ -270,15 +270,24 @@ class AndroidSafDirectoryFileSystem extends DirectoryFileSystem {
   Future<bool> moveAbsolute(String oldPath, String newPath) async {
     final directory = await getDirectory();
 
-    if (!isSafStorage(directory)) {
-      return _io.moveAbsolute(oldPath, newPath);
+    if (oldPath.isEmpty) {
+      oldPath = directory;
     }
-
+    if (newPath.isEmpty) {
+      newPath = directory;
+    }
     if (oldPath == newPath) {
       return false;
     }
 
-    if (oldPath == directory && isSafStorage(newPath)) {
+    final oldPathIsSaf = isSafStorage(oldPath);
+    final newPathIsSaf = isSafStorage(newPath);
+
+    if (!oldPathIsSaf && !newPathIsSaf) {
+      return _io.moveAbsolute(oldPath, newPath);
+    }
+
+    if (oldPathIsSaf && newPathIsSaf) {
       return await _channel.invokeMethod<bool>('copySafToSaf', {
             'sourceRootUri': oldPath,
             'targetRootUri': newPath,
@@ -286,7 +295,7 @@ class AndroidSafDirectoryFileSystem extends DirectoryFileSystem {
           false;
     }
 
-    if (oldPath == directory) {
+    if (oldPathIsSaf) {
       return await _channel.invokeMethod<bool>('exportSafToPath', {
             'rootUri': oldPath,
             'targetPath': newPath,
@@ -294,7 +303,7 @@ class AndroidSafDirectoryFileSystem extends DirectoryFileSystem {
           false;
     }
 
-    if (newPath == directory) {
+    if (newPathIsSaf) {
       return await _channel.invokeMethod<bool>('importPathToSaf', {
             'sourcePath': oldPath,
             'rootUri': newPath,

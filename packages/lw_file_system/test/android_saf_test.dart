@@ -1,10 +1,13 @@
 import 'dart:io';
 
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lw_file_system/lw_file_system.dart';
 import 'package:lw_file_system/src/api/io.dart';
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
   test('Android wrapper detects LocalStorage content URI', () async {
     final fileSystem = AndroidSafDirectoryFileSystem(
       config: _config,
@@ -40,6 +43,42 @@ void main() {
     expect(await fileSystem.isSaf(), isFalse);
     expect(await fileSystem.getDirectory(), '/tmp/lw_file_system');
   });
+
+  test(
+    'Android SAF imports a non-SAF path when configured directory is IO',
+    () async {
+      const channel = MethodChannel('linwood.dev/lw_file_system/saf');
+      final calls = <MethodCall>[];
+
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(channel, (call) async {
+            calls.add(call);
+            return true;
+          });
+      addTearDown(
+        () => TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+            .setMockMethodCallHandler(channel, null),
+      );
+
+      final fileSystem = AndroidSafDirectoryFileSystem(
+        config: _config,
+        storage: const LocalStorage(paths: {'': '/tmp/lw_file_system'}),
+      );
+
+      final result = await fileSystem.moveAbsolute(
+        '/tmp/source/file.txt',
+        'content://tree/root/Documents/file.txt',
+      );
+
+      expect(result, isTrue);
+      expect(calls, hasLength(1));
+      expect(calls.single.method, 'importPathToSaf');
+      expect(calls.single.arguments, {
+        'sourcePath': '/tmp/source/file.txt',
+        'rootUri': 'content://tree/root/Documents/file.txt',
+      });
+    },
+  );
 
   test(
     'uses Android SAF with a variant subdirectory inside a SAF root',

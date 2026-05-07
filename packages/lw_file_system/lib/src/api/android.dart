@@ -62,7 +62,7 @@ class AndroidSafDirectoryFileSystem extends DirectoryFileSystem {
       return null;
     }
 
-    return normalizePath(path);
+    return normalizePath(path).replaceFirst(RegExp(r'^/'), '');
   }
 
   @override
@@ -213,18 +213,21 @@ class AndroidSafDirectoryFileSystem extends DirectoryFileSystem {
       return getAsset(path);
     }
 
-    return _lock.synchronized(() async {
-      final entity = await getAsset(path, listLevel: allListLevel);
+    final moved =
+        await _lock.synchronized(
+          () async => _channel.invokeMethod<bool>('safMoveAsset', {
+            'rootUri': directory,
+            'path': await toRelativePath(path),
+            'newPath': await toRelativePath(newPath),
+          }),
+        ) ??
+        false;
 
-      if (entity == null) {
-        return null;
-      }
+    if (!moved) {
+      return null;
+    }
 
-      await _copyEntity(entity, newPath, forceSync: forceSync);
-      await deleteAsset(path);
-
-      return getAsset(newPath, listLevel: noListLevel);
-    });
+    return getAsset(newPath, listLevel: noListLevel);
   }
 
   @override
@@ -261,6 +264,10 @@ class AndroidSafDirectoryFileSystem extends DirectoryFileSystem {
       }
 
       return updateFile(relativePath, bytes);
+    }
+
+    if (!isSafStorage(path) && universalPathContext.isRelative(path)) {
+      return updateFile(path, bytes);
     }
 
     return super.saveAbsolute(path, bytes);
@@ -346,34 +353,10 @@ class AndroidSafDirectoryFileSystem extends DirectoryFileSystem {
     });
   }
 
-  Future<void> _copyEntity(
-    RawFileSystemEntity entity,
-    String targetPath, {
-    bool forceSync = false,
-  }) async {
-    if (entity is RawFileSystemFile) {
-      final data = entity.data;
-
-      if (data == null) {
-        return;
-      }
-
-      await updateFile(targetPath, data, forceSync: forceSync);
-    } else if (entity is RawFileSystemDirectory) {
-      await createDirectory(targetPath);
-
-      for (final child in entity.assets) {
-        await _copyEntity(
-          child,
-          universalPathContext.join(targetPath, child.fileName),
-          forceSync: forceSync,
-        );
-      }
-    }
-  }
-
   Future<RawFileSystemEntity> _entityFromMap(Map<String, Object?> map) async {
-    final path = normalizePath(map['path'] as String? ?? '');
+    final path = normalizePath(
+      map['path'] as String? ?? '',
+    ).replaceFirst(RegExp(r'^/'), '');
 
     final location = AssetLocation(
       path: path,

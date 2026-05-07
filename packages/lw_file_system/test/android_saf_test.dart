@@ -143,6 +143,83 @@ void main() {
     expect(await fileSystem.getDirectory(), 'content://tree/root');
   });
 
+  test(
+    'Android SAF moves assets through native move without nested writes',
+    () async {
+      const channel = MethodChannel('linwood.dev/lw_file_system/saf');
+      final calls = <MethodCall>[];
+
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(channel, (call) async {
+            calls.add(call);
+            if (call.method == 'safMoveAsset') return true;
+            if (call.method == 'safReadAsset') {
+              return <String, Object?>{
+                'path': 'renamed.txt',
+                'isDirectory': false,
+                'data': Uint8List.fromList([1, 2, 3]),
+              };
+            }
+            return null;
+          });
+      addTearDown(
+        () => TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+            .setMockMethodCallHandler(channel, null),
+      );
+
+      final fileSystem = AndroidSafDirectoryFileSystem(
+        config: _config,
+        storage: const LocalStorage(paths: {'': 'content://tree/root'}),
+      );
+
+      final moved = await fileSystem.moveAsset('old.txt', 'renamed.txt');
+
+      expect(moved?.path, 'renamed.txt');
+      expect(calls.map((call) => call.method), [
+        'safMoveAsset',
+        'safReadAsset',
+      ]);
+      expect(calls.first.arguments, {
+        'rootUri': 'content://tree/root',
+        'path': 'old.txt',
+        'newPath': 'renamed.txt',
+      });
+    },
+  );
+
+  test(
+    'Android SAF saveAbsolute writes relative paths to selected tree',
+    () async {
+      const channel = MethodChannel('linwood.dev/lw_file_system/saf');
+      final calls = <MethodCall>[];
+
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(channel, (call) async {
+            calls.add(call);
+            return null;
+          });
+      addTearDown(
+        () => TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+            .setMockMethodCallHandler(channel, null),
+      );
+
+      final fileSystem = AndroidSafDirectoryFileSystem(
+        config: _config,
+        storage: const LocalStorage(paths: {'': 'content://tree/root'}),
+      );
+
+      await fileSystem.saveAbsolute('folder/file.txt', Uint8List.fromList([4]));
+
+      expect(calls, hasLength(1));
+      expect(calls.single.method, 'safWriteFile');
+      expect(calls.single.arguments, {
+        'rootUri': 'content://tree/root',
+        'path': 'folder/file.txt',
+        'data': Uint8List.fromList([4]),
+      });
+    },
+  );
+
   test('missing selected variant delegates to IO behavior', () async {
     final fileSystem = AndroidSafDirectoryFileSystem(
       config: _androidConfig,

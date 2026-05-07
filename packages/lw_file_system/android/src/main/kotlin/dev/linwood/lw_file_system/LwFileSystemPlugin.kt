@@ -165,6 +165,22 @@ class LwFileSystemPlugin : FlutterPlugin, MethodCallHandler, ActivityAware, Acti
                     result.success(null)
                 }
 
+                "safMoveAsset" -> {
+                    val root = call.safRoot()
+
+                    result.success(
+                        moveAsset(
+                            treeUri = root.treeUri,
+                            sourcePath = call.fullPath(),
+                            targetPath = joinPaths(
+                                root.basePath,
+                                call.argument<String>("newPath")
+                                    ?: throw IllegalArgumentException("Missing newPath")
+                            )
+                        )
+                    )
+                }
+
                 "safReadAbsolute" -> {
                     val rawUri = Uri.parse(
                         call.argument<String>("uri")
@@ -606,6 +622,60 @@ class LwFileSystemPlugin : FlutterPlugin, MethodCallHandler, ActivityAware, Acti
         }
     }
 
+    private fun moveAsset(treeUri: Uri, sourcePath: String, targetPath: String): Boolean {
+        val source = resolveDocument(treeUri, sourcePath) ?: return false
+        val sourceParent = resolveDocument(treeUri, parentPath(sourcePath)) ?: return false
+        val targetParent = ensureDirectory(treeUri, parentPath(targetPath))
+        val targetName = fileName(targetPath)
+
+        if (targetName.isEmpty()) {
+            throw IOException("Missing target file name")
+        }
+
+        if (normalizePath(sourcePath) == normalizePath(targetPath)) {
+            return true
+        }
+
+        findChild(targetParent, targetName)?.let {
+            DocumentsContract.deleteDocument(contentResolver, it)
+        }
+
+        val moved = if (DocumentsContract.getDocumentId(sourceParent) ==
+            DocumentsContract.getDocumentId(targetParent)
+        ) {
+            DocumentsContract.renameDocument(contentResolver, source, targetName)
+        } else {
+            DocumentsContract.moveDocument(
+                contentResolver,
+                source,
+                sourceParent,
+                targetParent
+            )?.let { movedUri ->
+                val movedName = displayName(movedUri)
+
+                if (movedName == targetName) {
+                    movedUri
+                } else {
+                    DocumentsContract.renameDocument(contentResolver, movedUri, targetName)
+                }
+            }
+        }
+
+        if (moved != null) {
+            return true
+        }
+
+        copySafToSaf(
+            sourceTreeUri = treeUri,
+            sourcePath = sourcePath,
+            targetTreeUri = treeUri,
+            targetPath = targetPath
+        )
+        DocumentsContract.deleteDocument(contentResolver, source)
+
+        return resolveDocument(treeUri, targetPath) != null
+    }
+
     private fun copyPathToSaf(source: File, treeUri: Uri, targetPath: String) {
         if (source.isDirectory) {
             ensureDirectory(treeUri, targetPath)
@@ -738,6 +808,19 @@ class LwFileSystemPlugin : FlutterPlugin, MethodCallHandler, ActivityAware, Acti
         }
 
         return false
+    }
+
+    private fun displayName(uri: Uri): String? {
+        query(
+            uri,
+            arrayOf(DocumentsContract.Document.COLUMN_DISPLAY_NAME)
+        )?.use { cursor ->
+            if (cursor.moveToFirst()) {
+                return cursor.getString(0)
+            }
+        }
+
+        return null
     }
 
     private fun query(uri: Uri, projection: Array<String>): Cursor? =

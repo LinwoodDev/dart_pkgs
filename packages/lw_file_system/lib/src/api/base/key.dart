@@ -37,6 +37,7 @@ mixin GeneralKeyFileSystem<T> on GeneralFileSystem {
   Stream<FileSystemFile<T>> listFiles() async* {
     final keys = await getKeys();
     yield* Stream.fromIterable(keys).asyncExpand((key) async* {
+      key = normalizePath(key);
       final data = await getFile(key);
       if (data != null) {
         yield FileSystemFile(

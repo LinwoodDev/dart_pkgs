@@ -262,7 +262,9 @@ abstract class RemoteFileSystem extends DirectoryFileSystem {
         assets: await directory
             .list()
             .map((e) {
-              final childPath = p.relative(e.path, from: cacheDir);
+              final childPath = normalizePath(
+                p.relative(e.path, from: cacheDir),
+              );
               if (e is File) {
                 return RawFileSystemFile(
                   AssetLocation(remote: storage.identifier, path: childPath),
@@ -349,7 +351,7 @@ abstract class RemoteFileSystem extends DirectoryFileSystem {
     var list = await dir.list().toList();
     for (var file in list) {
       if (file is File) {
-        var name = p.relative(file.path, from: cacheDir);
+        var name = normalizePath(p.relative(file.path, from: cacheDir));
         var content = await file.readAsBytes();
         files[name] = content;
       }
@@ -376,7 +378,7 @@ abstract class RemoteFileSystem extends DirectoryFileSystem {
     var dir = Directory(cacheDir);
     var list = await dir.list().toList();
     for (final file in list) {
-      final name = p.relative(file.path, from: cacheDir);
+      final name = normalizePath(p.relative(file.path, from: cacheDir));
       final modified = await getCachedFileModified(name);
       if (modified != null) {
         files[name] = modified;
@@ -412,7 +414,7 @@ abstract class RemoteFileSystem extends DirectoryFileSystem {
     var list = await dir.list().toList();
     for (var file in list) {
       if (file is File) {
-        var name = p.relative(file.path, from: cacheDir);
+        var name = normalizePath(p.relative(file.path, from: cacheDir));
         var localLastModified = await file.lastModified();
         var remoteLastModified = await getRemoteFileModified(name);
         var syncedLastModified = storage.lastSynced;

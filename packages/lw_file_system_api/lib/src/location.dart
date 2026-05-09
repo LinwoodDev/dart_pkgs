@@ -28,6 +28,14 @@ class AssetLocation with AssetLocationMappable {
 
   String get identifier => isRemote ? '$path@$remote' : path;
 
+  AssetLocation normalize() {
+    final normalizedPath = universalPathContext.canonicalize(
+      path.replaceAll('\\', '/'),
+    );
+    if (normalizedPath == path) return this;
+    return AssetLocation(path: normalizedPath, remote: remote);
+  }
+
   String get fileExtensionWithDot => p.extension(path);
 
   String get fileExtension {

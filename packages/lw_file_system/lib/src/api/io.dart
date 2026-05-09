@@ -216,14 +216,15 @@ class IODirectoryFileSystem extends DirectoryFileSystem {
                 from: absolutePathPosix,
               ),
             );
+            final normalizedCurrent = normalizePath(current);
             if (e is File) {
               return RawFileSystemFile(
-                AssetLocation(path: current, remote: remoteName),
+                AssetLocation(path: normalizedCurrent, remote: remoteName),
                 data: readData ? await e.readAsBytes() : null,
               );
             } else if (e is Directory) {
               return RawFileSystemDirectory(
-                AssetLocation(path: current, remote: remoteName),
+                AssetLocation(path: normalizedCurrent, remote: remoteName),
               );
             }
             return null;

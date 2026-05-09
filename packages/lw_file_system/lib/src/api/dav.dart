@@ -355,7 +355,7 @@ class DavRemoteDirectoryFileSystem extends RemoteFileSystem {
               if (!childPath.startsWith('/')) {
                 childPath = '/$childPath';
               }
-              childPath = Uri.decodeComponent(childPath);
+              childPath = normalizePath(Uri.decodeComponent(childPath));
 
               if (meta.isCollection) {
                 return RawFileSystemDirectory(

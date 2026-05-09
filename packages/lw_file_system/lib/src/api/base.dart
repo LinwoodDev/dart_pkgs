@@ -54,6 +54,11 @@ abstract class GeneralFileSystem {
   String normalizePath(String path) =>
       universalPathContext.canonicalize(path.replaceAll('\\', '/'));
 
+  String normalizeRelativePath(String path) {
+    path = normalizePath(path);
+    return path.startsWith('/') ? path.substring(1) : path;
+  }
+
   String convertNameToFileSystem({
     String? name,
     String? suffix,
@@ -84,8 +89,7 @@ abstract class GeneralFileSystem {
   }
 
   FutureOr<String> getAbsolutePath(String relativePath) async {
-    relativePath = normalizePath(relativePath);
-    if (relativePath.startsWith('/')) relativePath = relativePath.substring(1);
+    relativePath = normalizeRelativePath(relativePath);
     final root = await getDirectory();
     return p.Context(
       style: p.Style.posix,

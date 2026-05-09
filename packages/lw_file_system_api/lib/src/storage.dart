@@ -6,6 +6,9 @@ import 'package:lw_file_system_api/lw_file_system_api.dart';
 
 part 'storage.mapper.dart';
 
+String _withoutLeadingSlash(String path) =>
+    path.startsWith('/') ? path.substring(1) : path;
+
 class PathHook extends MappingHook {
   static const suffix = 'Path';
   const PathHook();
@@ -178,10 +181,7 @@ sealed class RemoteStorage extends ExternalStorage with RemoteStorageMappable {
       if (variant.isNotEmpty) paths[variant] ?? '',
       ...path,
     ]);
-    if (currentPath.startsWith('/')) {
-      currentPath = currentPath.substring(1);
-    }
-    return currentPath;
+    return _withoutLeadingSlash(currentPath);
   }
 
   Uri? buildVariantUri({
@@ -195,13 +195,9 @@ sealed class RemoteStorage extends ExternalStorage with RemoteStorageMappable {
 
   /// Check if a path is pinned for offline caching
   bool isPathPinned(String name, {String variant = ''}) {
-    if (name.startsWith('/')) {
-      name = name.substring(1);
-    }
+    name = _withoutLeadingSlash(name);
     return pinnedPaths[variant]?.any((pinnedPath) {
-          if (pinnedPath.startsWith('/')) {
-            pinnedPath = pinnedPath.substring(1);
-          }
+          pinnedPath = _withoutLeadingSlash(pinnedPath);
 
           if (pinnedPath == name) {
             return true;

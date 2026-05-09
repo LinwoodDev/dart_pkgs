@@ -7,6 +7,9 @@ import 'uint8_list_mapper.dart';
 
 part 'data.mapper.dart';
 
+String _withoutLeadingSlash(String path) =>
+    path.startsWith('/') ? path.substring(1) : path;
+
 @MappableClass(includeCustomMappers: [Uint8ListMapper()])
 class ArchiveState with ArchiveStateMappable {
   final Map<String, Uint8List> added;
@@ -119,7 +122,7 @@ abstract class ArchiveData<T> {
           )
           .map((e) => e.substring(path.length))
           .map((e) {
-            if (e.startsWith('/')) e = e.substring(1);
+            e = _withoutLeadingSlash(e);
             if (!removeExtension) return e;
             final startExtension = e.lastIndexOf('.');
             if (startExtension == -1) return e;

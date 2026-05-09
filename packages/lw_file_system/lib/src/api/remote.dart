@@ -390,6 +390,7 @@ abstract class RemoteFileSystem extends DirectoryFileSystem {
   Future<DateTime?> getRemoteFileModified(String path) async => null;
 
   Future<SyncFile> getSyncFile(String path) async {
+    path = normalizePath(path);
     var localLastModified = await getCachedFileModified(path);
     var remoteLastModified = await getRemoteFileModified(path);
     var syncedLastModified = storage.lastSynced;

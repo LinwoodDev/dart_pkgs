@@ -182,17 +182,18 @@ class WebDirectoryFileSystem extends DirectoryFileSystem with WebFileSystem {
       }).toList();
       final assets = (await Future.wait(
         names.map((e) async {
+          final childPath = normalizePath(e);
           final store = txn.objectStore(config.storeName);
-          final data = await store.getObject(e);
+          final data = await store.getObject(childPath);
           if (data == null) return null;
           final map = Map<String, dynamic>.from(data as Map);
           if (map['type'] == 'file') {
             return RawFileSystemFile(
-              AssetLocation.local(e),
-              data: await getData(e),
+              AssetLocation.local(childPath),
+              data: await getData(childPath),
             );
           } else if (map['type'] == 'directory') {
-            return RawFileSystemDirectory(AssetLocation.local(e));
+            return RawFileSystemDirectory(AssetLocation.local(childPath));
           }
           return null;
         }),

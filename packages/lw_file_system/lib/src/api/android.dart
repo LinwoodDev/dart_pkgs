@@ -54,15 +54,13 @@ class AndroidSafDirectoryFileSystem extends DirectoryFileSystem {
 
     if (isSafStorage(path)) {
       if (path.startsWith(root)) {
-        return normalizePath(
-          path.substring(root.length).replaceFirst(RegExp(r'^/'), ''),
-        ).replaceFirst(RegExp(r'^/'), '');
+        return normalizeRelativePath(path.substring(root.length));
       }
 
       return null;
     }
 
-    return normalizePath(path).replaceFirst(RegExp(r'^/'), '');
+    return normalizeRelativePath(path);
   }
 
   @override
@@ -74,9 +72,7 @@ class AndroidSafDirectoryFileSystem extends DirectoryFileSystem {
     final directory = await getDirectory();
 
     if (isSafStorage(directory)) {
-      final normalizedRelativePath = normalizePath(
-        relativePath,
-      ).replaceFirst(RegExp(r'^/'), '');
+      final normalizedRelativePath = normalizeRelativePath(relativePath);
 
       if (normalizedRelativePath.isEmpty) {
         return directory;
@@ -354,9 +350,7 @@ class AndroidSafDirectoryFileSystem extends DirectoryFileSystem {
   }
 
   Future<RawFileSystemEntity> _entityFromMap(Map<String, Object?> map) async {
-    final path = normalizePath(
-      map['path'] as String? ?? '',
-    ).replaceFirst(RegExp(r'^/'), '');
+    final path = normalizeRelativePath(map['path'] as String? ?? '');
 
     final location = AssetLocation(
       path: path,

@@ -56,6 +56,9 @@ final keybinder = Keybinder(
   ],
   store: MyStore(), // Optional
 );
+
+// Optional: wait for stored overrides before building shortcut UI.
+await keybinder.ready;
 ```
 
 ### 4. Use in your App

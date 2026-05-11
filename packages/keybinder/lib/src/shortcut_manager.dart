@@ -1,6 +1,7 @@
 import 'dart:convert';
-import 'package:flutter/widgets.dart';
+
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 
 /// Interface for persisting key bindings.
 abstract class KeybinderStore {
@@ -26,6 +27,7 @@ class Keybinder with ChangeNotifier {
   final Map<String, ShortcutDefinition> _definitionsById = {};
   final Map<String, ShortcutActivator> _activators = {};
   final KeybinderStore? _store;
+  late final Future<void> _ready;
 
   /// Creates a Keybinder with a list of shortcut definitions.
   ///
@@ -36,18 +38,41 @@ class Keybinder with ChangeNotifier {
     KeybinderStore? store,
   }) : _store = store {
     for (final def in definitions) {
+      if (_definitionsById.containsKey(def.id)) {
+        throw ArgumentError.value(
+          def.id,
+          'definitions',
+          'Shortcut IDs must be unique.',
+        );
+      }
+
       _definitionsById[def.id] = def;
       _activators[def.id] = def.defaultActivator;
     }
-    _load();
+    _ready = _load();
   }
+
+  /// Completes after any persisted shortcuts have been loaded.
+  Future<void> get ready => _ready;
 
   /// Returns the current activator for the given ID.
   ShortcutActivator getActivator(String id) {
+    final activator = getActivatorOrNull(id);
+    if (activator == null) {
+      throw ArgumentError.value(id, 'id', 'No shortcut is registered with id.');
+    }
+    return activator;
+  }
+
+  /// Returns the current activator for the given ID, or null if it is unknown.
+  ShortcutActivator? getActivatorOrNull(String id) {
     final def = _definitionsById[id];
-    if (def == null) return const SingleActivator(LogicalKeyboardKey.keyA);
+    if (def == null) return null;
     return _activators[id] ?? def.defaultActivator;
   }
+
+  /// Returns whether a shortcut definition exists for the given ID.
+  bool hasDefinition(String id) => _definitionsById.containsKey(id);
 
   /// Returns the definition for the given ID.
   ShortcutDefinition? getDefinition(String id) {
@@ -73,7 +98,7 @@ class Keybinder with ChangeNotifier {
   }
 
   /// Updates the binding for a specific ID.
-  Future<void> updateBinding(String id, SingleActivator newActivator) async {
+  Future<void> updateBinding(String id, ShortcutActivator newActivator) async {
     final def = _definitionsById[id];
     if (def == null) return;
 
@@ -107,17 +132,11 @@ class Keybinder with ChangeNotifier {
   Future<void> _save() async {
     if (_store == null) return;
 
-    final Map<String, dynamic> jsonMap = {};
+    final jsonMap = <String, Object>{};
 
     _activators.forEach((id, activator) {
       if (activator is SingleActivator) {
-        jsonMap[id] = {
-          'keyId': activator.trigger.keyId,
-          'control': activator.control,
-          'shift': activator.shift,
-          'alt': activator.alt,
-          'meta': activator.meta,
-        };
+        jsonMap[id] = _singleActivatorToJson(activator);
       }
     });
 
@@ -127,30 +146,69 @@ class Keybinder with ChangeNotifier {
   Future<void> _load() async {
     if (_store == null) return;
 
-    final String? jsonString = await _store.load();
+    final jsonString = await _store.load();
 
     if (jsonString != null) {
       try {
-        final Map<String, dynamic> loaded = jsonDecode(jsonString);
+        final loaded = jsonDecode(jsonString);
 
-        for (final id in _definitionsById.keys) {
-          if (loaded.containsKey(id)) {
+        if (loaded is Map<String, dynamic>) {
+          for (final id in _definitionsById.keys) {
             final value = loaded[id];
-            final activator = SingleActivator(
-              LogicalKeyboardKey.findKeyByKeyId(value['keyId']) ??
-                  LogicalKeyboardKey.keyA,
-              control: value['control'] ?? false,
-              shift: value['shift'] ?? false,
-              alt: value['alt'] ?? false,
-              meta: value['meta'] ?? false,
-            );
-            _activators[id] = activator;
+            final activator = _readSingleActivator(value);
+            if (activator != null) {
+              _activators[id] = activator;
+            }
           }
         }
-      } catch (e) {
-        debugPrint("Error loading shortcuts: $e");
+      } catch (error) {
+        debugPrint('Error loading shortcuts: $error');
       }
     }
     notifyListeners();
+  }
+
+  Map<String, Object> _singleActivatorToJson(SingleActivator activator) {
+    return {
+      'keyId': activator.trigger.keyId,
+      'control': activator.control,
+      'shift': activator.shift,
+      'alt': activator.alt,
+      'meta': activator.meta,
+    };
+  }
+
+  SingleActivator? _readSingleActivator(Object? value) {
+    if (value is Map<String, dynamic>) {
+      return _singleActivatorFromJson(value);
+    }
+    if (value is Map) {
+      return _singleActivatorFromJson(value.cast<String, dynamic>());
+    }
+    return null;
+  }
+
+  SingleActivator? _singleActivatorFromJson(Map<String, dynamic> json) {
+    final keyId = json['keyId'];
+
+    if (keyId is! int) {
+      return null;
+    }
+
+    final trigger = LogicalKeyboardKey.findKeyByKeyId(keyId);
+
+    if (trigger == null) {
+      return null;
+    }
+
+    bool readModifier(String key) => json[key] == true;
+
+    return SingleActivator(
+      trigger,
+      control: readModifier('control'),
+      shift: readModifier('shift'),
+      alt: readModifier('alt'),
+      meta: readModifier('meta'),
+    );
   }
 }

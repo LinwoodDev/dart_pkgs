@@ -36,6 +36,19 @@ class AndroidSafDirectoryFileSystem extends DirectoryFileSystem {
     return _channel.invokeMethod<String>('pickDirectory');
   }
 
+  @override
+  Future<void> release() async {
+    final directory = await getDirectory();
+
+    if (!isSafStorage(directory)) {
+      return _io.release();
+    }
+
+    await _channel.invokeMethod<void>('releasePersistableUriPermission', {
+      'uri': directory,
+    });
+  }
+
   Future<bool> isSaf() async {
     return isSafStorage(await getDirectory());
   }

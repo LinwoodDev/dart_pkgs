@@ -126,6 +126,8 @@ abstract class GeneralFileSystem {
 
   Future<bool> moveAbsolute(String oldPath, String newPath) =>
       Future.value(false);
+
+  Future<void> release() => Future.value();
 }
 
 Archive exportDirectory(RawFileSystemDirectory directory, {int? lastModTime}) {

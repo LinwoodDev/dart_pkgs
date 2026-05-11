@@ -26,6 +26,9 @@ sealed class TypedFileSystem<T> extends GeneralFileSystem {
   @override
   Future<void> saveAbsolute(String path, Uint8List bytes) =>
       fileSystem.saveAbsolute(path, bytes);
+
+  @override
+  Future<void> release() => fileSystem.release();
 }
 
 class TypedDirectoryFileSystem<T> extends TypedFileSystem<T>

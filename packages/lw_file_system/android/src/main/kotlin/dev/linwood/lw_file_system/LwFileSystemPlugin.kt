@@ -95,6 +95,16 @@ class LwFileSystemPlugin : FlutterPlugin, MethodCallHandler, ActivityAware, Acti
             when (call.method) {
                 "pickDirectory" -> pickDirectory(result)
 
+                "releasePersistableUriPermission" -> {
+                    val uri = Uri.parse(
+                        call.argument<String>("uri")
+                            ?: throw IllegalArgumentException("Missing uri")
+                    )
+
+                    releasePersistableUriPermission(uri)
+                    result.success(null)
+                }
+
                 "safCanRead" -> {
                     val root = call.safRoot()
                     result.success(resolveDocument(root.treeUri, root.basePath) != null)
@@ -316,6 +326,27 @@ class LwFileSystemPlugin : FlutterPlugin, MethodCallHandler, ActivityAware, Acti
         }
 
         currentActivity.startActivityForResult(intent, PICK_DIRECTORY_REQUEST)
+    }
+
+    private fun releasePersistableUriPermission(uri: Uri) {
+        val root = parseSafRoot(uri)
+        val readFlag = Intent.FLAG_GRANT_READ_URI_PERMISSION
+        val writeFlag = Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+        val flags = readFlag or writeFlag
+
+        try {
+            contentResolver.releasePersistableUriPermission(root.treeUri, flags)
+        } catch (_: SecurityException) {
+            releasePersistableUriPermission(root.treeUri, readFlag)
+            releasePersistableUriPermission(root.treeUri, writeFlag)
+        }
+    }
+
+    private fun releasePersistableUriPermission(uri: Uri, flags: Int) {
+        try {
+            contentResolver.releasePersistableUriPermission(uri, flags)
+        } catch (_: SecurityException) {
+        }
     }
 
     private fun parseSafRoot(uri: Uri): SafRoot {

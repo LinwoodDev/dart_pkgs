@@ -220,6 +220,34 @@ void main() {
     },
   );
 
+  test('Android SAF releases persistable URI permission', () async {
+    const channel = MethodChannel('linwood.dev/lw_file_system/saf');
+    final calls = <MethodCall>[];
+
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(channel, (call) async {
+          calls.add(call);
+          return null;
+        });
+    addTearDown(
+      () => TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(channel, null),
+    );
+
+    final fileSystem = AndroidSafDirectoryFileSystem(
+      config: _androidConfig,
+      storage: const LocalStorage(
+        paths: {'': 'content://tree/root', 'android': 'Documents'},
+      ),
+    );
+
+    await fileSystem.release();
+
+    expect(calls, hasLength(1));
+    expect(calls.single.method, 'releasePersistableUriPermission');
+    expect(calls.single.arguments, {'uri': 'content://tree/root/Documents'});
+  });
+
   test('missing selected variant delegates to IO behavior', () async {
     final fileSystem = AndroidSafDirectoryFileSystem(
       config: _androidConfig,

@@ -243,4 +243,7 @@ class KeyDirectoryFileSystem extends KeyFileSystem {
   @override
   Future<void> saveAbsolute(String path, Uint8List bytes) =>
       fileSystem.saveAbsolute(path, bytes);
+
+  @override
+  Future<void> release() => fileSystem.release();
 }

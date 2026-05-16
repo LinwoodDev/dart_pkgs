@@ -1141,15 +1141,23 @@ abstract class RemoteFileSystem extends DirectoryFileSystem {
   Future<List<SyncFile>> getAllSyncFiles() async {
     final paths = getPinnedPaths();
     final files = <SyncFile>[];
-    for (final path in paths) {
+    final visited = <String>{};
+
+    Future<void> addSyncFiles(String path) async {
+      path = normalizePath(path);
+      if (!visited.add(path)) return;
       final asset = await getAsset(path);
-      if (asset == null) continue;
+      if (asset == null) return;
       files.add(await getSyncFile(asset.path));
       if (asset is RawFileSystemDirectory) {
         for (final file in asset.assets) {
-          files.add(await getSyncFile(file.path));
+          await addSyncFiles(file.path);
         }
       }
+    }
+
+    for (final path in paths) {
+      await addSyncFiles(path);
     }
     return files;
   }

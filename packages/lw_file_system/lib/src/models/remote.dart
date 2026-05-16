@@ -43,6 +43,10 @@ class SyncFile {
     final localChanged = isAfter(localLastModified!, syncedLastModified!);
     final remoteChanged = isAfter(remoteLastModified!, syncedLastModified!);
 
+    if (isDirectory && !localChanged && !remoteChanged) {
+      return FileSyncStatus.synced;
+    }
+
     if (localChanged && remoteChanged) {
       if (!isDirectory &&
           !sameModified(localLastModified!, remoteLastModified!)) {

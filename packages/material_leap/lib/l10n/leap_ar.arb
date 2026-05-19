@@ -16,7 +16,7 @@
   "shouldNotEmpty": "يجب ألا تكون هذه القيمة فارغة",
   "alreadyExists": "هذا العنصر موجود بالفعل",
   "create": "إنشاء",
-  "enterName": "يرجى إدخال اسم",
+  "enterName": "ادخل اسماً",
   "name": "الاسم",
   "invalidName": "الاسم غير صالح"
 }

@@ -87,6 +87,9 @@ class TypedDirectoryFileSystem<T> extends TypedFileSystem<T>
         RawFileSystemFile file => FileSystemFile(
           file.location,
           data: file.data == null ? null : onDecode(file.data!),
+          lastModified: file.lastModified,
+          creationTime: file.creationTime,
+          size: file.size,
         ),
         RawFileSystemDirectory directory => _toTypedDirectory(directory),
       };

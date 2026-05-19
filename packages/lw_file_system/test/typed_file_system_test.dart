@@ -23,14 +23,44 @@ void main() {
       expect(raw.lastData, [42]);
     },
   );
+
+  test('TypedDirectoryFileSystem preserves raw file metadata', () async {
+    final lastModified = DateTime.utc(2026, 5, 19, 10, 30);
+    final creationTime = DateTime.utc(2026, 5, 18, 9, 15);
+    final raw = _RecordingDirectoryFileSystem(
+      asset: RawFileSystemFile(
+        AssetLocation.local('/note.bfly'),
+        data: Uint8List.fromList([42]),
+        lastModified: lastModified,
+        creationTime: creationTime,
+        size: 1234,
+      ),
+    );
+    final typed = TypedDirectoryFileSystem<int>.raw(
+      raw,
+      onEncode: (data) => Uint8List.fromList([data]),
+      onDecode: (data) => data.first,
+      config: const MockFileSystemConfig(),
+    );
+
+    final asset = await typed.readAsset('/note.bfly');
+
+    final file = asset as FileSystemFile<int>;
+    expect(file.data, 42);
+    expect(file.lastModified, lastModified);
+    expect(file.creationTime, creationTime);
+    expect(file.size, 1234);
+  });
 }
 
 class _RecordingDirectoryFileSystem extends DirectoryFileSystem {
   String? lastPath;
   Uint8List? lastData;
   bool? lastForceSync;
+  FileSystemEntity<Uint8List>? asset;
 
-  _RecordingDirectoryFileSystem() : super(config: const MockFileSystemConfig());
+  _RecordingDirectoryFileSystem({this.asset})
+    : super(config: const MockFileSystemConfig());
 
   @override
   Future<FileSystemDirectory<Uint8List>> createDirectory(String path) async =>
@@ -60,7 +90,7 @@ class _RecordingDirectoryFileSystem extends DirectoryFileSystem {
     bool readData = true,
     bool forceRemote = false,
   }) async {
-    return null;
+    return asset;
   }
 
   @override

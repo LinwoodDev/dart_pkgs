@@ -26,11 +26,11 @@ class SysAPIWindows extends SysAPIPlatform {
 
   @override
   List<String> getFonts() {
-    final hDC = GetDC(NULL);
+    final hDC = GetDC(null);
     final searchFont = calloc<LOGFONT>()..ref.lfCharSet = DEFAULT_CHARSET;
     final callback = Pointer.fromFunction<FONTENUMPROC>(_enumerateFonts, 0);
 
-    EnumFontFamiliesEx(hDC, searchFont, callback, 0, 0);
+    EnumFontFamiliesEx(hDC, searchFont, callback, const LPARAM(0), 0);
     free(searchFont);
     return _fontNames.toList();
   }

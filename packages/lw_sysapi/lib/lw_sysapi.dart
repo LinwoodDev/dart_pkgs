@@ -4,5 +4,11 @@
 library;
 
 export 'src/native/lw_sysapi_base.dart'
-    show SysAPI, ClipboardManager, ClipboardContent, ClipboardMimeTypes;
+    show
+        SysAPI,
+        ClipboardManager,
+        ClipboardContent,
+        ClipboardMimeTypes,
+        InternalClipboardManager,
+        UnsupportedClipboardManager;
 export 'src/api/save.dart';

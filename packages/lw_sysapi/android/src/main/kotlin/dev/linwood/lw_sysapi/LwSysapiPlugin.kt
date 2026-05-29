@@ -1,6 +1,10 @@
 package dev.linwood.lw_sysapi
 
 import android.app.Activity
+import android.content.ClipData
+import android.content.ClipDescription
+import android.content.ClipboardManager
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import androidx.core.app.ActivityCompat.startActivityForResult
@@ -27,8 +31,10 @@ class LwSysapiPlugin: FlutterPlugin, MethodCallHandler, ActivityResultListener, 
   private var saveData: ByteArray? = null
   private var saveResult: MethodChannel.Result? = null
   private var act: Activity? = null
+  private var context: Context? = null
 
   override fun onAttachedToEngine(flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
+    context = flutterPluginBinding.applicationContext
     channel = MethodChannel(flutterPluginBinding.binaryMessenger, "linwood.dev/lw_sysapi")
     channel.setMethodCallHandler(this)
   }
@@ -53,6 +59,17 @@ class LwSysapiPlugin: FlutterPlugin, MethodCallHandler, ActivityResultListener, 
       saveResult = result
       saveData = call.argument("data")
       saveFile(call.argument("mime")!!, call.argument("name")!!)
+    } else if (call.method == "writeClipboard") {
+      val mimeType = call.argument<String>("type")
+      val data = call.argument<ByteArray>("data")
+      if (mimeType == null || data == null) {
+        result.success(false)
+        return
+      }
+      result.success(writeClipboard(mimeType, data))
+    } else if (call.method == "readClipboard") {
+      val types = call.argument<List<String>>("types")
+      result.success(readClipboard(types))
     } else {
       result.notImplemented()
     }
@@ -101,7 +118,99 @@ class LwSysapiPlugin: FlutterPlugin, MethodCallHandler, ActivityResultListener, 
     }
   }
 
+  private fun writeClipboard(mimeType: String, data: ByteArray): Boolean {
+    val currentContext = context ?: return false
+    val manager = currentContext.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+    if (mimeType == "text/plain") {
+      manager.setPrimaryClip(ClipData.newPlainText("lw_sysapi", String(data, Charsets.UTF_8)))
+      return true
+    }
+    if (mimeType == "text/html") {
+      val html = String(data, Charsets.UTF_8)
+      manager.setPrimaryClip(ClipData.newHtmlText("lw_sysapi", html, html))
+      return true
+    }
+    val id = LwSysapiClipboardProvider.add(mimeType, data)
+    val uri = Uri.Builder()
+      .scheme("content")
+      .authority("${currentContext.packageName}.lw_sysapi_clipboard")
+      .appendPath(id)
+      .build()
+    val clip = ClipData(
+      ClipDescription("lw_sysapi", arrayOf(mimeType)),
+      ClipData.Item(uri),
+    )
+    manager.setPrimaryClip(clip)
+    return true
+  }
+
+  private fun readClipboard(types: List<String>?): Map<String, Any>? {
+    val currentContext = context ?: return null
+    val manager = currentContext.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+    val clip = manager.primaryClip ?: return null
+    val description = manager.primaryClipDescription ?: return null
+    val requestedTypes = types ?: listOf(
+      "image/png",
+      "image/jpeg",
+      "image/gif",
+      "image/webp",
+      "image/tiff",
+      "image/bmp",
+      "application/pdf",
+      "image/svg+xml",
+      "text/plain",
+      "text/html",
+      "application/json",
+      "text/csv",
+      "application/rtf",
+      "application/zip",
+      "application/gzip",
+      "application/x-tar",
+      "application/x-7z-compressed",
+      "image/x-icon",
+      "image/heic",
+      "image/heif",
+      "image/avif",
+      "audio/mpeg",
+      "audio/wav",
+      "video/mp4",
+      "video/webm",
+    )
+    for (type in requestedTypes) {
+      if (!hasClipboardMimeType(description, type)) continue
+      for (i in 0 until clip.itemCount) {
+        val item = clip.getItemAt(i)
+        if (type == "text/plain") {
+          item.coerceToText(currentContext)?.let {
+            return mapOf("type" to type, "data" to it.toString().toByteArray(Charsets.UTF_8))
+          }
+        }
+        if (type == "text/html") {
+          item.htmlText?.let {
+            return mapOf("type" to type, "data" to it.toByteArray(Charsets.UTF_8))
+          }
+        }
+        val uri = item.uri ?: continue
+        val uriType = currentContext.contentResolver.getType(uri)
+        if (uriType != null && !ClipDescription.compareMimeTypes(uriType, type)) continue
+        val data = currentContext.contentResolver.openInputStream(uri)?.use {
+          it.readBytes()
+        } ?: continue
+        return mapOf("type" to type, "data" to data)
+      }
+    }
+    return null
+  }
+
+  private fun hasClipboardMimeType(description: ClipDescription, mimeType: String): Boolean {
+    if (description.hasMimeType(mimeType)) return true
+    val slashIndex = mimeType.indexOf("/")
+    if (slashIndex <= 0) return false
+    return description.hasMimeType("${mimeType.substring(0, slashIndex)}/*")
+  }
+
   override fun onDetachedFromEngine(binding: FlutterPlugin.FlutterPluginBinding) {
     channel.setMethodCallHandler(null)
+    context = null
   }
 }

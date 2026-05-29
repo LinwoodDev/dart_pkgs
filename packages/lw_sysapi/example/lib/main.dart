@@ -18,20 +18,22 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
-          appBar: AppBar(
-            title: const Text('Plugin example app'),
-          ),
-          body: Builder(builder: (context) {
+        appBar: AppBar(title: const Text('Plugin example app')),
+        body: Builder(
+          builder: (context) {
             return ListView(
               children: [
                 ListTile(
                   title: const Text('Fonts'),
-                  onTap: () => Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => const FontsPage())),
+                  onTap: () => Navigator.of(context).push(
+                    MaterialPageRoute(builder: (context) => const FontsPage()),
+                  ),
                 ),
               ],
             );
-          })),
+          },
+        ),
+      ),
     );
   }
 }

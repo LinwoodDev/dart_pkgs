@@ -4,5 +4,6 @@
   "controlKey": "Ctrl",
   "shiftKey": "Shift",
   "altKey": "Alt",
-  "metaKey": "Meta"
+  "metaKey": "Meta",
+  "reset": "Visszaállítás"
 }

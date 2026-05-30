@@ -190,6 +190,12 @@ abstract class KeybinderLocalizations {
   /// In en, this message translates to:
   /// **'Meta'**
   String get metaKey;
+
+  /// No description provided for @reset.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset'**
+  String get reset;
 }
 
 class _KeybinderLocalizationsDelegate

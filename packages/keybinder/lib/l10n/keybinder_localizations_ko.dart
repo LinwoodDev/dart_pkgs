@@ -25,4 +25,7 @@ class KeybinderLocalizationsKo extends KeybinderLocalizations {
 
   @override
   String get metaKey => 'Meta';
+
+  @override
+  String get reset => '초기화';
 }

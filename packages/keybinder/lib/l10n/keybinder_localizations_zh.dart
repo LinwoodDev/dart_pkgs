@@ -25,6 +25,9 @@ class KeybinderLocalizationsZh extends KeybinderLocalizations {
 
   @override
   String get metaKey => 'Meta';
+
+  @override
+  String get reset => '重置';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -48,4 +51,7 @@ class KeybinderLocalizationsZhHant extends KeybinderLocalizationsZh {
 
   @override
   String get metaKey => 'Meta';
+
+  @override
+  String get reset => '重設';
 }

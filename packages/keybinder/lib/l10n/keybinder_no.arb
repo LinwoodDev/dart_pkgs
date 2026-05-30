@@ -4,5 +4,6 @@
   "controlKey": "Ctrl",
   "shiftKey": "Skift",
   "altKey": "Alt",
-  "metaKey": "Meta"
+  "metaKey": "Meta",
+  "reset": "Tilbakestill"
 }

@@ -25,4 +25,7 @@ class KeybinderLocalizationsRo extends KeybinderLocalizations {
 
   @override
   String get metaKey => 'Meta';
+
+  @override
+  String get reset => 'Resetează';
 }

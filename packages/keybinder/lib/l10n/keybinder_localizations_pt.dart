@@ -25,6 +25,9 @@ class KeybinderLocalizationsPt extends KeybinderLocalizations {
 
   @override
   String get metaKey => 'Meta';
+
+  @override
+  String get reset => 'Redefinir';
 }
 
 /// The translations for Portuguese, as used in Brazil (`pt_BR`).
@@ -48,4 +51,7 @@ class KeybinderLocalizationsPtBr extends KeybinderLocalizationsPt {
 
   @override
   String get metaKey => 'Meta';
+
+  @override
+  String get reset => 'Redefinir';
 }

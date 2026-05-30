@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:material_leap/material_leap.dart';
 import '../l10n/keybinder_localizations.dart';
 import 'shortcut_localizer.dart';
 
@@ -168,7 +167,7 @@ class KeyRecorderButton extends StatelessWidget {
               IconButton(
                 icon: const Icon(Icons.restore),
                 onPressed: onReset,
-                tooltip: LeapLocalizations.of(context).reset,
+                tooltip: l10n.reset,
               ),
             ],
           );
@@ -233,7 +232,7 @@ class KeyRecorderListTile extends StatelessWidget {
               IconButton(
                 icon: const Icon(Icons.restore),
                 onPressed: onReset,
-                tooltip: LeapLocalizations.of(context).reset,
+                tooltip: l10n.reset,
               ),
             ],
           );

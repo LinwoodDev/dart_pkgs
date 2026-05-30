@@ -13,11 +13,6 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   intl: any
-  material_leap:
-    git:
-      url: https://github.com/LinwoodDev/dart_pkgs.git
-      ref: d3eab604143cac40036985a0483d97e352812ee4
-      path: packages/material_leap
 
 dev_dependencies:
   flutter_test:

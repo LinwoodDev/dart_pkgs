@@ -4,5 +4,6 @@
   "controlKey": "Ctrl",
   "shiftKey": "偏移",
   "altKey": "Alt",
-  "metaKey": "Meta"
+  "metaKey": "Meta",
+  "reset": "重置"
 }

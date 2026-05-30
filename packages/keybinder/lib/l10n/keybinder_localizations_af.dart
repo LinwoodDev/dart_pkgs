@@ -25,4 +25,7 @@ class KeybinderLocalizationsAf extends KeybinderLocalizations {
 
   @override
   String get metaKey => 'Meta';
+
+  @override
+  String get reset => 'Herstel';
 }

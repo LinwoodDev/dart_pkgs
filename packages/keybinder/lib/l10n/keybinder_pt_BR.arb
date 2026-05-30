@@ -4,5 +4,6 @@
   "controlKey": "Ctrl",
   "shiftKey": "Turno",
   "altKey": "Alt",
-  "metaKey": "Meta"
+  "metaKey": "Meta",
+  "reset": "Redefinir"
 }

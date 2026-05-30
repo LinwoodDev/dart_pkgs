@@ -4,5 +4,6 @@
   "controlKey": "Ctrl",
   "shiftKey": "Vaihto",
   "altKey": "Alt",
-  "metaKey": "Meta"
+  "metaKey": "Meta",
+  "reset": "Palauta"
 }

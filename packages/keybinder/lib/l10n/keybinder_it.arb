@@ -4,5 +4,6 @@
   "controlKey": "Ctrl",
   "shiftKey": "Maiusc",
   "altKey": "Alt",
-  "metaKey": "Meta"
+  "metaKey": "Meta",
+  "reset": "Reimposta"
 }

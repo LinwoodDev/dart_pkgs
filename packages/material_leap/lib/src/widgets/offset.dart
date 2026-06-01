@@ -50,19 +50,25 @@ class _OffsetListTileState extends State<OffsetListTile> {
     super.didUpdateWidget(oldWidget);
 
     if (oldWidget.value != widget.value) {
-      final currentXValue = double.tryParse(_xController.text);
-      final currentYValue = double.tryParse(_yController.text);
       final offset = widget.value;
-      if (currentXValue != offset.dx || currentYValue != offset.dy) {
-        _updateValue(widget.value);
+      final expectedX = _numberToString(offset.dx);
+      final expectedY = _numberToString(offset.dy);
+      if (_xController.text != expectedX) {
+        _xController.text = expectedX;
+      }
+      if (_yController.text != expectedY) {
+        _yController.text = expectedY;
       }
     }
   }
 
+  String _numberToString(num value) =>
+      value.toStringAsFixed(widget.fractionDigits);
+
   void _updateValue(Offset value) {
-    final x = value.dx.toStringAsFixed(widget.fractionDigits);
+    final x = _numberToString(value.dx);
     if (_xController.text != x) _xController.text = x;
-    final y = value.dy.toStringAsFixed(widget.fractionDigits);
+    final y = _numberToString(value.dy);
     if (_yController.text != y) _yController.text = y;
   }
 
@@ -89,11 +95,17 @@ class _OffsetListTileState extends State<OffsetListTile> {
                 floatingLabelAlignment: FloatingLabelAlignment.center,
               ),
               textAlign: TextAlign.center,
-              keyboardType: TextInputType.number,
-              controller: _xController,
-              onChanged: (value) => widget.onChanged(
-                Offset(double.parse(value), widget.value.dy),
+              keyboardType: const TextInputType.numberWithOptions(
+                decimal: true,
+                signed: true,
               ),
+              controller: _xController,
+              onChanged: (value) {
+                final dx = double.tryParse(value);
+                if (dx != null) {
+                  widget.onChanged(Offset(dx, widget.value.dy));
+                }
+              },
             ),
           ),
           const SizedBox(width: 4),
@@ -106,11 +118,17 @@ class _OffsetListTileState extends State<OffsetListTile> {
                 floatingLabelAlignment: FloatingLabelAlignment.center,
               ),
               textAlign: TextAlign.center,
-              keyboardType: TextInputType.number,
-              controller: _yController,
-              onChanged: (value) => widget.onChanged(
-                Offset(widget.value.dx, double.parse(value)),
+              keyboardType: const TextInputType.numberWithOptions(
+                decimal: true,
+                signed: true,
               ),
+              controller: _yController,
+              onChanged: (value) {
+                final dy = double.tryParse(value);
+                if (dy != null) {
+                  widget.onChanged(Offset(widget.value.dx, dy));
+                }
+              },
             ),
           ),
         ],

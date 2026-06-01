@@ -50,7 +50,12 @@ class _OffsetListTileState extends State<OffsetListTile> {
     super.didUpdateWidget(oldWidget);
 
     if (oldWidget.value != widget.value) {
-      _updateValue(widget.value);
+      final currentXValue = double.tryParse(_xController.text);
+      final currentYValue = double.tryParse(_yController.text);
+      final offset = widget.value;
+      if (currentXValue != offset.dx || currentYValue != offset.dy) {
+        _updateValue(widget.value);
+      }
     }
   }
 

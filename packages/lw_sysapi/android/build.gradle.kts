@@ -28,7 +28,7 @@ plugins {
 android {
     namespace = "dev.linwood.lw_sysapi"
 
-    compileSdk = 36
+    compileSdk = flutter.compileSdkVersion
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17

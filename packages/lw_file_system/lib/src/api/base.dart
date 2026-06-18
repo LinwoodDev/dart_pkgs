@@ -9,7 +9,6 @@ import 'package:path/path.dart' as p;
 import 'package:rxdart/rxdart.dart';
 import 'package:synchronized/synchronized.dart';
 
-import 'dav.dart';
 import 'io.dart';
 import 'html_stub.dart' if (dart.library.js_interop) 'html.dart';
 

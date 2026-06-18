@@ -7,6 +7,7 @@ export 'package:lw_file_system_api/lw_file_system_api.dart';
 export 'src/api/android.dart' show AndroidSafDirectoryFileSystem;
 export 'src/api/base.dart';
 export 'src/api/mock.dart';
+export 'src/api/dav.dart';
 export 'src/api/remote.dart';
 export 'src/api/typed.dart';
 export 'src/models/config.dart';

@@ -1,5 +1,6 @@
 // ignore_for_file: deprecated_member_use
 
+import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -71,6 +72,42 @@ class DavRemoteDirectoryFileSystem extends RemoteFileSystem {
     required this.storage,
     super.createDefault,
   });
+  static Future<bool> checkConnectivity({
+    required DavRemoteStorage storage,
+    required PasswordStorage? passwordStorage,
+    String variant = '',
+    String? certificateSha1,
+  }) async {
+    final client = HttpClient();
+    try {
+      client.badCertificateCallback =
+          (X509Certificate cert, String host, int port) =>
+              String.fromCharCodes(cert.sha1) ==
+              (certificateSha1 ?? storage.certificateSha1);
+
+      final url = storage.buildVariantUri(variant: variant);
+      if (url == null) return false;
+
+      final request = await client.openUrl('PROPFIND', url);
+      request.headers.add('Depth', '0');
+      request.headers.add(
+        'Authorization',
+        'Basic ${base64Encode(utf8.encode('${storage.username}:${await passwordStorage?.read(storage)}'))}',
+      );
+
+      final response = await request.close().timeout(
+        RemoteFileSystem.defaultTimeout,
+      );
+
+      return response.statusCode == 207 || response.statusCode == 200;
+    } on NetworkException {
+      return false;
+    } catch (_) {
+      return false;
+    } finally {
+      client.close(force: true);
+    }
+  }
 
   String _normalizePath(String path) {
     path = normalizePath(path);
@@ -530,21 +567,5 @@ class DavRemoteDirectoryFileSystem extends RemoteFileSystem {
   Future<void> runInitialize() async {
     await createDirectory('');
     await createDefault(this);
-  }
-
-  /// Check if the remote storage is reachable
-  Future<bool> checkConnectivity() async {
-    try {
-      final response = await createRequest(
-        [],
-        method: 'OPTIONS',
-        timeout: const Duration(seconds: 10),
-      );
-      return response != null && response.statusCode < 400;
-    } on NetworkException {
-      return false;
-    } catch (_) {
-      return false;
-    }
   }
 }

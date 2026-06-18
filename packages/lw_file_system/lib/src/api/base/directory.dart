@@ -251,10 +251,9 @@ abstract class DirectoryFileSystem extends GeneralFileSystem
     required super.config,
     this.createDefault = defaultCreateDefault,
   });
-
   factory DirectoryFileSystem.fromPlatform(
     FileSystemConfig config, {
-    final ExternalStorage? storage,
+    ExternalStorage? storage,
     bool useIsolates = false,
     bool useAndroidSaf = false,
     CreateDefaultCallback<DirectoryFileSystem> createDefault =
@@ -265,33 +264,43 @@ abstract class DirectoryFileSystem extends GeneralFileSystem
         config: config,
         createDefault: createDefault,
       );
-    } else if (useAndroidSaf && !kIsWeb && Platform.isAndroid) {
-      return AndroidSafDirectoryFileSystem(
+    }
+
+    return switch (storage) {
+      DavRemoteStorage e => DavRemoteDirectoryFileSystem(
         config: config,
-        storage: storage is LocalStorage ? storage : null,
+        storage: e,
+        createDefault: createDefault,
+      ),
+
+      LocalStorage e when useAndroidSaf && Platform.isAndroid =>
+        AndroidSafDirectoryFileSystem(
+          config: config,
+          storage: e,
+          createDefault: createDefault,
+          useIsolates: useIsolates,
+        ),
+
+      LocalStorage e => IODirectoryFileSystem(
+        config: config,
+        storage: e,
         createDefault: createDefault,
         useIsolates: useIsolates,
-      );
-    } else {
-      return switch (storage) {
-        DavRemoteStorage e => DavRemoteDirectoryFileSystem(
-          config: config,
-          storage: e,
-          createDefault: createDefault,
-        ),
-        LocalStorage e => IODirectoryFileSystem(
-          config: config,
-          storage: e,
-          createDefault: createDefault,
-          useIsolates: useIsolates,
-        ),
-        _ => IODirectoryFileSystem(
+      ),
+
+      _ when useAndroidSaf && Platform.isAndroid =>
+        AndroidSafDirectoryFileSystem(
           config: config,
           createDefault: createDefault,
           useIsolates: useIsolates,
         ),
-      };
-    }
+
+      _ => IODirectoryFileSystem(
+        config: config,
+        createDefault: createDefault,
+        useIsolates: useIsolates,
+      ),
+    };
   }
 
   @override

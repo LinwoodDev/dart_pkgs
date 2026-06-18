@@ -171,7 +171,7 @@ sealed class RemoteStorage extends ExternalStorage with RemoteStorageMappable {
       port: currentUri.port,
       host: currentUri.host,
       queryParameters: {...currentUri.queryParameters, ...query},
-      pathSegments: {...paths, ...path},
+      pathSegments: [...paths, ...path],
     );
   }
 

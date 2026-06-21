@@ -344,6 +344,20 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  OneNoteEmbeddedInk dco_decode_box_autoadd_one_note_embedded_ink(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return dco_decode_one_note_embedded_ink(raw);
+  }
+
+  @protected
+  OneNoteEmbeddedInkSpace dco_decode_box_autoadd_one_note_embedded_ink_space(
+    dynamic raw,
+  ) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return dco_decode_one_note_embedded_ink_space(raw);
+  }
+
+  @protected
   OneNoteImage dco_decode_box_autoadd_one_note_image(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return dco_decode_one_note_image(raw);
@@ -451,6 +465,16 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   List<OneNoteContent> dco_decode_list_one_note_content(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return (raw as List<dynamic>).map(dco_decode_one_note_content).toList();
+  }
+
+  @protected
+  List<OneNoteEmbeddedObject> dco_decode_list_one_note_embedded_object(
+    dynamic raw,
+  ) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return (raw as List<dynamic>)
+        .map(dco_decode_one_note_embedded_object)
+        .toList();
   }
 
   @protected
@@ -626,6 +650,51 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       offsetHorizontal: dco_decode_opt_box_autoadd_f_32(arr[6]),
       offsetVertical: dco_decode_opt_box_autoadd_f_32(arr[7]),
     );
+  }
+
+  @protected
+  OneNoteEmbeddedInk dco_decode_one_note_embedded_ink(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    final arr = raw as List<dynamic>;
+    if (arr.length != 2)
+      throw Exception('unexpected arr length: expect 2 but see ${arr.length}');
+    return OneNoteEmbeddedInk(
+      ink: dco_decode_one_note_ink(arr[0]),
+      displayBoundingBox: dco_decode_opt_box_autoadd_one_note_ink_bounding_box(
+        arr[1],
+      ),
+    );
+  }
+
+  @protected
+  OneNoteEmbeddedInkSpace dco_decode_one_note_embedded_ink_space(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    final arr = raw as List<dynamic>;
+    if (arr.length != 2)
+      throw Exception('unexpected arr length: expect 2 but see ${arr.length}');
+    return OneNoteEmbeddedInkSpace(
+      width: dco_decode_f_32(arr[0]),
+      height: dco_decode_f_32(arr[1]),
+    );
+  }
+
+  @protected
+  OneNoteEmbeddedObject dco_decode_one_note_embedded_object(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    switch (raw[0]) {
+      case 0:
+        return OneNoteEmbeddedObject_Ink(
+          dco_decode_box_autoadd_one_note_embedded_ink(raw[1]),
+        );
+      case 1:
+        return OneNoteEmbeddedObject_InkSpace(
+          dco_decode_box_autoadd_one_note_embedded_ink_space(raw[1]),
+        );
+      case 2:
+        return OneNoteEmbeddedObject_InkLineBreak();
+      default:
+        throw Exception("unreachable");
+    }
   }
 
   @protected
@@ -850,8 +919,8 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   OneNoteRichText dco_decode_one_note_rich_text(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     final arr = raw as List<dynamic>;
-    if (arr.length != 8)
-      throw Exception('unexpected arr length: expect 8 but see ${arr.length}');
+    if (arr.length != 9)
+      throw Exception('unexpected arr length: expect 9 but see ${arr.length}');
     return OneNoteRichText(
       text: dco_decode_String(arr[0]),
       textRunIndices: dco_decode_list_prim_u_32_strict(arr[1]),
@@ -861,6 +930,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       paragraphSpaceAfter: dco_decode_f_32(arr[5]),
       paragraphLineSpacingExact: dco_decode_opt_box_autoadd_f_32(arr[6]),
       paragraphAlignment: dco_decode_String(arr[7]),
+      embeddedObjects: dco_decode_list_one_note_embedded_object(arr[8]),
     );
   }
 
@@ -1109,6 +1179,22 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  OneNoteEmbeddedInk sse_decode_box_autoadd_one_note_embedded_ink(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return (sse_decode_one_note_embedded_ink(deserializer));
+  }
+
+  @protected
+  OneNoteEmbeddedInkSpace sse_decode_box_autoadd_one_note_embedded_ink_space(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return (sse_decode_one_note_embedded_ink_space(deserializer));
+  }
+
+  @protected
   OneNoteImage sse_decode_box_autoadd_one_note_image(
     SseDeserializer deserializer,
   ) {
@@ -1232,6 +1318,20 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     var ans_ = <OneNoteContent>[];
     for (var idx_ = 0; idx_ < len_; ++idx_) {
       ans_.add(sse_decode_one_note_content(deserializer));
+    }
+    return ans_;
+  }
+
+  @protected
+  List<OneNoteEmbeddedObject> sse_decode_list_one_note_embedded_object(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+
+    var len_ = sse_decode_i_32(deserializer);
+    var ans_ = <OneNoteEmbeddedObject>[];
+    for (var idx_ = 0; idx_ < len_; ++idx_) {
+      ans_.add(sse_decode_one_note_embedded_object(deserializer));
     }
     return ans_;
   }
@@ -1517,6 +1617,55 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  OneNoteEmbeddedInk sse_decode_one_note_embedded_ink(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    var var_ink = sse_decode_one_note_ink(deserializer);
+    var var_displayBoundingBox =
+        sse_decode_opt_box_autoadd_one_note_ink_bounding_box(deserializer);
+    return OneNoteEmbeddedInk(
+      ink: var_ink,
+      displayBoundingBox: var_displayBoundingBox,
+    );
+  }
+
+  @protected
+  OneNoteEmbeddedInkSpace sse_decode_one_note_embedded_ink_space(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    var var_width = sse_decode_f_32(deserializer);
+    var var_height = sse_decode_f_32(deserializer);
+    return OneNoteEmbeddedInkSpace(width: var_width, height: var_height);
+  }
+
+  @protected
+  OneNoteEmbeddedObject sse_decode_one_note_embedded_object(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+
+    var tag_ = sse_decode_i_32(deserializer);
+    switch (tag_) {
+      case 0:
+        var var_field0 = sse_decode_box_autoadd_one_note_embedded_ink(
+          deserializer,
+        );
+        return OneNoteEmbeddedObject_Ink(var_field0);
+      case 1:
+        var var_field0 = sse_decode_box_autoadd_one_note_embedded_ink_space(
+          deserializer,
+        );
+        return OneNoteEmbeddedObject_InkSpace(var_field0);
+      case 2:
+        return OneNoteEmbeddedObject_InkLineBreak();
+      default:
+        throw UnimplementedError('');
+    }
+  }
+
+  @protected
   OneNoteImage sse_decode_one_note_image(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     var var_data = sse_decode_opt_list_prim_u_8_strict(deserializer);
@@ -1794,6 +1943,9 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       deserializer,
     );
     var var_paragraphAlignment = sse_decode_String(deserializer);
+    var var_embeddedObjects = sse_decode_list_one_note_embedded_object(
+      deserializer,
+    );
     return OneNoteRichText(
       text: var_text,
       textRunIndices: var_textRunIndices,
@@ -1803,6 +1955,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       paragraphSpaceAfter: var_paragraphSpaceAfter,
       paragraphLineSpacingExact: var_paragraphLineSpacingExact,
       paragraphAlignment: var_paragraphAlignment,
+      embeddedObjects: var_embeddedObjects,
     );
   }
 
@@ -2123,6 +2276,24 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  void sse_encode_box_autoadd_one_note_embedded_ink(
+    OneNoteEmbeddedInk self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_one_note_embedded_ink(self, serializer);
+  }
+
+  @protected
+  void sse_encode_box_autoadd_one_note_embedded_ink_space(
+    OneNoteEmbeddedInkSpace self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_one_note_embedded_ink_space(self, serializer);
+  }
+
+  @protected
   void sse_encode_box_autoadd_one_note_image(
     OneNoteImage self,
     SseSerializer serializer,
@@ -2257,6 +2428,18 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     sse_encode_i_32(self.length, serializer);
     for (final item in self) {
       sse_encode_one_note_content(item, serializer);
+    }
+  }
+
+  @protected
+  void sse_encode_list_one_note_embedded_object(
+    List<OneNoteEmbeddedObject> self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_i_32(self.length, serializer);
+    for (final item in self) {
+      sse_encode_one_note_embedded_object(item, serializer);
     }
   }
 
@@ -2511,6 +2694,47 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  void sse_encode_one_note_embedded_ink(
+    OneNoteEmbeddedInk self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_one_note_ink(self.ink, serializer);
+    sse_encode_opt_box_autoadd_one_note_ink_bounding_box(
+      self.displayBoundingBox,
+      serializer,
+    );
+  }
+
+  @protected
+  void sse_encode_one_note_embedded_ink_space(
+    OneNoteEmbeddedInkSpace self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_f_32(self.width, serializer);
+    sse_encode_f_32(self.height, serializer);
+  }
+
+  @protected
+  void sse_encode_one_note_embedded_object(
+    OneNoteEmbeddedObject self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    switch (self) {
+      case OneNoteEmbeddedObject_Ink(field0: final field0):
+        sse_encode_i_32(0, serializer);
+        sse_encode_box_autoadd_one_note_embedded_ink(field0, serializer);
+      case OneNoteEmbeddedObject_InkSpace(field0: final field0):
+        sse_encode_i_32(1, serializer);
+        sse_encode_box_autoadd_one_note_embedded_ink_space(field0, serializer);
+      case OneNoteEmbeddedObject_InkLineBreak():
+        sse_encode_i_32(2, serializer);
+    }
+  }
+
+  @protected
   void sse_encode_one_note_image(OneNoteImage self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_opt_list_prim_u_8_strict(self.data, serializer);
@@ -2712,6 +2936,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     sse_encode_f_32(self.paragraphSpaceAfter, serializer);
     sse_encode_opt_box_autoadd_f_32(self.paragraphLineSpacingExact, serializer);
     sse_encode_String(self.paragraphAlignment, serializer);
+    sse_encode_list_one_note_embedded_object(self.embeddedObjects, serializer);
   }
 
   @protected

@@ -8,7 +8,7 @@ import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 import 'package:freezed_annotation/freezed_annotation.dart' hide protected;
 part 'model.freezed.dart';
 
-// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`
+// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`
 
 class OneNoteColor {
   final int alpha;
@@ -99,6 +99,54 @@ class OneNoteEmbeddedFile {
           layoutMaxHeight == other.layoutMaxHeight &&
           offsetHorizontal == other.offsetHorizontal &&
           offsetVertical == other.offsetVertical;
+}
+
+class OneNoteEmbeddedInk {
+  final OneNoteInk ink;
+  final OneNoteInkBoundingBox? displayBoundingBox;
+
+  const OneNoteEmbeddedInk({required this.ink, this.displayBoundingBox});
+
+  @override
+  int get hashCode => ink.hashCode ^ displayBoundingBox.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is OneNoteEmbeddedInk &&
+          runtimeType == other.runtimeType &&
+          ink == other.ink &&
+          displayBoundingBox == other.displayBoundingBox;
+}
+
+class OneNoteEmbeddedInkSpace {
+  final double width;
+  final double height;
+
+  const OneNoteEmbeddedInkSpace({required this.width, required this.height});
+
+  @override
+  int get hashCode => width.hashCode ^ height.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is OneNoteEmbeddedInkSpace &&
+          runtimeType == other.runtimeType &&
+          width == other.width &&
+          height == other.height;
+}
+
+@freezed
+sealed class OneNoteEmbeddedObject with _$OneNoteEmbeddedObject {
+  const OneNoteEmbeddedObject._();
+
+  const factory OneNoteEmbeddedObject.ink(OneNoteEmbeddedInk field0) =
+      OneNoteEmbeddedObject_Ink;
+  const factory OneNoteEmbeddedObject.inkSpace(OneNoteEmbeddedInkSpace field0) =
+      OneNoteEmbeddedObject_InkSpace;
+  const factory OneNoteEmbeddedObject.inkLineBreak() =
+      OneNoteEmbeddedObject_InkLineBreak;
 }
 
 class OneNoteImage {
@@ -545,6 +593,7 @@ class OneNoteRichText {
   final double paragraphSpaceAfter;
   final double? paragraphLineSpacingExact;
   final String paragraphAlignment;
+  final List<OneNoteEmbeddedObject> embeddedObjects;
 
   const OneNoteRichText({
     required this.text,
@@ -555,6 +604,7 @@ class OneNoteRichText {
     required this.paragraphSpaceAfter,
     this.paragraphLineSpacingExact,
     required this.paragraphAlignment,
+    required this.embeddedObjects,
   });
 
   @override
@@ -566,7 +616,8 @@ class OneNoteRichText {
       paragraphSpaceBefore.hashCode ^
       paragraphSpaceAfter.hashCode ^
       paragraphLineSpacingExact.hashCode ^
-      paragraphAlignment.hashCode;
+      paragraphAlignment.hashCode ^
+      embeddedObjects.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -580,7 +631,8 @@ class OneNoteRichText {
           paragraphSpaceBefore == other.paragraphSpaceBefore &&
           paragraphSpaceAfter == other.paragraphSpaceAfter &&
           paragraphLineSpacingExact == other.paragraphLineSpacingExact &&
-          paragraphAlignment == other.paragraphAlignment;
+          paragraphAlignment == other.paragraphAlignment &&
+          embeddedObjects == other.embeddedObjects;
 }
 
 class OneNoteSection {

@@ -6,10 +6,10 @@ use super::{
     OneNoteSectionGroup, OneNoteTable, OneNoteTableCell, OneNoteTableRow, OneNoteTextStyle,
     OneNoteWarning,
 };
+use crate::api::{OneNoteEmbeddedInk, OneNoteEmbeddedInkSpace, OneNoteEmbeddedObject};
 use crate::memory_file_system::MemoryFileSystem;
 use onenote_parser::contents::{
-    Content, EmbeddedFile, Image, Ink, InkBoundingBox, InkPoint, InkStroke, Outline,
-    OutlineElement, OutlineGroup, OutlineItem, RichText, Table, TableCell, TableRow,
+    Content, EmbeddedFile, EmbeddedObject, Image, Ink, InkBoundingBox, InkPoint, InkStroke, Outline, OutlineElement, OutlineGroup, OutlineItem, RichText, Table, TableCell, TableRow
 };
 use onenote_parser::notebook::Notebook;
 use onenote_parser::page::{Page, PageContent, PageSeries};
@@ -221,6 +221,32 @@ fn rich_text(value: &RichText) -> OneNoteRichText {
         paragraph_space_after: value.paragraph_space_after(),
         paragraph_line_spacing_exact: value.paragraph_line_spacing_exact(),
         paragraph_alignment: debug(value.paragraph_alignment()),
+        embedded_objects: value
+            .embedded_objects()
+            .iter()
+            .map(embedded_object)
+            .collect(),
+    }
+}
+
+fn embedded_object(value: &EmbeddedObject) -> OneNoteEmbeddedObject {
+    match value {
+        EmbeddedObject::Ink(value) => {
+            OneNoteEmbeddedObject::Ink(OneNoteEmbeddedInk {
+                ink: ink(value.ink()),
+                display_bounding_box: value
+                    .bounding_box()
+                    .copied()
+                    .map(ink_bounding_box),
+            })
+        }
+        EmbeddedObject::InkSpace(value) => {
+            OneNoteEmbeddedObject::InkSpace(OneNoteEmbeddedInkSpace {
+                width: value.width(),
+                height: value.height(),
+            })
+        }
+        EmbeddedObject::InkLineBreak => OneNoteEmbeddedObject::InkLineBreak,
     }
 }
 

@@ -327,6 +327,20 @@ impl SseDecode for Vec<crate::api::model::OneNoteContent> {
     }
 }
 
+impl SseDecode for Vec<crate::api::model::OneNoteEmbeddedObject> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut len_ = <i32>::sse_decode(deserializer);
+        let mut ans_ = Vec::with_capacity(len_ as usize);
+        for idx_ in 0..len_ {
+            ans_.push(<crate::api::model::OneNoteEmbeddedObject>::sse_decode(
+                deserializer,
+            ));
+        }
+        return ans_;
+    }
+}
+
 impl SseDecode for Vec<crate::api::model::OneNoteInk> {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
@@ -617,6 +631,56 @@ impl SseDecode for crate::api::model::OneNoteEmbeddedFile {
     }
 }
 
+impl SseDecode for crate::api::model::OneNoteEmbeddedInk {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut var_ink = <crate::api::model::OneNoteInk>::sse_decode(deserializer);
+        let mut var_displayBoundingBox =
+            <Option<crate::api::model::OneNoteInkBoundingBox>>::sse_decode(deserializer);
+        return crate::api::model::OneNoteEmbeddedInk {
+            ink: var_ink,
+            display_bounding_box: var_displayBoundingBox,
+        };
+    }
+}
+
+impl SseDecode for crate::api::model::OneNoteEmbeddedInkSpace {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut var_width = <f32>::sse_decode(deserializer);
+        let mut var_height = <f32>::sse_decode(deserializer);
+        return crate::api::model::OneNoteEmbeddedInkSpace {
+            width: var_width,
+            height: var_height,
+        };
+    }
+}
+
+impl SseDecode for crate::api::model::OneNoteEmbeddedObject {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut tag_ = <i32>::sse_decode(deserializer);
+        match tag_ {
+            0 => {
+                let mut var_field0 =
+                    <crate::api::model::OneNoteEmbeddedInk>::sse_decode(deserializer);
+                return crate::api::model::OneNoteEmbeddedObject::Ink(var_field0);
+            }
+            1 => {
+                let mut var_field0 =
+                    <crate::api::model::OneNoteEmbeddedInkSpace>::sse_decode(deserializer);
+                return crate::api::model::OneNoteEmbeddedObject::InkSpace(var_field0);
+            }
+            2 => {
+                return crate::api::model::OneNoteEmbeddedObject::InkLineBreak;
+            }
+            _ => {
+                unimplemented!("");
+            }
+        }
+    }
+}
+
 impl SseDecode for crate::api::model::OneNoteImage {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
@@ -903,6 +967,8 @@ impl SseDecode for crate::api::model::OneNoteRichText {
         let mut var_paragraphSpaceAfter = <f32>::sse_decode(deserializer);
         let mut var_paragraphLineSpacingExact = <Option<f32>>::sse_decode(deserializer);
         let mut var_paragraphAlignment = <String>::sse_decode(deserializer);
+        let mut var_embeddedObjects =
+            <Vec<crate::api::model::OneNoteEmbeddedObject>>::sse_decode(deserializer);
         return crate::api::model::OneNoteRichText {
             text: var_text,
             text_run_indices: var_textRunIndices,
@@ -912,6 +978,7 @@ impl SseDecode for crate::api::model::OneNoteRichText {
             paragraph_space_after: var_paragraphSpaceAfter,
             paragraph_line_spacing_exact: var_paragraphLineSpacingExact,
             paragraph_alignment: var_paragraphAlignment,
+            embedded_objects: var_embeddedObjects,
         };
     }
 }
@@ -1323,6 +1390,76 @@ impl flutter_rust_bridge::IntoIntoDart<crate::api::model::OneNoteEmbeddedFile>
     }
 }
 // Codec=Dco (DartCObject based), see doc to use other codecs
+impl flutter_rust_bridge::IntoDart for crate::api::model::OneNoteEmbeddedInk {
+    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
+        [
+            self.ink.into_into_dart().into_dart(),
+            self.display_bounding_box.into_into_dart().into_dart(),
+        ]
+        .into_dart()
+    }
+}
+impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
+    for crate::api::model::OneNoteEmbeddedInk
+{
+}
+impl flutter_rust_bridge::IntoIntoDart<crate::api::model::OneNoteEmbeddedInk>
+    for crate::api::model::OneNoteEmbeddedInk
+{
+    fn into_into_dart(self) -> crate::api::model::OneNoteEmbeddedInk {
+        self
+    }
+}
+// Codec=Dco (DartCObject based), see doc to use other codecs
+impl flutter_rust_bridge::IntoDart for crate::api::model::OneNoteEmbeddedInkSpace {
+    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
+        [
+            self.width.into_into_dart().into_dart(),
+            self.height.into_into_dart().into_dart(),
+        ]
+        .into_dart()
+    }
+}
+impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
+    for crate::api::model::OneNoteEmbeddedInkSpace
+{
+}
+impl flutter_rust_bridge::IntoIntoDart<crate::api::model::OneNoteEmbeddedInkSpace>
+    for crate::api::model::OneNoteEmbeddedInkSpace
+{
+    fn into_into_dart(self) -> crate::api::model::OneNoteEmbeddedInkSpace {
+        self
+    }
+}
+// Codec=Dco (DartCObject based), see doc to use other codecs
+impl flutter_rust_bridge::IntoDart for crate::api::model::OneNoteEmbeddedObject {
+    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
+        match self {
+            crate::api::model::OneNoteEmbeddedObject::Ink(field0) => {
+                [0.into_dart(), field0.into_into_dart().into_dart()].into_dart()
+            }
+            crate::api::model::OneNoteEmbeddedObject::InkSpace(field0) => {
+                [1.into_dart(), field0.into_into_dart().into_dart()].into_dart()
+            }
+            crate::api::model::OneNoteEmbeddedObject::InkLineBreak => [2.into_dart()].into_dart(),
+            _ => {
+                unimplemented!("");
+            }
+        }
+    }
+}
+impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
+    for crate::api::model::OneNoteEmbeddedObject
+{
+}
+impl flutter_rust_bridge::IntoIntoDart<crate::api::model::OneNoteEmbeddedObject>
+    for crate::api::model::OneNoteEmbeddedObject
+{
+    fn into_into_dart(self) -> crate::api::model::OneNoteEmbeddedObject {
+        self
+    }
+}
+// Codec=Dco (DartCObject based), see doc to use other codecs
 impl flutter_rust_bridge::IntoDart for crate::api::model::OneNoteImage {
     fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
         [
@@ -1666,6 +1803,7 @@ impl flutter_rust_bridge::IntoDart for crate::api::model::OneNoteRichText {
                 .into_into_dart()
                 .into_dart(),
             self.paragraph_alignment.into_into_dart().into_dart(),
+            self.embedded_objects.into_into_dart().into_dart(),
         ]
         .into_dart()
     }
@@ -1913,6 +2051,16 @@ impl SseEncode for Vec<crate::api::model::OneNoteContent> {
     }
 }
 
+impl SseEncode for Vec<crate::api::model::OneNoteEmbeddedObject> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <i32>::sse_encode(self.len() as _, serializer);
+        for item in self {
+            <crate::api::model::OneNoteEmbeddedObject>::sse_encode(item, serializer);
+        }
+    }
+}
+
 impl SseEncode for Vec<crate::api::model::OneNoteInk> {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
@@ -2131,6 +2279,47 @@ impl SseEncode for crate::api::model::OneNoteEmbeddedFile {
     }
 }
 
+impl SseEncode for crate::api::model::OneNoteEmbeddedInk {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <crate::api::model::OneNoteInk>::sse_encode(self.ink, serializer);
+        <Option<crate::api::model::OneNoteInkBoundingBox>>::sse_encode(
+            self.display_bounding_box,
+            serializer,
+        );
+    }
+}
+
+impl SseEncode for crate::api::model::OneNoteEmbeddedInkSpace {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <f32>::sse_encode(self.width, serializer);
+        <f32>::sse_encode(self.height, serializer);
+    }
+}
+
+impl SseEncode for crate::api::model::OneNoteEmbeddedObject {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        match self {
+            crate::api::model::OneNoteEmbeddedObject::Ink(field0) => {
+                <i32>::sse_encode(0, serializer);
+                <crate::api::model::OneNoteEmbeddedInk>::sse_encode(field0, serializer);
+            }
+            crate::api::model::OneNoteEmbeddedObject::InkSpace(field0) => {
+                <i32>::sse_encode(1, serializer);
+                <crate::api::model::OneNoteEmbeddedInkSpace>::sse_encode(field0, serializer);
+            }
+            crate::api::model::OneNoteEmbeddedObject::InkLineBreak => {
+                <i32>::sse_encode(2, serializer);
+            }
+            _ => {
+                unimplemented!("");
+            }
+        }
+    }
+}
+
 impl SseEncode for crate::api::model::OneNoteImage {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
@@ -2326,6 +2515,10 @@ impl SseEncode for crate::api::model::OneNoteRichText {
         <f32>::sse_encode(self.paragraph_space_after, serializer);
         <Option<f32>>::sse_encode(self.paragraph_line_spacing_exact, serializer);
         <String>::sse_encode(self.paragraph_alignment, serializer);
+        <Vec<crate::api::model::OneNoteEmbeddedObject>>::sse_encode(
+            self.embedded_objects,
+            serializer,
+        );
     }
 }
 

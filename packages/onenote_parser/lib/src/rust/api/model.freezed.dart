@@ -558,6 +558,336 @@ String toString() {
 
 
 /// @nodoc
+mixin _$OneNoteEmbeddedObject {
+
+
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is OneNoteEmbeddedObject);
+}
+
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'OneNoteEmbeddedObject()';
+}
+
+
+}
+
+/// @nodoc
+class $OneNoteEmbeddedObjectCopyWith<$Res>  {
+$OneNoteEmbeddedObjectCopyWith(OneNoteEmbeddedObject _, $Res Function(OneNoteEmbeddedObject) __);
+}
+
+
+/// Adds pattern-matching-related methods to [OneNoteEmbeddedObject].
+extension OneNoteEmbeddedObjectPatterns on OneNoteEmbeddedObject {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( OneNoteEmbeddedObject_Ink value)?  ink,TResult Function( OneNoteEmbeddedObject_InkSpace value)?  inkSpace,TResult Function( OneNoteEmbeddedObject_InkLineBreak value)?  inkLineBreak,required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case OneNoteEmbeddedObject_Ink() when ink != null:
+return ink(_that);case OneNoteEmbeddedObject_InkSpace() when inkSpace != null:
+return inkSpace(_that);case OneNoteEmbeddedObject_InkLineBreak() when inkLineBreak != null:
+return inkLineBreak(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( OneNoteEmbeddedObject_Ink value)  ink,required TResult Function( OneNoteEmbeddedObject_InkSpace value)  inkSpace,required TResult Function( OneNoteEmbeddedObject_InkLineBreak value)  inkLineBreak,}){
+final _that = this;
+switch (_that) {
+case OneNoteEmbeddedObject_Ink():
+return ink(_that);case OneNoteEmbeddedObject_InkSpace():
+return inkSpace(_that);case OneNoteEmbeddedObject_InkLineBreak():
+return inkLineBreak(_that);}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( OneNoteEmbeddedObject_Ink value)?  ink,TResult? Function( OneNoteEmbeddedObject_InkSpace value)?  inkSpace,TResult? Function( OneNoteEmbeddedObject_InkLineBreak value)?  inkLineBreak,}){
+final _that = this;
+switch (_that) {
+case OneNoteEmbeddedObject_Ink() when ink != null:
+return ink(_that);case OneNoteEmbeddedObject_InkSpace() when inkSpace != null:
+return inkSpace(_that);case OneNoteEmbeddedObject_InkLineBreak() when inkLineBreak != null:
+return inkLineBreak(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( OneNoteEmbeddedInk field0)?  ink,TResult Function( OneNoteEmbeddedInkSpace field0)?  inkSpace,TResult Function()?  inkLineBreak,required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case OneNoteEmbeddedObject_Ink() when ink != null:
+return ink(_that.field0);case OneNoteEmbeddedObject_InkSpace() when inkSpace != null:
+return inkSpace(_that.field0);case OneNoteEmbeddedObject_InkLineBreak() when inkLineBreak != null:
+return inkLineBreak();case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( OneNoteEmbeddedInk field0)  ink,required TResult Function( OneNoteEmbeddedInkSpace field0)  inkSpace,required TResult Function()  inkLineBreak,}) {final _that = this;
+switch (_that) {
+case OneNoteEmbeddedObject_Ink():
+return ink(_that.field0);case OneNoteEmbeddedObject_InkSpace():
+return inkSpace(_that.field0);case OneNoteEmbeddedObject_InkLineBreak():
+return inkLineBreak();}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( OneNoteEmbeddedInk field0)?  ink,TResult? Function( OneNoteEmbeddedInkSpace field0)?  inkSpace,TResult? Function()?  inkLineBreak,}) {final _that = this;
+switch (_that) {
+case OneNoteEmbeddedObject_Ink() when ink != null:
+return ink(_that.field0);case OneNoteEmbeddedObject_InkSpace() when inkSpace != null:
+return inkSpace(_that.field0);case OneNoteEmbeddedObject_InkLineBreak() when inkLineBreak != null:
+return inkLineBreak();case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+
+
+class OneNoteEmbeddedObject_Ink extends OneNoteEmbeddedObject {
+  const OneNoteEmbeddedObject_Ink(this.field0): super._();
+  
+
+ final  OneNoteEmbeddedInk field0;
+
+/// Create a copy of OneNoteEmbeddedObject
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$OneNoteEmbeddedObject_InkCopyWith<OneNoteEmbeddedObject_Ink> get copyWith => _$OneNoteEmbeddedObject_InkCopyWithImpl<OneNoteEmbeddedObject_Ink>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is OneNoteEmbeddedObject_Ink&&(identical(other.field0, field0) || other.field0 == field0));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,field0);
+
+@override
+String toString() {
+  return 'OneNoteEmbeddedObject.ink(field0: $field0)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $OneNoteEmbeddedObject_InkCopyWith<$Res> implements $OneNoteEmbeddedObjectCopyWith<$Res> {
+  factory $OneNoteEmbeddedObject_InkCopyWith(OneNoteEmbeddedObject_Ink value, $Res Function(OneNoteEmbeddedObject_Ink) _then) = _$OneNoteEmbeddedObject_InkCopyWithImpl;
+@useResult
+$Res call({
+ OneNoteEmbeddedInk field0
+});
+
+
+
+
+}
+/// @nodoc
+class _$OneNoteEmbeddedObject_InkCopyWithImpl<$Res>
+    implements $OneNoteEmbeddedObject_InkCopyWith<$Res> {
+  _$OneNoteEmbeddedObject_InkCopyWithImpl(this._self, this._then);
+
+  final OneNoteEmbeddedObject_Ink _self;
+  final $Res Function(OneNoteEmbeddedObject_Ink) _then;
+
+/// Create a copy of OneNoteEmbeddedObject
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? field0 = null,}) {
+  return _then(OneNoteEmbeddedObject_Ink(
+null == field0 ? _self.field0 : field0 // ignore: cast_nullable_to_non_nullable
+as OneNoteEmbeddedInk,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
+class OneNoteEmbeddedObject_InkSpace extends OneNoteEmbeddedObject {
+  const OneNoteEmbeddedObject_InkSpace(this.field0): super._();
+  
+
+ final  OneNoteEmbeddedInkSpace field0;
+
+/// Create a copy of OneNoteEmbeddedObject
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$OneNoteEmbeddedObject_InkSpaceCopyWith<OneNoteEmbeddedObject_InkSpace> get copyWith => _$OneNoteEmbeddedObject_InkSpaceCopyWithImpl<OneNoteEmbeddedObject_InkSpace>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is OneNoteEmbeddedObject_InkSpace&&(identical(other.field0, field0) || other.field0 == field0));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,field0);
+
+@override
+String toString() {
+  return 'OneNoteEmbeddedObject.inkSpace(field0: $field0)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $OneNoteEmbeddedObject_InkSpaceCopyWith<$Res> implements $OneNoteEmbeddedObjectCopyWith<$Res> {
+  factory $OneNoteEmbeddedObject_InkSpaceCopyWith(OneNoteEmbeddedObject_InkSpace value, $Res Function(OneNoteEmbeddedObject_InkSpace) _then) = _$OneNoteEmbeddedObject_InkSpaceCopyWithImpl;
+@useResult
+$Res call({
+ OneNoteEmbeddedInkSpace field0
+});
+
+
+
+
+}
+/// @nodoc
+class _$OneNoteEmbeddedObject_InkSpaceCopyWithImpl<$Res>
+    implements $OneNoteEmbeddedObject_InkSpaceCopyWith<$Res> {
+  _$OneNoteEmbeddedObject_InkSpaceCopyWithImpl(this._self, this._then);
+
+  final OneNoteEmbeddedObject_InkSpace _self;
+  final $Res Function(OneNoteEmbeddedObject_InkSpace) _then;
+
+/// Create a copy of OneNoteEmbeddedObject
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? field0 = null,}) {
+  return _then(OneNoteEmbeddedObject_InkSpace(
+null == field0 ? _self.field0 : field0 // ignore: cast_nullable_to_non_nullable
+as OneNoteEmbeddedInkSpace,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
+class OneNoteEmbeddedObject_InkLineBreak extends OneNoteEmbeddedObject {
+  const OneNoteEmbeddedObject_InkLineBreak(): super._();
+  
+
+
+
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is OneNoteEmbeddedObject_InkLineBreak);
+}
+
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'OneNoteEmbeddedObject.inkLineBreak()';
+}
+
+
+}
+
+
+
+
+/// @nodoc
 mixin _$OneNoteOutlineItem {
 
  Object get field0;

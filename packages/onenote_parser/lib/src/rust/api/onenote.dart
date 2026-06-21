@@ -7,7 +7,7 @@ import '../frb_generated.dart';
 import 'model.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
-// These functions are ignored because they are not marked as `pub`: `color`, `content`, `debug`, `embedded_file`, `image`, `ink_bounding_box`, `ink_point`, `ink_stroke`, `ink`, `notebook`, `outline_element`, `outline_group`, `outline_item`, `outline`, `page_content`, `page_series`, `page`, `read_all`, `rich_text`, `section_entry`, `section_group`, `section`, `table_cell`, `table_row`, `table`, `text_style`, `warnings`
+// These functions are ignored because they are not marked as `pub`: `color`, `content`, `debug`, `embedded_file`, `embedded_object`, `image`, `ink_bounding_box`, `ink_point`, `ink_stroke`, `ink`, `notebook`, `outline_element`, `outline_group`, `outline_item`, `outline`, `page_content`, `page_series`, `page`, `read_all`, `rich_text`, `section_entry`, `section_group`, `section`, `table_cell`, `table_row`, `table`, `text_style`, `warnings`
 
 /// Parse a `.onetoc2` notebook file.
 Future<OneNoteNotebook> parseNotebook({required String path}) =>

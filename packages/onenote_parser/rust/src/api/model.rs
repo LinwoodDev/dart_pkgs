@@ -109,8 +109,30 @@ pub struct OneNoteRichText {
     pub paragraph_space_after: f32,
     pub paragraph_line_spacing_exact: Option<f32>,
     pub paragraph_alignment: String,
+    pub embedded_objects: Vec<OneNoteEmbeddedObject>,
 }
 
+
+#[derive(Clone, Debug)]
+pub enum OneNoteEmbeddedObject {
+    Ink(OneNoteEmbeddedInk),
+    InkSpace(OneNoteEmbeddedInkSpace),
+    InkLineBreak,
+}
+
+#[derive(Clone, Debug)]
+pub struct OneNoteEmbeddedInk {
+    pub ink: OneNoteInk,
+
+    // This is separate from ink.bounding_box.
+    pub display_bounding_box: Option<OneNoteInkBoundingBox>,
+}
+
+#[derive(Clone, Debug)]
+pub struct OneNoteEmbeddedInkSpace {
+    pub width: f32,
+    pub height: f32,
+}
 #[derive(Clone, Debug)]
 pub struct OneNoteTextStyle {
     pub bold: bool,

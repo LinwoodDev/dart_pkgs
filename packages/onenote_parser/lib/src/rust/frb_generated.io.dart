@@ -37,6 +37,14 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  OneNoteEmbeddedInk dco_decode_box_autoadd_one_note_embedded_ink(dynamic raw);
+
+  @protected
+  OneNoteEmbeddedInkSpace dco_decode_box_autoadd_one_note_embedded_ink_space(
+    dynamic raw,
+  );
+
+  @protected
   OneNoteImage dco_decode_box_autoadd_one_note_image(dynamic raw);
 
   @protected
@@ -94,6 +102,11 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   List<OneNoteContent> dco_decode_list_one_note_content(dynamic raw);
+
+  @protected
+  List<OneNoteEmbeddedObject> dco_decode_list_one_note_embedded_object(
+    dynamic raw,
+  );
 
   @protected
   List<OneNoteInk> dco_decode_list_one_note_ink(dynamic raw);
@@ -156,6 +169,15 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   OneNoteEmbeddedFile dco_decode_one_note_embedded_file(dynamic raw);
+
+  @protected
+  OneNoteEmbeddedInk dco_decode_one_note_embedded_ink(dynamic raw);
+
+  @protected
+  OneNoteEmbeddedInkSpace dco_decode_one_note_embedded_ink_space(dynamic raw);
+
+  @protected
+  OneNoteEmbeddedObject dco_decode_one_note_embedded_object(dynamic raw);
 
   @protected
   OneNoteImage dco_decode_one_note_image(dynamic raw);
@@ -287,6 +309,16 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  OneNoteEmbeddedInk sse_decode_box_autoadd_one_note_embedded_ink(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  OneNoteEmbeddedInkSpace sse_decode_box_autoadd_one_note_embedded_ink_space(
+    SseDeserializer deserializer,
+  );
+
+  @protected
   OneNoteImage sse_decode_box_autoadd_one_note_image(
     SseDeserializer deserializer,
   );
@@ -354,6 +386,11 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   List<OneNoteContent> sse_decode_list_one_note_content(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  List<OneNoteEmbeddedObject> sse_decode_list_one_note_embedded_object(
     SseDeserializer deserializer,
   );
 
@@ -438,6 +475,21 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   OneNoteEmbeddedFile sse_decode_one_note_embedded_file(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  OneNoteEmbeddedInk sse_decode_one_note_embedded_ink(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  OneNoteEmbeddedInkSpace sse_decode_one_note_embedded_ink_space(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  OneNoteEmbeddedObject sse_decode_one_note_embedded_object(
     SseDeserializer deserializer,
   );
 
@@ -591,6 +643,18 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  void sse_encode_box_autoadd_one_note_embedded_ink(
+    OneNoteEmbeddedInk self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_box_autoadd_one_note_embedded_ink_space(
+    OneNoteEmbeddedInkSpace self,
+    SseSerializer serializer,
+  );
+
+  @protected
   void sse_encode_box_autoadd_one_note_image(
     OneNoteImage self,
     SseSerializer serializer,
@@ -671,6 +735,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   @protected
   void sse_encode_list_one_note_content(
     List<OneNoteContent> self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_list_one_note_embedded_object(
+    List<OneNoteEmbeddedObject> self,
     SseSerializer serializer,
   );
 
@@ -785,6 +855,24 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   @protected
   void sse_encode_one_note_embedded_file(
     OneNoteEmbeddedFile self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_one_note_embedded_ink(
+    OneNoteEmbeddedInk self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_one_note_embedded_ink_space(
+    OneNoteEmbeddedInkSpace self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_one_note_embedded_object(
+    OneNoteEmbeddedObject self,
     SseSerializer serializer,
   );
 

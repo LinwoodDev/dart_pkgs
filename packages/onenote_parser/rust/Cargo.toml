@@ -1,0 +1,18 @@
+[package]
+name = "rust_lib_onenote_parser"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib", "staticlib"]
+
+[dependencies]
+flutter_rust_bridge = "=2.13.0-beta.2"
+onenote_parser = { git = "https://github.com/CodeDoctorDE/onenote.rs", rev = "99c53cc856f7f93b41024eeb75b10a5b1be25c03", default-features = false, features = ["onepkg"] }
+typed-path = "0.12.3"
+
+[target.'cfg(not(target_family = "wasm"))'.dependencies]
+onenote_parser = { git = "https://github.com/CodeDoctorDE/onenote.rs", rev = "99c53cc856f7f93b41024eeb75b10a5b1be25c03", default-features = false, features = ["native-fs", "onepkg"] }
+
+[lints.rust]
+unexpected_cfgs = { level = "warn", check-cfg = ['cfg(frb_expand)'] }

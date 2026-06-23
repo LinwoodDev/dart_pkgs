@@ -15,6 +15,7 @@ Use the packages individually via git dependencies.
 - [lw_file_system](packages/lw_file_system) - Cross‑platform file system abstraction (Flutter)
 - [lw_file_system_api](packages/lw_file_system_api) - Pure Dart API for lw_file_system
 - [consoler](packages/consoler) - Console helpers & structured output (Dart)
+- [onenote_parser](packages/onenote_parser) - OneNote file parser for Dart and Flutter
 
 Each package has its own README with more detailed usage.
 

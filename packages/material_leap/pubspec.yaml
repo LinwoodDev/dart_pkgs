@@ -14,7 +14,10 @@ dependencies:
   flutter:
     sdk: flutter
   intl: any
-  phosphor_flutter: ^2.1.0
+  phosphor_flutter:
+    git:
+      url: https://github.com/CodeDoctorDE/phosphor-flutter.git
+      ref: f7479596c67239e755ab1fe3bade84895bfd6222
   dart_leap:
     git:
       url: https://github.com/LinwoodDev/dart_pkgs.git

@@ -28,7 +28,7 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
-  file_picker: ^10.3.10
+  file_picker: ^11.0.2
   flutter:
     sdk: flutter
 

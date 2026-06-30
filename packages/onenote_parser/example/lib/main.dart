@@ -36,7 +36,7 @@ class PickedOneNoteFile {
 }
 
 Future<PickedOneNoteFile?> pickOneNoteFile() async {
-  final result = await FilePicker.platform.pickFiles(
+  final result = await FilePicker.pickFiles(
     type: FileType.custom,
     allowedExtensions: const ['one', 'onepkg'],
     withData: true,

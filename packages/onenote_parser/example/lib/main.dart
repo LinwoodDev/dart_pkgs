@@ -39,10 +39,9 @@ Future<PickedOneNoteFile?> pickOneNoteFile() async {
   final result = await FilePicker.pickFiles(
     type: FileType.custom,
     allowedExtensions: const ['one', 'onepkg'],
-    withData: true,
   );
   final file = result?.files.single;
-  final bytes = file?.bytes;
+  final bytes = await file?.readAsBytes();
   if (file == null || bytes == null) return null;
   return PickedOneNoteFile(name: file.name, bytes: bytes);
 }

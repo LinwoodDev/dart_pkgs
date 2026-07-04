@@ -31,7 +31,6 @@ jobs:
           - packages/networker/networker_crypto
           - packages/networker/networker_rtc
           - packages/networker/networker_socket
-          - packages/networker/networker_s5
     defaults:
       run:
         working-directory: ${{ matrix.project }}

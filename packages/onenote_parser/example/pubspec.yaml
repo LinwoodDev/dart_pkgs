@@ -21,6 +21,8 @@ version: 1.0.0+1
 environment:
   sdk: ^3.12.2
 
+resolution: workspace
+
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
 # consider running `flutter pub upgrade --major-versions`. Alternatively,
@@ -28,7 +30,7 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
-  file_picker: ^11.0.2
+  file_picker: ">=11.0.2 <13.0.0"
   flutter:
     sdk: flutter
 

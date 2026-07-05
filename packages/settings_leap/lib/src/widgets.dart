@@ -219,7 +219,7 @@ class _SettingsLeapViewState<S> extends State<SettingsLeapView<S>> {
         builder: (context) => SettingsLeapGeneratedPage<S>(
           page: page,
           state: widget.state,
-          inView: true,
+          inView: false,
           cardMargin: widget.cardMargin,
           cardPadding: widget.cardPadding,
           sectionTitlePadding: widget.sectionTitlePadding,

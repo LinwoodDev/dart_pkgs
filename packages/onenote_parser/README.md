@@ -1,7 +1,6 @@
 # onenote_parser
 
-Dart and Flutter bindings for [onenote.rs](https://github.com/msiemens/onenote.rs),
-built with `flutter_rust_bridge` and Native Assets.
+> Dart and Flutter bindings for [onenote.rs](https://github.com/msiemens/onenote.rs), built with `flutter_rust_bridge` and Native Assets.
 
 ## Supported inputs
 

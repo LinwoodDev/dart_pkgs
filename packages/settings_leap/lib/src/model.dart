@@ -63,7 +63,6 @@ sealed class SettingsLeapNode<S> {
 
 final class SettingsLeapPage<S> extends SettingsLeapNode<S> {
   const SettingsLeapPage({
-    required this.id,
     required super.displayName,
     super.description,
     super.descriptionBuilder,
@@ -79,7 +78,6 @@ final class SettingsLeapPage<S> extends SettingsLeapNode<S> {
     this.builder,
   });
 
-  final String id;
   final Map<String, SettingsLeapSection<S>> sections;
   final Map<String, SettingsLeapPage<S>> children;
   final SettingsLeapPageActionsBuilder<S>? actionsBuilder;
@@ -144,7 +142,6 @@ sealed class SettingsLeapSetting<S> extends SettingsLeapNode<S> {
 
 final class SettingsLeapBoolSetting<S> extends SettingsLeapSetting<S> {
   const SettingsLeapBoolSetting({
-    super.id,
     required super.displayName,
     required this.read,
     required this.write,
@@ -175,7 +172,6 @@ final class SettingsLeapBoolSetting<S> extends SettingsLeapSetting<S> {
 
 final class SettingsLeapEnumSetting<S, V> extends SettingsLeapSetting<S> {
   const SettingsLeapEnumSetting({
-    super.id,
     required super.displayName,
     required this.values,
     required this.read,
@@ -235,7 +231,6 @@ final class SettingsLeapEnumSetting<S, V> extends SettingsLeapSetting<S> {
 
 final class SettingsLeapActionSetting<S> extends SettingsLeapSetting<S> {
   const SettingsLeapActionSetting({
-    super.id,
     required super.displayName,
     required this.onTap,
     super.description,
@@ -263,7 +258,6 @@ final class SettingsLeapActionSetting<S> extends SettingsLeapSetting<S> {
 
 final class SettingsLeapCustomSetting<S> extends SettingsLeapSetting<S> {
   const SettingsLeapCustomSetting({
-    super.id,
     required super.displayName,
     required this.builder,
     super.description,

@@ -16,6 +16,7 @@ Use the packages individually via git dependencies.
 - [lw_file_system_api](packages/lw_file_system_api) - Pure Dart API for lw_file_system
 - [consoler](packages/consoler) - Console helpers & structured output (Dart)
 - [onenote_parser](packages/onenote_parser) - OneNote file parser for Dart and Flutter
+- [settings_leap](packages/settings_leap) - Flutter settings framework for building searchable, expandable settings views
 
 Each package has its own README with more detailed usage.
 

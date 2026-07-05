@@ -15,9 +15,8 @@ void main() {
   ) async {
     const tree = SettingsLeapTree<Object?>({
       'inputs': SettingsLeapPage(
-        id: 'inputs',
         displayName: _inputs,
-        children: {'mouse': SettingsLeapPage(id: 'mouse', displayName: _mouse)},
+        children: {'mouse': SettingsLeapPage(displayName: _mouse)},
       ),
     });
 
@@ -41,12 +40,10 @@ void main() {
   ) async {
     const tree = SettingsLeapTree<Object?>({
       'nested': SettingsLeapPage(
-        id: 'nested',
         displayName: _persistence,
         keywords: ['behavior'],
       ),
       'top': SettingsLeapPage(
-        id: 'top',
         displayName: _behavior,
         keywords: ['persistence'],
       ),
@@ -72,7 +69,6 @@ void main() {
   ) async {
     const tree = SettingsLeapTree<Object?>({
       'personalization': SettingsLeapPage(
-        id: 'personalization',
         displayName: _appearance,
         sections: {
           'theme': SettingsLeapSection(

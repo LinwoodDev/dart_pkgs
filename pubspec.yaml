@@ -22,6 +22,7 @@ workspace:
   - packages/networker/networker
   - packages/networker/networker_crypto
   - packages/networker/networker_rtc
+  - packages/networker/networker_rtc/example
   - packages/networker/networker_socket
   - packages/onenote_parser
   - packages/onenote_parser/example

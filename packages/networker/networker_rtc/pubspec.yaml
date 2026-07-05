@@ -16,6 +16,7 @@ dependencies:
       path: packages/networker/networker
       ref: 4e2219e6b447edbd793a692116e41362ea0954c9
   flutter_webrtc: ^1.4.1
+  meta: ^1.16.0
 
 dev_dependencies:
   lints: ^6.0.0

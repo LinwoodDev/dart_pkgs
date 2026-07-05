@@ -1,0 +1,24 @@
+name: networker_rtc_example
+description: Demonstrates peer-to-peer messaging with networker_rtc.
+publish_to: none
+
+environment:
+  sdk: ^3.8.0
+
+resolution: workspace
+
+dependencies:
+  flutter:
+    sdk: flutter
+  networker:
+    path: ../../networker
+  networker_rtc:
+    path: ../
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true

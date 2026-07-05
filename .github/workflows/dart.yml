@@ -31,6 +31,7 @@ jobs:
           - packages/networker/networker_crypto
           - packages/networker/networker_rtc
           - packages/networker/networker_socket
+          - packages/networker/settings_leap
     defaults:
       run:
         working-directory: ${{ matrix.project }}

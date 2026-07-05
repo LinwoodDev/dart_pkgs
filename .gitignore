@@ -1,3 +1,4 @@
 .vscode
 *.iml
 .idea
+.dart_tool/

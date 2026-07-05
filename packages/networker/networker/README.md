@@ -13,4 +13,3 @@ Libraries:
 *Uncompleted:*
 
 * [`networker_rpc`] - A rpc implementation of the networker API.
-* [`networker_s5`] - A s5 implementation of the networker API.

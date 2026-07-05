@@ -31,7 +31,7 @@ jobs:
           - packages/networker/networker_crypto
           - packages/networker/networker_rtc
           - packages/networker/networker_socket
-          - packages/networker/networker_s5
+          - packages/networker/settings_leap
     defaults:
       run:
         working-directory: ${{ matrix.project }}
@@ -40,7 +40,7 @@ jobs:
       - uses: subosito/flutter-action@v2.23.0
         with:
           channel: stable
-          flutter-version: 3.44.0
+          flutter-version: 3.44.4
       - name: Install dependencies
         run: dart pub get
       - name: Verify formatting

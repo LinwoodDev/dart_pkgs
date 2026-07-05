@@ -1,0 +1,20 @@
+name: settings_leap
+description: Flutter helpers for building searchable, expandable settings views.
+version: 0.1.0
+repository: https://github.com/LinwoodDev/dart_pkgs
+publish_to: none
+
+environment:
+  sdk: '>=3.11.0 <4.0.0'
+  flutter: '>=1.17.0'
+
+resolution: workspace
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_lints: ^6.0.0
+  flutter_test:
+    sdk: flutter

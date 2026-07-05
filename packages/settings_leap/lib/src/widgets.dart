@@ -3,6 +3,14 @@ import 'package:flutter/material.dart';
 import 'model.dart';
 import 'search.dart';
 
+typedef SettingsLeapPageOpener<S> =
+    void Function(
+      BuildContext context,
+      String id,
+      SettingsLeapPage<S> page,
+      String? focusedId,
+    );
+
 class SettingsLeapView<S> extends StatefulWidget {
   const SettingsLeapView({
     super.key,
@@ -12,6 +20,7 @@ class SettingsLeapView<S> extends StatefulWidget {
     this.searchHint = defaultSettingsLeapSearchHint,
     this.selectedId,
     this.onSelected,
+    this.onOpenPage,
     this.isDialog = false,
     this.closeButton,
     this.compactWidth = 600,
@@ -34,6 +43,7 @@ class SettingsLeapView<S> extends StatefulWidget {
   final SettingsLeapDisplayName searchHint;
   final String? selectedId;
   final ValueChanged<String>? onSelected;
+  final SettingsLeapPageOpener<S>? onOpenPage;
   final bool isDialog;
   final Widget? closeButton;
   final double compactWidth;
@@ -51,6 +61,7 @@ class SettingsLeapView<S> extends StatefulWidget {
 class _SettingsLeapViewState<S> extends State<SettingsLeapView<S>> {
   final _searchController = TextEditingController();
   String? _selectedId;
+  String? _focusedId;
 
   @override
   void initState() {
@@ -81,13 +92,22 @@ class _SettingsLeapViewState<S> extends State<SettingsLeapView<S>> {
     final rootEntries = widget.tree.pages.entries
         .where((entry) => entry.value.isEnabled(context, widget.state))
         .toList();
-    final selectedRootIndex = _selectedId == null
+    final selectedRootId = _selectedId?.split('.').first;
+    final selectedRootIndex = selectedRootId == null
         ? 0
-        : rootEntries.indexWhere((entry) => entry.key == _selectedId);
-    final selectedEntry = rootEntries.elementAtOrNull(
+        : rootEntries.indexWhere((entry) => entry.key == selectedRootId);
+    final selectedRootEntry = rootEntries.elementAtOrNull(
       selectedRootIndex < 0 ? 0 : selectedRootIndex,
     );
-    final selectedPage = selectedEntry?.value;
+    final selectedPageId = _selectedId ?? selectedRootEntry?.key;
+    final selectedPage = selectedPageId == null
+        ? null
+        : widget.tree.pageById(selectedPageId) ?? selectedRootEntry?.value;
+    final resolvedPageId = selectedPage == null
+        ? null
+        : widget.tree.pageById(selectedPageId!) == null
+        ? selectedRootEntry?.key
+        : selectedPageId;
     final closeButton = widget.closeButton ?? _buildCloseButton(context);
     final emptySearch = widget.emptySearch ?? _buildEmptySearch(context);
 
@@ -113,7 +133,7 @@ class _SettingsLeapViewState<S> extends State<SettingsLeapView<S>> {
                 for (final entry in rootEntries)
                   SettingsLeapPageTile(
                     page: entry.value,
-                    onTap: () => _openMobilePage(entry.key, entry.value),
+                    onTap: () => _openPage(entry.key, entry.value),
                   ),
               ],
             )
@@ -123,9 +143,10 @@ class _SettingsLeapViewState<S> extends State<SettingsLeapView<S>> {
               shrinkWrap: true,
               empty: emptySearch,
               onTap: (result) {
-                final rootId = result.id.split('.').first;
-                final page = widget.tree.pages[rootId];
-                if (page != null) _openMobilePage(rootId, page);
+                final page = widget.tree.pageById(result.pageId);
+                if (page != null) {
+                  _openPage(result.pageId, page, result.focusId);
+                }
               },
             ),
           const SizedBox(height: 16),
@@ -179,7 +200,7 @@ class _SettingsLeapViewState<S> extends State<SettingsLeapView<S>> {
                 empty: emptySearch,
                 onTap: (result) {
                   _searchController.clear();
-                  _select(result.id.split('.').first);
+                  _select(result.pageId, focusedId: result.focusId);
                 },
               ),
           ],
@@ -189,7 +210,10 @@ class _SettingsLeapViewState<S> extends State<SettingsLeapView<S>> {
               ? const SizedBox.shrink()
               : SettingsLeapGeneratedPage<S>(
                   page: selectedPage,
+                  pageId: resolvedPageId,
                   state: widget.state,
+                  focusedId: _focusedId,
+                  appBarBuilder: widget.tree.appBarBuilder,
                   inView: true,
                   showAppBar: false,
                   cardMargin: widget.cardMargin,
@@ -201,7 +225,7 @@ class _SettingsLeapViewState<S> extends State<SettingsLeapView<S>> {
     );
   }
 
-  void _select(String id, {bool mobile = false}) {
+  void _select(String id, {String? focusedId, bool mobile = false}) {
     widget.onSelected?.call(id);
     if (mobile) {
       Navigator.of(context).maybePop();
@@ -209,16 +233,25 @@ class _SettingsLeapViewState<S> extends State<SettingsLeapView<S>> {
     }
     setState(() {
       _selectedId = id;
+      _focusedId = focusedId;
     });
   }
 
-  void _openMobilePage(String id, SettingsLeapPage<S> page) {
+  void _openPage(String id, SettingsLeapPage<S> page, [String? focusedId]) {
     widget.onSelected?.call(id);
+    final onOpenPage = widget.onOpenPage;
+    if (onOpenPage != null) {
+      onOpenPage(context, id, page, focusedId);
+      return;
+    }
     Navigator.of(context).push(
       MaterialPageRoute<void>(
         builder: (context) => SettingsLeapGeneratedPage<S>(
           page: page,
+          pageId: id,
           state: widget.state,
+          focusedId: focusedId,
+          appBarBuilder: widget.tree.appBarBuilder,
           inView: false,
           cardMargin: widget.cardMargin,
           cardPadding: widget.cardPadding,
@@ -249,6 +282,9 @@ class SettingsLeapGeneratedPage<S> extends StatelessWidget {
     super.key,
     required this.page,
     required this.state,
+    this.pageId,
+    this.focusedId,
+    this.appBarBuilder,
     this.inView = false,
     this.showAppBar = true,
     this.cardMargin = const EdgeInsets.all(8),
@@ -263,6 +299,9 @@ class SettingsLeapGeneratedPage<S> extends StatelessWidget {
 
   final SettingsLeapPage<S> page;
   final S state;
+  final String? pageId;
+  final String? focusedId;
+  final SettingsLeapAppBarBuilder<S>? appBarBuilder;
   final bool inView;
   final bool showAppBar;
   final EdgeInsetsGeometry cardMargin;
@@ -276,9 +315,10 @@ class SettingsLeapGeneratedPage<S> extends StatelessWidget {
       return customBuilder(context, state, inView);
     }
     final actions = page.actionsBuilder?.call(context, state);
-    final sections = page.sections.values;
-    final fillRemaining = sections.where((section) => section.fillRemaining);
-    final appBar = page.appBarBuilder?.call(
+    final sections = page.sections.entries;
+    final fillRemaining = sections.where((entry) => entry.value.fillRemaining);
+    final customAppBarBuilder = page.appBarBuilder ?? appBarBuilder;
+    final appBar = customAppBarBuilder?.call(
       context,
       state,
       inView,
@@ -302,7 +342,13 @@ class SettingsLeapGeneratedPage<S> extends StatelessWidget {
           ? ListView(children: [_buildSections(context, sections)])
           : Column(
               children: [
-                Expanded(child: _buildSection(context, fillRemaining.single)),
+                Expanded(
+                  child: _buildSection(
+                    context,
+                    fillRemaining.single.key,
+                    fillRemaining.single.value,
+                  ),
+                ),
               ],
             ),
     );
@@ -310,27 +356,40 @@ class SettingsLeapGeneratedPage<S> extends StatelessWidget {
 
   Widget _buildSections(
     BuildContext context,
-    Iterable<SettingsLeapSection<S>> sections,
+    Iterable<MapEntry<String, SettingsLeapSection<S>>> sections,
   ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        for (final section in sections) _buildSection(context, section),
+        for (final entry in sections)
+          _buildSection(context, entry.key, entry.value),
       ],
     );
   }
 
-  Widget _buildSection(BuildContext context, SettingsLeapSection<S> section) {
+  Widget _buildSection(
+    BuildContext context,
+    String sectionId,
+    SettingsLeapSection<S> section,
+  ) {
     final builder = section.builder;
     if (builder != null) {
       if (!section.wrapBuilder) {
-        return builder(context, state, _buildSectionChild(context, section));
+        return builder(
+          context,
+          state,
+          _buildSectionChild(context, sectionId, section),
+        );
       }
       return Card(
         margin: cardMargin,
         child: Padding(
           padding: cardPadding,
-          child: builder(context, state, _buildSectionChild(context, section)),
+          child: builder(
+            context,
+            state,
+            _buildSectionChild(context, sectionId, section),
+          ),
         ),
       );
     }
@@ -338,13 +397,14 @@ class SettingsLeapGeneratedPage<S> extends StatelessWidget {
       margin: cardMargin,
       child: Padding(
         padding: cardPadding,
-        child: _buildSectionChild(context, section),
+        child: _buildSectionChild(context, sectionId, section),
       ),
     );
   }
 
   Widget _buildSectionChild(
     BuildContext context,
+    String sectionId,
     SettingsLeapSection<S> section,
   ) {
     return Column(
@@ -364,27 +424,92 @@ class SettingsLeapGeneratedPage<S> extends StatelessWidget {
           section.headerBuilder!(context, state),
           const SizedBox(height: 16),
         ],
-        for (final setting in section.settings)
+        for (final (index, setting) in section.settings.indexed)
           if (setting.isEnabled(context, state))
-            SettingsLeapSettingTile<S>(setting: setting, state: state),
+            SettingsLeapSettingTile<S>(
+              setting: setting,
+              state: state,
+              focused: focusedId == _settingId(sectionId, setting, index),
+            ),
       ],
     );
   }
+
+  String _settingId(
+    String sectionId,
+    SettingsLeapSetting<S> setting,
+    int index,
+  ) {
+    final pagePrefix = pageId;
+    final settingId = setting.id ?? 'setting$index';
+    if (pagePrefix == null) return '$sectionId.$settingId';
+    return '$pagePrefix.$sectionId.$settingId';
+  }
 }
 
-class SettingsLeapSettingTile<S> extends StatelessWidget {
+class SettingsLeapSettingTile<S> extends StatefulWidget {
   const SettingsLeapSettingTile({
     super.key,
     required this.setting,
     required this.state,
+    this.focused = false,
   });
 
   final SettingsLeapSetting<S> setting;
   final S state;
+  final bool focused;
+
+  @override
+  State<SettingsLeapSettingTile<S>> createState() =>
+      _SettingsLeapSettingTileState<S>();
+}
+
+class _SettingsLeapSettingTileState<S>
+    extends State<SettingsLeapSettingTile<S>> {
+  final _focusNode = FocusNode();
+
+  @override
+  void initState() {
+    super.initState();
+    _focusIfNeeded();
+  }
+
+  @override
+  void didUpdateWidget(covariant SettingsLeapSettingTile<S> oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (!oldWidget.focused && widget.focused) {
+      _focusIfNeeded();
+    }
+  }
+
+  @override
+  void dispose() {
+    _focusNode.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return setting.buildTile(context, state);
+    return widget.setting.buildTile(
+      context,
+      widget.state,
+      focusNode: _focusNode,
+      autofocus: widget.focused,
+      selected: widget.focused,
+    );
+  }
+
+  void _focusIfNeeded() {
+    if (!widget.focused) return;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      _focusNode.requestFocus();
+      Scrollable.ensureVisible(
+        context,
+        duration: const Duration(milliseconds: 250),
+        alignment: 0.5,
+      );
+    });
   }
 }
 

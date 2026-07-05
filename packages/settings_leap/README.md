@@ -7,7 +7,7 @@
 * 🚀 Model settings as a tree of pages, sections, and entries
 * 🔎 Search pages, sections, descriptions, and custom keywords
 * 🎨 Keep full control over localization, icons, actions, and custom page bodies
-* 🧩 Use built-in boolean, enum, action, and custom settings
+* 🧩 Use built-in boolean, enum, list, action, and custom settings
 * 📱 Responsive Material layout for compact and wide screens
 
 ## Getting started
@@ -48,7 +48,6 @@ class SettingsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final tree = SettingsLeapTree<AppSettings>({
       'general': SettingsLeapPage(
-        id: 'general',
         displayName: (context) => 'General',
         icon: Icons.settings,
         sections: {
@@ -83,11 +82,17 @@ class SettingsPage extends StatelessWidget {
                   SyncMode.manual => 'Manual',
                   SyncMode.automatic => 'Automatic',
                 },
+                valueDescription: (context, value) => switch (value) {
+                  SyncMode.off => 'Never sync automatically.',
+                  SyncMode.manual => 'Sync only when requested.',
+                  SyncMode.automatic => 'Keep data synced in the background.',
+                },
               ),
             ],
           ),
         },
       ),
+    }, appBarBuilder: _buildSettingsAppBar);
     });
 
     return SettingsLeapView(
@@ -97,6 +102,20 @@ class SettingsPage extends StatelessWidget {
       searchHint: (context) => 'Search settings',
     );
   }
+}
+
+PreferredSizeWidget _buildSettingsAppBar(
+  BuildContext context,
+  AppSettings settings,
+  bool inView,
+  Widget title,
+  List<Widget>? actions,
+) {
+  return AppBar(
+    title: title,
+    actions: actions,
+    automaticallyImplyLeading: !inView,
+  );
 }
 ```
 
@@ -114,9 +133,64 @@ SettingsLeapActionSetting<AppSettings>(
 );
 ```
 
+## Dynamic options
+
+Use `SettingsLeapListSetting` when options come from dynamic data with stable ids and display names.
+
+```dart
+SettingsLeapListSetting<AppSettings, String>(
+  id: 'workspace',
+  displayName: (context) => 'Workspace',
+  options: [
+    SettingsLeapOption(
+      id: 'personal',
+      value: 'personal',
+      displayName: (context) => 'Personal',
+      description: 'Only visible to you.',
+    ),
+    SettingsLeapOption(
+      id: 'team',
+      value: 'team',
+      displayName: (context) => 'Team',
+      description: 'Shared with collaborators.',
+    ),
+  ],
+  read: (state) => 'personal',
+  write: (context, value) {
+    // Update your app state here.
+  },
+);
+```
+
+## Routing
+
+`SettingsLeapView` can delegate page opening to your app router without depending on a routing package.
+
+```dart
+SettingsLeapView(
+  tree: tree,
+  state: settings,
+  onOpenPage: (context, id, page, focusedId) {
+    // For example with go_router:
+    // context.go('/settings/$id', extra: focusedId);
+  },
+);
+```
+
+When rendering routed pages yourself, pass the same id and optional focus target to `SettingsLeapGeneratedPage`.
+
+```dart
+SettingsLeapGeneratedPage(
+  page: tree.pages[id]!,
+  pageId: id,
+  focusedId: focusedId,
+  state: settings,
+);
+```
+
 ## Search
 
-`SettingsLeapTree` can also be searched manually. Results include the matched node, its id, score, and breadcrumb.
+`SettingsLeapTree` can also be searched manually. Results include the matched node, its id, score, breadcrumb, and optional `focusId`.
 
 ```dart
 final results = tree.search(context, settings, 'sync');

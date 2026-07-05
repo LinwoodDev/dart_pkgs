@@ -137,11 +137,23 @@ sealed class SettingsLeapSetting<S> extends SettingsLeapNode<S> {
 
   final String? id;
 
-  Widget buildTile(BuildContext context, S state);
+  Iterable<SettingsLeapNode<S>> buildOptionSearchNodes(
+    BuildContext context,
+    S state,
+  ) sync* {}
+
+  Widget buildTile(
+    BuildContext context,
+    S state, {
+    FocusNode? focusNode,
+    bool autofocus = false,
+    bool selected = false,
+  });
 }
 
 final class SettingsLeapBoolSetting<S> extends SettingsLeapSetting<S> {
   const SettingsLeapBoolSetting({
+    super.id,
     required super.displayName,
     required this.read,
     required this.write,
@@ -157,7 +169,13 @@ final class SettingsLeapBoolSetting<S> extends SettingsLeapSetting<S> {
   final SettingsLeapStateWriter<bool> write;
 
   @override
-  Widget buildTile(BuildContext context, S state) {
+  Widget buildTile(
+    BuildContext context,
+    S state, {
+    FocusNode? focusNode,
+    bool autofocus = false,
+    bool selected = false,
+  }) {
     final description = getDescription(context);
 
     return SwitchListTile(
@@ -165,18 +183,52 @@ final class SettingsLeapBoolSetting<S> extends SettingsLeapSetting<S> {
       title: Text(getDisplayName(context)),
       subtitle: description == null ? null : Text(description),
       value: read(state),
+      focusNode: focusNode,
+      autofocus: autofocus,
+      selected: selected,
       onChanged: (value) => write(context, value),
     );
   }
 }
 
-final class SettingsLeapEnumSetting<S, V> extends SettingsLeapSetting<S> {
-  const SettingsLeapEnumSetting({
+final class SettingsLeapOption<V> {
+  const SettingsLeapOption({
+    required this.id,
+    required this.value,
+    required this.displayName,
+    this.description,
+    this.descriptionBuilder,
+    this.keywords = const [],
+    this.keywordsBuilder,
+  });
+
+  final String id;
+  final V value;
+  final SettingsLeapDisplayName displayName;
+  final String? description;
+  final SettingsLeapDisplayName? descriptionBuilder;
+  final List<String> keywords;
+  final SettingsLeapKeywordsBuilder? keywordsBuilder;
+
+  String getDisplayName(BuildContext context) => displayName(context);
+
+  String? getDescription(BuildContext context) =>
+      descriptionBuilder?.call(context) ?? description;
+
+  Iterable<String> getKeywords(BuildContext context) sync* {
+    yield* keywords;
+    yield* keywordsBuilder?.call(context) ?? const [];
+  }
+}
+
+final class SettingsLeapListSetting<S, V> extends SettingsLeapSetting<S> {
+  const SettingsLeapListSetting({
+    super.id,
     required super.displayName,
-    required this.values,
+    required this.options,
     required this.read,
     required this.write,
-    required this.valueLabel,
+    this.optionEquals,
     super.description,
     super.descriptionBuilder,
     super.icon,
@@ -185,19 +237,43 @@ final class SettingsLeapEnumSetting<S, V> extends SettingsLeapSetting<S> {
     super.enabled,
   });
 
-  final List<V> values;
+  final List<SettingsLeapOption<V>> options;
   final SettingsLeapStateReader<S, V> read;
   final SettingsLeapStateWriter<V> write;
-  final String Function(BuildContext context, V value) valueLabel;
+  final bool Function(V a, V b)? optionEquals;
 
   @override
-  Widget buildTile(BuildContext context, S state) {
+  Iterable<SettingsLeapNode<S>> buildOptionSearchNodes(
+    BuildContext context,
+    S state,
+  ) sync* {
+    for (final option in options) {
+      yield SettingsLeapOptionSearchNode<S, V>(option: option);
+    }
+  }
+
+  @override
+  Widget buildTile(
+    BuildContext context,
+    S state, {
+    FocusNode? focusNode,
+    bool autofocus = false,
+    bool selected = false,
+  }) {
     final currentValue = read(state);
+    final currentOption = _optionForValue(currentValue);
+    final description = getDescription(context);
 
     return ListTile(
       leading: icon == null ? null : Icon(icon),
       title: Text(getDisplayName(context)),
-      subtitle: Text(valueLabel(context, currentValue)),
+      subtitle: description == null ? null : Text(description),
+      trailing: currentOption == null
+          ? null
+          : Text(currentOption.getDisplayName(context)),
+      focusNode: focusNode,
+      autofocus: autofocus,
+      selected: selected,
       onTap: () => _openSheet(context, state),
     );
   }
@@ -213,12 +289,16 @@ final class SettingsLeapEnumSetting<S, V> extends SettingsLeapSetting<S> {
           shrinkWrap: true,
           children: [
             ListTile(title: Text(getDisplayName(context))),
-            for (final value in values)
+            for (final option in options)
               ListTile(
-                title: Text(valueLabel(context, value)),
-                selected: value == currentValue,
+                title: Text(option.getDisplayName(context)),
+                subtitle: switch (option.getDescription(context)) {
+                  final description? => Text(description),
+                  null => null,
+                },
+                selected: _isSelected(option.value, currentValue),
                 onTap: () {
-                  write(context, value);
+                  write(context, option.value);
                   Navigator.of(context).pop();
                 },
               ),
@@ -227,10 +307,97 @@ final class SettingsLeapEnumSetting<S, V> extends SettingsLeapSetting<S> {
       ),
     );
   }
+
+  SettingsLeapOption<V>? _optionForValue(V value) {
+    for (final option in options) {
+      if (_isSelected(option.value, value)) return option;
+    }
+    return null;
+  }
+
+  bool _isSelected(V a, V b) => optionEquals?.call(a, b) ?? a == b;
+}
+
+final class SettingsLeapEnumSetting<S, V> extends SettingsLeapSetting<S> {
+  const SettingsLeapEnumSetting({
+    super.id,
+    required super.displayName,
+    required this.values,
+    required this.read,
+    required this.write,
+    required this.valueLabel,
+    this.valueDescription,
+    super.description,
+    super.descriptionBuilder,
+    super.icon,
+    super.keywords,
+    super.keywordsBuilder,
+    super.enabled,
+  });
+
+  final List<V> values;
+  final SettingsLeapStateReader<S, V> read;
+  final SettingsLeapStateWriter<V> write;
+  final String Function(BuildContext context, V value) valueLabel;
+  final String Function(BuildContext context, V value)? valueDescription;
+
+  @override
+  Iterable<SettingsLeapNode<S>> buildOptionSearchNodes(
+    BuildContext context,
+    S state,
+  ) sync* {
+    for (final value in values) {
+      yield SettingsLeapOptionSearchNode<S, V>(option: _buildOption(value));
+    }
+  }
+
+  @override
+  Widget buildTile(
+    BuildContext context,
+    S state, {
+    FocusNode? focusNode,
+    bool autofocus = false,
+    bool selected = false,
+  }) {
+    return _asListSetting().buildTile(
+      context,
+      state,
+      focusNode: focusNode,
+      autofocus: autofocus,
+      selected: selected,
+    );
+  }
+
+  SettingsLeapListSetting<S, V> _asListSetting() {
+    return SettingsLeapListSetting<S, V>(
+      displayName: displayName,
+      description: description,
+      descriptionBuilder: descriptionBuilder,
+      icon: icon,
+      keywords: keywords,
+      keywordsBuilder: keywordsBuilder,
+      enabled: enabled,
+      options: [for (final value in values) _buildOption(value)],
+      read: read,
+      write: write,
+    );
+  }
+
+  SettingsLeapOption<V> _buildOption(V value) {
+    return SettingsLeapOption<V>(
+      id: value is Enum ? value.name : value.toString(),
+      value: value,
+      displayName: (context) => valueLabel(context, value),
+      descriptionBuilder: valueDescription == null
+          ? null
+          : (context) => valueDescription!(context, value),
+    );
+  }
 }
 
 final class SettingsLeapActionSetting<S> extends SettingsLeapSetting<S> {
   const SettingsLeapActionSetting({
+    super.id,
     required super.displayName,
     required this.onTap,
     super.description,
@@ -244,13 +411,22 @@ final class SettingsLeapActionSetting<S> extends SettingsLeapSetting<S> {
   final void Function(BuildContext context) onTap;
 
   @override
-  Widget buildTile(BuildContext context, S state) {
+  Widget buildTile(
+    BuildContext context,
+    S state, {
+    FocusNode? focusNode,
+    bool autofocus = false,
+    bool selected = false,
+  }) {
     final description = getDescription(context);
 
     return ListTile(
       leading: icon == null ? null : Icon(icon),
       title: Text(getDisplayName(context)),
       subtitle: description == null ? null : Text(description),
+      focusNode: focusNode,
+      autofocus: autofocus,
+      selected: selected,
       onTap: () => onTap(context),
     );
   }
@@ -258,6 +434,7 @@ final class SettingsLeapActionSetting<S> extends SettingsLeapSetting<S> {
 
 final class SettingsLeapCustomSetting<S> extends SettingsLeapSetting<S> {
   const SettingsLeapCustomSetting({
+    super.id,
     required super.displayName,
     required this.builder,
     super.description,
@@ -271,9 +448,29 @@ final class SettingsLeapCustomSetting<S> extends SettingsLeapSetting<S> {
   final SettingsLeapCustomSettingBuilder<S> builder;
 
   @override
-  Widget buildTile(BuildContext context, S state) {
+  Widget buildTile(
+    BuildContext context,
+    S state, {
+    FocusNode? focusNode,
+    bool autofocus = false,
+    bool selected = false,
+  }) {
     return builder(context, state);
   }
+}
+
+final class SettingsLeapOptionSearchNode<S, V> extends SettingsLeapNode<S> {
+  SettingsLeapOptionSearchNode({required SettingsLeapOption<V> option})
+    : optionId = option.id,
+      super(
+        displayName: option.displayName,
+        description: option.description,
+        descriptionBuilder: option.descriptionBuilder,
+        keywords: option.keywords,
+        keywordsBuilder: option.keywordsBuilder,
+      );
+
+  final String optionId;
 }
 
 final class SettingsLeapSectionSearchNode<S> extends SettingsLeapNode<S> {
@@ -294,12 +491,16 @@ final class SettingsLeapSearchResult<S> {
     required this.node,
     required this.parents,
     required this.score,
+    required this.pageId,
+    this.focusId,
   });
 
   final String id;
   final SettingsLeapNode<S> node;
   final List<SettingsLeapNode<S>> parents;
   final int score;
+  final String pageId;
+  final String? focusId;
 
   String breadcrumb(BuildContext context) => [
     ...parents.map((parent) => parent.getDisplayName(context)),
@@ -312,9 +513,13 @@ final class SettingsLeapFlatNode<S> {
     required this.id,
     required this.node,
     required this.parents,
+    required this.pageId,
+    this.focusId,
   });
 
   final String id;
   final SettingsLeapNode<S> node;
   final List<SettingsLeapNode<S>> parents;
+  final String pageId;
+  final String? focusId;
 }

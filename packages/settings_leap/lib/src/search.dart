@@ -5,10 +5,12 @@ import 'model.dart';
 final class SettingsLeapTree<S> {
   const SettingsLeapTree(
     this.pages, {
+    this.appBarBuilder,
     this.normalizer = defaultSettingsLeapTextNormalizer,
   });
 
   final Map<String, SettingsLeapPage<S>> pages;
+  final SettingsLeapAppBarBuilder<S>? appBarBuilder;
   final SettingsLeapTextNormalizer normalizer;
 
   List<SettingsLeapFlatNode<S>> flatten(
@@ -31,6 +33,16 @@ final class SettingsLeapTree<S> {
     return result;
   }
 
+  SettingsLeapPage<S>? pageById(String id) {
+    final parts = id.split('.');
+    if (parts.isEmpty) return null;
+    var page = pages[parts.first];
+    for (final part in parts.skip(1)) {
+      page = page?.children[part];
+    }
+    return page;
+  }
+
   List<SettingsLeapSearchResult<S>> search(
     BuildContext context,
     S state,
@@ -51,6 +63,8 @@ final class SettingsLeapTree<S> {
             node: flatNode.node,
             parents: flatNode.parents,
             score: score,
+            pageId: flatNode.pageId,
+            focusId: flatNode.focusId,
           ),
         );
       }
@@ -73,7 +87,9 @@ final class SettingsLeapTree<S> {
     required bool includeDisabled,
   }) {
     if (!includeDisabled && !page.isEnabled(context, state)) return;
-    result.add(SettingsLeapFlatNode(id: id, node: page, parents: parents));
+    result.add(
+      SettingsLeapFlatNode(id: id, node: page, parents: parents, pageId: id),
+    );
     for (final sectionEntry in page.sections.entries) {
       final section = sectionEntry.value;
       final sectionLabel = section.getDisplayName(context);
@@ -89,18 +105,38 @@ final class SettingsLeapTree<S> {
               keywordsBuilder: section.keywordsBuilder,
             ),
             parents: [...parents, page],
+            pageId: id,
           ),
         );
       }
       for (final (index, setting) in section.settings.indexed) {
         if (!includeDisabled && !setting.isEnabled(context, state)) continue;
+        final settingId =
+            '$id.${sectionEntry.key}.${_settingId(setting, index)}';
         result.add(
           SettingsLeapFlatNode(
-            id: '$id.${sectionEntry.key}.${_settingId(setting, index)}',
+            id: settingId,
             node: setting,
             parents: [...parents, page],
+            pageId: id,
+            focusId: settingId,
           ),
         );
+        for (final option in setting.buildOptionSearchNodes(context, state)) {
+          final optionId = switch (option) {
+            SettingsLeapOptionSearchNode<S, Object?>() => option.optionId,
+            _ => option.getDisplayName(context),
+          };
+          result.add(
+            SettingsLeapFlatNode(
+              id: '$settingId.$optionId',
+              node: option,
+              parents: [...parents, page, setting],
+              pageId: id,
+              focusId: settingId,
+            ),
+          );
+        }
       }
     }
     for (final child in page.children.entries) {

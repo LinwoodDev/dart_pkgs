@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:material_leap/material_leap.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 typedef SettingsLeapDisplayName = String Function(BuildContext context);
 typedef SettingsLeapKeywordsBuilder =
@@ -28,11 +30,38 @@ typedef SettingsLeapSectionHeaderBuilder<S> =
 typedef SettingsLeapCustomSettingBuilder<S> =
     Widget Function(BuildContext context, S state);
 
+class _SettingsLeapDescriptionButton extends StatelessWidget {
+  const _SettingsLeapDescriptionButton({
+    required this.title,
+    required this.help,
+  });
+
+  final String title;
+  final String help;
+
+  @override
+  Widget build(BuildContext context) => IconButton(
+    tooltip: help,
+    icon: const PhosphorIcon(PhosphorIconsLight.question),
+    onPressed: () => showLeapBottomSheet<void>(
+      context: context,
+      titleBuilder: (context) => Text(title),
+      childrenBuilder: (context) => [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          child: Text(help),
+        ),
+      ],
+    ),
+  );
+}
+
 sealed class SettingsLeapNode<S> {
   const SettingsLeapNode({
     required this.displayName,
     this.description,
     this.descriptionBuilder,
+    this.help,
     this.icon,
     this.keywords = const [],
     this.keywordsBuilder,
@@ -42,6 +71,7 @@ sealed class SettingsLeapNode<S> {
   final SettingsLeapDisplayName displayName;
   final String? description;
   final SettingsLeapDisplayName? descriptionBuilder;
+  final String? help;
   final IconData? icon;
   final List<String> keywords;
   final SettingsLeapKeywordsBuilder? keywordsBuilder;
@@ -66,6 +96,7 @@ final class SettingsLeapPage<S> extends SettingsLeapNode<S> {
     required super.displayName,
     super.description,
     super.descriptionBuilder,
+    super.help,
     super.icon,
     super.keywords,
     super.keywordsBuilder,
@@ -92,6 +123,7 @@ final class SettingsLeapSection<S> {
     this.displayName,
     this.description,
     this.descriptionBuilder,
+    this.help,
     this.settings = const [],
     this.keywords = const [],
     this.keywordsBuilder,
@@ -104,6 +136,7 @@ final class SettingsLeapSection<S> {
   final SettingsLeapDisplayName? displayName;
   final String? description;
   final SettingsLeapDisplayName? descriptionBuilder;
+  final String? help;
   final List<SettingsLeapSetting<S>> settings;
   final List<String> keywords;
   final SettingsLeapKeywordsBuilder? keywordsBuilder;
@@ -129,6 +162,7 @@ sealed class SettingsLeapSetting<S> extends SettingsLeapNode<S> {
     required super.displayName,
     super.description,
     super.descriptionBuilder,
+    super.help,
     super.icon,
     super.keywords,
     super.keywordsBuilder,
@@ -159,6 +193,7 @@ final class SettingsLeapBoolSetting<S> extends SettingsLeapSetting<S> {
     required this.write,
     super.description,
     super.descriptionBuilder,
+    super.help,
     super.icon,
     super.keywords,
     super.keywordsBuilder,
@@ -178,15 +213,26 @@ final class SettingsLeapBoolSetting<S> extends SettingsLeapSetting<S> {
   }) {
     final description = getDescription(context);
 
-    return SwitchListTile(
-      secondary: icon == null ? null : Icon(icon),
+    final value = read(state);
+    return ListTile(
+      leading: icon == null ? null : Icon(icon),
       title: Text(getDisplayName(context)),
       subtitle: description == null ? null : Text(description),
-      value: read(state),
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Switch(value: value, onChanged: (value) => write(context, value)),
+          if (help != null)
+            _SettingsLeapDescriptionButton(
+              title: getDisplayName(context),
+              help: help!,
+            ),
+        ],
+      ),
       focusNode: focusNode,
       autofocus: autofocus,
       selected: selected,
-      onChanged: (value) => write(context, value),
+      onTap: () => write(context, !value),
     );
   }
 }
@@ -198,6 +244,7 @@ final class SettingsLeapOption<V> {
     required this.displayName,
     this.description,
     this.descriptionBuilder,
+    this.help,
     this.keywords = const [],
     this.keywordsBuilder,
   });
@@ -207,6 +254,7 @@ final class SettingsLeapOption<V> {
   final SettingsLeapDisplayName displayName;
   final String? description;
   final SettingsLeapDisplayName? descriptionBuilder;
+  final String? help;
   final List<String> keywords;
   final SettingsLeapKeywordsBuilder? keywordsBuilder;
 
@@ -231,6 +279,7 @@ final class SettingsLeapListSetting<S, V> extends SettingsLeapSetting<S> {
     this.optionEquals,
     super.description,
     super.descriptionBuilder,
+    super.help,
     super.icon,
     super.keywords,
     super.keywordsBuilder,
@@ -267,10 +316,19 @@ final class SettingsLeapListSetting<S, V> extends SettingsLeapSetting<S> {
     return ListTile(
       leading: icon == null ? null : Icon(icon),
       title: Text(getDisplayName(context)),
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (currentOption != null)
+            Text(currentOption.getDisplayName(context)),
+          if (help != null)
+            _SettingsLeapDescriptionButton(
+              title: getDisplayName(context),
+              help: help!,
+            ),
+        ],
+      ),
       subtitle: description == null ? null : Text(description),
-      trailing: currentOption == null
-          ? null
-          : Text(currentOption.getDisplayName(context)),
       focusNode: focusNode,
       autofocus: autofocus,
       selected: selected,
@@ -281,30 +339,31 @@ final class SettingsLeapListSetting<S, V> extends SettingsLeapSetting<S> {
   Future<void> _openSheet(BuildContext context, S state) {
     final currentValue = read(state);
 
-    return showModalBottomSheet<void>(
+    return showLeapBottomSheet<void>(
       context: context,
-      showDragHandle: true,
-      builder: (context) => SafeArea(
-        child: ListView(
-          shrinkWrap: true,
-          children: [
-            ListTile(title: Text(getDisplayName(context))),
-            for (final option in options)
-              ListTile(
-                title: Text(option.getDisplayName(context)),
-                subtitle: switch (option.getDescription(context)) {
-                  final description? => Text(description),
-                  null => null,
-                },
-                selected: _isSelected(option.value, currentValue),
-                onTap: () {
-                  write(context, option.value);
-                  Navigator.of(context).pop();
-                },
+      titleBuilder: (context) => Text(getDisplayName(context)),
+      childrenBuilder: (context) => [
+        for (final option in options)
+          ListTile(
+            title: Text(option.getDisplayName(context)),
+            subtitle: switch (option.getDescription(context)) {
+              final description? => Text(description),
+              null => null,
+            },
+            trailing: switch (option.help) {
+              final help? => _SettingsLeapDescriptionButton(
+                title: option.getDisplayName(context),
+                help: help,
               ),
-          ],
-        ),
-      ),
+              null => null,
+            },
+            selected: _isSelected(option.value, currentValue),
+            onTap: () {
+              write(context, option.value);
+              Navigator.of(context).pop();
+            },
+          ),
+      ],
     );
   }
 
@@ -329,6 +388,7 @@ final class SettingsLeapEnumSetting<S, V> extends SettingsLeapSetting<S> {
     this.valueDescription,
     super.description,
     super.descriptionBuilder,
+    super.help,
     super.icon,
     super.keywords,
     super.keywordsBuilder,
@@ -373,6 +433,7 @@ final class SettingsLeapEnumSetting<S, V> extends SettingsLeapSetting<S> {
       displayName: displayName,
       description: description,
       descriptionBuilder: descriptionBuilder,
+      help: help,
       icon: icon,
       keywords: keywords,
       keywordsBuilder: keywordsBuilder,
@@ -395,6 +456,70 @@ final class SettingsLeapEnumSetting<S, V> extends SettingsLeapSetting<S> {
   }
 }
 
+final class SettingsLeapSliderSetting<S> extends SettingsLeapSetting<S> {
+  const SettingsLeapSliderSetting({
+    super.id,
+    required super.displayName,
+    required this.read,
+    required this.write,
+    this.min = 0,
+    this.max = 100,
+    this.defaultValue,
+    this.fractionDigits = 2,
+    this.divisions = false,
+    this.onChangeEnd,
+    super.description,
+    super.descriptionBuilder,
+    super.help,
+    super.icon,
+    super.keywords,
+    super.keywordsBuilder,
+    super.enabled,
+  });
+
+  final SettingsLeapStateReader<S, double> read;
+  final SettingsLeapStateWriter<double> write;
+  final SettingsLeapStateWriter<double>? onChangeEnd;
+  final double min;
+  final double max;
+  final double? defaultValue;
+  final int fractionDigits;
+  final bool divisions;
+
+  @override
+  Widget buildTile(
+    BuildContext context,
+    S state, {
+    FocusNode? focusNode,
+    bool autofocus = false,
+    bool selected = false,
+  }) {
+    final title = getDisplayName(context);
+    return ExactSlider(
+      leading: icon == null ? null : Icon(icon),
+      header: Text(title),
+      subtitle: switch (getDescription(context)) {
+        final description? => Text(description),
+        null => null,
+      },
+      trailing: help == null
+          ? null
+          : _SettingsLeapDescriptionButton(title: title, help: help!),
+      value: read(state),
+      min: min,
+      max: max,
+      defaultValue: defaultValue,
+      fractionDigits: fractionDigits,
+      divide: divisions,
+      clampValue: true,
+      onChanged: (value) => write(context, value),
+      onChangeEnd: onChangeEnd == null
+          ? null
+          : (value) => onChangeEnd!(context, value),
+    );
+  }
+}
+
 final class SettingsLeapActionSetting<S> extends SettingsLeapSetting<S> {
   const SettingsLeapActionSetting({
     super.id,
@@ -402,6 +527,7 @@ final class SettingsLeapActionSetting<S> extends SettingsLeapSetting<S> {
     required this.onTap,
     super.description,
     super.descriptionBuilder,
+    super.help,
     super.icon,
     super.keywords,
     super.keywordsBuilder,
@@ -424,6 +550,12 @@ final class SettingsLeapActionSetting<S> extends SettingsLeapSetting<S> {
       leading: icon == null ? null : Icon(icon),
       title: Text(getDisplayName(context)),
       subtitle: description == null ? null : Text(description),
+      trailing: help == null
+          ? null
+          : _SettingsLeapDescriptionButton(
+              title: getDisplayName(context),
+              help: help!,
+            ),
       focusNode: focusNode,
       autofocus: autofocus,
       selected: selected,
@@ -439,6 +571,7 @@ final class SettingsLeapCustomSetting<S> extends SettingsLeapSetting<S> {
     required this.builder,
     super.description,
     super.descriptionBuilder,
+    super.help,
     super.icon,
     super.keywords,
     super.keywordsBuilder,
@@ -466,6 +599,7 @@ final class SettingsLeapOptionSearchNode<S, V> extends SettingsLeapNode<S> {
         displayName: option.displayName,
         description: option.description,
         descriptionBuilder: option.descriptionBuilder,
+        help: option.help,
         keywords: option.keywords,
         keywordsBuilder: option.keywordsBuilder,
       );
@@ -478,6 +612,7 @@ final class SettingsLeapSectionSearchNode<S> extends SettingsLeapNode<S> {
     required super.displayName,
     super.description,
     super.descriptionBuilder,
+    super.help,
     super.icon,
     super.keywords,
     super.keywordsBuilder,

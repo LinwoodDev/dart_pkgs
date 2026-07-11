@@ -289,6 +289,71 @@ void main() {
     expect(find.text('Page app bar'), findsOneWidget);
     expect(find.text('Tree app bar'), findsNothing);
   });
+
+  testWidgets('shows setting help from the help button', (tester) async {
+    const setting = SettingsLeapActionSetting<Object?>(
+      displayName: _theme,
+      description: 'Choose how the application looks.',
+      help: 'This changes the colors used by the application.',
+      onTap: _noop,
+    );
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: Builder(builder: (context) => setting.buildTile(context, null)),
+        ),
+      ),
+    );
+
+    expect(find.text('Choose how the application looks.'), findsOneWidget);
+    expect(
+      find.text('This changes the colors used by the application.'),
+      findsNothing,
+    );
+    await tester.tap(
+      find.byTooltip('This changes the colors used by the application.'),
+    );
+    await tester.pumpAndSettle();
+
+    expect(
+      find.text('This changes the colors used by the application.'),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('finds settings through their help text', (tester) async {
+    const tree = SettingsLeapTree<Object?>({
+      'appearance': SettingsLeapPage(
+        displayName: _appearance,
+        sections: {
+          'theme': SettingsLeapSection(
+            settings: [
+              SettingsLeapActionSetting(
+                displayName: _theme,
+                help: 'Reduces glare in low-light environments.',
+                onTap: _noop,
+              ),
+            ],
+          ),
+        },
+      ),
+    });
+
+    late List<SettingsLeapSearchResult<Object?>> results;
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Builder(
+          builder: (context) {
+            results = tree.search(context, null, 'glare');
+            return const SizedBox.shrink();
+          },
+        ),
+      ),
+    );
+
+    expect(results.single.id, 'appearance.theme.setting0');
+  });
 }
 
 Iterable<String> _appearanceKeywords(BuildContext context) => ['Look'];

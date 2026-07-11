@@ -101,6 +101,7 @@ final class SettingsLeapTree<S> {
               displayName: section.displayName!,
               description: section.description,
               descriptionBuilder: section.descriptionBuilder,
+              help: section.help,
               keywords: section.keywords,
               keywordsBuilder: section.keywordsBuilder,
             ),
@@ -178,6 +179,7 @@ final class SettingsLeapTree<S> {
             prefix: 40,
             contains: 25,
           ) ??
+          _scoreText(node.help, term, exact: 55, prefix: 40, contains: 25) ??
           _scoreText(
             parents.map((parent) => parent.getDisplayName(context)).join(' '),
             term,

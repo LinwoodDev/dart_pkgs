@@ -57,7 +57,7 @@ class SettingsPage extends StatelessWidget {
               SettingsLeapBoolSetting(
                 id: 'darkMode',
                 displayName: (context) => 'Dark mode',
-                description: 'Use a darker color scheme.',
+            description: 'Use a darker color scheme.',
                 read: (state) => state.darkMode,
                 write: (context, value) {
                   // Update your app state here.
@@ -146,13 +146,13 @@ SettingsLeapListSetting<AppSettings, String>(
       id: 'personal',
       value: 'personal',
       displayName: (context) => 'Personal',
-      description: 'Only visible to you.',
+        description: 'Only visible to you.',
     ),
     SettingsLeapOption(
       id: 'team',
       value: 'team',
       displayName: (context) => 'Team',
-      description: 'Shared with collaborators.',
+        description: 'Shared with collaborators.',
     ),
   ],
   read: (state) => 'personal',

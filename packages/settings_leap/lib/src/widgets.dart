@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:material_leap/material_leap.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import 'model.dart';
 import 'search.dart';
@@ -263,7 +265,7 @@ class _SettingsLeapViewState<S> extends State<SettingsLeapView<S>> {
 
   Widget _buildCloseButton(BuildContext context) {
     return IconButton.outlined(
-      icon: const Icon(Icons.close),
+      icon: const PhosphorIcon(PhosphorIconsLight.x),
       tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
       onPressed: () => Navigator.of(context).maybePop(),
     );
@@ -526,6 +528,25 @@ class SettingsLeapPageTile<S> extends StatelessWidget {
       leading: page.icon == null ? null : Icon(page.icon),
       title: Text(page.getDisplayName(context)),
       subtitle: description == null ? null : Text(description),
+      trailing: page.help == null
+          ? null
+          : IconButton(
+              tooltip: page.help,
+              icon: const PhosphorIcon(PhosphorIconsLight.question),
+              onPressed: () => showLeapBottomSheet<void>(
+                context: context,
+                titleBuilder: (context) => Text(page.getDisplayName(context)),
+                childrenBuilder: (context) => [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
+                    child: Text(page.help!),
+                  ),
+                ],
+              ),
+            ),
       onTap: onTap,
     );
   }
@@ -578,14 +599,14 @@ class SettingsLeapSearchField extends StatelessWidget {
         controller: controller,
         autoFocus: autofocus,
         hintText: hintText,
-        leading: const Icon(Icons.search),
+        leading: const PhosphorIcon(PhosphorIconsLight.magnifyingGlass),
         trailing: [
           ValueListenableBuilder<TextEditingValue>(
             valueListenable: controller,
             builder: (context, value, child) {
               if (value.text.isEmpty) return const SizedBox.shrink();
               return IconButton(
-                icon: const Icon(Icons.close),
+                icon: const PhosphorIcon(PhosphorIconsLight.x),
                 tooltip: MaterialLocalizations.of(context).deleteButtonTooltip,
                 onPressed: () {
                   controller.clear();

@@ -26,6 +26,7 @@ workspace:
   - packages/onenote_parser
   - packages/onenote_parser/example
   - packages/settings_leap
+  - packages/settings_leap/example
   - tools/app_tools
 
 dependency_overrides:

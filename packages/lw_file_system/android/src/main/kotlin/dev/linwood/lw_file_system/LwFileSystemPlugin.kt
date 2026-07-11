@@ -15,17 +15,22 @@ import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
 import io.flutter.plugin.common.PluginRegistry.ActivityResultListener
+import io.flutter.plugin.common.StandardMethodCodec
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.io.IOException
 import java.io.InputStream
+import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.atomic.AtomicLong
 
 class LwFileSystemPlugin : FlutterPlugin, MethodCallHandler, ActivityAware, ActivityResultListener {
     private lateinit var channel: MethodChannel
     private lateinit var context: Context
-    private var activity: Activity? = null
-    private var pendingDirectoryResult: Result? = null
+    @Volatile private var activity: Activity? = null
+    @Volatile private var pendingDirectoryResult: Result? = null
+    private val nextReadId = AtomicLong()
+    private val openReads = ConcurrentHashMap<Long, InputStream>()
 
     private val contentResolver: ContentResolver
         get() = context.contentResolver
@@ -37,12 +42,19 @@ class LwFileSystemPlugin : FlutterPlugin, MethodCallHandler, ActivityAware, Acti
 
     override fun onAttachedToEngine(binding: FlutterPlugin.FlutterPluginBinding) {
         context = binding.applicationContext
-        channel = MethodChannel(binding.binaryMessenger, CHANNEL)
+        channel = MethodChannel(
+            binding.binaryMessenger,
+            CHANNEL,
+            StandardMethodCodec.INSTANCE,
+            binding.binaryMessenger.makeBackgroundTaskQueue()
+        )
         channel.setMethodCallHandler(this)
     }
 
     override fun onDetachedFromEngine(binding: FlutterPlugin.FlutterPluginBinding) {
         channel.setMethodCallHandler(null)
+        openReads.values.forEach { runCatching { it.close() } }
+        openReads.clear()
     }
 
     override fun onAttachedToActivity(binding: ActivityPluginBinding) {
@@ -93,7 +105,8 @@ class LwFileSystemPlugin : FlutterPlugin, MethodCallHandler, ActivityAware, Acti
     override fun onMethodCall(call: MethodCall, result: Result) {
         try {
             when (call.method) {
-                "pickDirectory" -> pickDirectory(result)
+                "pickDirectory" -> activity?.runOnUiThread { pickDirectory(result) }
+                    ?: result.error("no_activity", "No activity attached.", null)
 
                 "releasePersistableUriPermission" -> {
                     val uri = Uri.parse(
@@ -138,6 +151,40 @@ class LwFileSystemPlugin : FlutterPlugin, MethodCallHandler, ActivityAware, Acti
                             )
                         }
                     )
+                }
+
+                "safOpenRead" -> {
+                    val root = call.safRoot()
+                    val uri = resolveDocument(root.treeUri, call.fullPath())
+                        ?: throw IOException("Could not resolve document: ${call.fullPath()}")
+                    val input = contentResolver.openInputStream(uri)
+                        ?: throw IOException("Could not open document: ${call.fullPath()}")
+                    val id = nextReadId.incrementAndGet()
+                    openReads[id] = input
+                    result.success(id)
+                }
+
+                "safReadChunk" -> {
+                    val id = call.argument<Number>("id")?.toLong()
+                        ?: throw IllegalArgumentException("Missing id")
+                    val input = openReads[id]
+                        ?: throw IllegalArgumentException("Unknown read session")
+                    val buffer = ByteArray(SAF_READ_CHUNK_SIZE)
+                    val count = input.read(buffer)
+                    result.success(
+                        when {
+                            count < 0 -> ByteArray(0)
+                            count == buffer.size -> buffer
+                            else -> buffer.copyOf(count)
+                        }
+                    )
+                }
+
+                "safCloseRead" -> {
+                    call.argument<Number>("id")?.toLong()?.let { id ->
+                        openReads.remove(id)?.close()
+                    }
+                    result.success(null)
                 }
 
                 "safListDirectory" -> {
@@ -858,6 +905,7 @@ class LwFileSystemPlugin : FlutterPlugin, MethodCallHandler, ActivityAware, Acti
         contentResolver.query(uri, projection, null, null, null)
 
     companion object {
+        private const val SAF_READ_CHUNK_SIZE = 1024 * 1024
         private const val CHANNEL = "linwood.dev/lw_file_system/saf"
         private const val PICK_DIRECTORY_REQUEST = 4204
     }

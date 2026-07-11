@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:typed_data' show BytesBuilder;
 
 import 'package:flutter/services.dart';
 import 'package:lw_file_system/lw_file_system.dart';
@@ -195,12 +196,17 @@ class AndroidSafDirectoryFileSystem extends DirectoryFileSystem {
 
     final safPath = await toRelativePath(path);
 
+    // File data is transferred separately in bounded messages. Encoding a whole
+    // large file in StandardMethodCodec requires another equally large direct
+    // ByteBuffer on Android and can exhaust the app heap.
     final map = await _channel.invokeMapMethod<String, Object?>(
       'safReadAsset',
-      {'rootUri': directory, 'path': safPath, 'readData': readData},
+      {'rootUri': directory, 'path': safPath, 'readData': false},
     );
 
-    return map == null ? null : await _entityFromMap(map);
+    return map == null
+        ? null
+        : await _entityFromMap(map, readData: readData, rootUri: directory);
   }
 
   @override
@@ -362,7 +368,55 @@ class AndroidSafDirectoryFileSystem extends DirectoryFileSystem {
     });
   }
 
-  Future<RawFileSystemEntity> _entityFromMap(Map<String, Object?> map) async {
+  Future<Uint8List> _readSafFile(
+    String rootUri,
+    String path,
+    int? expectedSize,
+  ) async {
+    final id = await _channel.invokeMethod<int>('safOpenRead', {
+      'rootUri': rootUri,
+      'path': path,
+    });
+    if (id == null) return Uint8List(0);
+    final bytes = expectedSize == null ? null : Uint8List(expectedSize);
+    BytesBuilder? overflow;
+    var offset = 0;
+    try {
+      while (true) {
+        final chunk = await _channel.invokeMethod<Uint8List>('safReadChunk', {
+          'id': id,
+        });
+        if (chunk == null || chunk.isEmpty) break;
+        if (bytes != null &&
+            overflow == null &&
+            offset + chunk.length <= bytes.length) {
+          bytes.setRange(offset, offset + chunk.length, chunk);
+        } else {
+          overflow ??= BytesBuilder(copy: false)
+            ..add(
+              bytes == null
+                  ? Uint8List(0)
+                  : Uint8List.sublistView(bytes, 0, offset),
+            );
+          overflow.add(chunk);
+        }
+        offset += chunk.length;
+      }
+      if (overflow != null) return overflow.takeBytes();
+      if (bytes == null) return Uint8List(0);
+      return offset == bytes.length
+          ? bytes
+          : Uint8List.sublistView(bytes, 0, offset);
+    } finally {
+      await _channel.invokeMethod<void>('safCloseRead', {'id': id});
+    }
+  }
+
+  Future<RawFileSystemEntity> _entityFromMap(
+    Map<String, Object?> map, {
+    bool readData = false,
+    String? rootUri,
+  }) async {
     final path = normalizeRelativePath(map['path'] as String? ?? '');
 
     final location = AssetLocation(
@@ -374,12 +428,17 @@ class AndroidSafDirectoryFileSystem extends DirectoryFileSystem {
     final size = (map['size'] as num?)?.toInt();
 
     if (map['isDirectory'] == true) {
-      final assets = await Future.wait(
-        (map['assets'] as List?)?.whereType<Map>().map((entry) {
-              return _entityFromMap(entry.cast<String, Object?>());
-            }).toList() ??
-            const <Future<RawFileSystemEntity>>[],
-      );
+      final assets = <RawFileSystemEntity>[];
+      for (final entry
+          in (map['assets'] as List?)?.whereType<Map>() ?? const <Map>[]) {
+        assets.add(
+          await _entityFromMap(
+            entry.cast<String, Object?>(),
+            readData: readData,
+            rootUri: rootUri,
+          ),
+        );
+      }
 
       return RawFileSystemDirectory(
         location,
@@ -391,7 +450,11 @@ class AndroidSafDirectoryFileSystem extends DirectoryFileSystem {
 
     return RawFileSystemFile(
       location,
-      data: map['data'] as Uint8List?,
+      data:
+          map['data'] as Uint8List? ??
+          (readData && rootUri != null
+              ? await _readSafFile(rootUri, path, size)
+              : null),
       lastModified: lastModified,
       size: size,
     );

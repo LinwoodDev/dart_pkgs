@@ -19,20 +19,28 @@ class _ExampleSettings {
     this.darkMode = false,
     this.textScale = 1,
     this.language = 'system',
+    this.notifications = true,
+    this.notificationFrequency = 'daily',
   });
 
   final bool darkMode;
   final double textScale;
   final String language;
+  final bool notifications;
+  final String notificationFrequency;
 
   _ExampleSettings copyWith({
     bool? darkMode,
     double? textScale,
     String? language,
+    bool? notifications,
+    String? notificationFrequency,
   }) => _ExampleSettings(
     darkMode: darkMode ?? this.darkMode,
     textScale: textScale ?? this.textScale,
     language: language ?? this.language,
+    notifications: notifications ?? this.notifications,
+    notificationFrequency: notificationFrequency ?? this.notificationFrequency,
   );
 }
 
@@ -103,6 +111,38 @@ class _SettingsPageState extends State<_SettingsPage> {
                 read: (state) => state.language,
                 write: (_, value) => setState(
                   () => _settings = _settings.copyWith(language: value),
+                ),
+              ),
+              SettingsLeapAdvancedSwitchSetting<_ExampleSettings, String>(
+                displayName: (_) => 'Notifications',
+                description: 'Enable notifications and choose their frequency.',
+                help: 'The frequency controls how often summaries are sent.',
+                options: [
+                  SettingsLeapOption(
+                    id: 'instant',
+                    value: 'instant',
+                    displayName: (_) => 'Instantly',
+                  ),
+                  SettingsLeapOption(
+                    id: 'daily',
+                    value: 'daily',
+                    displayName: (_) => 'Daily summary',
+                  ),
+                  SettingsLeapOption(
+                    id: 'weekly',
+                    value: 'weekly',
+                    displayName: (_) => 'Weekly summary',
+                  ),
+                ],
+                readEnabled: (state) => state.notifications,
+                writeEnabled: (_, value) => setState(
+                  () => _settings = _settings.copyWith(notifications: value),
+                ),
+                read: (state) => state.notificationFrequency,
+                write: (_, value) => setState(
+                  () => _settings = _settings.copyWith(
+                    notificationFrequency: value,
+                  ),
                 ),
               ),
             ],

@@ -542,6 +542,87 @@ final class SettingsLeapSliderSetting<S> extends SettingsLeapSetting<S> {
   }
 }
 
+final class SettingsLeapAdvancedSwitchSetting<S, V>
+    extends SettingsLeapSetting<S> {
+  const SettingsLeapAdvancedSwitchSetting({
+    super.id,
+    required super.displayName,
+    required this.options,
+    required this.readEnabled,
+    required this.writeEnabled,
+    required this.read,
+    required this.write,
+    this.optionEquals,
+    super.description,
+    super.descriptionBuilder,
+    super.help,
+    super.hintBuilder,
+    super.icon,
+    super.keywords,
+    super.keywordsBuilder,
+    super.enabled,
+  });
+
+  final List<SettingsLeapOption<V>> options;
+  final SettingsLeapStateReader<S, bool> readEnabled;
+  final SettingsLeapStateWriter<bool> writeEnabled;
+  final SettingsLeapStateReader<S, V> read;
+  final SettingsLeapStateWriter<V> write;
+  final bool Function(V a, V b)? optionEquals;
+
+  SettingsLeapListSetting<S, V> _asListSetting() =>
+      SettingsLeapListSetting<S, V>(
+        displayName: displayName,
+        options: options,
+        read: read,
+        write: write,
+        optionEquals: optionEquals,
+      );
+
+  @override
+  Iterable<SettingsLeapNode<S>> buildOptionSearchNodes(
+    BuildContext context,
+    S state,
+  ) => _asListSetting().buildOptionSearchNodes(context, state);
+
+  @override
+  Widget buildTile(
+    BuildContext context,
+    S state, {
+    FocusNode? focusNode,
+    bool autofocus = false,
+    bool selected = false,
+  }) {
+    final listSetting = _asListSetting();
+    final currentOption = listSetting._optionForValue(read(state));
+    final help = getHelp(context);
+    return AdvancedSwitchListTile(
+      leading: icon == null ? null : Icon(icon),
+      title: Text(getDisplayName(context)),
+      subtitle: switch (getDescription(context)) {
+        final description? => Text(description),
+        null => null,
+      },
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (currentOption != null)
+            Text(currentOption.getDisplayName(context)),
+          if (help != null)
+            _SettingsLeapDescriptionButton(
+              title: getDisplayName(context),
+              help: help,
+            ),
+        ],
+      ),
+      selected: selected,
+      value: readEnabled(state),
+      onTap: () => listSetting._openSheet(context, state),
+      onChanged: (value) => writeEnabled(context, value),
+    );
+  }
+}
+
 final class SettingsLeapActionSetting<S> extends SettingsLeapSetting<S> {
   const SettingsLeapActionSetting({
     super.id,

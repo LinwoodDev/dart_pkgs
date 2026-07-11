@@ -42,7 +42,10 @@ class _SettingsLeapDescriptionButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) => IconButton(
     tooltip: help,
-    icon: const PhosphorIcon(PhosphorIconsLight.question),
+    visualDensity: VisualDensity.compact,
+    padding: const EdgeInsets.all(4),
+    constraints: const BoxConstraints.tightFor(width: 32, height: 32),
+    icon: const PhosphorIcon(PhosphorIconsLight.question, size: 20),
     onPressed: () => showLeapBottomSheet<void>(
       context: context,
       titleBuilder: (context) => Text(title),
@@ -53,6 +56,23 @@ class _SettingsLeapDescriptionButton extends StatelessWidget {
         ),
       ],
     ),
+  );
+}
+
+class _SettingsLeapTitle extends StatelessWidget {
+  const _SettingsLeapTitle({required this.title, this.help});
+
+  final String title;
+  final String? help;
+
+  @override
+  Widget build(BuildContext context) => Row(
+    mainAxisSize: MainAxisSize.min,
+    children: [
+      Flexible(fit: FlexFit.loose, child: Text(title)),
+      if (help != null)
+        _SettingsLeapDescriptionButton(title: title, help: help!),
+    ],
   );
 }
 
@@ -228,18 +248,11 @@ final class SettingsLeapBoolSetting<S> extends SettingsLeapSetting<S> {
     final help = getHelp(context);
     return ListTile(
       leading: icon == null ? null : Icon(icon),
-      title: Text(getDisplayName(context)),
+      title: _SettingsLeapTitle(title: getDisplayName(context), help: help),
       subtitle: description == null ? null : Text(description),
-      trailing: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Switch(value: value, onChanged: (value) => write(context, value)),
-          if (help != null)
-            _SettingsLeapDescriptionButton(
-              title: getDisplayName(context),
-              help: help,
-            ),
-        ],
+      trailing: Switch(
+        value: value,
+        onChanged: (value) => write(context, value),
       ),
       focusNode: focusNode,
       autofocus: autofocus,
@@ -333,19 +346,10 @@ final class SettingsLeapListSetting<S, V> extends SettingsLeapSetting<S> {
 
     return ListTile(
       leading: icon == null ? null : Icon(icon),
-      title: Text(getDisplayName(context)),
-      trailing: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (currentOption != null)
-            Text(currentOption.getDisplayName(context)),
-          if (help != null)
-            _SettingsLeapDescriptionButton(
-              title: getDisplayName(context),
-              help: help,
-            ),
-        ],
-      ),
+      title: _SettingsLeapTitle(title: getDisplayName(context), help: help),
+      trailing: currentOption == null
+          ? null
+          : Text(currentOption.getDisplayName(context)),
       subtitle: description == null ? null : Text(description),
       focusNode: focusNode,
       autofocus: autofocus,
@@ -363,16 +367,12 @@ final class SettingsLeapListSetting<S, V> extends SettingsLeapSetting<S> {
       childrenBuilder: (context) => [
         for (final option in options)
           ListTile(
-            title: Text(option.getDisplayName(context)),
+            title: _SettingsLeapTitle(
+              title: option.getDisplayName(context),
+              help: option.getHelp(context),
+            ),
             subtitle: switch (option.getDescription(context)) {
               final description? => Text(description),
-              null => null,
-            },
-            trailing: switch (option.getHelp(context)) {
-              final help? => _SettingsLeapDescriptionButton(
-                title: option.getDisplayName(context),
-                help: help,
-              ),
               null => null,
             },
             selected: _isSelected(option.value, currentValue),
@@ -519,14 +519,11 @@ final class SettingsLeapSliderSetting<S> extends SettingsLeapSetting<S> {
     final help = getHelp(context);
     return ExactSlider(
       leading: icon == null ? null : Icon(icon),
-      header: Text(title),
+      header: _SettingsLeapTitle(title: title, help: help),
       subtitle: switch (getDescription(context)) {
         final description? => Text(description),
         null => null,
       },
-      trailing: help == null
-          ? null
-          : _SettingsLeapDescriptionButton(title: title, help: help),
       value: read(state),
       min: min,
       max: max,
@@ -598,23 +595,14 @@ final class SettingsLeapAdvancedSwitchSetting<S, V>
     final help = getHelp(context);
     return AdvancedSwitchListTile(
       leading: icon == null ? null : Icon(icon),
-      title: Text(getDisplayName(context)),
+      title: _SettingsLeapTitle(title: getDisplayName(context), help: help),
       subtitle: switch (getDescription(context)) {
         final description? => Text(description),
         null => null,
       },
-      trailing: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (currentOption != null)
-            Text(currentOption.getDisplayName(context)),
-          if (help != null)
-            _SettingsLeapDescriptionButton(
-              title: getDisplayName(context),
-              help: help,
-            ),
-        ],
-      ),
+      trailing: currentOption == null
+          ? null
+          : Text(currentOption.getDisplayName(context)),
       selected: selected,
       value: readEnabled(state),
       onTap: () => listSetting._openSheet(context, state),
@@ -653,14 +641,8 @@ final class SettingsLeapActionSetting<S> extends SettingsLeapSetting<S> {
 
     return ListTile(
       leading: icon == null ? null : Icon(icon),
-      title: Text(getDisplayName(context)),
+      title: _SettingsLeapTitle(title: getDisplayName(context), help: help),
       subtitle: description == null ? null : Text(description),
-      trailing: help == null
-          ? null
-          : _SettingsLeapDescriptionButton(
-              title: getDisplayName(context),
-              help: help,
-            ),
       focusNode: focusNode,
       autofocus: autofocus,
       selected: selected,

@@ -527,13 +527,20 @@ class SettingsLeapPageTile<S> extends StatelessWidget {
     final help = page.getHelp(context);
     return ListTile(
       leading: page.icon == null ? null : Icon(page.icon),
-      title: Text(page.getDisplayName(context)),
-      subtitle: description == null ? null : Text(description),
-      trailing: help == null
-          ? null
-          : IconButton(
+      title: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Flexible(
+            fit: FlexFit.loose,
+            child: Text(page.getDisplayName(context)),
+          ),
+          if (help != null)
+            IconButton(
               tooltip: help,
-              icon: const PhosphorIcon(PhosphorIconsLight.question),
+              visualDensity: VisualDensity.compact,
+              padding: const EdgeInsets.all(4),
+              constraints: const BoxConstraints.tightFor(width: 32, height: 32),
+              icon: const PhosphorIcon(PhosphorIconsLight.question, size: 20),
               onPressed: () => showLeapBottomSheet<void>(
                 context: context,
                 titleBuilder: (context) => Text(page.getDisplayName(context)),
@@ -548,6 +555,9 @@ class SettingsLeapPageTile<S> extends StatelessWidget {
                 ],
               ),
             ),
+        ],
+      ),
+      subtitle: description == null ? null : Text(description),
       onTap: onTap,
     );
   }

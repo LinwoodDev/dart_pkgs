@@ -62,6 +62,7 @@ sealed class SettingsLeapNode<S> {
     this.description,
     this.descriptionBuilder,
     this.help,
+    this.hintBuilder,
     this.icon,
     this.keywords = const [],
     this.keywordsBuilder,
@@ -72,6 +73,7 @@ sealed class SettingsLeapNode<S> {
   final String? description;
   final SettingsLeapDisplayName? descriptionBuilder;
   final String? help;
+  final SettingsLeapDisplayName? hintBuilder;
   final IconData? icon;
   final List<String> keywords;
   final SettingsLeapKeywordsBuilder? keywordsBuilder;
@@ -85,6 +87,8 @@ sealed class SettingsLeapNode<S> {
   String? getDescription(BuildContext context) =>
       descriptionBuilder?.call(context) ?? description;
 
+  String? getHelp(BuildContext context) => hintBuilder?.call(context) ?? help;
+
   Iterable<String> getKeywords(BuildContext context) sync* {
     yield* keywords;
     yield* keywordsBuilder?.call(context) ?? const [];
@@ -97,6 +101,7 @@ final class SettingsLeapPage<S> extends SettingsLeapNode<S> {
     super.description,
     super.descriptionBuilder,
     super.help,
+    super.hintBuilder,
     super.icon,
     super.keywords,
     super.keywordsBuilder,
@@ -124,6 +129,7 @@ final class SettingsLeapSection<S> {
     this.description,
     this.descriptionBuilder,
     this.help,
+    this.hintBuilder,
     this.settings = const [],
     this.keywords = const [],
     this.keywordsBuilder,
@@ -137,6 +143,7 @@ final class SettingsLeapSection<S> {
   final String? description;
   final SettingsLeapDisplayName? descriptionBuilder;
   final String? help;
+  final SettingsLeapDisplayName? hintBuilder;
   final List<SettingsLeapSetting<S>> settings;
   final List<String> keywords;
   final SettingsLeapKeywordsBuilder? keywordsBuilder;
@@ -149,6 +156,8 @@ final class SettingsLeapSection<S> {
 
   String? getDescription(BuildContext context) =>
       descriptionBuilder?.call(context) ?? description;
+
+  String? getHelp(BuildContext context) => hintBuilder?.call(context) ?? help;
 
   Iterable<String> getKeywords(BuildContext context) sync* {
     yield* keywords;
@@ -163,6 +172,7 @@ sealed class SettingsLeapSetting<S> extends SettingsLeapNode<S> {
     super.description,
     super.descriptionBuilder,
     super.help,
+    super.hintBuilder,
     super.icon,
     super.keywords,
     super.keywordsBuilder,
@@ -194,6 +204,7 @@ final class SettingsLeapBoolSetting<S> extends SettingsLeapSetting<S> {
     super.description,
     super.descriptionBuilder,
     super.help,
+    super.hintBuilder,
     super.icon,
     super.keywords,
     super.keywordsBuilder,
@@ -214,6 +225,7 @@ final class SettingsLeapBoolSetting<S> extends SettingsLeapSetting<S> {
     final description = getDescription(context);
 
     final value = read(state);
+    final help = getHelp(context);
     return ListTile(
       leading: icon == null ? null : Icon(icon),
       title: Text(getDisplayName(context)),
@@ -225,7 +237,7 @@ final class SettingsLeapBoolSetting<S> extends SettingsLeapSetting<S> {
           if (help != null)
             _SettingsLeapDescriptionButton(
               title: getDisplayName(context),
-              help: help!,
+              help: help,
             ),
         ],
       ),
@@ -245,6 +257,7 @@ final class SettingsLeapOption<V> {
     this.description,
     this.descriptionBuilder,
     this.help,
+    this.hintBuilder,
     this.keywords = const [],
     this.keywordsBuilder,
   });
@@ -255,6 +268,7 @@ final class SettingsLeapOption<V> {
   final String? description;
   final SettingsLeapDisplayName? descriptionBuilder;
   final String? help;
+  final SettingsLeapDisplayName? hintBuilder;
   final List<String> keywords;
   final SettingsLeapKeywordsBuilder? keywordsBuilder;
 
@@ -262,6 +276,8 @@ final class SettingsLeapOption<V> {
 
   String? getDescription(BuildContext context) =>
       descriptionBuilder?.call(context) ?? description;
+
+  String? getHelp(BuildContext context) => hintBuilder?.call(context) ?? help;
 
   Iterable<String> getKeywords(BuildContext context) sync* {
     yield* keywords;
@@ -280,6 +296,7 @@ final class SettingsLeapListSetting<S, V> extends SettingsLeapSetting<S> {
     super.description,
     super.descriptionBuilder,
     super.help,
+    super.hintBuilder,
     super.icon,
     super.keywords,
     super.keywordsBuilder,
@@ -312,6 +329,7 @@ final class SettingsLeapListSetting<S, V> extends SettingsLeapSetting<S> {
     final currentValue = read(state);
     final currentOption = _optionForValue(currentValue);
     final description = getDescription(context);
+    final help = getHelp(context);
 
     return ListTile(
       leading: icon == null ? null : Icon(icon),
@@ -324,7 +342,7 @@ final class SettingsLeapListSetting<S, V> extends SettingsLeapSetting<S> {
           if (help != null)
             _SettingsLeapDescriptionButton(
               title: getDisplayName(context),
-              help: help!,
+              help: help,
             ),
         ],
       ),
@@ -350,7 +368,7 @@ final class SettingsLeapListSetting<S, V> extends SettingsLeapSetting<S> {
               final description? => Text(description),
               null => null,
             },
-            trailing: switch (option.help) {
+            trailing: switch (option.getHelp(context)) {
               final help? => _SettingsLeapDescriptionButton(
                 title: option.getDisplayName(context),
                 help: help,
@@ -389,6 +407,7 @@ final class SettingsLeapEnumSetting<S, V> extends SettingsLeapSetting<S> {
     super.description,
     super.descriptionBuilder,
     super.help,
+    super.hintBuilder,
     super.icon,
     super.keywords,
     super.keywordsBuilder,
@@ -434,6 +453,7 @@ final class SettingsLeapEnumSetting<S, V> extends SettingsLeapSetting<S> {
       description: description,
       descriptionBuilder: descriptionBuilder,
       help: help,
+      hintBuilder: hintBuilder,
       icon: icon,
       keywords: keywords,
       keywordsBuilder: keywordsBuilder,
@@ -471,6 +491,7 @@ final class SettingsLeapSliderSetting<S> extends SettingsLeapSetting<S> {
     super.description,
     super.descriptionBuilder,
     super.help,
+    super.hintBuilder,
     super.icon,
     super.keywords,
     super.keywordsBuilder,
@@ -495,6 +516,7 @@ final class SettingsLeapSliderSetting<S> extends SettingsLeapSetting<S> {
     bool selected = false,
   }) {
     final title = getDisplayName(context);
+    final help = getHelp(context);
     return ExactSlider(
       leading: icon == null ? null : Icon(icon),
       header: Text(title),
@@ -504,7 +526,7 @@ final class SettingsLeapSliderSetting<S> extends SettingsLeapSetting<S> {
       },
       trailing: help == null
           ? null
-          : _SettingsLeapDescriptionButton(title: title, help: help!),
+          : _SettingsLeapDescriptionButton(title: title, help: help),
       value: read(state),
       min: min,
       max: max,
@@ -528,6 +550,7 @@ final class SettingsLeapActionSetting<S> extends SettingsLeapSetting<S> {
     super.description,
     super.descriptionBuilder,
     super.help,
+    super.hintBuilder,
     super.icon,
     super.keywords,
     super.keywordsBuilder,
@@ -545,6 +568,7 @@ final class SettingsLeapActionSetting<S> extends SettingsLeapSetting<S> {
     bool selected = false,
   }) {
     final description = getDescription(context);
+    final help = getHelp(context);
 
     return ListTile(
       leading: icon == null ? null : Icon(icon),
@@ -554,7 +578,7 @@ final class SettingsLeapActionSetting<S> extends SettingsLeapSetting<S> {
           ? null
           : _SettingsLeapDescriptionButton(
               title: getDisplayName(context),
-              help: help!,
+              help: help,
             ),
       focusNode: focusNode,
       autofocus: autofocus,
@@ -572,6 +596,7 @@ final class SettingsLeapCustomSetting<S> extends SettingsLeapSetting<S> {
     super.description,
     super.descriptionBuilder,
     super.help,
+    super.hintBuilder,
     super.icon,
     super.keywords,
     super.keywordsBuilder,
@@ -600,6 +625,7 @@ final class SettingsLeapOptionSearchNode<S, V> extends SettingsLeapNode<S> {
         description: option.description,
         descriptionBuilder: option.descriptionBuilder,
         help: option.help,
+        hintBuilder: option.hintBuilder,
         keywords: option.keywords,
         keywordsBuilder: option.keywordsBuilder,
       );
@@ -613,6 +639,7 @@ final class SettingsLeapSectionSearchNode<S> extends SettingsLeapNode<S> {
     super.description,
     super.descriptionBuilder,
     super.help,
+    super.hintBuilder,
     super.icon,
     super.keywords,
     super.keywordsBuilder,

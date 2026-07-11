@@ -331,7 +331,7 @@ void main() {
             settings: [
               SettingsLeapActionSetting(
                 displayName: _theme,
-                help: 'Reduces glare in low-light environments.',
+                hintBuilder: _themeHint,
                 onTap: _noop,
               ),
             ],
@@ -357,6 +357,9 @@ void main() {
 }
 
 Iterable<String> _appearanceKeywords(BuildContext context) => ['Look'];
+
+String _themeHint(BuildContext context) =>
+    'Reduces glare in low-light environments.';
 
 void _noop(BuildContext context) {}
 

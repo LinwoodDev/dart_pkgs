@@ -524,14 +524,15 @@ class SettingsLeapPageTile<S> extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final description = page.getDescription(context);
+    final help = page.getHelp(context);
     return ListTile(
       leading: page.icon == null ? null : Icon(page.icon),
       title: Text(page.getDisplayName(context)),
       subtitle: description == null ? null : Text(description),
-      trailing: page.help == null
+      trailing: help == null
           ? null
           : IconButton(
-              tooltip: page.help,
+              tooltip: help,
               icon: const PhosphorIcon(PhosphorIconsLight.question),
               onPressed: () => showLeapBottomSheet<void>(
                 context: context,
@@ -542,7 +543,7 @@ class SettingsLeapPageTile<S> extends StatelessWidget {
                       horizontal: 16,
                       vertical: 8,
                     ),
-                    child: Text(page.help!),
+                    child: Text(help),
                   ),
                 ],
               ),

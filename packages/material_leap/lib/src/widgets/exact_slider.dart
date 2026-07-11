@@ -10,7 +10,7 @@ typedef OnValueChanged = void Function(double value);
 class ExactSlider extends StatefulWidget {
   final String? label;
   final int fractionDigits;
-  final Widget? header, subtitle, leading, bottom;
+  final Widget? header, subtitle, leading, trailing, bottom;
   final double value, min, max;
   final double? defaultValue;
   final double? headerWidth;
@@ -23,6 +23,7 @@ class ExactSlider extends StatefulWidget {
     super.key,
     this.label,
     this.leading,
+    this.trailing,
     this.bottom,
     this.subtitle,
     this.fractionDigits = 2,
@@ -45,6 +46,7 @@ class ExactSlider extends StatefulWidget {
     super.key,
     this.label,
     this.leading,
+    this.trailing,
     this.bottom,
     this.subtitle,
     this.fractionDigits = 2,
@@ -229,6 +231,7 @@ class _ExactSliderState extends State<ExactSlider> {
                           Expanded(child: textField),
                           const SizedBox(width: 8),
                           ?resetButton,
+                          ?widget.trailing,
                         ],
                       ),
                       slider,
@@ -248,6 +251,7 @@ class _ExactSliderState extends State<ExactSlider> {
                         children: [
                           Expanded(child: slider),
                           ?resetButton,
+                          ?widget.trailing,
                         ],
                       ),
                     ],
@@ -290,7 +294,14 @@ class _ExactSliderState extends State<ExactSlider> {
                   ],
                 ),
                 subtitle: subtitle,
-                trailing: resetButton,
+                trailing: switch ((resetButton, widget.trailing)) {
+                  (null, final trailing) => trailing,
+                  (final reset?, null) => reset,
+                  (final reset?, final trailing?) => Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [reset, trailing],
+                  ),
+                },
               );
             },
           ),

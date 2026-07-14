@@ -145,11 +145,12 @@ mixin GeneralDirectoryFileSystem<T> on GeneralFileSystem {
   }) async {
     path = normalizePath(path);
     final uniquePath = await findAvailableName(path);
-    return updateFile(
-      uniquePath,
-      data,
-      forceSync: forceSync,
-    ).then((_) => FileSystemFile(AssetLocation.local(uniquePath), data: data));
+    return updateFile(uniquePath, data, forceSync: forceSync).then(
+      (_) => FileSystemFile(
+        AssetLocation(path: uniquePath, remote: storage?.identifier ?? ''),
+        data: data,
+      ),
+    );
   }
 
   Future<bool> hasAsset(String path) =>

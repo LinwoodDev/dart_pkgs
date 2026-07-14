@@ -138,7 +138,7 @@ class IODirectoryFileSystem extends DirectoryFileSystem {
           await oldFile.delete();
         }
         return FileSystemFile(
-          AssetLocation.local(newPath),
+          AssetLocation(path: newPath, remote: storage?.identifier ?? ''),
           data: await File(newAbsolutePath).readAsBytes(),
         );
       } else if (await oldDir.exists()) {

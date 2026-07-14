@@ -51,6 +51,23 @@ void main() {
     expect(file.creationTime, creationTime);
     expect(file.size, 1234);
   });
+
+  test('created files retain the configured storage identifier', () async {
+    const storage = DavRemoteStorage(
+      name: 'remote-test',
+      username: 'user',
+      url: 'https://example.com',
+    );
+    final fileSystem = _RecordingDirectoryFileSystem(storage: storage);
+
+    final created = await fileSystem.createFile(
+      '/note.bfly',
+      Uint8List.fromList([42]),
+    );
+
+    expect(created.path, '/note.bfly');
+    expect(created.remote, storage.identifier);
+  });
 }
 
 class _RecordingDirectoryFileSystem extends DirectoryFileSystem {
@@ -59,7 +76,10 @@ class _RecordingDirectoryFileSystem extends DirectoryFileSystem {
   bool? lastForceSync;
   FileSystemEntity<Uint8List>? asset;
 
-  _RecordingDirectoryFileSystem({this.asset})
+  @override
+  final ExternalStorage? storage;
+
+  _RecordingDirectoryFileSystem({this.asset, this.storage})
     : super(config: const MockFileSystemConfig());
 
   @override

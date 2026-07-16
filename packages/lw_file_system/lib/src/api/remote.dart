@@ -100,7 +100,10 @@ abstract class RemoteFileSystem extends DirectoryFileSystem {
     NetworkException? error;
     RawFileSystemEntity? asset;
 
-    if (isOnline) {
+    // A forced read also acts as a connectivity probe while offline. Normal
+    // reads can then use the cached directory immediately after a connection
+    // failure instead of waiting for the same request to time out each time.
+    if (isOnline || forceRemote) {
       DateTime? currentLastModified;
       int? currentSize;
 
@@ -117,9 +120,12 @@ abstract class RemoteFileSystem extends DirectoryFileSystem {
           currentLastModified: currentLastModified,
           currentSize: currentSize,
         );
+        setOnlineStatus(true);
       } on NotModifiedException {
+        setOnlineStatus(true);
         if (cached != null) return cached;
       } on NetworkException catch (e) {
+        setOnlineStatus(false);
         error = e;
       }
     } else {

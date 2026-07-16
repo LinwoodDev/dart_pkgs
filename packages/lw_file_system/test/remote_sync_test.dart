@@ -52,6 +52,47 @@ void main() {
         ]),
       );
     });
+
+    test('uses cached directories immediately after going offline', () async {
+      await fileSystem.cacheContent(
+        'projects/cached.bfly',
+        Uint8List.fromList([1, 2, 3]),
+      );
+      fileSystem.fetchError = const NetworkException(
+        'Offline',
+        type: NetworkErrorType.connection,
+      );
+
+      final first = await fileSystem.readAsset('projects');
+      final second = await fileSystem.readAsset('projects');
+
+      expect(first, isA<RawFileSystemDirectory>());
+      expect(second, isA<RawFileSystemDirectory>());
+      expect(fileSystem.isOnline, false);
+      expect(fileSystem.fetchCount, 1);
+    });
+
+    test('forced reads probe the remote after going offline', () async {
+      await fileSystem.cacheContent(
+        'projects/cached.bfly',
+        Uint8List.fromList([1, 2, 3]),
+      );
+      fileSystem.fetchError = const NetworkException(
+        'Offline',
+        type: NetworkErrorType.connection,
+      );
+      await fileSystem.readAsset('projects');
+      fileSystem.fetchError = null;
+
+      final refreshed = await fileSystem.readAsset(
+        'projects',
+        forceRemote: true,
+      );
+
+      expect(refreshed, isA<RawFileSystemDirectory>());
+      expect(fileSystem.isOnline, true);
+      expect(fileSystem.fetchCount, 2);
+    });
   });
 
   group('SyncFile status', () {
@@ -117,6 +158,8 @@ void main() {
 class _FakeRemoteFileSystem extends RemoteFileSystem {
   final Map<String, Uint8List> _files = {};
   bool _initialized = false;
+  NetworkException? fetchError;
+  int fetchCount = 0;
 
   @override
   final RemoteStorage storage;
@@ -144,6 +187,8 @@ class _FakeRemoteFileSystem extends RemoteFileSystem {
     DateTime? currentLastModified,
     int? currentSize,
   }) async {
+    fetchCount++;
+    if (fetchError case final error?) throw error;
     path = normalizePath(path);
     if (_files.containsKey(path)) {
       return RawFileSystemFile(

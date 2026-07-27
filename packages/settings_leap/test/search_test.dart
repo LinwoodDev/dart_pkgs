@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:material_leap/l10n/leap_localizations.dart';
 import 'package:settings_leap/settings_leap.dart';
 
 String _inputs(BuildContext context) => 'Inputs';
@@ -16,6 +17,27 @@ String _treeTitle(BuildContext context) => 'Tree app bar';
 String _pageTitle(BuildContext context) => 'Page app bar';
 
 void main() {
+  testWidgets('shows and invokes a page reset action', (tester) async {
+    var resetState = 0;
+
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: const [LeapLocalizations.delegate],
+        supportedLocales: LeapLocalizations.supportedLocales,
+        home: SettingsLeapGeneratedPage<int>(
+          page: SettingsLeapPage<int>(
+            displayName: _profile,
+            onReset: (context, state) => resetState = state,
+          ),
+          state: 42,
+        ),
+      ),
+    );
+
+    await tester.tap(find.byTooltip('Reset'));
+    expect(resetState, 42);
+  });
+
   testWidgets('finds nested entries through their parent titles', (
     tester,
   ) async {

@@ -316,7 +316,15 @@ class SettingsLeapGeneratedPage<S> extends StatelessWidget {
     if (customBuilder != null) {
       return customBuilder(context, state, inView);
     }
-    final actions = page.actionsBuilder?.call(context, state);
+    final actions = [
+      ...?page.actionsBuilder?.call(context, state),
+      if (page.onReset != null)
+        IconButton(
+          icon: const PhosphorIcon(PhosphorIconsLight.clockCounterClockwise),
+          tooltip: LeapLocalizations.of(context).reset,
+          onPressed: () => page.onReset!(context, state),
+        ),
+    ];
     final sections = page.sections.entries;
     final fillRemaining = sections.where((entry) => entry.value.fillRemaining);
     final customAppBarBuilder = page.appBarBuilder ?? appBarBuilder;

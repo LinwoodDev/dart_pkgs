@@ -13,6 +13,7 @@ typedef SettingsLeapPageBuilder<S> =
     Widget Function(BuildContext context, S state, bool inView);
 typedef SettingsLeapPageActionsBuilder<S> =
     List<Widget> Function(BuildContext context, S state);
+typedef SettingsLeapPageReset<S> = void Function(BuildContext context, S state);
 typedef SettingsLeapPageFloatingActionButtonBuilder<S> =
     Widget? Function(BuildContext context, S state);
 typedef SettingsLeapAppBarBuilder<S> =
@@ -129,6 +130,7 @@ final class SettingsLeapPage<S> extends SettingsLeapNode<S> {
     this.sections = const {},
     this.children = const {},
     this.actionsBuilder,
+    this.onReset,
     this.floatingActionButtonBuilder,
     this.appBarBuilder,
     this.builder,
@@ -137,6 +139,7 @@ final class SettingsLeapPage<S> extends SettingsLeapNode<S> {
   final Map<String, SettingsLeapSection<S>> sections;
   final Map<String, SettingsLeapPage<S>> children;
   final SettingsLeapPageActionsBuilder<S>? actionsBuilder;
+  final SettingsLeapPageReset<S>? onReset;
   final SettingsLeapPageFloatingActionButtonBuilder<S>?
   floatingActionButtonBuilder;
   final SettingsLeapAppBarBuilder<S>? appBarBuilder;

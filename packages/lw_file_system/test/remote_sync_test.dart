@@ -25,7 +25,7 @@ void main() {
         passwordStorage: MockPasswordStorage(),
         storeName: 'test_store',
         getUnnamed: () => 'unnamed',
-        getDirectory: (_) async => tempDir.path,
+        getDirectory: (_) async => '${tempDir.path}/cache',
         database: 'test_db',
         databaseVersion: 1,
       );
@@ -92,6 +92,25 @@ void main() {
       expect(refreshed, isA<RawFileSystemDirectory>());
       expect(fileSystem.isOnline, true);
       expect(fileSystem.fetchCount, 2);
+    });
+
+    test('repairs a file occupying the cache root before creating', () async {
+      final cacheRoot = await fileSystem.getDirectory();
+      await File(cacheRoot).create(recursive: true);
+      await File(cacheRoot).writeAsString('invalid directory response');
+
+      await fileSystem.createDirectory('projects');
+      await fileSystem.cacheContent(
+        'projects/cached.bfly',
+        Uint8List.fromList([1, 2, 3]),
+      );
+
+      expect(await Directory(cacheRoot).exists(), true);
+      expect(await File('$cacheRoot/projects/cached.bfly').readAsBytes(), [
+        1,
+        2,
+        3,
+      ]);
     });
   });
 

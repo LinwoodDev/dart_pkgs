@@ -306,6 +306,13 @@ class DavRemoteDirectoryFileSystem extends RemoteFileSystem {
         'Failed to read asset: ${response.statusCode} ${response.reasonPhrase} $path',
       );
     }
+    // SabreDAV can start a 207 multistatus response before discovering that
+    // the requested asset does not exist. It then appends a second XML error
+    // document, leaving the response malformed despite its successful status.
+    // Treat the embedded error like the 404 returned by GET before parsing.
+    if (content.contains(r'Sabre\DAV\Exception\NotFound')) {
+      return null;
+    }
     final xml = XmlDocument.parse(content);
     final responses = xml.findAllElements('response', namespace: '*').where((
       element,

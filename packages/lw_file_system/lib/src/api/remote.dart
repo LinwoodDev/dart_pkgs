@@ -291,11 +291,24 @@ abstract class RemoteFileSystem extends DirectoryFileSystem {
     return null;
   }
 
+  Future<void> _ensureCacheRootDirectory() async {
+    final cacheRoot = await getDirectory();
+    final cacheRootFile = File(cacheRoot);
+    if (await cacheRootFile.exists()) {
+      // A directory response must never be cached as the root file. Repair
+      // caches created by clients that previously misclassified a WebDAV
+      // collection returned from GET as a regular file.
+      await cacheRootFile.delete();
+    }
+    await Directory(cacheRoot).create(recursive: true);
+  }
+
   Future<void> cacheContent(
     String path,
     Uint8List content, {
     DateTime? modified,
   }) async {
+    await _ensureCacheRootDirectory();
     var absolutePath = await getAbsolutePath(path);
     var file = File(absolutePath);
     final directory = Directory(absolutePath);
@@ -1240,6 +1253,7 @@ abstract class RemoteFileSystem extends DirectoryFileSystem {
   @override
   Future<RawFileSystemDirectory> createDirectory(String path) async {
     path = normalizePath(path);
+    await _ensureCacheRootDirectory();
     final absolutePath = await getAbsolutePath(path);
     await Directory(absolutePath).create(recursive: true);
 

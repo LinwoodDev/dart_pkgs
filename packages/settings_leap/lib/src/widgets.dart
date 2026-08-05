@@ -114,8 +114,7 @@ class _SettingsLeapViewState<S> extends State<SettingsLeapView<S>> {
     final emptySearch = widget.emptySearch ?? _buildEmptySearch(context);
 
     if (isMobile) {
-      return ListView(
-        shrinkWrap: true,
+      return Column(
         children: [
           if (widget.isDialog)
             _SettingsLeapHeader(
@@ -129,29 +128,31 @@ class _SettingsLeapViewState<S> extends State<SettingsLeapView<S>> {
             onChanged: (_) => setState(() {}),
           ),
           if (query.trim().isEmpty)
-            ListView(
-              shrinkWrap: true,
-              children: [
-                for (final entry in rootEntries)
-                  SettingsLeapPageTile(
+            Expanded(
+              child: ListView.builder(
+                itemCount: rootEntries.length,
+                itemBuilder: (context, index) {
+                  final entry = rootEntries[index];
+                  return SettingsLeapPageTile(
                     page: entry.value,
                     onTap: () => _openPage(entry.key, entry.value),
-                  ),
-              ],
+                  );
+                },
+              ),
             )
           else
-            SettingsLeapSearchResults<S>(
-              results: results,
-              shrinkWrap: true,
-              empty: emptySearch,
-              onTap: (result) {
-                final page = widget.tree.pageById(result.pageId);
-                if (page != null) {
-                  _openPage(result.pageId, page, result.focusId);
-                }
-              },
+            Expanded(
+              child: SettingsLeapSearchResults<S>(
+                results: results,
+                empty: emptySearch,
+                onTap: (result) {
+                  final page = widget.tree.pageById(result.pageId);
+                  if (page != null) {
+                    _openPage(result.pageId, page, result.focusId);
+                  }
+                },
+              ),
             ),
-          const SizedBox(height: 16),
         ],
       );
     }
@@ -159,32 +160,23 @@ class _SettingsLeapViewState<S> extends State<SettingsLeapView<S>> {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        NavigationDrawer(
-          selectedIndex: selectedRootIndex < 0 ? null : selectedRootIndex,
-          onDestinationSelected: (index) => _select(rootEntries[index].key),
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(28, 16, 16, 16),
-              child: Row(
-                spacing: 16,
-                children: [
-                  if (widget.isDialog) closeButton,
-                  Expanded(
-                    child: Text(
-                      widget.title(context),
-                      style: TextTheme.of(context).headlineSmall,
-                    ),
-                  ),
-                ],
-              ),
+        if (query.trim().isEmpty)
+          NavigationDrawer(
+            selectedIndex: selectedRootIndex < 0 ? null : selectedRootIndex,
+            onDestinationSelected: (index) => _select(rootEntries[index].key),
+            header: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                _buildDrawerHeader(context, closeButton),
+                SettingsLeapSearchField(
+                  controller: _searchController,
+                  hintText: widget.searchHint(context),
+                  margin: widget.searchFieldMargin,
+                  onChanged: (_) => setState(() {}),
+                ),
+              ],
             ),
-            SettingsLeapSearchField(
-              controller: _searchController,
-              hintText: widget.searchHint(context),
-              margin: widget.searchFieldMargin,
-              onChanged: (_) => setState(() {}),
-            ),
-            if (query.trim().isEmpty)
+            children: [
               for (final entry in rootEntries)
                 NavigationDrawerDestination(
                   icon: entry.value.icon == null
@@ -194,19 +186,36 @@ class _SettingsLeapViewState<S> extends State<SettingsLeapView<S>> {
                       ? const SizedBox.shrink()
                       : Icon(entry.value.icon),
                   label: Text(entry.value.getDisplayName(context)),
-                )
-            else
-              SettingsLeapSearchResults<S>(
-                results: results,
-                shrinkWrap: true,
-                empty: emptySearch,
-                onTap: (result) {
-                  _searchController.clear();
-                  _select(result.pageId, focusedId: result.focusId);
-                },
+                ),
+            ],
+          )
+        else
+          Drawer(
+            child: SafeArea(
+              bottom: false,
+              child: Column(
+                children: [
+                  _buildDrawerHeader(context, closeButton),
+                  SettingsLeapSearchField(
+                    controller: _searchController,
+                    hintText: widget.searchHint(context),
+                    margin: widget.searchFieldMargin,
+                    onChanged: (_) => setState(() {}),
+                  ),
+                  Expanded(
+                    child: SettingsLeapSearchResults<S>(
+                      results: results,
+                      empty: emptySearch,
+                      onTap: (result) {
+                        _searchController.clear();
+                        _select(result.pageId, focusedId: result.focusId);
+                      },
+                    ),
+                  ),
+                ],
               ),
-          ],
-        ),
+            ),
+          ),
         Expanded(
           child: selectedPage == null
               ? const SizedBox.shrink()
@@ -224,6 +233,24 @@ class _SettingsLeapViewState<S> extends State<SettingsLeapView<S>> {
                 ),
         ),
       ],
+    );
+  }
+
+  Widget _buildDrawerHeader(BuildContext context, Widget closeButton) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(28, 16, 16, 16),
+      child: Row(
+        spacing: 16,
+        children: [
+          if (widget.isDialog) closeButton,
+          Expanded(
+            child: Text(
+              widget.title(context),
+              style: TextTheme.of(context).headlineSmall,
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -417,21 +444,30 @@ class SettingsLeapGeneratedPage<S> extends StatelessWidget {
     String sectionId,
     SettingsLeapSection<S> section,
   ) {
+    final displayName = section.getDisplayName(context);
+    final header = section.headerBuilder?.call(context, state);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        if (section.getDisplayName(context) != null) ...[
+        if (displayName != null) ...[
           Padding(
             padding: sectionTitlePadding,
-            child: Text(
-              section.getDisplayName(context)!,
-              style: TextTheme.of(context).headlineSmall,
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    displayName,
+                    style: TextTheme.of(context).headlineSmall,
+                  ),
+                ),
+                ?header,
+              ],
             ),
           ),
           const SizedBox(height: 16),
         ],
-        if (section.headerBuilder != null) ...[
-          section.headerBuilder!(context, state),
+        if (displayName == null && header != null) ...[
+          header,
           const SizedBox(height: 16),
         ],
         for (final (index, setting) in section.settings.indexed)

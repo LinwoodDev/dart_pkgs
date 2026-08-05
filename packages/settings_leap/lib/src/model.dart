@@ -30,6 +30,8 @@ typedef SettingsLeapSectionHeaderBuilder<S> =
     Widget Function(BuildContext context, S state);
 typedef SettingsLeapCustomSettingBuilder<S> =
     Widget Function(BuildContext context, S state);
+typedef SettingsLeapOptionPreviewBuilder =
+    Widget Function(BuildContext context);
 
 class _SettingsLeapDescriptionButton extends StatelessWidget {
   const _SettingsLeapDescriptionButton({
@@ -191,6 +193,7 @@ final class SettingsLeapSection<S> {
 sealed class SettingsLeapSetting<S> extends SettingsLeapNode<S> {
   const SettingsLeapSetting({
     this.id,
+    this.disableOptionSearch = false,
     required super.displayName,
     super.description,
     super.descriptionBuilder,
@@ -203,6 +206,7 @@ sealed class SettingsLeapSetting<S> extends SettingsLeapNode<S> {
   });
 
   final String? id;
+  final bool disableOptionSearch;
 
   Iterable<SettingsLeapNode<S>> buildOptionSearchNodes(
     BuildContext context,
@@ -276,6 +280,7 @@ final class SettingsLeapOption<V> {
     this.hintBuilder,
     this.keywords = const [],
     this.keywordsBuilder,
+    this.previewBuilder,
   });
 
   final String id;
@@ -287,6 +292,7 @@ final class SettingsLeapOption<V> {
   final SettingsLeapDisplayName? hintBuilder;
   final List<String> keywords;
   final SettingsLeapKeywordsBuilder? keywordsBuilder;
+  final SettingsLeapOptionPreviewBuilder? previewBuilder;
 
   String getDisplayName(BuildContext context) => displayName(context);
 
@@ -304,6 +310,7 @@ final class SettingsLeapOption<V> {
 final class SettingsLeapListSetting<S, V> extends SettingsLeapSetting<S> {
   const SettingsLeapListSetting({
     super.id,
+    super.disableOptionSearch,
     required super.displayName,
     required this.options,
     required this.read,
@@ -352,7 +359,15 @@ final class SettingsLeapListSetting<S, V> extends SettingsLeapSetting<S> {
       title: _SettingsLeapTitle(title: getDisplayName(context), help: help),
       trailing: currentOption == null
           ? null
-          : Text(currentOption.getDisplayName(context)),
+          : Row(
+              mainAxisSize: MainAxisSize.min,
+              spacing: 8,
+              children: [
+                Text(currentOption.getDisplayName(context)),
+                if (currentOption.previewBuilder != null)
+                  currentOption.previewBuilder!(context),
+              ],
+            ),
       subtitle: description == null ? null : Text(description),
       focusNode: focusNode,
       autofocus: autofocus,
@@ -370,6 +385,7 @@ final class SettingsLeapListSetting<S, V> extends SettingsLeapSetting<S> {
       childrenBuilder: (context) => [
         for (final option in options)
           ListTile(
+            leading: option.previewBuilder?.call(context),
             title: _SettingsLeapTitle(
               title: option.getDisplayName(context),
               help: option.getHelp(context),
@@ -401,6 +417,7 @@ final class SettingsLeapListSetting<S, V> extends SettingsLeapSetting<S> {
 final class SettingsLeapEnumSetting<S, V> extends SettingsLeapSetting<S> {
   const SettingsLeapEnumSetting({
     super.id,
+    super.disableOptionSearch,
     required super.displayName,
     required this.values,
     required this.read,
@@ -461,6 +478,7 @@ final class SettingsLeapEnumSetting<S, V> extends SettingsLeapSetting<S> {
       keywords: keywords,
       keywordsBuilder: keywordsBuilder,
       enabled: enabled,
+      disableOptionSearch: disableOptionSearch,
       options: [for (final value in values) _buildOption(value)],
       read: read,
       write: write,
@@ -546,6 +564,7 @@ final class SettingsLeapAdvancedSwitchSetting<S, V>
     extends SettingsLeapSetting<S> {
   const SettingsLeapAdvancedSwitchSetting({
     super.id,
+    super.disableOptionSearch,
     required super.displayName,
     required this.options,
     required this.readEnabled,
@@ -577,6 +596,7 @@ final class SettingsLeapAdvancedSwitchSetting<S, V>
         read: read,
         write: write,
         optionEquals: optionEquals,
+        disableOptionSearch: disableOptionSearch,
       );
 
   @override

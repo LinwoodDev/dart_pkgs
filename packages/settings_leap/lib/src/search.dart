@@ -124,6 +124,7 @@ final class SettingsLeapTree<S> {
             focusId: settingId,
           ),
         );
+        if (setting.disableOptionSearch) continue;
         for (final option in setting.buildOptionSearchNodes(context, state)) {
           final optionId = switch (option) {
             SettingsLeapOptionSearchNode<S, Object?>() => option.optionId,

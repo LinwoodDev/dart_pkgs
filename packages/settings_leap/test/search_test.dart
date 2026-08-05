@@ -173,6 +173,98 @@ void main() {
     expect(results.single.focusId, 'profile.identity.name');
   });
 
+  testWidgets('can exclude list options from search', (tester) async {
+    const tree = SettingsLeapTree<String>({
+      'profile': SettingsLeapPage(
+        displayName: _profile,
+        sections: {
+          'identity': SettingsLeapSection(
+            settings: [
+              SettingsLeapListSetting<String, String>(
+                id: 'name',
+                displayName: _profileName,
+                disableOptionSearch: true,
+                options: [
+                  SettingsLeapOption(id: 'a', value: 'a', displayName: _nameA),
+                  SettingsLeapOption(id: 'b', value: 'b', displayName: _nameB),
+                ],
+                read: _readString,
+                write: _writeString,
+              ),
+            ],
+          ),
+        },
+      ),
+    });
+
+    late List<SettingsLeapSearchResult<String>> results;
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Builder(
+          builder: (context) {
+            results = tree.search(context, 'a', 'Name B');
+            return const SizedBox.shrink();
+          },
+        ),
+      ),
+    );
+
+    expect(results, isEmpty);
+  });
+
+  testWidgets('desktop search results are scrollable', (tester) async {
+    final tree = SettingsLeapTree<Object?>({
+      'profile': SettingsLeapPage(
+        displayName: _profile,
+        sections: {
+          'identity': SettingsLeapSection(
+            settings: List.generate(
+              100,
+              (index) => SettingsLeapActionSetting(
+                id: 'theme$index',
+                displayName: (context) => 'Theme $index',
+                onTap: _noop,
+              ),
+            ),
+          ),
+        },
+      ),
+    });
+    tester.view.physicalSize = const Size(1200, 600);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: SettingsLeapView<Object?>(
+            tree: tree,
+            state: null,
+            compactWidth: 600,
+          ),
+        ),
+      ),
+    );
+
+    await tester.enterText(find.byType(SearchBar), 'Theme');
+    await tester.pump();
+
+    final resultsList = find.descendant(
+      of: find.byWidgetPredicate(
+        (widget) => widget is SettingsLeapSearchResults<Object?>,
+      ),
+      matching: find.byType(Scrollable),
+    );
+    await tester.scrollUntilVisible(
+      find.text('Theme 99'),
+      300,
+      scrollable: resultsList,
+    );
+
+    expect(find.text('Theme 99'), findsOneWidget);
+  });
+
   testWidgets('uses the page opener with search focus targets', (tester) async {
     const tree = SettingsLeapTree<String>({
       'profile': SettingsLeapPage(

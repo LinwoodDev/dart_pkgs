@@ -212,6 +212,36 @@ void main() {
     expect(results, isEmpty);
   });
 
+  testWidgets('enum options support leading widgets', (tester) async {
+    const setting = SettingsLeapEnumSetting<String, String>(
+      displayName: _profileName,
+      values: ['a', 'b'],
+      read: _readString,
+      write: _writeString,
+      valueLabel: _valueLabel,
+      valueLeadingBuilder: _valueLeading,
+    );
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: Builder(builder: (context) => setting.buildTile(context, 'a')),
+        ),
+      ),
+    );
+    await tester.tap(find.text('Profile name'));
+    await tester.pumpAndSettle();
+
+    final nameBTile = find.ancestor(
+      of: find.text('Name B'),
+      matching: find.byType(ListTile),
+    );
+    expect(
+      find.descendant(of: nameBTile, matching: find.text('Leading b')),
+      findsOneWidget,
+    );
+  });
+
   testWidgets('desktop search results are scrollable', (tester) async {
     final tree = SettingsLeapTree<Object?>({
       'profile': SettingsLeapPage(
@@ -480,6 +510,15 @@ void _noop(BuildContext context) {}
 String _readString(String value) => value;
 
 void _writeString(BuildContext context, String value) {}
+
+String _valueLabel(BuildContext context, String value) => switch (value) {
+  'a' => _nameA(context),
+  'b' => _nameB(context),
+  _ => value,
+};
+
+Widget _valueLeading(BuildContext context, String value) =>
+    Text('Leading $value');
 
 PreferredSizeWidget _treeAppBar(
   BuildContext context,

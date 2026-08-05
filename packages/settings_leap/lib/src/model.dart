@@ -30,8 +30,10 @@ typedef SettingsLeapSectionHeaderBuilder<S> =
     Widget Function(BuildContext context, S state);
 typedef SettingsLeapCustomSettingBuilder<S> =
     Widget Function(BuildContext context, S state);
-typedef SettingsLeapOptionPreviewBuilder =
+typedef SettingsLeapOptionLeadingBuilder =
     Widget Function(BuildContext context);
+typedef SettingsLeapValueLeadingBuilder<V> =
+    Widget Function(BuildContext context, V value);
 
 class _SettingsLeapDescriptionButton extends StatelessWidget {
   const _SettingsLeapDescriptionButton({
@@ -280,7 +282,7 @@ final class SettingsLeapOption<V> {
     this.hintBuilder,
     this.keywords = const [],
     this.keywordsBuilder,
-    this.previewBuilder,
+    this.leadingBuilder,
   });
 
   final String id;
@@ -292,7 +294,7 @@ final class SettingsLeapOption<V> {
   final SettingsLeapDisplayName? hintBuilder;
   final List<String> keywords;
   final SettingsLeapKeywordsBuilder? keywordsBuilder;
-  final SettingsLeapOptionPreviewBuilder? previewBuilder;
+  final SettingsLeapOptionLeadingBuilder? leadingBuilder;
 
   String getDisplayName(BuildContext context) => displayName(context);
 
@@ -364,8 +366,8 @@ final class SettingsLeapListSetting<S, V> extends SettingsLeapSetting<S> {
               spacing: 8,
               children: [
                 Text(currentOption.getDisplayName(context)),
-                if (currentOption.previewBuilder != null)
-                  currentOption.previewBuilder!(context),
+                if (currentOption.leadingBuilder != null)
+                  currentOption.leadingBuilder!(context),
               ],
             ),
       subtitle: description == null ? null : Text(description),
@@ -385,7 +387,7 @@ final class SettingsLeapListSetting<S, V> extends SettingsLeapSetting<S> {
       childrenBuilder: (context) => [
         for (final option in options)
           ListTile(
-            leading: option.previewBuilder?.call(context),
+            leading: option.leadingBuilder?.call(context),
             title: _SettingsLeapTitle(
               title: option.getDisplayName(context),
               help: option.getHelp(context),
@@ -424,6 +426,7 @@ final class SettingsLeapEnumSetting<S, V> extends SettingsLeapSetting<S> {
     required this.write,
     required this.valueLabel,
     this.valueDescription,
+    this.valueLeadingBuilder,
     super.description,
     super.descriptionBuilder,
     super.help,
@@ -439,6 +442,7 @@ final class SettingsLeapEnumSetting<S, V> extends SettingsLeapSetting<S> {
   final SettingsLeapStateWriter<V> write;
   final String Function(BuildContext context, V value) valueLabel;
   final String Function(BuildContext context, V value)? valueDescription;
+  final SettingsLeapValueLeadingBuilder<V>? valueLeadingBuilder;
 
   @override
   Iterable<SettingsLeapNode<S>> buildOptionSearchNodes(
@@ -493,6 +497,9 @@ final class SettingsLeapEnumSetting<S, V> extends SettingsLeapSetting<S> {
       descriptionBuilder: valueDescription == null
           ? null
           : (context) => valueDescription!(context, value),
+      leadingBuilder: valueLeadingBuilder == null
+          ? null
+          : (context) => valueLeadingBuilder!(context, value),
     );
   }
 }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-/// A List Tile with a Switch with an separated clickable area for the ListTile
+/// A list tile with separate clickable areas for its content and switch.
 class AdvancedSwitchListTile extends StatelessWidget {
   final Widget? leading, trailing;
   final Widget? title;
@@ -28,30 +28,25 @@ class AdvancedSwitchListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final child = Row(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Expanded(
-          child: Align(
-            child: ListTile(
-              title: title,
-              subtitle: subtitle,
-              onTap: onTap,
-              onLongPress: onLongPress,
-              leading: leading,
-              trailing: trailing,
-              selected: selected ?? value,
-            ),
-          ),
-        ),
-        const VerticalDivider(),
-        Switch(value: value, onChanged: onChanged),
-      ],
+    final child = ListTile(
+      title: title,
+      subtitle: subtitle,
+      onTap: onTap,
+      onLongPress: onLongPress,
+      leading: leading,
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ?trailing,
+          const SizedBox(height: 32, child: VerticalDivider()),
+          Switch(value: value, onChanged: onChanged),
+        ],
+      ),
+      selected: selected ?? value,
     );
     if (height != null) {
       return SizedBox(height: height, child: child);
-    } else {
-      return IntrinsicHeight(child: child);
     }
+    return child;
   }
 }

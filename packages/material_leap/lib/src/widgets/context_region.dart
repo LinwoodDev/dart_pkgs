@@ -77,22 +77,36 @@ class _ContextRegionState extends State<ContextRegion> {
 
   @override
   Widget build(BuildContext context) {
-    return MenuAnchor(
-      controller: _menuController,
-      menuChildren: widget.menuChildren,
-      key: _buttonKey,
-      builder: (context, controller, child) => GestureDetector(
-        onSecondaryTapUp: _onSecondaryTapUp,
-        onLongPress: _longPressEnabled ? _onLongPress : null,
-        onLongPressStart: _longPressEnabled ? _onLongPressStart : null,
-        child: widget.builder(
-          context,
-          widget.buttonBuilder?.call(context, controller, null) ??
-              defaultMenuButton(
-                calculateLocalOffset: true,
-                tooltip: widget.tooltip,
-              )(context, controller, null),
-          controller,
+    final inheritedMenuTheme = MenuTheme.of(context);
+    final defaultMenuStyle = MenuStyle(
+      backgroundColor: WidgetStatePropertyAll(
+        ColorScheme.of(context).surfaceContainerHighest,
+      ),
+    );
+    return MenuTheme(
+      data: MenuThemeData(
+        style:
+            inheritedMenuTheme.style?.merge(defaultMenuStyle) ??
+            defaultMenuStyle,
+        submenuIcon: inheritedMenuTheme.submenuIcon,
+      ),
+      child: MenuAnchor(
+        controller: _menuController,
+        menuChildren: widget.menuChildren,
+        key: _buttonKey,
+        builder: (context, controller, child) => GestureDetector(
+          onSecondaryTapUp: _onSecondaryTapUp,
+          onLongPress: _longPressEnabled ? _onLongPress : null,
+          onLongPressStart: _longPressEnabled ? _onLongPressStart : null,
+          child: widget.builder(
+            context,
+            widget.buttonBuilder?.call(context, controller, null) ??
+                defaultMenuButton(
+                  calculateLocalOffset: true,
+                  tooltip: widget.tooltip,
+                )(context, controller, null),
+            controller,
+          ),
         ),
       ),
     );

@@ -50,12 +50,7 @@ walks the typed document tree, and runs on native platforms and web.
 The package pins:
 
 - `flutter_rust_bridge` `2.13.0-beta.2`
-- `CodeDoctorDE/onenote.rs` commit
-  `99c53cc856f7f93b41024eeb75b10a5b1be25c03`
-
-The fork contains a small compatibility fix for real-world rich-text nodes that
-omit their paragraph-style reference. Those nodes are preserved with default
-formatting and produce a parser warning.
+- `onenote_parser` `2.0.0`
 
 After changing Rust APIs, run:
 

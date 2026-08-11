@@ -175,10 +175,13 @@ abstract class RemoteFileSystem extends DirectoryFileSystem {
 
     try {
       final request = await client.openUrl(method, url);
-      request.headers.add(
-        'Authorization',
-        'Basic ${base64Encode(utf8.encode('${storage.username}:${await config.passwordStorage?.read(storage)}'))}',
-      );
+      final password = await config.passwordStorage?.read(storage);
+      if (password != null) {
+        request.headers.add(
+          HttpHeaders.authorizationHeader,
+          'Basic ${base64Encode(utf8.encode('${storage.username}:$password'))}',
+        );
+      }
       if (headers != null) {
         headers.forEach((key, value) {
           request.headers.add(key, value);

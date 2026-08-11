@@ -239,6 +239,7 @@ class MockTypedDirectoryFileSystem<T> extends TypedDirectoryFileSystem<T> {
   MockTypedDirectoryFileSystem._(
     MockFileSystem super.mockFileSystem, {
     required super.onEncode,
+    super.onCreate,
     required super.onDecode,
     required super.config,
     super.createDefault,
@@ -247,6 +248,7 @@ class MockTypedDirectoryFileSystem<T> extends TypedDirectoryFileSystem<T> {
   factory MockTypedDirectoryFileSystem({
     required EncodeTypedFileSystemCallback<T> onEncode,
     required DecodeTypedFileSystemCallback<T> onDecode,
+    CreateTypedFileSystemCallback<T>? onCreate,
     FileSystemConfig? config,
     CreateDefaultCallback<TypedDirectoryFileSystem<T>> createDefault =
         defaultCreateDefault,
@@ -265,6 +267,7 @@ class MockTypedDirectoryFileSystem<T> extends TypedDirectoryFileSystem<T> {
       mock,
       onEncode: onEncode,
       onDecode: onDecode,
+      onCreate: onCreate,
       config: config,
       createDefault: createDefault,
     );
@@ -276,6 +279,7 @@ class MockTypedKeyFileSystem<T> extends TypedKeyFileSystem<T> {
   MockTypedKeyFileSystem._(
     MockKeyFileSystem super.mockFileSystem, {
     required super.onEncode,
+    super.onCreate,
     required super.onDecode,
     required super.config,
     super.createDefault,
@@ -284,6 +288,7 @@ class MockTypedKeyFileSystem<T> extends TypedKeyFileSystem<T> {
   factory MockTypedKeyFileSystem({
     required EncodeTypedFileSystemCallback<T> onEncode,
     required DecodeTypedFileSystemCallback<T> onDecode,
+    CreateTypedFileSystemCallback<T>? onCreate,
     FileSystemConfig? config,
     CreateDefaultCallback<TypedKeyFileSystem<T>> createDefault =
         defaultCreateDefault,
@@ -302,6 +307,7 @@ class MockTypedKeyFileSystem<T> extends TypedKeyFileSystem<T> {
       mock,
       onEncode: onEncode,
       onDecode: onDecode,
+      onCreate: onCreate,
       config: config,
       createDefault: createDefault,
     );

@@ -24,6 +24,44 @@ void main() {
     },
   );
 
+  test('TypedDirectoryFileSystem transforms creates but not updates', () async {
+    final raw = _RecordingDirectoryFileSystem();
+    final typed = TypedDirectoryFileSystem<int>.raw(
+      raw,
+      onCreate: (data) => data + 1,
+      onEncode: (data) => Uint8List.fromList([data]),
+      onDecode: (data) => data.first,
+      config: const MockFileSystemConfig(),
+    );
+
+    final created = await typed.createFile('/created.bfly', 41);
+    expect(created.data, 42);
+    expect(raw.lastData, [42]);
+
+    await typed.updateFile('/created.bfly', 7);
+    expect(raw.lastData, [7]);
+  });
+
+  test('TypedKeyFileSystem does not transform renamed files', () async {
+    var createCount = 0;
+    final typed = MockTypedKeyFileSystem<int>(
+      onCreate: (data) {
+        createCount++;
+        return data + 1;
+      },
+      onEncode: (data) => Uint8List.fromList([data]),
+      onDecode: (data) => data.first,
+    );
+
+    await typed.createFile('old', 41);
+    expect(createCount, 1);
+    expect(await typed.getFile('old'), 42);
+
+    await typed.renameFile('old', 'new');
+    expect(createCount, 1);
+    expect(await typed.getFile('new'), 42);
+  });
+
   test('TypedDirectoryFileSystem preserves raw file metadata', () async {
     final lastModified = DateTime.utc(2026, 5, 19, 10, 30);
     final creationTime = DateTime.utc(2026, 5, 18, 9, 15);

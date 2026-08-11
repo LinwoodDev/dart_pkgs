@@ -5,16 +5,19 @@ import 'package:lw_file_system/lw_file_system.dart';
 
 typedef EncodeTypedFileSystemCallback<T> = Uint8List Function(T data);
 typedef DecodeTypedFileSystemCallback<T> = T Function(Uint8List data);
+typedef CreateTypedFileSystemCallback<T> = T Function(T data);
 
 sealed class TypedFileSystem<T> extends GeneralFileSystem {
   final EncodeTypedFileSystemCallback<T> onEncode;
   final DecodeTypedFileSystemCallback<T> onDecode;
+  final CreateTypedFileSystemCallback<T>? onCreate;
 
   RemoteFileSystem? get remoteSystem;
 
   TypedFileSystem({
     required this.onEncode,
     required this.onDecode,
+    this.onCreate,
     required super.config,
   });
 
@@ -49,6 +52,7 @@ class TypedDirectoryFileSystem<T> extends TypedFileSystem<T>
     this.fileSystem, {
     required super.onDecode,
     required super.onEncode,
+    super.onCreate,
     required super.config,
     this.createDefault = defaultCreateDefault,
   });
@@ -62,6 +66,7 @@ class TypedDirectoryFileSystem<T> extends TypedFileSystem<T>
         defaultCreateDefault,
     required EncodeTypedFileSystemCallback<T> onEncode,
     required DecodeTypedFileSystemCallback<T> onDecode,
+    CreateTypedFileSystemCallback<T>? onCreate,
   }) {
     TypedDirectoryFileSystem<T>? fileSystem;
     Future<void> createWrappedDefault(_) =>
@@ -77,6 +82,7 @@ class TypedDirectoryFileSystem<T> extends TypedFileSystem<T>
       directorySystem,
       onEncode: onEncode,
       onDecode: onDecode,
+      onCreate: onCreate,
       config: config,
       createDefault: createDefault,
     );
@@ -122,6 +128,17 @@ class TypedDirectoryFileSystem<T> extends TypedFileSystem<T>
   @override
   Future<void> updateFile(String path, T data, {bool forceSync = false}) =>
       fileSystem.updateFile(path, onEncode(data), forceSync: forceSync);
+
+  @override
+  Future<FileSystemFile<T>> createFile(
+    String path,
+    T data, {
+    bool forceSync = false,
+  }) => super.createFile(
+    path,
+    onCreate?.call(data) ?? data,
+    forceSync: forceSync,
+  );
 
   @override
   Future<FileSystemEntity<T>?> readAsset(
@@ -184,6 +201,7 @@ class TypedKeyFileSystem<T> extends TypedFileSystem<T>
     this.fileSystem, {
     required super.onDecode,
     required super.onEncode,
+    super.onCreate,
     required super.config,
     this.createDefault = defaultCreateDefault,
   });
@@ -196,6 +214,7 @@ class TypedKeyFileSystem<T> extends TypedFileSystem<T>
         defaultCreateDefault,
     required EncodeTypedFileSystemCallback<T> onEncode,
     required DecodeTypedFileSystemCallback<T> onDecode,
+    CreateTypedFileSystemCallback<T>? onCreate,
   }) {
     TypedKeyFileSystem<T>? fileSystem;
     Future<void> createWrappedDefault(_) =>
@@ -210,6 +229,7 @@ class TypedKeyFileSystem<T> extends TypedFileSystem<T>
       keySystem,
       onEncode: onEncode,
       onDecode: onDecode,
+      onCreate: onCreate,
       config: config,
       createDefault: createDefault,
     );
@@ -235,6 +255,10 @@ class TypedKeyFileSystem<T> extends TypedFileSystem<T>
   @override
   Future<void> updateFile(String key, T data) =>
       fileSystem.updateFile(key, onEncode(data));
+
+  @override
+  Future<String> createFile(String key, T data) =>
+      super.createFile(key, onCreate?.call(data) ?? data);
 
   @override
   FutureOr<bool> isInitialized() => fileSystem.isInitialized();

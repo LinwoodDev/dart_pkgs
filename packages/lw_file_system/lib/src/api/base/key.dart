@@ -68,9 +68,10 @@ mixin GeneralKeyFileSystem<T> on GeneralFileSystem {
     newKey = normalizePath(newKey);
     var data = await getFile(oldKey);
     if (data == null) return null;
-    final newTemplate = await createFile(newKey, data);
+    newKey = await findAvailableKey(newKey);
+    await updateFile(newKey, data);
     await deleteFile(oldKey);
-    return newTemplate;
+    return newKey;
   }
 }
 

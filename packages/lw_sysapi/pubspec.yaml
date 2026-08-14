@@ -9,7 +9,7 @@ resolution: workspace
 
 dependencies:
   ffi: ^2.0.1
-  file_picker: ^12.0.0-beta.7
+  file_picker: ^12.0.0
   flutter:
     sdk: flutter
   plugin_platform_interface: ^2.0.2

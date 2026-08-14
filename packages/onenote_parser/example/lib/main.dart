@@ -36,13 +36,12 @@ class PickedOneNoteFile {
 }
 
 Future<PickedOneNoteFile?> pickOneNoteFile() async {
-  final result = await FilePicker.pickFiles(
+  final file = await FilePicker.pickFile(
     type: FileType.custom,
     allowedExtensions: const ['one', 'onepkg'],
   );
-  final file = result?.files.single;
-  final bytes = await file?.readAsBytes();
-  if (file == null || bytes == null) return null;
+  if (file == null) return null;
+  final bytes = await file.readAsBytes();
   return PickedOneNoteFile(name: file.name, bytes: bytes);
 }
 

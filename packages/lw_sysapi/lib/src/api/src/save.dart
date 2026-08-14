@@ -20,21 +20,12 @@ Future<void> exportFile(
     });
     return;
   }
-  var file = await FilePicker.saveFile(
+  await FilePicker.saveFile(
     dialogTitle: label,
     fileName: '$fileName.$fileExtension',
     bytes: bytes,
+    mimeType: mimeType,
     type: FileType.custom,
     allowedExtensions: [fileExtension],
   );
-  if (file == null) return;
-  if (!file.endsWith('.$fileExtension')) {
-    final dotIndex = file.lastIndexOf('.');
-    if (dotIndex != -1) {
-      file = file.substring(0, dotIndex);
-    }
-    file = '$file.$fileExtension';
-  }
-  final outputFile = File(file);
-  await outputFile.writeAsBytes(bytes);
 }

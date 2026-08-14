@@ -302,7 +302,7 @@ class WebDirectoryFileSystem extends DirectoryFileSystem with WebFileSystem {
       }
 
       launchQueue?.setConsumer(complete.toJS);
-      return completer.future;
+      return await completer.future;
     } on NoSuchMethodError catch (e) {
       if (kDebugMode) {
         print('File handling feature not supported: $e');

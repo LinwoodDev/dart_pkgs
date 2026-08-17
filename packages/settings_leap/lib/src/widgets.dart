@@ -62,18 +62,23 @@ class SettingsLeapView<S> extends StatefulWidget {
 
 class _SettingsLeapViewState<S> extends State<SettingsLeapView<S>> {
   final _searchController = TextEditingController();
+  late final ValueNotifier<S> _stateNotifier;
   String? _selectedId;
   String? _focusedId;
 
   @override
   void initState() {
     super.initState();
+    _stateNotifier = ValueNotifier(widget.state);
     _selectedId = widget.selectedId;
   }
 
   @override
   void didUpdateWidget(covariant SettingsLeapView<S> oldWidget) {
     super.didUpdateWidget(oldWidget);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _stateNotifier.value = widget.state;
+    });
     if (oldWidget.selectedId != widget.selectedId) {
       _selectedId = widget.selectedId;
     }
@@ -82,6 +87,7 @@ class _SettingsLeapViewState<S> extends State<SettingsLeapView<S>> {
   @override
   void dispose() {
     _searchController.dispose();
+    _stateNotifier.dispose();
     super.dispose();
   }
 
@@ -275,16 +281,19 @@ class _SettingsLeapViewState<S> extends State<SettingsLeapView<S>> {
     }
     Navigator.of(context).push(
       MaterialPageRoute<void>(
-        builder: (context) => SettingsLeapGeneratedPage<S>(
-          page: page,
-          pageId: id,
-          state: widget.state,
-          focusedId: focusedId,
-          appBarBuilder: widget.tree.appBarBuilder,
-          inView: false,
-          cardMargin: widget.cardMargin,
-          cardPadding: widget.cardPadding,
-          sectionTitlePadding: widget.sectionTitlePadding,
+        builder: (context) => ValueListenableBuilder<S>(
+          valueListenable: _stateNotifier,
+          builder: (context, state, child) => SettingsLeapGeneratedPage<S>(
+            page: page,
+            pageId: id,
+            state: state,
+            focusedId: focusedId,
+            appBarBuilder: widget.tree.appBarBuilder,
+            inView: false,
+            cardMargin: widget.cardMargin,
+            cardPadding: widget.cardPadding,
+            sectionTitlePadding: widget.sectionTitlePadding,
+          ),
         ),
       ),
     );

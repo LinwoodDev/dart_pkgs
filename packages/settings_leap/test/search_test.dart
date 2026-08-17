@@ -402,6 +402,58 @@ void main() {
     expect(tile.selected, isTrue);
   });
 
+  testWidgets('mobile page reflects state updates after it is opened', (
+    tester,
+  ) async {
+    var state = false;
+    tester.view.physicalSize = const Size(400, 800);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: StatefulBuilder(
+          builder: (context, setState) {
+            final tree = SettingsLeapTree<bool>({
+              'profile': SettingsLeapPage(
+                displayName: _profile,
+                sections: {
+                  'appearance': SettingsLeapSection(
+                    settings: [
+                      SettingsLeapBoolSetting<bool>(
+                        displayName: _theme,
+                        read: (value) => value,
+                        write: (context, value) =>
+                            setState(() => state = value),
+                      ),
+                    ],
+                  ),
+                },
+              ),
+            });
+            return Scaffold(
+              body: SettingsLeapView<bool>(
+                tree: tree,
+                state: state,
+                compactWidth: 600,
+              ),
+            );
+          },
+        ),
+      ),
+    );
+
+    await tester.tap(find.text('Profile'));
+    await tester.pumpAndSettle();
+    expect(tester.widget<Switch>(find.byType(Switch)).value, isFalse);
+
+    await tester.tap(find.byType(Switch));
+    await tester.pumpAndSettle();
+
+    expect(tester.widget<Switch>(find.byType(Switch)).value, isTrue);
+  });
+
   testWidgets('uses tree app bar builder with page overrides', (tester) async {
     const page = SettingsLeapPage<Object?>(displayName: _profile);
 

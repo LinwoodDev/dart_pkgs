@@ -21,11 +21,16 @@ void main() {
     }
   });
 
-  DavRemoteDirectoryFileSystem createFileSystem({String? password}) {
+  DavRemoteDirectoryFileSystem createFileSystem({
+    String? password,
+    Map<String, String> paths = const {},
+    String variant = '',
+  }) {
     final storage = DavRemoteStorage(
       name: 'dav',
       username: 'test',
       url: 'http://${server.address.host}:${server.port}',
+      paths: paths,
     );
     final passwordStorage = InMemoryPasswordStorage();
     if (password != null) passwordStorage.write(storage, password);
@@ -34,12 +39,75 @@ void main() {
       config: FileSystemConfig(
         passwordStorage: passwordStorage,
         storeName: 'test_store',
+        variant: variant,
         getDirectory: (_) async => tempDir.path,
         database: 'test_db',
         databaseVersion: 1,
       ),
     );
   }
+
+  test('creates a missing configured root and its parents', () async {
+    final paths = <String>[];
+    var parentExists = false;
+    var directoryExists = false;
+    final handling = server.forEach((request) async {
+      methods.add(request.method);
+      paths.add(request.uri.path);
+      switch (request.method) {
+        case 'PROPFIND':
+          if (!directoryExists) {
+            request.response.statusCode = HttpStatus.notFound;
+          } else {
+            request.response
+              ..statusCode = HttpStatus.multiStatus
+              ..write('''<?xml version="1.0"?>
+<d:multistatus xmlns:d="DAV:">
+  <d:response>
+    <d:href>${request.uri.path}</d:href>
+    <d:propstat>
+      <d:prop><d:resourcetype><d:collection/></d:resourcetype></d:prop>
+      <d:status>HTTP/1.1 200 OK</d:status>
+    </d:propstat>
+  </d:response>
+</d:multistatus>''');
+          }
+        case 'MKCOL':
+          switch (request.uri.path) {
+            case '/Butterfly/Documents':
+              if (parentExists) {
+                directoryExists = true;
+                request.response.statusCode = HttpStatus.created;
+              } else {
+                request.response.statusCode = HttpStatus.conflict;
+              }
+            case '/Butterfly':
+              parentExists = true;
+              request.response.statusCode = HttpStatus.created;
+            default:
+              request.response.statusCode = HttpStatus.notFound;
+          }
+      }
+      await request.response.close();
+    });
+
+    final asset = await createFileSystem(
+      paths: const {'': 'Butterfly', 'documents': 'Documents'},
+      variant: 'documents',
+    ).fetchRemoteAsset('', readData: false);
+
+    expect(asset, isA<RawFileSystemDirectory>());
+    expect(methods, ['PROPFIND', 'MKCOL', 'MKCOL', 'MKCOL', 'PROPFIND']);
+    expect(paths.map((path) => path.replaceFirst(RegExp(r'/$'), '')), [
+      '/Butterfly/Documents',
+      '/Butterfly/Documents',
+      '/Butterfly',
+      '/Butterfly/Documents',
+      '/Butterfly/Documents',
+    ]);
+    await server.close();
+    await handling;
+  });
 
   test(
     'uses PROPFIND to distinguish uncached directories from files',

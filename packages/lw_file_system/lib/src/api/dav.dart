@@ -308,23 +308,25 @@ class DavRemoteDirectoryFileSystem extends RemoteFileSystem {
   }
 
   String _normalizePath(String path) {
-    path = normalizePath(path);
-    if (path.startsWith('/')) {
-      path = path.substring(1);
-    }
-    return path;
+    path = normalizeRelativePath(path);
+    return path == '.' ? '' : path;
   }
 
   @override
   Future<void> createRemoteDirectory(String path) async {
     path = _normalizePath(path);
-    final response = await createRequest(path.split('/'), method: 'MKCOL');
-    if (response == null) {
-      throw FileSystemException(
-        'Failed to create directory: Request failed',
-        path,
-      );
-    }
+    final fullPath = storage.buildVariantPath(
+      variant: config.currentPathVariant,
+      path: path.isEmpty ? const [] : path.split('/'),
+    );
+    await _createRemoteDirectory(fullPath);
+  }
+
+  Future<void> _createRemoteDirectory(String path) async {
+    final response = await createUriRequest(
+      storage.buildUri(path: path.split('/')),
+      method: 'MKCOL',
+    );
     final status = response.statusCode;
     await response.drain<void>();
     if (status == HttpStatus.created) {
@@ -336,8 +338,8 @@ class DavRemoteDirectoryFileSystem extends RemoteFileSystem {
     } else if (status == HttpStatus.conflict) {
       final parent = p.url.dirname(path);
       if (parent != '.' && parent != '/') {
-        await createRemoteDirectory(parent);
-        return createRemoteDirectory(path);
+        await _createRemoteDirectory(parent);
+        return _createRemoteDirectory(path);
       }
     }
 

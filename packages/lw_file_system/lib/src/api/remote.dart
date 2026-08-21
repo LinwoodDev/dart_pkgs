@@ -165,10 +165,29 @@ abstract class RemoteFileSystem extends DirectoryFileSystem {
       variant: config.currentPathVariant,
       path: path,
     );
+    if (url == null) return null;
+    return createUriRequest(
+      url,
+      method: method,
+      bodyBytes: bodyBytes,
+      body: body,
+      headers: headers,
+      timeout: timeout,
+    );
+  }
+
+  @protected
+  Future<HttpClientResponse> createUriRequest(
+    Uri url, {
+    String method = 'GET',
+    List<int>? bodyBytes,
+    String? body,
+    Map<String, String>? headers,
+    Duration? timeout,
+  }) async {
     client.badCertificateCallback =
         (X509Certificate cert, String host, int port) =>
             String.fromCharCodes(cert.sha1) == storage.certificateSha1;
-    if (url == null) return null;
 
     // Set connection timeout
     client.connectionTimeout = timeout ?? defaultTimeout;

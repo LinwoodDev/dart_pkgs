@@ -5,15 +5,16 @@ edition = "2021"
 
 [lib]
 name = "rust_lib_onenote_parser"
-crate-type = ["cdylib", "staticlib"]
+crate-type = ["staticlib", "cdylib"]
 
 [dependencies]
-flutter_rust_bridge = "=2.13.0-beta.6"
+flutter_rust_bridge = "=2.13.0"
 onenote_parser = { version = "2.0.0", default-features = false, features = ["onepkg"] }
 typed-path = "0.12.3"
 
-[target.'cfg(not(target_family = "wasm"))'.dependencies]
-onenote_parser = { version = "2.0.0", default-features = false, features = ["native-fs", "onepkg"] }
-
 [lints.rust]
 unexpected_cfgs = { level = "warn", check-cfg = ['cfg(frb_expand)'] }
+
+[profile.release]
+lto = "thin"
+codegen-units = 1

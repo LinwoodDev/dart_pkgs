@@ -4,11 +4,10 @@
 
 ## Supported inputs
 
-- Native: `.one`, `.onetoc2`, and `.onepkg` paths.
 - Native and web: `.one` and `.onepkg` bytes.
 
-A loose `.onetoc2` notebook references sibling `.one` files, so browser clients
-should provide a `.onepkg` archive when parsing a complete notebook.
+A loose `.onetoc2` notebook references sibling `.one` files, so provide a
+`.onepkg` archive when parsing a complete notebook.
 
 ## Usage
 
@@ -49,7 +48,7 @@ walks the typed document tree, and runs on native platforms and web.
 
 The package pins:
 
-- `flutter_rust_bridge` `2.13.0-beta.2`
+- `flutter_rust_bridge` `2.13.0`
 - `onenote_parser` `2.0.0`
 
 After changing Rust APIs, run:

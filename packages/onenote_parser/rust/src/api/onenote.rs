@@ -9,7 +9,8 @@ use super::{
 use crate::api::{OneNoteEmbeddedInk, OneNoteEmbeddedInkSpace, OneNoteEmbeddedObject};
 use crate::memory_file_system::MemoryFileSystem;
 use onenote_parser::contents::{
-    Content, EmbeddedFile, EmbeddedObject, Image, Ink, InkBoundingBox, InkPoint, InkStroke, Outline, OutlineElement, OutlineGroup, OutlineItem, RichText, Table, TableCell, TableRow
+    Content, EmbeddedFile, EmbeddedObject, Image, Ink, InkBoundingBox, InkPoint, InkStroke,
+    Outline, OutlineElement, OutlineGroup, OutlineItem, RichText, Table, TableCell, TableRow,
 };
 use onenote_parser::notebook::Notebook;
 use onenote_parser::page::{Page, PageContent, PageSeries};
@@ -17,60 +18,11 @@ use onenote_parser::property::common::Color;
 use onenote_parser::section::{Section, SectionEntry, SectionGroup};
 use onenote_parser::Parser;
 use std::io::Read;
-use typed_path::TypedPath;
-
-/// Parse a `.onetoc2` notebook file.
-pub fn parse_notebook(path: String) -> Result<OneNoteNotebook, String> {
-    #[cfg(not(target_family = "wasm"))]
-    {
-        Parser::new()
-            .parse_notebook(TypedPath::derive(&path))
-            .map(|value| notebook(&value))
-            .map_err(|error| error.to_string())
-    }
-    #[cfg(target_family = "wasm")]
-    {
-        let _ = path;
-        Err("path-based parsing is unavailable on web; pass file bytes instead".to_owned())
-    }
-}
-
-/// Parse a `.one` section file.
-pub fn parse_section(path: String) -> Result<OneNoteSection, String> {
-    #[cfg(not(target_family = "wasm"))]
-    {
-        Parser::new()
-            .parse_section(TypedPath::derive(&path))
-            .map(|value| section(&value))
-            .map_err(|error| error.to_string())
-    }
-    #[cfg(target_family = "wasm")]
-    {
-        let _ = path;
-        Err("path-based parsing is unavailable on web; pass file bytes instead".to_owned())
-    }
-}
-
-/// Parse a `.onepkg` notebook archive.
-pub fn parse_package(path: String) -> Result<OneNoteNotebook, String> {
-    #[cfg(not(target_family = "wasm"))]
-    {
-        Parser::new()
-            .parse_package(TypedPath::derive(&path))
-            .map(|value| notebook(&value))
-            .map_err(|error| error.to_string())
-    }
-    #[cfg(target_family = "wasm")]
-    {
-        let _ = path;
-        Err("path-based parsing is unavailable on web; pass file bytes instead".to_owned())
-    }
-}
 
 /// Parse a `.one` section from bytes. This works on native platforms and web.
 pub fn parse_section_bytes(data: Vec<u8>, file_name: String) -> Result<OneNoteSection, String> {
     Parser::new_with_fs(MemoryFileSystem { data: &[] })
-        .parse_section_buffer(&data, TypedPath::derive(&file_name))
+        .parse_section_buffer(&data, typed_path::TypedPath::derive(&file_name))
         .map(|value| section(&value))
         .map_err(|error| error.to_string())
 }
@@ -78,15 +30,8 @@ pub fn parse_section_bytes(data: Vec<u8>, file_name: String) -> Result<OneNoteSe
 /// Parse a `.onepkg` archive from bytes. This works on native platforms and web.
 pub fn parse_package_bytes(data: Vec<u8>) -> Result<OneNoteNotebook, String> {
     Parser::new_with_fs(MemoryFileSystem { data: &data })
-        .parse_package(TypedPath::unix("notebook.onepkg"))
+        .parse_package(typed_path::TypedPath::unix("notebook.onepkg"))
         .map(|value| notebook(&value))
-        .map_err(|error| error.to_string())
-}
-
-/// Dump the low-level OneStore representation for diagnostic tools.
-pub fn dump_onestore(data: Vec<u8>) -> Result<String, String> {
-    Parser::new_with_fs(MemoryFileSystem { data: &[] })
-        .dump_onestore(&data)
         .map_err(|error| error.to_string())
 }
 
@@ -147,9 +92,7 @@ fn page_content(value: &PageContent) -> OneNotePageContent {
     match value {
         PageContent::Outline(value) => OneNotePageContent::Outline(outline(value)),
         PageContent::Image(value) => OneNotePageContent::Image(image(value)),
-        PageContent::EmbeddedFile(value) => {
-            OneNotePageContent::EmbeddedFile(embedded_file(value))
-        }
+        PageContent::EmbeddedFile(value) => OneNotePageContent::EmbeddedFile(embedded_file(value)),
         PageContent::Ink(value) => OneNotePageContent::Ink(ink(value)),
         PageContent::Unknown => OneNotePageContent::Unknown,
     }
@@ -211,11 +154,7 @@ fn rich_text(value: &RichText) -> OneNoteRichText {
     OneNoteRichText {
         text: value.text().to_owned(),
         text_run_indices: value.text_run_indices().to_vec(),
-        text_run_styles: value
-            .text_run_formatting()
-            .iter()
-            .map(text_style)
-            .collect(),
+        text_run_styles: value.text_run_formatting().iter().map(text_style).collect(),
         paragraph_style: text_style(value.paragraph_style()),
         paragraph_space_before: value.paragraph_space_before(),
         paragraph_space_after: value.paragraph_space_after(),
@@ -231,15 +170,10 @@ fn rich_text(value: &RichText) -> OneNoteRichText {
 
 fn embedded_object(value: &EmbeddedObject) -> OneNoteEmbeddedObject {
     match value {
-        EmbeddedObject::Ink(value) => {
-            OneNoteEmbeddedObject::Ink(OneNoteEmbeddedInk {
-                ink: ink(value.ink()),
-                display_bounding_box: value
-                    .bounding_box()
-                    .copied()
-                    .map(ink_bounding_box),
-            })
-        }
+        EmbeddedObject::Ink(value) => OneNoteEmbeddedObject::Ink(OneNoteEmbeddedInk {
+            ink: ink(value.ink()),
+            display_bounding_box: value.bounding_box().copied().map(ink_bounding_box),
+        }),
         EmbeddedObject::InkSpace(value) => {
             OneNoteEmbeddedObject::InkSpace(OneNoteEmbeddedInkSpace {
                 width: value.width(),

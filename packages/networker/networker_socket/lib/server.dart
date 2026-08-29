@@ -15,9 +15,7 @@ class NetworkerSocketInfo extends ConnectionInfo {
   NetworkerSocketInfo(this.address, this.socket);
 
   @override
-  void close([int? code, String? reason]) {
-    socket.close(code, reason);
-  }
+  Future<void> close([int? code, String? reason]) => socket.close(code, reason);
 
   @override
   bool get isClosed => socket.closeCode != null;
@@ -37,6 +35,8 @@ class NetworkerSocketServer extends NetworkerServer<NetworkerSocketInfo> {
   final bool overrideStatusCode;
   final bool _ownsServer;
   StreamSubscription<HttpRequest>? _subscription;
+  bool _isDisposed = false;
+  Future<void>? _closeFuture;
 
   HttpServer? get server => _server;
 
@@ -72,16 +72,30 @@ class NetworkerSocketServer extends NetworkerServer<NetworkerSocketInfo> {
   Stream<void> get onOpen => _onOpen.stream;
 
   @override
-  Future<void> close() async {
-    await super.close();
-    await _subscription?.cancel();
-    _subscription = null;
-    if (_ownsServer) {
-      await _server?.close();
+  Future<void> close() {
+    final pendingClose = _closeFuture;
+    if (pendingClose != null) return pendingClose;
+    _isDisposed = true;
+    final parentClose = super.close();
+    return _closeFuture = _close(parentClose);
+  }
+
+  Future<void> _close(Future<void> parentClose) async {
+    try {
+      await parentClose;
+    } finally {
+      await _subscription?.cancel();
+      _subscription = null;
+      if (_ownsServer) {
+        await _server?.close();
+      }
+      _server = null;
+      if (!_onClosed.isClosed) {
+        _onClosed.add(null);
+      }
+      await _onOpen.close();
+      await _onClosed.close();
     }
-    _server = null;
-    _onOpen.close();
-    _onClosed.close();
   }
 
   @override
@@ -180,8 +194,12 @@ class NetworkerSocketServer extends NetworkerServer<NetworkerSocketInfo> {
         } catch (_) {}
       },
       onDone: () {
-        removeConnection(id);
+        removeConnection(id).ignore();
       },
+      onError: (_) {
+        removeConnection(id).ignore();
+      },
+      cancelOnError: true,
     );
   }
 
@@ -196,6 +214,9 @@ class NetworkerSocketServer extends NetworkerServer<NetworkerSocketInfo> {
 
   @override
   Future<void> init() async {
+    if (_isDisposed) {
+      throw StateError('A closed NetworkerSocketServer cannot be reused.');
+    }
     if (_subscription != null) {
       return;
     }

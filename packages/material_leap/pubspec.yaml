@@ -34,6 +34,7 @@ dependencies:
       path: packages/lw_file_system_api
       ref: 37594211585889e35e65dad382d4fdcf29ac69a0
 
+  material_ui: any
 dev_dependencies:
   flutter_test:
     sdk: flutter

@@ -23,6 +23,7 @@ dependencies:
       url: https://github.com/CodeDoctorDE/phosphor-flutter.git
       ref: f7479596c67239e755ab1fe3bade84895bfd6222
 
+  material_ui: any
 dev_dependencies:
   flutter_lints: ^6.0.0
   flutter_test:

@@ -13,6 +13,7 @@ dependencies:
   settings_leap:
     path: ..
 
+  material_ui: any
 dev_dependencies:
   flutter_lints: ^6.0.0
 

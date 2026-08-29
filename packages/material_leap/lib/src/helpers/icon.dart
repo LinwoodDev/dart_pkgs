@@ -1,3 +1,10 @@
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
-typedef IconGetter = PhosphorIconData Function([PhosphorIconsStyle style]);
+class IconGetter {
+  final PhosphorIconData light;
+  final PhosphorIconData fill;
+
+  const IconGetter(this.light, this.fill);
+
+  PhosphorIconData call([bool filled = false]) => filled ? fill : light;
+}

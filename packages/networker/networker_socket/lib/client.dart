@@ -15,6 +15,12 @@ class NetworkerSocketClient extends NetworkerClient {
   static List<String> supportedSchemes = List.unmodifiable(['ws', 'wss']);
 
   WebSocketChannel? _channel;
+  StreamSubscription<dynamic>? _subscription;
+  bool _isOpen = false;
+  bool _isDisposed = false;
+  bool _closedNotified = false;
+  Future<void>? _initFuture;
+  Future<void>? _closeFuture;
 
   @override
   final Uri address;
@@ -35,25 +41,53 @@ class NetworkerSocketClient extends NetworkerClient {
   NetworkerSocketClient(this.address, {this.protocols, this.pingInterval});
 
   @override
-  Future<void> init() async {
-    if (isOpen) {
-      return;
+  Future<void> init() {
+    if (_isDisposed) {
+      return Future.error(
+        StateError('A closed NetworkerSocketClient cannot be reused.'),
+      );
     }
+    if (isOpen) {
+      return Future.value();
+    }
+    return _initFuture ??= _init().whenComplete(() => _initFuture = null);
+  }
+
+  Future<void> _init() async {
+    await _subscription?.cancel();
+    _closedNotified = false;
     final channel = _channel = createWebSocketChannel();
-    channel.stream.listen(
+    _subscription = channel.stream.listen(
       (event) {
         handleData(event);
       },
       onDone: () {
-        _onClosed.add(null);
+        _notifyClosed();
       },
       onError: (error) {
-        _onClosed.addError(error);
+        _notifyClosed(error);
       },
-      cancelOnError: true,
+      cancelOnError: false,
     );
-    await channel.ready;
-    _onOpen.add(null);
+    try {
+      await channel.ready;
+      _isOpen = true;
+      _onOpen.add(null);
+    } catch (error, stackTrace) {
+      _notifyClosed(error, stackTrace);
+      rethrow;
+    }
+  }
+
+  void _notifyClosed([Object? error, StackTrace? stackTrace]) {
+    _isOpen = false;
+    if (_closedNotified || _onClosed.isClosed) return;
+    _closedNotified = true;
+    if (error != null) {
+      _onClosed.addError(error, stackTrace);
+    } else {
+      _onClosed.add(null);
+    }
   }
 
   /// Creates the [WebSocketChannel] used for the connection.
@@ -85,15 +119,25 @@ class NetworkerSocketClient extends NetworkerClient {
   }
 
   @override
-  Future<void> close() async {
-    await _channel?.sink.close();
+  Future<void> close() => _closeFuture ??= _close();
+
+  Future<void> _close() async {
+    _isDisposed = true;
+    final channel = _channel;
     _channel = null;
-    _onOpen.close();
-    _onClosed.close();
+    try {
+      await channel?.sink.close();
+      _notifyClosed();
+    } finally {
+      await _subscription?.cancel();
+      _subscription = null;
+      await _onOpen.close();
+      await _onClosed.close();
+    }
   }
 
   @override
-  bool get isClosed => _channel == null || _channel?.closeCode != null;
+  bool get isClosed => !_isOpen;
 
   int? get closeCode => _channel?.closeCode;
   String? get closeReason => _channel?.closeReason;

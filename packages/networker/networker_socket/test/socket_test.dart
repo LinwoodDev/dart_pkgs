@@ -18,7 +18,9 @@ void main() {
 
     await server.init();
     final connected = expectLater(server.clientConnect, emits(anything));
-    await client.init();
+    final initializing = client.init();
+    expect(identical(initializing, client.init()), isTrue);
+    await initializing;
     await connected;
 
     final message = expectLater(
@@ -51,5 +53,25 @@ void main() {
       server.clientConnections.single,
     );
     await response;
+  });
+
+  test('closing a server disconnects its websocket clients', () async {
+    final server = NetworkerSocketServer(InternetAddress.loopbackIPv4, 0);
+    await server.init();
+    final client = NetworkerSocketClient(server.address);
+
+    addTearDown(client.close);
+    addTearDown(server.close);
+
+    final connected = expectLater(server.clientConnect, emits(anything));
+    await client.init();
+    await connected;
+    final disconnected = expectLater(client.onClosed, emits(null));
+
+    await server.close();
+
+    await disconnected;
+    expect(client.isClosed, isTrue);
+    expect(server.clientConnections, isEmpty);
   });
 }

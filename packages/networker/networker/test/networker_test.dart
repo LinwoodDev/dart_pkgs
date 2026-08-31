@@ -114,6 +114,86 @@ void main() {
       throwsRangeError,
     );
   });
+
+  test('closing a server closes and removes every client connection', () async {
+    final server = _TestServer();
+    final first = _TestConnectionInfo();
+    final second = _TestConnectionInfo();
+    server.addTestConnection(first);
+    server.addTestConnection(second);
+
+    final close = server.close();
+    expect(identical(close, server.close()), isTrue);
+    await close;
+
+    expect(first.closeCount, 1);
+    expect(second.closeCount, 1);
+    expect(server.clientConnections, isEmpty);
+  });
+
+  test('removing a connection closes it', () async {
+    final server = _TestServer();
+    final connection = _TestConnectionInfo();
+    final channel = server.addTestConnection(connection);
+
+    expect(await server.removeTestConnection(channel), isTrue);
+
+    expect(connection.closeCount, 1);
+    expect(server.clientConnections, isEmpty);
+    await server.close();
+  });
+}
+
+final class _TestConnectionInfo implements ConnectionInfo {
+  bool _closed = false;
+  int closeCount = 0;
+
+  @override
+  Uri get address => Uri.parse('test://client');
+
+  @override
+  Future<void> close() async {
+    closeCount++;
+    _closed = true;
+  }
+
+  @override
+  bool get isClosed => _closed;
+
+  @override
+  bool get isOpen => !_closed;
+
+  @override
+  Future<void> sendMessage(Uint8List data) async {}
+}
+
+final class _TestServer extends NetworkerServer<_TestConnectionInfo> {
+  final _open = Stream<void>.empty();
+  final _closed = Stream<void>.empty();
+  bool _initialized = false;
+
+  Channel addTestConnection(_TestConnectionInfo info) =>
+      addClientConnection(info);
+
+  Future<bool> removeTestConnection(Channel channel) =>
+      removeConnection(channel);
+
+  @override
+  Uri get address => Uri.parse('test://server');
+
+  @override
+  Future<void> init() async {
+    _initialized = true;
+  }
+
+  @override
+  bool get isClosed => !_initialized;
+
+  @override
+  Stream<void> get onClosed => _closed;
+
+  @override
+  Stream<void> get onOpen => _open;
 }
 
 class ClientEvents {

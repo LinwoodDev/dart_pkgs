@@ -18,6 +18,7 @@ mixin NetworkerServerMixin<T extends ConnectionInfo, O> on NetworkerBase<O> {
       StreamController.broadcast();
   final StreamController<Set<Channel>> _changeController =
       StreamController.broadcast();
+  Future<void>? _closeFuture;
 
   Stream<(Channel, ConnectionInfo)> get clientConnect =>
       _connectController.stream;
@@ -44,7 +45,7 @@ mixin NetworkerServerMixin<T extends ConnectionInfo, O> on NetworkerBase<O> {
   @protected
   Channel addClientConnection(T info, [Channel? id]) {
     if (id != null) {
-      closeConnection(id);
+      closeConnection(id).ignore();
     }
     final current = id ?? _findAvailableChannel();
     if (current == kAnyChannel) return current;
@@ -56,12 +57,13 @@ mixin NetworkerServerMixin<T extends ConnectionInfo, O> on NetworkerBase<O> {
   }
 
   @protected
-  bool removeConnection(Channel id) {
+  Future<bool> removeConnection(Channel id) async {
     final info = _connections.remove(id);
     if (info == null) return false;
     onClientDisconnected(id, info);
     _disconnectController.add((id, info));
     _changeController.add(clientConnections);
+    await info.close();
     return true;
   }
 
@@ -75,9 +77,7 @@ mixin NetworkerServerMixin<T extends ConnectionInfo, O> on NetworkerBase<O> {
   @protected
   void onClientDisconnected(Channel id, T info) {}
 
-  void closeConnection(Channel id) {
-    getConnectionInfo(id)?.close();
-  }
+  Future<bool> closeConnection(Channel id) => removeConnection(id);
 
   void _sendMessage(Uint8List data, Channel channel) =>
       getConnectionInfo(channel)?.sendMessage(data);
@@ -96,20 +96,21 @@ mixin NetworkerServerMixin<T extends ConnectionInfo, O> on NetworkerBase<O> {
   }
 
   @protected
-  void clearConnections() {
-    final ids = _connections.keys.toList();
-    for (final id in ids) {
-      removeConnection(id);
-    }
-  }
+  Future<void> clearConnections() async =>
+      Future.wait(clientConnections.map(removeConnection));
 
   @override
   @mustCallSuper
-  FutureOr<void> close() {
-    clearConnections();
-    _connectController.close();
-    _disconnectController.close();
-    _changeController.close();
+  Future<void> close() => _closeFuture ??= _close();
+
+  Future<void> _close() async {
+    try {
+      await clearConnections();
+    } finally {
+      await _connectController.close();
+      await _disconnectController.close();
+      await _changeController.close();
+    }
   }
 }
 

@@ -73,6 +73,51 @@ void main() {
       final dir = asset as FileSystemDirectory<Uint8List>;
       expect(dir.assets.length, 2);
     });
+
+    test(
+      'duplicates nested directories without loading the full tree',
+      () async {
+        final recordingFileSystem = _RecordingMockFileSystem();
+        recordingFileSystem
+          ..addFile('source/root.txt', Uint8List.fromList([1]))
+          ..addFile('source/one/first.txt', Uint8List.fromList([2]))
+          ..addFile('source/one/two/second.txt', Uint8List.fromList([3]));
+
+        final duplicated = await recordingFileSystem.duplicateAsset(
+          'source',
+          'copy',
+        );
+
+        expect(duplicated, isA<FileSystemDirectory<Uint8List>>());
+        final rootFile = await recordingFileSystem.getAsset('copy/root.txt');
+        final firstFile = await recordingFileSystem.getAsset(
+          'copy/one/first.txt',
+        );
+        final secondFile = await recordingFileSystem.getAsset(
+          'copy/one/two/second.txt',
+        );
+        expect(
+          (rootFile as FileSystemFile<Uint8List>).data,
+          Uint8List.fromList([1]),
+        );
+        expect(
+          (firstFile as FileSystemFile<Uint8List>).data,
+          Uint8List.fromList([2]),
+        );
+        expect(
+          (secondFile as FileSystemFile<Uint8List>).data,
+          Uint8List.fromList([3]),
+        );
+        expect(
+          recordingFileSystem.reads.where(
+            (read) => read.path.contains('source'),
+          ),
+          everyElement(
+            predicate<_AssetRead>((read) => read.listLevel == noListLevel),
+          ),
+        );
+      },
+    );
   });
 
   group('MockKeyFileSystem', () {
@@ -133,3 +178,25 @@ void main() {
     });
   });
 }
+
+class _RecordingMockFileSystem extends MockFileSystem {
+  final reads = <_AssetRead>[];
+
+  @override
+  Future<FileSystemEntity<Uint8List>?> getAsset(
+    String path, {
+    int listLevel = oneListLevel,
+    bool readData = true,
+    bool forceRemote = false,
+  }) {
+    reads.add((path: path, listLevel: listLevel, readData: readData));
+    return super.getAsset(
+      path,
+      listLevel: listLevel,
+      readData: readData,
+      forceRemote: forceRemote,
+    );
+  }
+}
+
+typedef _AssetRead = ({String path, int listLevel, bool readData});

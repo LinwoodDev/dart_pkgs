@@ -172,10 +172,13 @@ mixin GeneralDirectoryFileSystem<T> on GeneralFileSystem {
     bool forceSync = false,
   }) async {
     path = normalizePath(path);
-    final asset = await getAsset(path, listLevel: allListLevel);
+    final asset = await getAsset(path, listLevel: noListLevel, readData: false);
     if (asset == null) return null;
     if (asset is FileSystemFile<T>) {
-      final data = asset.data;
+      final resolved = asset.hasData
+          ? asset
+          : await getAsset(path, listLevel: noListLevel, readData: true);
+      final data = resolved is FileSystemFile<T> ? resolved.data : null;
       if (data != null) {
         return createFile(newPath, data, forceSync: forceSync);
       }

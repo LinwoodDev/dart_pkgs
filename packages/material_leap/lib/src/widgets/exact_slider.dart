@@ -13,6 +13,7 @@ class ExactSlider extends StatefulWidget {
   final Widget? header, subtitle, leading, trailing, bottom;
   final double value, min, max;
   final double? defaultValue;
+  final double? sliderStep;
   final double? headerWidth;
   final OnValueChanged? onChanged, onChangeEnd;
   final Color? color, thumbColor;
@@ -28,6 +29,7 @@ class ExactSlider extends StatefulWidget {
     this.subtitle,
     this.fractionDigits = 2,
     this.defaultValue,
+    this.sliderStep,
     this.min = 0,
     this.max = 100,
     this.divide = false,
@@ -40,7 +42,7 @@ class ExactSlider extends StatefulWidget {
     this.contentPadding,
     this.headerWidth,
     this.clampValue = false,
-  });
+  }) : assert(sliderStep == null || sliderStep > 0);
 
   ExactSlider.srgb({
     super.key,
@@ -51,6 +53,7 @@ class ExactSlider extends StatefulWidget {
     this.subtitle,
     this.fractionDigits = 2,
     this.defaultValue,
+    this.sliderStep,
     this.min = 0,
     this.max = 100,
     this.divide = false,
@@ -64,7 +67,8 @@ class ExactSlider extends StatefulWidget {
     this.headerWidth,
     this.clampValue = false,
   }) : color = color.toColor(),
-       thumbColor = thumbColor.toColor();
+       thumbColor = thumbColor.toColor(),
+       assert(sliderStep == null || sliderStep > 0);
 
   @override
   _ExactSliderState createState() => _ExactSliderState();
@@ -122,6 +126,14 @@ class _ExactSliderState extends State<ExactSlider> {
     if (_controller.text.trim() != text) {
       _controller.text = text;
     }
+  }
+
+  double _snapSliderValue(double value) {
+    final step = widget.sliderStep;
+    if (step == null) return value;
+    return ((value / step).round() * step)
+        .clamp(widget.min, widget.max)
+        .toDouble();
   }
 
   @override
@@ -185,13 +197,15 @@ class _ExactSliderState extends State<ExactSlider> {
                 min: widget.min,
                 max: widget.max,
                 activeColor: widget.color,
-                onChangeEnd: widget.onChangeEnd,
+                onChangeEnd: widget.onChangeEnd == null
+                    ? null
+                    : (value) => widget.onChangeEnd!(_snapSliderValue(value)),
                 thumbColor: widget.thumbColor,
                 divisions: widget.divide
                     ? ((widget.max - widget.min + 1) * pow(10, digits)).toInt()
                     : null,
                 onChanged: (value) {
-                  _changeValue(value);
+                  _changeValue(_snapSliderValue(value));
                 },
               );
               final header = widget.header;

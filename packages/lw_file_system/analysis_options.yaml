@@ -11,6 +11,10 @@
 # (the recommended set includes the core lints).
 # The core lints are also what is used by pub.dev for scoring packages.
 
+analyzer:
+  exclude:
+    - build/**
+    - android/**
 include: package:flutter_lints/flutter.yaml
 # Uncomment the following section to specify additional rules.
 

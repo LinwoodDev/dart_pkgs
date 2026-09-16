@@ -30,7 +30,7 @@ resolution: workspace
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
-  file_picker: ">=11.0.2 <13.0.0"
+  file_picker: ^13.1.0
   flutter:
     sdk: flutter
 

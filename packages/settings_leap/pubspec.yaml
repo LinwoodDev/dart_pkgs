@@ -21,7 +21,7 @@ dependencies:
   phosphor_flutter:
     git:
       url: https://github.com/CodeDoctorDE/phosphor-flutter.git
-      ref: f7479596c67239e755ab1fe3bade84895bfd6222
+      ref: 571650ac818f95a6c1f48f1bf3d33a010505d2c9
 
   material_ui: any
 dev_dependencies:

@@ -173,10 +173,10 @@ packages:
     dependency: transitive
     description:
       name: code_assets
-      sha256: cfd4f5f575a49c5f10ca856e9846073f1e6c3ee94912377eea5f6cefc5272941
+      sha256: "828110d598123b5ea96c00c9f3c72105bf79f8ee36c20a39b26209ade421ec57"
       url: "https://pub.dev"
     source: hosted
-    version: "2.0.0"
+    version: "2.1.0"
   collection:
     dependency: transitive
     description:
@@ -800,8 +800,8 @@ packages:
     dependency: transitive
     description:
       path: "."
-      ref: f7479596c67239e755ab1fe3bade84895bfd6222
-      resolved-ref: f7479596c67239e755ab1fe3bade84895bfd6222
+      ref: "571650ac818f95a6c1f48f1bf3d33a010505d2c9"
+      resolved-ref: "571650ac818f95a6c1f48f1bf3d33a010505d2c9"
       url: "https://github.com/CodeDoctorDE/phosphor-flutter.git"
     source: git
     version: "2.1.0"

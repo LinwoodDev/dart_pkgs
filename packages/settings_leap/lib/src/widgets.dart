@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:flutter/services.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:material_leap/material_leap.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
@@ -89,23 +90,29 @@ class _SettingsLeapDialogNavigatorState
     extends State<SettingsLeapDialogNavigator> {
   final _navigatorKey = GlobalKey<NavigatorState>();
 
+  void _goBack() {
+    final navigator = _navigatorKey.currentState;
+    if (navigator?.canPop() ?? false) {
+      navigator!.pop();
+    } else {
+      Navigator.of(context).pop();
+    }
+  }
+
   @override
   Widget build(BuildContext context) => PopScope(
     canPop: false,
     onPopInvokedWithResult: (didPop, result) {
-      if (didPop) return;
-      final navigator = _navigatorKey.currentState;
-      if (navigator?.canPop() ?? false) {
-        navigator!.pop();
-      } else {
-        Navigator.of(context).pop();
-      }
+      if (!didPop) _goBack();
     },
-    child: _SettingsLeapDialogScope(
-      child: Navigator(
-        key: _navigatorKey,
-        onGenerateRoute: (settings) =>
-            MaterialPageRoute<void>(builder: (context) => widget.child),
+    child: CallbackShortcuts(
+      bindings: {const SingleActivator(LogicalKeyboardKey.escape): _goBack},
+      child: _SettingsLeapDialogScope(
+        child: Navigator(
+          key: _navigatorKey,
+          onGenerateRoute: (settings) =>
+              MaterialPageRoute<void>(builder: (context) => widget.child),
+        ),
       ),
     ),
   );

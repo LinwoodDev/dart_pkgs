@@ -28,4 +28,13 @@ class KeybinderLocalizationsHu extends KeybinderLocalizations {
 
   @override
   String get reset => 'Visszaállítás';
+
+  @override
+  String get spaceKey => 'Space';
+
+  @override
+  String get mediaTrackPreviousKey => 'Media Previous';
+
+  @override
+  String get mediaTrackNextKey => 'Media Next';
 }

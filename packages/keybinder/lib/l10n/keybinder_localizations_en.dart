@@ -28,4 +28,13 @@ class KeybinderLocalizationsEn extends KeybinderLocalizations {
 
   @override
   String get reset => 'Reset';
+
+  @override
+  String get spaceKey => 'Space';
+
+  @override
+  String get mediaTrackPreviousKey => 'Media Previous';
+
+  @override
+  String get mediaTrackNextKey => 'Media Next';
 }

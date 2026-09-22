@@ -1,4 +1,5 @@
 import 'package:flutter/widgets.dart';
+import 'package:flutter/services.dart';
 import '../l10n/keybinder_localizations.dart';
 
 /// Helper class to localize shortcut activators.
@@ -12,7 +13,13 @@ class ShortcutLocalizer {
       final shift = activator.shift ? "${l10n.shiftKey}+" : "";
       final alt = activator.alt ? "${l10n.altKey}+" : "";
       final meta = activator.meta ? "${l10n.metaKey}+" : "";
-      return "$ctrl$shift$alt$meta${activator.trigger.keyLabel}";
+      final key = switch (activator.trigger) {
+        LogicalKeyboardKey.space => l10n.spaceKey,
+        LogicalKeyboardKey.mediaTrackPrevious => l10n.mediaTrackPreviousKey,
+        LogicalKeyboardKey.mediaTrackNext => l10n.mediaTrackNextKey,
+        _ => activator.trigger.keyLabel,
+      };
+      return "$ctrl$shift$alt$meta$key";
     }
 
     return activator.toString();

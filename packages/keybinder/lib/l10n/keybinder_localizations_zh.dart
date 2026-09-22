@@ -28,6 +28,15 @@ class KeybinderLocalizationsZh extends KeybinderLocalizations {
 
   @override
   String get reset => '重置';
+
+  @override
+  String get spaceKey => 'Space';
+
+  @override
+  String get mediaTrackPreviousKey => 'Media Previous';
+
+  @override
+  String get mediaTrackNextKey => 'Media Next';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).

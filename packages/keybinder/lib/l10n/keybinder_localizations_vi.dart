@@ -28,4 +28,13 @@ class KeybinderLocalizationsVi extends KeybinderLocalizations {
 
   @override
   String get reset => 'Đặt lại';
+
+  @override
+  String get spaceKey => 'Space';
+
+  @override
+  String get mediaTrackPreviousKey => 'Media Previous';
+
+  @override
+  String get mediaTrackNextKey => 'Media Next';
 }

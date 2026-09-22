@@ -196,6 +196,24 @@ abstract class KeybinderLocalizations {
   /// In en, this message translates to:
   /// **'Reset'**
   String get reset;
+
+  /// No description provided for @spaceKey.
+  ///
+  /// In en, this message translates to:
+  /// **'Space'**
+  String get spaceKey;
+
+  /// No description provided for @mediaTrackPreviousKey.
+  ///
+  /// In en, this message translates to:
+  /// **'Media Previous'**
+  String get mediaTrackPreviousKey;
+
+  /// No description provided for @mediaTrackNextKey.
+  ///
+  /// In en, this message translates to:
+  /// **'Media Next'**
+  String get mediaTrackNextKey;
 }
 
 class _KeybinderLocalizationsDelegate

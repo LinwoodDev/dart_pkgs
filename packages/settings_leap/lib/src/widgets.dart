@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:material_ui/material_ui.dart';
 import 'package:material_leap/material_leap.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
@@ -12,6 +14,109 @@ typedef SettingsLeapPageOpener<S> =
       SettingsLeapPage<S> page,
       String? focusedId,
     );
+
+/// Opens a settings view in a dialog with its own page stack.
+Future<T?> showSettingsLeapDialog<T>({
+  required BuildContext context,
+  required Widget child,
+  BoxConstraints constraints = const BoxConstraints(
+    maxHeight: 800,
+    maxWidth: 1000,
+  ),
+}) => showGeneralDialog<T>(
+  context: context,
+  pageBuilder: (context, animation, secondaryAnimation) => ScaffoldMessenger(
+    child: Stack(
+      alignment: Alignment.center,
+      children: [
+        Positioned.fill(
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+            child: const SizedBox.expand(),
+          ),
+        ),
+        Dialog(
+          clipBehavior: Clip.antiAlias,
+          child: ConstrainedBox(
+            constraints: constraints,
+            child: SettingsLeapDialogNavigator(child: child),
+          ),
+        ),
+      ],
+    ),
+  ),
+  barrierDismissible: true,
+  barrierLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel,
+  transitionDuration: const Duration(milliseconds: 200),
+  transitionBuilder: (context, animation, secondaryAnimation, child) =>
+      SlideTransition(
+        position: Tween<Offset>(
+          begin: const Offset(0, 1),
+          end: Offset.zero,
+        ).chain(CurveTween(curve: Curves.easeOutQuart)).animate(animation),
+        child: child,
+      ),
+);
+
+/// Keeps settings subpages within the bounds of a dialog.
+///
+/// Place this around [SettingsLeapView] when it is shown in a dialog. Pages
+/// opened by the view use this navigator, while [maybePush] also lets custom
+/// settings tiles open their own pages in the same dialog.
+class SettingsLeapDialogNavigator extends StatefulWidget {
+  const SettingsLeapDialogNavigator({super.key, required this.child});
+
+  final Widget child;
+
+  static bool maybePush(BuildContext context, Widget page) {
+    if (context
+            .dependOnInheritedWidgetOfExactType<_SettingsLeapDialogScope>() ==
+        null) {
+      return false;
+    }
+    Navigator.of(
+      context,
+    ).push(MaterialPageRoute<void>(builder: (context) => page));
+    return true;
+  }
+
+  @override
+  State<SettingsLeapDialogNavigator> createState() =>
+      _SettingsLeapDialogNavigatorState();
+}
+
+class _SettingsLeapDialogNavigatorState
+    extends State<SettingsLeapDialogNavigator> {
+  final _navigatorKey = GlobalKey<NavigatorState>();
+
+  @override
+  Widget build(BuildContext context) => PopScope(
+    canPop: false,
+    onPopInvokedWithResult: (didPop, result) {
+      if (didPop) return;
+      final navigator = _navigatorKey.currentState;
+      if (navigator?.canPop() ?? false) {
+        navigator!.pop();
+      } else {
+        Navigator.of(context).pop();
+      }
+    },
+    child: _SettingsLeapDialogScope(
+      child: Navigator(
+        key: _navigatorKey,
+        onGenerateRoute: (settings) =>
+            MaterialPageRoute<void>(builder: (context) => widget.child),
+      ),
+    ),
+  );
+}
+
+class _SettingsLeapDialogScope extends InheritedWidget {
+  const _SettingsLeapDialogScope({required super.child});
+
+  @override
+  bool updateShouldNotify(_SettingsLeapDialogScope oldWidget) => false;
+}
 
 class SettingsLeapView<S> extends StatefulWidget {
   const SettingsLeapView({
@@ -289,7 +394,7 @@ class _SettingsLeapViewState<S> extends State<SettingsLeapView<S>> {
             state: state,
             focusedId: focusedId,
             appBarBuilder: widget.tree.appBarBuilder,
-            inView: false,
+            inView: widget.isDialog,
             cardMargin: widget.cardMargin,
             cardPadding: widget.cardPadding,
             sectionTitlePadding: widget.sectionTitlePadding,
@@ -375,7 +480,7 @@ class SettingsLeapGeneratedPage<S> extends StatelessWidget {
       title: Text(page.getDisplayName(context)),
       backgroundColor: inView ? Colors.transparent : null,
       actions: actions,
-      automaticallyImplyLeading: !inView,
+      automaticallyImplyLeading: true,
     );
     return Scaffold(
       backgroundColor: inView ? Colors.transparent : null,

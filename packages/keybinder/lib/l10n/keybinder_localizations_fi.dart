@@ -28,4 +28,13 @@ class KeybinderLocalizationsFi extends KeybinderLocalizations {
 
   @override
   String get reset => 'Palauta';
+
+  @override
+  String get spaceKey => 'Space';
+
+  @override
+  String get mediaTrackPreviousKey => 'Media Previous';
+
+  @override
+  String get mediaTrackNextKey => 'Media Next';
 }

@@ -1,6 +1,5 @@
 import 'dart:ui';
 
-import 'package:flutter/services.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:material_leap/material_leap.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
@@ -75,10 +74,29 @@ class SettingsLeapDialogNavigator extends StatefulWidget {
         null) {
       return false;
     }
-    Navigator.of(
-      context,
-    ).push(MaterialPageRoute<void>(builder: (context) => page));
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (context) => _withDismissAction(context, page),
+      ),
+    );
     return true;
+  }
+
+  static Widget _withDismissAction(BuildContext context, Widget page) {
+    final scope = context
+        .dependOnInheritedWidgetOfExactType<_SettingsLeapDialogScope>();
+    if (scope == null) return page;
+    return Actions(
+      actions: {
+        DismissIntent: CallbackAction<DismissIntent>(
+          onInvoke: (intent) {
+            scope.onDismiss();
+            return null;
+          },
+        ),
+      },
+      child: Focus(autofocus: true, child: page),
+    );
   }
 
   @override
@@ -105,13 +123,15 @@ class _SettingsLeapDialogNavigatorState
     onPopInvokedWithResult: (didPop, result) {
       if (!didPop) _goBack();
     },
-    child: CallbackShortcuts(
-      bindings: {const SingleActivator(LogicalKeyboardKey.escape): _goBack},
-      child: _SettingsLeapDialogScope(
-        child: Navigator(
-          key: _navigatorKey,
-          onGenerateRoute: (settings) =>
-              MaterialPageRoute<void>(builder: (context) => widget.child),
+    child: _SettingsLeapDialogScope(
+      onDismiss: _goBack,
+      child: Navigator(
+        key: _navigatorKey,
+        onGenerateRoute: (settings) => MaterialPageRoute<void>(
+          builder: (context) => SettingsLeapDialogNavigator._withDismissAction(
+            context,
+            widget.child,
+          ),
         ),
       ),
     ),
@@ -119,7 +139,12 @@ class _SettingsLeapDialogNavigatorState
 }
 
 class _SettingsLeapDialogScope extends InheritedWidget {
-  const _SettingsLeapDialogScope({required super.child});
+  const _SettingsLeapDialogScope({
+    required this.onDismiss,
+    required super.child,
+  });
+
+  final VoidCallback onDismiss;
 
   @override
   bool updateShouldNotify(_SettingsLeapDialogScope oldWidget) => false;
@@ -393,18 +418,21 @@ class _SettingsLeapViewState<S> extends State<SettingsLeapView<S>> {
     }
     Navigator.of(context).push(
       MaterialPageRoute<void>(
-        builder: (context) => ValueListenableBuilder<S>(
-          valueListenable: _stateNotifier,
-          builder: (context, state, child) => SettingsLeapGeneratedPage<S>(
-            page: page,
-            pageId: id,
-            state: state,
-            focusedId: focusedId,
-            appBarBuilder: widget.tree.appBarBuilder,
-            inView: widget.isDialog,
-            cardMargin: widget.cardMargin,
-            cardPadding: widget.cardPadding,
-            sectionTitlePadding: widget.sectionTitlePadding,
+        builder: (context) => SettingsLeapDialogNavigator._withDismissAction(
+          context,
+          ValueListenableBuilder<S>(
+            valueListenable: _stateNotifier,
+            builder: (context, state, child) => SettingsLeapGeneratedPage<S>(
+              page: page,
+              pageId: id,
+              state: state,
+              focusedId: focusedId,
+              appBarBuilder: widget.tree.appBarBuilder,
+              inView: widget.isDialog,
+              cardMargin: widget.cardMargin,
+              cardPadding: widget.cardPadding,
+              sectionTitlePadding: widget.sectionTitlePadding,
+            ),
           ),
         ),
       ),

@@ -5,5 +5,8 @@
   "shiftKey": "Shift",
   "altKey": "Alt",
   "metaKey": "Meta",
-  "reset": "초기화"
+  "reset": "초기화",
+  "spaceKey": "공간",
+  "mediaTrackPreviousKey": "Media Previous",
+  "mediaTrackNextKey": "Media Next"
 }

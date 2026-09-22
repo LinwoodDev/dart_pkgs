@@ -1,9 +1,12 @@
 {
   "clickToSet": "انقر للتعيين",
-  "pressAnyKey": "اضغط على أي مفتاح...",
+  "pressAnyKey": "اضغط على مفاتيح لتعيينها",
   "controlKey": "Ctrl",
   "shiftKey": "Shift",
   "altKey": "Alt",
   "metaKey": "Meta",
-  "reset": "إعادة التعيين"
+  "reset": "إعادة التعيين",
+  "spaceKey": "المساحة",
+  "mediaTrackPreviousKey": "Media Previous",
+  "mediaTrackNextKey": "Media Next"
 }

@@ -5,5 +5,8 @@
   "shiftKey": "Schimb",
   "altKey": "Alt",
   "metaKey": "Meta",
-  "reset": "Resetează"
+  "reset": "Resetează",
+  "spaceKey": "Spațiu",
+  "mediaTrackPreviousKey": "Media Previous",
+  "mediaTrackNextKey": "Media Next"
 }

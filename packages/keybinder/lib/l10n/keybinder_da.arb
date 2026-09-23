@@ -5,5 +5,8 @@
   "shiftKey": "Skift",
   "altKey": "Alt",
   "metaKey": "Meta",
-  "reset": "Nulstil"
+  "reset": "Nulstil",
+  "spaceKey": "Mellemrum",
+  "mediaTrackPreviousKey": "Media Previous",
+  "mediaTrackNextKey": "Media Next"
 }

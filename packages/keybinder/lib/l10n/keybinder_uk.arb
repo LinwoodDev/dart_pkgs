@@ -5,5 +5,8 @@
   "shiftKey": "Зсув",
   "altKey": "Alt",
   "metaKey": "Meta",
-  "reset": "Скинути"
+  "reset": "Скинути",
+  "spaceKey": "З відступом",
+  "mediaTrackPreviousKey": "Media Previous",
+  "mediaTrackNextKey": "Media Next"
 }

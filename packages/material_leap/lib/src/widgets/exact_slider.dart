@@ -1,9 +1,10 @@
 import 'dart:math';
 
 import 'package:material_ui/material_ui.dart';
-import 'package:flutter/services.dart';
 import 'package:material_leap/helpers.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+
+import 'number_input.dart';
 
 typedef OnValueChanged = void Function(double value);
 
@@ -15,6 +16,9 @@ class ExactSlider extends StatefulWidget {
   final double? defaultValue;
   final double? sliderStep;
   final double? headerWidth;
+
+  /// Maximum width of the editable number field.
+  final double inputWidth;
   final OnValueChanged? onChanged, onChangeEnd;
   final Color? color, thumbColor;
   final EdgeInsets? contentPadding;
@@ -41,8 +45,10 @@ class ExactSlider extends StatefulWidget {
     this.thumbColor,
     this.contentPadding,
     this.headerWidth,
+    this.inputWidth = 80,
     this.clampValue = false,
-  }) : assert(sliderStep == null || sliderStep > 0);
+  }) : assert(sliderStep == null || sliderStep > 0),
+       assert(inputWidth > 0);
 
   ExactSlider.srgb({
     super.key,
@@ -65,10 +71,12 @@ class ExactSlider extends StatefulWidget {
     required SRGBColor thumbColor,
     this.contentPadding,
     this.headerWidth,
+    this.inputWidth = 80,
     this.clampValue = false,
   }) : color = color.toColor(),
        thumbColor = thumbColor.toColor(),
-       assert(sliderStep == null || sliderStep > 0);
+       assert(sliderStep == null || sliderStep > 0),
+       assert(inputWidth > 0);
 
   @override
   _ExactSliderState createState() => _ExactSliderState();
@@ -76,56 +84,25 @@ class ExactSlider extends StatefulWidget {
 
 class _ExactSliderState extends State<ExactSlider> {
   late double _value;
-  final TextEditingController _controller = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     _value = _clamp(widget.value);
-    _controller.text = _value.toStringAsFixed(widget.fractionDigits);
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
   }
 
   double _clamp(double value) => widget.clampValue
       ? value.clamp(widget.min, widget.max).toDouble()
       : value;
 
-  void _changeValue(double value, {bool syncText = true}) {
+  void _changeValue(double value) {
     final nextValue = _clamp(value);
     if (_value != nextValue) {
-      if (syncText) {
-        _updateText(nextValue);
-      }
       setState(() {
         _value = nextValue;
       });
-    } else if (syncText) {
-      _updateText(nextValue);
     }
     widget.onChanged?.call(nextValue);
-  }
-
-  void _commitTextValue() {
-    final parsed = double.tryParse(_controller.text.trim());
-    if (parsed == null) {
-      _updateText(_value);
-      widget.onChangeEnd?.call(_value);
-      return;
-    }
-    _changeValue(parsed);
-    widget.onChangeEnd?.call(_value);
-  }
-
-  void _updateText(double value) {
-    final text = value.toStringAsFixed(widget.fractionDigits);
-    if (_controller.text.trim() != text) {
-      _controller.text = text;
-    }
   }
 
   double _snapSliderValue(double value) {
@@ -142,10 +119,6 @@ class _ExactSliderState extends State<ExactSlider> {
     if (oldWidget.value != widget.value) {
       setState(() {
         _value = _clamp(widget.value);
-        final currentTextValue = double.tryParse(_controller.text);
-        if (currentTextValue != _value) {
-          _updateText(_value);
-        }
       });
     }
   }
@@ -167,29 +140,18 @@ class _ExactSliderState extends State<ExactSlider> {
         children: [
           LayoutBuilder(
             builder: (context, constraints) {
-              final textField = TextFormField(
-                decoration: InputDecoration(
-                  filled: true,
-                  labelText: widget.label,
-                  floatingLabelAlignment: FloatingLabelAlignment.center,
-                ),
-                textAlign: TextAlign.center,
-                keyboardType: const TextInputType.numberWithOptions(
-                  decimal: true,
-                  signed: true,
-                ),
-                inputFormatters: [
-                  FilteringTextInputFormatter.allow(RegExp(r'^-?\d*\.?\d*')),
-                ],
-                controller: _controller,
-                onFieldSubmitted: (_) => _commitTextValue(),
-                onEditingComplete: _commitTextValue,
-                onTapOutside: (_) => _commitTextValue(),
-                onChanged: (value) {
-                  final parsed = double.tryParse(value);
-                  if (parsed == null) return;
-                  _changeValue(parsed, syncText: false);
-                },
+              final textField = NumberInput(
+                value: _value,
+                min: widget.min,
+                max: widget.max,
+                step: widget.sliderStep ?? 1,
+                fractionDigits: widget.fractionDigits,
+                label: widget.label,
+                showButtons: false,
+                updateOnInput: true,
+                enforceBounds: widget.clampValue,
+                onChanged: _changeValue,
+                onChangeEnd: widget.onChangeEnd,
               );
               final digits = widget.fractionDigits;
               final slider = Slider(
@@ -242,7 +204,15 @@ class _ExactSliderState extends State<ExactSlider> {
                       Row(
                         children: [
                           ?widget.leading,
-                          Expanded(child: textField),
+                          Flexible(
+                            fit: FlexFit.loose,
+                            child: ConstrainedBox(
+                              constraints: BoxConstraints(
+                                maxWidth: widget.inputWidth,
+                              ),
+                              child: textField,
+                            ),
+                          ),
                           const SizedBox(width: 8),
                           ?resetButton,
                           ?widget.trailing,
@@ -274,7 +244,9 @@ class _ExactSliderState extends State<ExactSlider> {
                     children: [
                       if (header != null) Expanded(child: header),
                       ConstrainedBox(
-                        constraints: const BoxConstraints(maxWidth: 75),
+                        constraints: BoxConstraints(
+                          maxWidth: widget.inputWidth,
+                        ),
                         child: textField,
                       ),
                     ],
@@ -298,7 +270,9 @@ class _ExactSliderState extends State<ExactSlider> {
                           const SizedBox(width: 16),
                         ],
                         ConstrainedBox(
-                          constraints: const BoxConstraints(maxWidth: 75),
+                          constraints: BoxConstraints(
+                            maxWidth: widget.inputWidth,
+                          ),
                           child: textField,
                         ),
                         const SizedBox(width: 8),

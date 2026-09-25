@@ -25,7 +25,7 @@ class AdvancedTextField extends StatelessWidget {
         labelText: label,
         prefixIcon: icon,
         filled: true,
-        suffix: IconButton(
+        suffixIcon: IconButton(
           onPressed: () {
             controller.text = resetValue;
             onChanged?.call(resetValue);

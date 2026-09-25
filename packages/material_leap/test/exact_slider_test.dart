@@ -3,6 +3,27 @@ import 'package:material_leap/material_leap.dart';
 import 'package:material_ui/material_ui.dart';
 
 void main() {
+  testWidgets('inputWidth sizes the number field', (tester) async {
+    Future<void> showSlider(double? width) => tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: SizedBox(
+            width: 800,
+            child: width == null
+                ? const ExactSlider()
+                : ExactSlider(inputWidth: width),
+          ),
+        ),
+      ),
+    );
+
+    await showSlider(null);
+    expect(tester.getSize(find.byType(NumberInput)).width, 80);
+
+    await showSlider(110);
+    expect(tester.getSize(find.byType(NumberInput)).width, 110);
+  });
+
   testWidgets('sliderStep snaps only slider interactions', (tester) async {
     double? changedValue;
     double? endedValue;
@@ -30,7 +51,14 @@ void main() {
     slider.onChangeEnd!(4.4);
     expect(endedValue, 4);
 
-    await tester.enterText(find.byType(TextFormField), '3.75');
+    await tester.enterText(find.byType(TextField), '3.');
+    await tester.pump();
+    expect(
+      tester.widget<TextField>(find.byType(TextField)).controller!.text,
+      '3.',
+    );
+
+    await tester.enterText(find.byType(TextField), '3.75');
     await tester.testTextInput.receiveAction(TextInputAction.done);
     await tester.pump();
     expect(changedValue, 3.75);

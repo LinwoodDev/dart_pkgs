@@ -50,17 +50,8 @@ class _MyAppState extends State<MyApp> {
       child: MaterialApp(
         title: 'Material Leap Demo',
         debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-          useMaterial3: true,
-        ),
-        darkTheme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(
-            seedColor: Colors.deepPurple,
-            brightness: Brightness.dark,
-          ),
-          useMaterial3: true,
-        ),
+        theme: ThemeData(useMaterial3: true),
+        darkTheme: ThemeData(useMaterial3: true, brightness: Brightness.dark),
         themeMode: _themeMode,
         localizationsDelegates: const [
           GlobalMaterialLocalizations.delegate,
@@ -86,11 +77,14 @@ class _MyAppState extends State<MyApp> {
               ),
             ],
           ),
-          body: ListView(
-            children: const [
-              DialogsView(),
-              WidgetsView(),
-            ],
+          body: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 900),
+              child: ListView(
+                padding: const EdgeInsets.all(16),
+                children: const [WidgetsView(), DialogsView()],
+              ),
+            ),
           ),
         ),
       ),

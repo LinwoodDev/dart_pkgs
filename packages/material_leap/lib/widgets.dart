@@ -12,6 +12,7 @@ export 'src/widgets/horizontal_tab.dart';
 export 'src/widgets/input_stepper.dart';
 export 'src/widgets/leap_bottom_sheet.dart';
 export 'src/widgets/menu.dart';
+export 'src/widgets/number_input.dart';
 export 'src/widgets/offset.dart';
 export 'src/widgets/theme_box.dart';
 export 'src/widgets/window.dart';

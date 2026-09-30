@@ -356,25 +356,47 @@ final class SettingsLeapListSetting<S, V> extends SettingsLeapSetting<S> {
     final description = getDescription(context);
     final help = getHelp(context);
 
-    return ListTile(
-      leading: icon == null ? null : Icon(icon),
-      title: _SettingsLeapTitle(title: getDisplayName(context), help: help),
-      trailing: currentOption == null
-          ? null
-          : Row(
-              mainAxisSize: MainAxisSize.min,
-              spacing: 8,
-              children: [
-                Text(currentOption.getDisplayName(context)),
-                if (currentOption.leadingBuilder != null)
-                  currentOption.leadingBuilder!(context),
-              ],
-            ),
-      subtitle: description == null ? null : Text(description),
-      focusNode: focusNode,
-      autofocus: autofocus,
-      selected: selected,
-      onTap: () => _openSheet(context, state),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final stackValue = constraints.maxWidth < 480;
+        final value = currentOption == null
+            ? null
+            : Row(
+                mainAxisSize: MainAxisSize.min,
+                spacing: 8,
+                children: [
+                  Flexible(child: Text(currentOption.getDisplayName(context))),
+                  if (currentOption.leadingBuilder != null)
+                    currentOption.leadingBuilder!(context),
+                ],
+              );
+
+        return ListTile(
+          leading: icon == null ? null : Icon(icon),
+          title: _SettingsLeapTitle(title: getDisplayName(context), help: help),
+          trailing: stackValue || value == null
+              ? null
+              : ConstrainedBox(
+                  constraints: BoxConstraints(
+                    maxWidth: constraints.maxWidth * 0.4,
+                  ),
+                  child: value,
+                ),
+          subtitle: stackValue && value != null
+              ? Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [if (description != null) Text(description), value],
+                )
+              : description == null
+              ? null
+              : Text(description),
+          focusNode: focusNode,
+          autofocus: autofocus,
+          selected: selected,
+          onTap: () => _openSheet(context, state),
+        );
+      },
     );
   }
 

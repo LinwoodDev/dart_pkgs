@@ -64,4 +64,48 @@ void main() {
     expect(changedValue, 3.75);
     expect(endedValue, 3.75);
   });
+
+  testWidgets('optional step buttons use custom icons and remain bounded', (
+    tester,
+  ) async {
+    double? changed, ended;
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: ThemeData(splashFactory: NoSplash.splashFactory),
+        home: Scaffold(
+          body: ExactSlider(
+            value: 2.25,
+            min: 0,
+            max: 4,
+            sliderStep: 1,
+            showButtons: true,
+            decrementIcon: const Icon(Icons.remove, key: ValueKey('decrement')),
+            incrementIcon: const Icon(Icons.add, key: ValueKey('increment')),
+            onChanged: (v) => changed = v,
+            onChangeEnd: (v) => ended = v,
+          ),
+        ),
+      ),
+    );
+    expect(find.byKey(const ValueKey('decrement')), findsOneWidget);
+    expect(find.byKey(const ValueKey('increment')), findsOneWidget);
+    await tester.tap(find.byKey(const ValueKey('increment')));
+    await tester.pump();
+    expect(changed, 3.25);
+    expect(ended, 3.25);
+    await tester.tap(find.byKey(const ValueKey('increment')));
+    await tester.pump();
+    expect(changed, 4);
+    final button = tester.widget<IconButton>(
+      find.ancestor(
+        of: find.byKey(const ValueKey('increment')),
+        matching: find.byType(IconButton),
+      ),
+    );
+    expect(button.onPressed, isNull);
+    await tester.enterText(find.byType(TextField), '2.75');
+    await tester.testTextInput.receiveAction(TextInputAction.done);
+    expect(changed, 2.75);
+    expect(ended, 2.75);
+  });
 }

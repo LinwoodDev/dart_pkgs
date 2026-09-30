@@ -96,4 +96,49 @@ void main() {
     await tester.sendKeyUpEvent(LogicalKeyboardKey.controlLeft);
     expect(changed, 4);
   });
+
+  testWidgets('Ctrl+A and partial input survive external updates', (
+    tester,
+  ) async {
+    late StateSetter rebuild;
+    var value = 10.0;
+    double? ended;
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: ThemeData(splashFactory: NoSplash.splashFactory),
+        home: Scaffold(
+          body: StatefulBuilder(
+            builder: (context, setState) {
+              rebuild = setState;
+              return NumberInput(
+                value: value,
+                updateOnInput: true,
+                onChanged: (v) => setState(() => value = v),
+                onChangeEnd: (v) => ended = v,
+              );
+            },
+          ),
+        ),
+      ),
+    );
+    final field = find.byType(TextField);
+    await tester.tap(field);
+    await tester.pump();
+    await tester.sendKeyDownEvent(LogicalKeyboardKey.controlLeft);
+    await tester.sendKeyEvent(LogicalKeyboardKey.keyA);
+    await tester.sendKeyUpEvent(LogicalKeyboardKey.controlLeft);
+    final controller = tester.widget<TextField>(field).controller!;
+    expect(controller.selection.start, 0);
+    expect(controller.selection.end, controller.text.length);
+    await tester.enterText(field, '-');
+    rebuild(() => value = 12);
+    await tester.pump();
+    expect(controller.text, '-');
+    await tester.enterText(field, '12,75');
+    await tester.testTextInput.receiveAction(TextInputAction.done);
+    await tester.pump();
+    expect(value, 12.75);
+    expect(ended, 12.75);
+    expect(controller.text, '12.75');
+  });
 }

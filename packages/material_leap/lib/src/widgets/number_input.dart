@@ -15,6 +15,8 @@ class NumberInput extends StatefulWidget {
   final ValueChanged<double>? onChanged, onChangeEnd;
   final String? label, errorText;
   final bool showButtons, updateOnInput, enforceBounds;
+  /// Overrides the default minus/plus widgets without changing step behavior.
+  final Widget? decrementIcon, incrementIcon;
 
   const NumberInput({
     super.key,
@@ -30,6 +32,8 @@ class NumberInput extends StatefulWidget {
     this.showButtons = true,
     this.updateOnInput = false,
     this.enforceBounds = true,
+    this.decrementIcon,
+    this.incrementIcon,
   }) : assert(step > 0),
        assert(min <= max);
 
@@ -39,6 +43,12 @@ class NumberInput extends StatefulWidget {
 
 class _NumberInputState extends State<NumberInput> {
   final TextEditingController _controller = TextEditingController();
+  final FocusNode _focusNode = FocusNode();
+
+  void _onFocusChanged() {
+    if (!_focusNode.hasFocus) _commitTextValue();
+  }
+
   Timer? _stepTimer;
   late double _value;
   bool _invalid = false;
@@ -49,6 +59,7 @@ class _NumberInputState extends State<NumberInput> {
   void initState() {
     super.initState();
     _syncValue(widget.value);
+    _focusNode.addListener(_onFocusChanged);
   }
 
   @override
@@ -56,6 +67,11 @@ class _NumberInputState extends State<NumberInput> {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.value != widget.value ||
         oldWidget.fractionDigits != widget.fractionDigits) {
+      if (_focusNode.hasFocus &&
+          oldWidget.fractionDigits == widget.fractionDigits) {
+        _value = widget.value;
+        return;
+      }
       final editingValue = double.tryParse(
         _controller.text.trim().replaceAll(',', '.'),
       );
@@ -72,6 +88,8 @@ class _NumberInputState extends State<NumberInput> {
   @override
   void dispose() {
     _stepTimer?.cancel();
+    _focusNode.removeListener(_onFocusChanged);
+    _focusNode.dispose();
     _controller.dispose();
     super.dispose();
   }
@@ -162,13 +180,13 @@ class _NumberInputState extends State<NumberInput> {
     _stepTimer = null;
   }
 
-  Widget _stepButton(int direction, IconData icon, bool enabled) =>
+  Widget _stepButton(int direction, Widget icon, bool enabled) =>
       GestureDetector(
         onLongPressStart: enabled ? (_) => _startStepping(direction) : null,
         onLongPressEnd: enabled ? (_) => _stopStepping() : null,
         child: IconButton(
           onPressed: enabled ? () => _step(direction) : null,
-          icon: PhosphorIcon(icon),
+          icon: icon,
         ),
       );
 
@@ -238,6 +256,7 @@ class _NumberInputState extends State<NumberInput> {
         onPointerCancel: (_) => _endDrag(),
         child: TextField(
           controller: _controller,
+          focusNode: _focusNode,
           decoration: InputDecoration(
             filled: true,
             labelText: widget.label,
@@ -257,21 +276,33 @@ class _NumberInputState extends State<NumberInput> {
               widget.onChanged?.call(parsed);
             }
           },
-          onSubmitted: (_) => _commitTextValue(),
-          onTapOutside: (_) => _commitTextValue(),
+          onEditingComplete: () {},
+          onSubmitted: (_) => _focusNode.unfocus(),
+          onTapOutside: (_) => _focusNode.unfocus(),
         ),
       ),
     );
-    if (!widget.showButtons) return field;
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        _stepButton(-1, PhosphorIconsLight.minus, _value > widget.min),
-        const SizedBox(width: 2),
-        Flexible(child: field),
-        const SizedBox(width: 2),
-        _stepButton(1, PhosphorIconsLight.plus, _value < widget.max),
-      ],
+    if (!widget.showButtons) return DefaultTextEditingShortcuts(child: field);
+    return DefaultTextEditingShortcuts(
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _stepButton(
+            -1,
+            widget.decrementIcon ??
+                const PhosphorIcon(PhosphorIconsLight.minus),
+            _value > widget.min,
+          ),
+          const SizedBox(width: 2),
+          Flexible(child: field),
+          const SizedBox(width: 2),
+          _stepButton(
+            1,
+            widget.incrementIcon ?? const PhosphorIcon(PhosphorIconsLight.plus),
+            _value < widget.max,
+          ),
+        ],
+      ),
     );
   }
 }

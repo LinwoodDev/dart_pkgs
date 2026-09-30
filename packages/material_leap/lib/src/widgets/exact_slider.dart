@@ -23,6 +23,9 @@ class ExactSlider extends StatefulWidget {
   final Color? color, thumbColor;
   final EdgeInsets? contentPadding;
   final bool divide, clampValue;
+  /// Shows the number field's step buttons using [sliderStep].
+  final bool showButtons;
+  final Widget? decrementIcon, incrementIcon;
 
   const ExactSlider({
     super.key,
@@ -47,6 +50,9 @@ class ExactSlider extends StatefulWidget {
     this.headerWidth,
     this.inputWidth = 80,
     this.clampValue = false,
+    this.showButtons = false,
+    this.decrementIcon,
+    this.incrementIcon,
   }) : assert(sliderStep == null || sliderStep > 0),
        assert(inputWidth > 0);
 
@@ -73,6 +79,9 @@ class ExactSlider extends StatefulWidget {
     this.headerWidth,
     this.inputWidth = 80,
     this.clampValue = false,
+    this.showButtons = false,
+    this.decrementIcon,
+    this.incrementIcon,
   }) : color = color.toColor(),
        thumbColor = thumbColor.toColor(),
        assert(sliderStep == null || sliderStep > 0),
@@ -147,7 +156,9 @@ class _ExactSliderState extends State<ExactSlider> {
                 step: widget.sliderStep ?? 1,
                 fractionDigits: widget.fractionDigits,
                 label: widget.label,
-                showButtons: false,
+                showButtons: widget.showButtons,
+                decrementIcon: widget.decrementIcon,
+                incrementIcon: widget.incrementIcon,
                 updateOnInput: true,
                 enforceBounds: widget.clampValue,
                 onChanged: _changeValue,
@@ -208,7 +219,9 @@ class _ExactSliderState extends State<ExactSlider> {
                             fit: FlexFit.loose,
                             child: ConstrainedBox(
                               constraints: BoxConstraints(
-                                maxWidth: widget.inputWidth,
+                                maxWidth:
+                                    widget.inputWidth +
+                                    (widget.showButtons ? 100 : 0),
                               ),
                               child: textField,
                             ),
@@ -245,7 +258,9 @@ class _ExactSliderState extends State<ExactSlider> {
                       if (header != null) Expanded(child: header),
                       ConstrainedBox(
                         constraints: BoxConstraints(
-                          maxWidth: widget.inputWidth,
+                          maxWidth:
+                              widget.inputWidth +
+                              (widget.showButtons ? 100 : 0),
                         ),
                         child: textField,
                       ),
@@ -271,7 +286,9 @@ class _ExactSliderState extends State<ExactSlider> {
                         ],
                         ConstrainedBox(
                           constraints: BoxConstraints(
-                            maxWidth: widget.inputWidth,
+                            maxWidth:
+                                widget.inputWidth +
+                                (widget.showButtons ? 100 : 0),
                           ),
                           child: textField,
                         ),

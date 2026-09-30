@@ -5,6 +5,37 @@ import 'package:material_leap/material_leap.dart';
 import 'package:material_ui/material_ui.dart';
 
 void main() {
+  testWidgets('rounded display preserves input and step precision', (
+    tester,
+  ) async {
+    double? changed;
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: ThemeData(splashFactory: NoSplash.splashFactory),
+        home: Scaffold(
+          body: NumberInput(
+            value: 12.3456789,
+            roundValues: true,
+            onChanged: (value) => changed = value,
+          ),
+        ),
+      ),
+    );
+    final field = find.byType(TextField);
+    final controller = tester.widget<TextField>(field).controller!;
+    expect(controller.text, '12.3');
+    await tester.enterText(field, '12.78901');
+    expect(controller.text, '12.78901');
+    await tester.testTextInput.receiveAction(TextInputAction.done);
+    await tester.pump();
+    expect(controller.text, '12.8');
+    expect(changed, 12.78901);
+    tester.widget<IconButton>(find.byType(IconButton).last).onPressed!();
+    await tester.pump();
+    expect(controller.text, '13.8');
+    expect(changed, closeTo(13.78901, 1e-9));
+  });
+
   testWidgets('text keeps precision and step controls use modifiers', (
     tester,
   ) async {

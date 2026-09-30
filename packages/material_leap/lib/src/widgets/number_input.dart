@@ -15,6 +15,11 @@ class NumberInput extends StatefulWidget {
   final ValueChanged<double>? onChanged, onChangeEnd;
   final String? label, errorText;
   final bool showButtons, updateOnInput, enforceBounds;
+
+  /// Rounds the displayed value to [fractionDigits], preserving the numeric
+  /// value used by callbacks and step controls. Text stays editable until commit.
+  final bool roundValues;
+
   /// Overrides the default minus/plus widgets without changing step behavior.
   final Widget? decrementIcon, incrementIcon;
 
@@ -32,6 +37,7 @@ class NumberInput extends StatefulWidget {
     this.showButtons = true,
     this.updateOnInput = false,
     this.enforceBounds = true,
+    this.roundValues = false,
     this.decrementIcon,
     this.incrementIcon,
   }) : assert(step > 0),
@@ -66,7 +72,8 @@ class _NumberInputState extends State<NumberInput> {
   void didUpdateWidget(covariant NumberInput oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.value != widget.value ||
-        oldWidget.fractionDigits != widget.fractionDigits) {
+        oldWidget.fractionDigits != widget.fractionDigits ||
+        oldWidget.roundValues != widget.roundValues) {
       if (_focusNode.hasFocus &&
           oldWidget.fractionDigits == widget.fractionDigits) {
         _value = widget.value;
@@ -100,7 +107,9 @@ class _NumberInputState extends State<NumberInput> {
 
   String _format(double value) {
     final formatted = value.toStringAsFixed(widget.fractionDigits);
-    if ((double.parse(formatted) - value).abs() < 1e-9) return formatted;
+    if (widget.roundValues || (double.parse(formatted) - value).abs() < 1e-9) {
+      return formatted;
+    }
     return value.toString();
   }
 

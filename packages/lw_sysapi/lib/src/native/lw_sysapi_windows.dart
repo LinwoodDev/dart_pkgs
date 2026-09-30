@@ -6,6 +6,7 @@ import 'package:ffi/ffi.dart';
 import 'package:win32/win32.dart';
 
 import 'lw_sysapi_base.dart';
+import 'windows_bitmap.dart';
 
 final _fontNames = <String>{};
 
@@ -107,7 +108,7 @@ class WindowsClipboardManager implements ClipboardManager {
     }
     if (type == ClipboardMimeTypes.bmp &&
         (format == CF_DIB || format == CF_DIBV5)) {
-      return _dibToBmp(data);
+      return dibToBmp(data);
     }
     return data;
   }
@@ -212,43 +213,6 @@ class WindowsClipboardManager implements ClipboardManager {
       default:
         return [_registerFormat(type)];
     }
-  }
-
-  static Uint8List? _dibToBmp(Uint8List dib) {
-    if (dib.length < 4) return null;
-    final dibData = ByteData.sublistView(dib);
-    final headerSize = dibData.getUint32(0, Endian.little);
-    if (headerSize > dib.length || headerSize < 12) return null;
-    final bitsOffset = 14 + _dibBitsOffset(dib, headerSize);
-    final fileSize = 14 + dib.length;
-    final result = Uint8List(fileSize);
-    final resultData = ByteData.sublistView(result);
-    result[0] = 0x42;
-    result[1] = 0x4d;
-    resultData.setUint32(2, fileSize, Endian.little);
-    resultData.setUint32(10, bitsOffset, Endian.little);
-    result.setRange(14, result.length, dib);
-    return result;
-  }
-
-  static int _dibBitsOffset(Uint8List dib, int headerSize) {
-    if (headerSize == 12 && dib.length >= 12) {
-      final bitCount = ByteData.sublistView(dib).getUint16(10, Endian.little);
-      final colorTableEntries = bitCount <= 8 ? 1 << bitCount : 0;
-      return headerSize + colorTableEntries * 3;
-    }
-    if (headerSize < 40 || dib.length < 40) return headerSize;
-    final data = ByteData.sublistView(dib);
-    final bitCount = data.getUint16(14, Endian.little);
-    final compression = data.getUint32(16, Endian.little);
-    final colorsUsed = data.getUint32(32, Endian.little);
-    final colorTableEntries = colorsUsed != 0
-        ? colorsUsed
-        : bitCount <= 8
-        ? 1 << bitCount
-        : 0;
-    final bitFieldsSize = compression == 3 && headerSize == 40 ? 12 : 0;
-    return headerSize + bitFieldsSize + colorTableEntries * 4;
   }
 
   static Uint8List _bmpToDib(Uint8List bmp) {

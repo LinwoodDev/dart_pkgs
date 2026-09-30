@@ -17,7 +17,7 @@ dependencies:
     git:
       url: https://github.com/LinwoodDev/dart_pkgs.git
       path: packages/material_leap
-      ref: f0545c8c9b158258557fa0b063778eb96436bf84
+      ref: 9a60fef2b9d415beb31ba22c24bbea6c69b4c76f
   phosphor_flutter:
     git:
       url: https://github.com/CodeDoctorDE/phosphor-flutter.git

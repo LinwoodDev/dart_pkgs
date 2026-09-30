@@ -23,6 +23,7 @@ class ExactSlider extends StatefulWidget {
   final Color? color, thumbColor;
   final EdgeInsets? contentPadding;
   final bool divide, clampValue;
+
   /// Shows the number field's step buttons using [sliderStep].
   final bool showButtons;
   final Widget? decrementIcon, incrementIcon;

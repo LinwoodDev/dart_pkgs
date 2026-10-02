@@ -17,6 +17,7 @@ Use the packages individually via git dependencies.
 - [consoler](packages/consoler) - Console helpers & structured output (Dart)
 - [onenote_parser](packages/onenote_parser) - OneNote file parser for Dart and Flutter
 - [settings_leap](packages/settings_leap) - Flutter settings framework for building searchable, expandable settings views
+- [svg_normalizer](packages/svg_normalizer) - Resolve static SVG CSS into presentation attributes (Dart)
 
 Each package has its own README with more detailed usage.
 

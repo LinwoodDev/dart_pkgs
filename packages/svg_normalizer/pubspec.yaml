@@ -1,0 +1,17 @@
+name: svg_normalizer
+description: Resolve static SVG stylesheets into presentation attributes for SVG renderers with limited CSS support.
+version: 0.1.0
+repository: https://github.com/LinwoodDev/dart_pkgs
+
+environment:
+  sdk: ^3.11.0
+
+resolution: workspace
+
+dependencies:
+  csslib: ^1.0.2
+  xml: ^7.0.1
+
+dev_dependencies:
+  lints: ^6.0.0
+  test: ^1.25.0

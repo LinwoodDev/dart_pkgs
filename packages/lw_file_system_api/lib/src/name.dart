@@ -14,7 +14,7 @@ String convertNameToFile({
   if (name.isEmpty) {
     name = getUnnamed();
   }
-  name = name.replaceAll(invalidFileName, '_');
+  name = name.replaceAll(RegExp(invalidFileName), '_');
   return universalPathContext.join(directory, '$name$suffix');
 }
 

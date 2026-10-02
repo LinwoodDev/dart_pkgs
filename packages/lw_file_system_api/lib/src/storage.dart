@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:path/path.dart' as p;
+
 import 'package:dart_mappable/dart_mappable.dart';
 import 'package:lw_file_system_api/lw_file_system_api.dart';
 
@@ -109,17 +111,19 @@ sealed class ExternalStorage with ExternalStorageMappable {
   String getBasePath() => paths[''] ?? '';
 
   String getFullPath(String variant) {
-    final path = paths[variant];
+    final path = paths[variant]?.replaceAll('\\', '/');
     if (path == null) return '';
     if (path.startsWith('content://')) return path;
+    if (this is LocalStorage && p.windows.isAbsolute(path)) return path;
 
-    final basePath = getBasePath();
+    final basePath = getBasePath().replaceAll('\\', '/');
     if (basePath.startsWith('content://')) {
-      if (path.isEmpty) return basePath;
+      if (path.isEmpty || path == '.') return basePath;
       if (path.startsWith('content://')) return path;
       return '$basePath${basePath.endsWith('/') ? '' : '/'}$path';
     }
-    return universalPathContext.join(basePath, path);
+    final joined = universalPathContext.join(basePath, path);
+    return joined.isEmpty ? joined : universalPathContext.normalize(joined);
   }
 
   bool hasDocumentCached(String name) => true;

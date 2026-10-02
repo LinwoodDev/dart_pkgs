@@ -10,10 +10,17 @@ class AssetLocation with AssetLocationMappable {
   final String remote;
   final String path;
 
-  const AssetLocation({this.remote = '', required this.path});
+  /// Whether [path] is a device path rather than a path within a storage root.
+  final bool absolute;
+
+  const AssetLocation({
+    this.remote = '',
+    required this.path,
+    this.absolute = false,
+  });
 
   factory AssetLocation.local(String path, [bool absolute = false]) =>
-      AssetLocation(path: path);
+      AssetLocation(path: path, absolute: absolute);
 
   static const empty = AssetLocation(path: '');
 
@@ -33,7 +40,7 @@ class AssetLocation with AssetLocationMappable {
       path.replaceAll('\\', '/'),
     );
     if (normalizedPath == path) return this;
-    return AssetLocation(path: normalizedPath, remote: remote);
+    return copyWith(path: normalizedPath);
   }
 
   String get fileExtensionWithDot => p.extension(path);
@@ -54,13 +61,14 @@ class AssetLocation with AssetLocationMappable {
   String get parent => p.dirname(path);
 
   AssetLocation buildParentLocation() {
-    return AssetLocation(path: parent, remote: remote);
+    return copyWith(path: parent);
   }
 
   AssetLocation buildChildLocation(String child) {
     return AssetLocation(
       path: universalPathContext.join(path, child),
       remote: remote,
+      absolute: absolute,
     );
   }
 
@@ -68,6 +76,7 @@ class AssetLocation with AssetLocationMappable {
     return AssetLocation(
       path: universalPathContext.join(parent, sibling),
       remote: remote,
+      absolute: absolute,
     );
   }
 }

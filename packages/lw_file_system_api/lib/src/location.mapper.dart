@@ -31,15 +31,27 @@ class AssetLocationMapper extends ClassMapperBase<AssetLocation> {
   );
   static String _$path(AssetLocation v) => v.path;
   static const Field<AssetLocation, String> _f$path = Field('path', _$path);
+  static bool _$absolute(AssetLocation v) => v.absolute;
+  static const Field<AssetLocation, bool> _f$absolute = Field(
+    'absolute',
+    _$absolute,
+    opt: true,
+    def: false,
+  );
 
   @override
   final MappableFields<AssetLocation> fields = const {
     #remote: _f$remote,
     #path: _f$path,
+    #absolute: _f$absolute,
   };
 
   static AssetLocation _instantiate(DecodingData data) {
-    return AssetLocation(remote: data.dec(_f$remote), path: data.dec(_f$path));
+    return AssetLocation(
+      remote: data.dec(_f$remote),
+      path: data.dec(_f$path),
+      absolute: data.dec(_f$absolute),
+    );
   }
 
   @override
@@ -104,7 +116,7 @@ extension AssetLocationValueCopy<$R, $Out>
 
 abstract class AssetLocationCopyWith<$R, $In extends AssetLocation, $Out>
     implements ClassCopyWith<$R, $In, $Out> {
-  $R call({String? remote, String? path});
+  $R call({String? remote, String? path, bool? absolute});
   AssetLocationCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t);
 }
 
@@ -117,16 +129,18 @@ class _AssetLocationCopyWithImpl<$R, $Out>
   late final ClassMapperBase<AssetLocation> $mapper =
       AssetLocationMapper.ensureInitialized();
   @override
-  $R call({String? remote, String? path}) => $apply(
+  $R call({String? remote, String? path, bool? absolute}) => $apply(
     FieldCopyWithData({
       if (remote != null) #remote: remote,
       if (path != null) #path: path,
+      if (absolute != null) #absolute: absolute,
     }),
   );
   @override
   AssetLocation $make(CopyWithData data) => AssetLocation(
     remote: data.get(#remote, or: $value.remote),
     path: data.get(#path, or: $value.path),
+    absolute: data.get(#absolute, or: $value.absolute),
   );
 
   @override

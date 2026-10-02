@@ -1,5 +1,6 @@
 import 'dart:async';
-import 'dart:io';
+import 'dart:io' hide FileSystemEntity;
+import 'dart:io' as io show FileSystemEntity;
 
 import 'package:flutter/foundation.dart';
 import 'package:lw_file_system/lw_file_system.dart';
@@ -32,11 +33,13 @@ class IODirectoryFileSystem extends DirectoryFileSystem {
   @override
   Future<bool> moveAbsolute(String oldPath, String newPath) async {
     if (oldPath.isEmpty) {
-      oldPath = await config.getDirectory(storage);
+      oldPath = await getDirectory();
     }
     if (newPath.isEmpty) {
-      newPath = await config.getDirectory(storage);
+      newPath = await getDirectory();
     }
+    oldPath = universalPathContext.normalize(oldPath.replaceAll('\\', '/'));
+    newPath = universalPathContext.normalize(newPath.replaceAll('\\', '/'));
     if (oldPath == newPath) {
       return false;
     }
@@ -44,6 +47,23 @@ class IODirectoryFileSystem extends DirectoryFileSystem {
     final stat = await FileStat.stat(oldPath);
     final type = stat.type;
     if (type == FileSystemEntityType.notFound) return false;
+
+    final destinationType = await io.FileSystemEntity.type(
+      newPath,
+      followLinks: false,
+    );
+    final emptyDirectory =
+        type == FileSystemEntityType.directory &&
+        destinationType == FileSystemEntityType.directory &&
+        await Directory(newPath).list().isEmpty;
+    if (universalPathContext.isWithin(oldPath, newPath) ||
+        (destinationType != FileSystemEntityType.notFound && !emptyDirectory)) {
+      throw FileSystemException(
+        'Destination already exists or is inside source',
+        newPath,
+      );
+    }
+    await Directory(newPath).parent.create(recursive: true);
 
     // Try atomic rename first
     try {
@@ -67,6 +87,7 @@ class IODirectoryFileSystem extends DirectoryFileSystem {
       await file.delete();
       return true;
     } else if (type == FileSystemEntityType.directory) {
+      await Directory(newPath).create(recursive: true);
       var oldDirectory = Directory(oldPath);
       var files = await oldDirectory.list().toList();
       for (final file in files) {
@@ -101,6 +122,10 @@ class IODirectoryFileSystem extends DirectoryFileSystem {
   }
 
   @override
+  Future<void> saveAbsolute(String path, Uint8List bytes) =>
+      _lock.synchronized(() => _updateFile((path, bytes)));
+
+  @override
   Future<RawFileSystemDirectory> createDirectory(String path) async {
     path = normalizePath(path);
     return _lock.synchronized(() async {
@@ -126,32 +151,10 @@ class IODirectoryFileSystem extends DirectoryFileSystem {
     if (path == newPath) return getAsset(path);
 
     return _lock.synchronized(() async {
-      final oldFile = File(await getAbsolutePath(path));
-      final oldDir = Directory(await getAbsolutePath(path));
+      final oldAbsolutePath = await getAbsolutePath(path);
       final newAbsolutePath = await getAbsolutePath(newPath);
-
-      if (await oldFile.exists()) {
-        try {
-          await oldFile.rename(newAbsolutePath);
-        } catch (_) {
-          await oldFile.copy(newAbsolutePath);
-          await oldFile.delete();
-        }
-        return FileSystemFile(
-          AssetLocation(path: newPath, remote: storage?.identifier ?? ''),
-          data: await File(newAbsolutePath).readAsBytes(),
-        );
-      } else if (await oldDir.exists()) {
-        try {
-          await oldDir.rename(newAbsolutePath);
-        } catch (_) {
-          // Fallback for directories is complex, use moveAbsolute logic or similar
-          // But moveAbsolute works on absolute paths, so we can use it.
-          await moveAbsolute(oldDir.path, newAbsolutePath);
-        }
-        return getAsset(newPath, listLevel: 0);
-      }
-      return null;
+      if (!await moveAbsolute(oldAbsolutePath, newAbsolutePath)) return null;
+      return getAsset(newPath, listLevel: 0);
     });
   }
 

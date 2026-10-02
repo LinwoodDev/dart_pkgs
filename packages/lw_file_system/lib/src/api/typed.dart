@@ -141,6 +141,15 @@ class TypedDirectoryFileSystem<T> extends TypedFileSystem<T>
   );
 
   @override
+  Future<FileSystemFile<T>?> readAbsoluteAsset(
+    String path, {
+    bool readData = true,
+  }) async {
+    final asset = await fileSystem.readAbsoluteAsset(path, readData: readData);
+    return asset == null ? null : _toTypedAsset(asset) as FileSystemFile<T>;
+  }
+
+  @override
   Future<FileSystemEntity<T>?> readAsset(
     String path, {
     bool readData = true,

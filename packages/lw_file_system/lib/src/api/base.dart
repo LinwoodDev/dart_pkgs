@@ -50,8 +50,25 @@ abstract class GeneralFileSystem {
 
   ExternalStorage? get storage => null;
 
-  String normalizePath(String path) =>
-      universalPathContext.canonicalize(path.replaceAll('\\', '/'));
+  String normalizePath(String path) {
+    path = path.replaceAll('\\', '/');
+    var depth = 0;
+    for (final part in path.split('/')) {
+      if (part.isEmpty || part == '.') continue;
+      if (part == '..') {
+        if (--depth < 0) {
+          throw ArgumentError.value(
+            path,
+            'path',
+            'Path must stay inside the storage directory',
+          );
+        }
+      } else {
+        depth++;
+      }
+    }
+    return universalPathContext.canonicalize(path);
+  }
 
   String normalizeRelativePath(String path) {
     path = normalizePath(path);
@@ -90,10 +107,18 @@ abstract class GeneralFileSystem {
   FutureOr<String> getAbsolutePath(String relativePath) async {
     relativePath = normalizeRelativePath(relativePath);
     final root = await getDirectory();
-    return p.Context(
-      style: p.Style.posix,
-      current: root,
-    ).absolute(relativePath);
+    final context = p.Context(style: p.Style.posix, current: root);
+    final absolute = context.normalize(context.absolute(relativePath));
+    final normalizedRoot = context.normalize(root);
+    if (absolute != normalizedRoot &&
+        !context.isWithin(normalizedRoot, absolute)) {
+      throw ArgumentError.value(
+        relativePath,
+        'relativePath',
+        'Path must stay inside the storage directory',
+      );
+    }
+    return absolute;
   }
 
   Future<String> getDirectory() async {
@@ -109,7 +134,11 @@ abstract class GeneralFileSystem {
   }
 
   Future<String?> toRelativePath(String path) async {
-    final root = await getDirectory();
+    final root = universalPathContext.normalize(
+      (await getDirectory()).replaceAll('\\', '/'),
+    );
+    path = universalPathContext.normalize(path.replaceAll('\\', '/'));
+    if (path == root) return '';
     if (universalPathContext.isRelative(path)) {
       return normalizePath(path);
     }

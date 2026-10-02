@@ -28,12 +28,23 @@ mixin GeneralDirectoryFileSystem<T> on GeneralFileSystem {
     bool forceRemote = false,
   });
 
+  /// Read a device file without resolving it against the storage directory.
+  Future<FileSystemFile<T>?> readAbsoluteAsset(
+    String path, {
+    bool readData = true,
+  });
+
   Stream<FileSystemEntity<T>?> fetchAsset(
     String path, {
     int listLevel = oneListLevel,
     bool readData = true,
     bool forceRemote = false,
+    bool absolute = false,
   }) async* {
+    if (absolute) {
+      yield await readAbsoluteAsset(path, readData: readData);
+      return;
+    }
     final nextLevel = listLevel <= 0 ? listLevel : (listLevel - 1);
     final asset = await readAsset(
       path,
@@ -113,11 +124,13 @@ mixin GeneralDirectoryFileSystem<T> on GeneralFileSystem {
     int listLevel = oneListLevel,
     bool readData = true,
     bool forceRemote = false,
+    bool absolute = false,
   }) => fetchAsset(
     path,
     listLevel: listLevel,
     readData: readData,
     forceRemote: forceRemote,
+    absolute: absolute,
   ).last;
   Future<FileSystemDirectory<T>> createDirectory(String path);
   Future<void> updateFile(String path, T data, {bool forceSync = false});
@@ -208,7 +221,7 @@ mixin GeneralDirectoryFileSystem<T> on GeneralFileSystem {
       int? index;
       await for (final file
           in fileSystem
-              .fetchAsset(e.path, listLevel: listLevel)
+              .fetchAsset(e.path, listLevel: listLevel, absolute: e.absolute)
               .whereNotNull()) {
         if (index == null) {
           index = files.length;
@@ -219,7 +232,7 @@ mixin GeneralDirectoryFileSystem<T> on GeneralFileSystem {
         yield null;
       }
     });
-    return streams.map((event) => files);
+    return streams.map((event) => List.of(files));
   }
 
   static Stream<List<FileSystemEntity<T>>> fetchAssetsGlobalSync<T>(
@@ -305,6 +318,24 @@ abstract class DirectoryFileSystem extends GeneralFileSystem
         useIsolates: useIsolates,
       ),
     };
+  }
+
+  @override
+  Future<RawFileSystemFile?> readAbsoluteAsset(
+    String path, {
+    bool readData = true,
+  }) async {
+    final bytes = await loadAbsolute(path);
+    if (bytes == null) return null;
+    return RawFileSystemFile(
+      AssetLocation(
+        path: path,
+        remote: storage?.identifier ?? '',
+        absolute: true,
+      ),
+      data: readData ? bytes : null,
+      size: bytes.length,
+    );
   }
 
   @override

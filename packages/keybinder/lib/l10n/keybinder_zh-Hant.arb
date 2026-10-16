@@ -5,5 +5,8 @@
   "shiftKey": "Shift",
   "altKey": "Alt",
   "metaKey": "Meta",
-  "reset": "重設"
+  "reset": "重設",
+  "spaceKey": "間隔",
+  "mediaTrackPreviousKey": "Media Previous",
+  "mediaTrackNextKey": "Media Next"
 }

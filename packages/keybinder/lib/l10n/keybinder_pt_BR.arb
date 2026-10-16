@@ -5,5 +5,8 @@
   "shiftKey": "Turno",
   "altKey": "Alt",
   "metaKey": "Meta",
-  "reset": "Redefinir"
+  "reset": "Redefinir",
+  "spaceKey": "Sala",
+  "mediaTrackPreviousKey": "Media Previous",
+  "mediaTrackNextKey": "Media Next"
 }

@@ -5,5 +5,8 @@
   "shiftKey": "Skift",
   "altKey": "Alt",
   "metaKey": "Meta",
-  "reset": "Återställ"
+  "reset": "Återställ",
+  "spaceKey": "Mellanslag",
+  "mediaTrackPreviousKey": "Media Previous",
+  "mediaTrackNextKey": "Media Next"
 }

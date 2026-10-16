@@ -5,5 +5,8 @@
   "shiftKey": "Mayús",
   "altKey": "Alt",
   "metaKey": "Meta",
-  "reset": "Restablecer"
+  "reset": "Restablecer",
+  "spaceKey": "Espacio",
+  "mediaTrackPreviousKey": "Media Previous",
+  "mediaTrackNextKey": "Media Next"
 }

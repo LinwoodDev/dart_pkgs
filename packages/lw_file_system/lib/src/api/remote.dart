@@ -1273,13 +1273,20 @@ abstract class RemoteFileSystem extends DirectoryFileSystem {
   }
 
   @override
-  Future<RawFileSystemDirectory> createDirectory(String path) async {
+  Future<RawFileSystemDirectory> createDirectory(
+    String path, {
+    bool forceSync = false,
+  }) async {
     path = normalizePath(path);
     await _ensureCacheRootDirectory();
     final absolutePath = await getAbsolutePath(path);
     await Directory(absolutePath).create(recursive: true);
 
-    await _addToQueue(SyncOperation(SyncOperationType.createDir, path));
+    if (forceSync) {
+      await createRemoteDirectory(path);
+    } else {
+      await _addToQueue(SyncOperation(SyncOperationType.createDir, path));
+    }
 
     return RawFileSystemDirectory(
       AssetLocation(remote: storage.identifier, path: path),

@@ -792,7 +792,7 @@ class DavRemoteDirectoryFileSystem extends RemoteFileSystem {
 
   @override
   Future<void> runInitialize() async {
-    await createDirectory('');
+    await createDirectory('', forceSync: true);
     await createDefault(this);
   }
 }

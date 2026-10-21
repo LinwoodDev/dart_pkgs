@@ -20,7 +20,9 @@ Map<String, String> reproducibleEnvironment({
     if (cargoHome != null) _path(Directory(cargoHome)): '/cargo',
     _path(Directory.fromUri(sourceRoot)): prefix,
     _path(Directory.fromUri(outputDirectory)): '$prefix/native-build',
-  };
+  }.entries.toList()..sort((a, b) => a.key.length.compareTo(b.key.length));
+  // Rust/GNU use the last matching map; MSVC uses the first. Give nested
+  // cache/output paths priority over their enclosing checkout in both cases.
   // Cargo splits RUSTFLAGS on whitespace. The encoded form also supports paths
   // containing spaces, and takes precedence over RUSTFLAGS.
   final encoded = environment['CARGO_ENCODED_RUSTFLAGS'];
@@ -31,7 +33,7 @@ Map<String, String> reproducibleEnvironment({
       ...?environment['RUSTFLAGS']
           ?.split(RegExp(r'\s+'))
           .where((flag) => flag.isNotEmpty),
-    for (final entry in prefixes.entries)
+    for (final entry in prefixes)
       '--remap-path-prefix=${entry.key}=${entry.value}',
     if (windows) ...[
       '-C',
@@ -41,10 +43,11 @@ Map<String, String> reproducibleEnvironment({
     ],
   ];
   String compilerFlags(String variable) => [
-    ?environment![variable],
+    if (!windows) ?environment![variable],
     if (windows) ...['/Brepro', '/experimental:deterministic'],
-    for (final entry in prefixes.entries)
+    for (final entry in windows ? prefixes.reversed : prefixes)
       '"${windows ? '/pathmap:' : '-ffile-prefix-map='}${entry.key.replaceAll('\\', '/')}=${entry.value}"',
+    if (windows) ?environment![variable],
   ].join(' ');
   return {
     'CARGO_ENCODED_RUSTFLAGS': rustFlags.join('\u001f'),

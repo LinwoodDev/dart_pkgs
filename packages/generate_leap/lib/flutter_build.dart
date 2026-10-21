@@ -391,6 +391,14 @@ class FlutterBuild extends BuildContext {
               platform == 'windows' ||
               platform == 'server' && Platform.isWindows,
           environment: environment,
+        )..removeWhere(
+          (key, _) =>
+              platform != 'web' &&
+              const [
+                'CFLAGS',
+                'CXXFLAGS',
+                'CC_SHELL_ESCAPED_FLAGS',
+              ].contains(key),
         ),
       );
     }

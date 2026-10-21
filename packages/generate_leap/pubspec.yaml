@@ -1,5 +1,5 @@
 name: generate_leap
-description: A starting point for Dart libraries or applications.
+description: Asset generation, prepared offline builds and reproducible artifacts.
 version: 1.0.0
 # repository: https://github.com/my_org/my_repo
 
@@ -10,7 +10,10 @@ resolution: workspace
 
 # Add regular dependencies here.
 dependencies:
-  archive: ^4.0.1
+  args: ^2.7.0
+  crypto: ^3.0.7
+  yaml: ^3.1.1
+  archive: ^4.3.0
   # path: ^1.8.0
 
 dev_dependencies:

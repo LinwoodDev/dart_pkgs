@@ -2,6 +2,8 @@ import Cocoa
 import FlutterMacOS
 
 public class SwiftLwSysapiPlugin: NSObject, FlutterPlugin {
+  private weak var view: NSView?
+
   private let defaultTypes = [
     "image/png", "image/jpeg", "image/gif", "image/webp", "image/tiff",
     "image/bmp", "image/svg+xml", "application/pdf", "text/plain",
@@ -17,11 +19,15 @@ public class SwiftLwSysapiPlugin: NSObject, FlutterPlugin {
       name: "linwood.dev/lw_sysapi",
       binaryMessenger: registrar.messenger
     )
-    registrar.addMethodCallDelegate(SwiftLwSysapiPlugin(), channel: channel)
+    let plugin = SwiftLwSysapiPlugin()
+    plugin.view = registrar.view
+    registrar.addMethodCallDelegate(plugin, channel: channel)
   }
 
   public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
     switch call.method {
+    case "getDisplayMetrics":
+      result(getDisplayMetrics())
     case "writeClipboard":
       guard
         let arguments = call.arguments as? [String: Any],
@@ -38,6 +44,30 @@ public class SwiftLwSysapiPlugin: NSObject, FlutterPlugin {
     default:
       result(FlutterMethodNotImplemented)
     }
+  }
+
+  private func getDisplayMetrics() -> [String: Any]? {
+    guard
+      let screen = view?.window?.screen,
+      let number = screen.deviceDescription[NSDeviceDescriptionKey("NSScreenNumber")] as? NSNumber
+    else { return nil }
+    let displayId = CGDirectDisplayID(number.uint32Value)
+    var millimeters = CGDisplayScreenSize(displayId)
+    // EDID dimensions describe the panel's native orientation.
+    let rotation = Int(CGDisplayRotation(displayId).rounded()) % 180
+    if rotation != 0 {
+      millimeters = CGSize(width: millimeters.height, height: millimeters.width)
+    }
+    guard millimeters.width > 0, millimeters.height > 0 else { return nil }
+    // Use the pixel coordinates rendered by this view, including scaled modes.
+    let pixels = screen.convertRectToBacking(screen.frame).size
+    guard pixels.width > 0, pixels.height > 0 else { return nil }
+    return [
+      "dpiX": pixels.width * 25.4 / millimeters.width,
+      "dpiY": pixels.height * 25.4 / millimeters.height,
+      "displayId": String(displayId),
+      "name": screen.localizedName,
+    ]
   }
 
   private func writeClipboard(type: String, data: Data) -> Bool {

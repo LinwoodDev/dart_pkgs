@@ -1,12 +1,16 @@
 import 'dart:async';
 import 'dart:typed_data';
 
+import '../display_metrics.dart';
+
 import 'lw_sysapi_stub.dart'
     if (dart.library.io) 'lw_sysapi_io.dart'
     if (dart.library.js_interop) 'lw_sysapi_web.dart';
 
 abstract class SysAPIPlatform {
   FutureOr<List<String>?> getFonts();
+
+  FutureOr<DisplayMetrics?> getDisplayMetrics() => null;
 
   FutureOr<ClipboardManager> getClipboardManager() =>
       UnsupportedClipboardManager();
@@ -83,6 +87,9 @@ class SysAPIBase implements SysAPIPlatform {
 
   @override
   ClipboardManager getClipboardManager() => UnsupportedClipboardManager();
+
+  @override
+  FutureOr<DisplayMetrics?> getDisplayMetrics() => null;
 }
 
 class InternalClipboardManager implements ClipboardManager {
@@ -115,6 +122,17 @@ SysAPIPlatform _instance = createInstance();
 
 /// Base class for getting system information
 class SysAPI {
+  /// Physical pixel density for the display containing the plugin's app view.
+  ///
+  /// Available on Android, Linux, macOS and Windows when the platform reports
+  /// physical display information. Returns null when unavailable, including
+  /// iOS and Web. No nominal 96/160-DPI fallback is used.
+  ///
+  /// Query again after moving the window to another display. Device pixel ratio
+  /// is supplied separately by the caller from its current Flutter view.
+  static FutureOr<DisplayMetrics?> getDisplayMetrics() =>
+      _instance.getDisplayMetrics();
+
   ///Get all system fonts
   ///Available on Windows, Linux and Web
   ///

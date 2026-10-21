@@ -185,6 +185,7 @@ class _RecordingMockFileSystem extends MockFileSystem {
   @override
   Future<FileSystemEntity<Uint8List>?> getAsset(
     String path, {
+    bool absolute = false,
     int listLevel = oneListLevel,
     bool readData = true,
     bool forceRemote = false,

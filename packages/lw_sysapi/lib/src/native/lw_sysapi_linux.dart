@@ -4,6 +4,9 @@ import 'dart:typed_data';
 import 'package:ffi/ffi.dart';
 import 'package:lw_sysapi/src/native/lw_sysapi_base.dart';
 
+import '../display_metrics.dart';
+import 'display_metrics_channel.dart';
+
 typedef _FcInitNative = ffi.Void Function();
 typedef _FcInitDart = void Function();
 typedef _FcPatternCreateNative = ffi.Pointer Function();
@@ -127,6 +130,9 @@ typedef _FcFontListNative =
     );
 
 class SysAPILinux extends SysAPIPlatform {
+  @override
+  Future<DisplayMetrics?> getDisplayMetrics() => getNativeDisplayMetrics();
+
   static const String _libPath = 'libfontconfig.so.1';
   final ffi.DynamicLibrary _dylib;
   late final _FcInitDart _fcInit;

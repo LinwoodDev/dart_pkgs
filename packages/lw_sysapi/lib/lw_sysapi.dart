@@ -12,3 +12,4 @@ export 'src/native/lw_sysapi_base.dart'
         InternalClipboardManager,
         UnsupportedClipboardManager;
 export 'src/api/save.dart';
+export 'src/display_metrics.dart';

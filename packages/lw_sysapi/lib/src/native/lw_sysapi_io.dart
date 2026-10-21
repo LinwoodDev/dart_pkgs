@@ -2,6 +2,8 @@ import 'dart:io';
 
 import 'package:flutter/services.dart';
 
+import '../display_metrics.dart';
+import 'display_metrics_channel.dart';
 import 'lw_sysapi_base.dart';
 import 'lw_sysapi_windows.dart';
 import 'lw_sysapi_linux.dart';
@@ -21,6 +23,9 @@ SysAPIPlatform createInstance() {
 }
 
 class SysAPIAndroid extends SysAPIBase {
+  @override
+  Future<DisplayMetrics?> getDisplayMetrics() => getNativeDisplayMetrics();
+
   @override
   ClipboardManager getClipboardManager() => AndroidClipboardManager();
 }
@@ -52,6 +57,9 @@ class AndroidClipboardManager implements ClipboardManager {
 }
 
 class SysAPIApple extends SysAPIBase {
+  @override
+  Future<DisplayMetrics?> getDisplayMetrics() => getNativeDisplayMetrics();
+
   @override
   ClipboardManager getClipboardManager() => AppleClipboardManager();
 }

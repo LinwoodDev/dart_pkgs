@@ -8,6 +8,49 @@
 | --------------------: | :---------------------------------- | :-----: | :---: | :---: | :---: | :------: | :--------: | :-----: |
 |            `getFonts` | Get all system fonts                |    ✅    |   ✅   |   ❌   |   ❌   |    ✅     |     ✅      |    ❌    |
 | `getClipboardManager` | Read and write typed clipboard data |    ✅    |   ✅   |   ✅   |   ✅   |    ✅     |     ✅      |    ✅    |
+|   `getDisplayMetrics` | Get physical display pixel density |    ✅    |   ✅   |   ✅   |   ❌   |    ❌     |     ❌      |    ✅    |
+
+## Physical display size
+
+`SysAPI.getDisplayMetrics()` reads the physical X/Y pixel density of the display
+containing the plugin's registered app view. The returned `DisplayMetrics` can
+convert canvas units to displayed millimeters and back. A canvas unit is one
+Flutter logical pixel before camera zoom. Supply the current view's
+device pixel ratio from `MediaQuery.devicePixelRatioOf(context)` or
+`View.of(context).devicePixelRatio` separately.
+
+```dart
+import 'dart:ui';
+import 'package:lw_sysapi/lw_sysapi.dart';
+
+Future<Size?> a4SizeInCanvasUnits(double devicePixelRatio, double zoom) async {
+  final metrics = await SysAPI.getDisplayMetrics();
+  return metrics?.millimetersToCanvasUnits(
+    const Size(210, 297),
+    devicePixelRatio: devicePixelRatio,
+    zoom: zoom,
+  );
+}
+```
+
+For an already displayed canvas, convert its document size with
+`metrics.canvasUnitsToMillimeters(size, devicePixelRatio: currentRatio, zoom: canvasZoom)`.
+Zoom is a factor: `1` means 100%, `2` means 200%.
+This API does not assign units to document coordinates or change PDF units.
+
+Android uses the activity's `DisplayMetrics.xdpi/ydpi`; Linux uses the app view's
+GDK monitor geometry, scale and millimeter dimensions; macOS uses the app view's
+`NSScreen` and Core Graphics millimeter dimensions; Windows uses the app view's
+monitor and `MDT_RAW_DPI`, excluding the desktop UI scaling preference.
+
+Physical values are reported by the OS/hardware and may be rounded or inaccurate.
+The API returns `null` if valid physical metrics are unavailable. iOS and Web do
+not expose physical pixel density through their standard display APIs, so they
+return `null`; there is no nominal 96/160-DPI fallback or device-model lookup.
+
+Query again when the view moves to another monitor or display metrics change.
+`displayId` is a native, session-local identifier, not Flutter's `Display.id`.
+
 
 ## Clipboard
 

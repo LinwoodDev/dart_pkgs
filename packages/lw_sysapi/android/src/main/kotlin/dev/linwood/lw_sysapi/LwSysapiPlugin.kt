@@ -7,6 +7,7 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import androidx.core.app.ActivityCompat.startActivityForResult
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
@@ -45,9 +46,11 @@ class LwSysapiPlugin: FlutterPlugin, MethodCallHandler, ActivityResultListener, 
   }
 
   override fun onDetachedFromActivityForConfigChanges() {
+    act = null
   }
 
   override fun onReattachedToActivityForConfigChanges(binding: ActivityPluginBinding) {
+    act = binding.activity
   }
 
   override fun onDetachedFromActivity() {
@@ -55,7 +58,9 @@ class LwSysapiPlugin: FlutterPlugin, MethodCallHandler, ActivityResultListener, 
   }
 
   override fun onMethodCall(call: MethodCall, result: Result) {
-    if (call.method == "saveFile") {
+    if (call.method == "getDisplayMetrics") {
+      result.success(getDisplayMetrics())
+    } else if (call.method == "saveFile") {
       saveResult = result
       saveData = call.argument("data")
       saveFile(call.argument("mime")!!, call.argument("name")!!)
@@ -73,6 +78,28 @@ class LwSysapiPlugin: FlutterPlugin, MethodCallHandler, ActivityResultListener, 
     } else {
       result.notImplemented()
     }
+  }
+
+  @Suppress("DEPRECATION")
+  private fun getDisplayMetrics(): Map<String, Any>? {
+    val activity = act ?: return null
+    val metrics = activity.resources.displayMetrics
+    if (!metrics.xdpi.isFinite() || !metrics.ydpi.isFinite() ||
+        metrics.xdpi <= 0 || metrics.ydpi <= 0) return null
+    val display = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+      activity.display
+    } else {
+      activity.windowManager.defaultDisplay
+    }
+    val result = mutableMapOf<String, Any>(
+      "dpiX" to metrics.xdpi.toDouble(),
+      "dpiY" to metrics.ydpi.toDouble(),
+    )
+    display?.let {
+      result["displayId"] = it.displayId.toString()
+      result["name"] = it.name
+    }
+    return result
   }
 
 

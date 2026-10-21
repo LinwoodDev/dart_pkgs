@@ -6,11 +6,16 @@ import 'package:ffi/ffi.dart';
 import 'package:win32/win32.dart';
 
 import 'lw_sysapi_base.dart';
+import '../display_metrics.dart';
+import 'display_metrics_channel.dart';
 import 'windows_bitmap.dart';
 
 final _fontNames = <String>{};
 
 class SysAPIWindows extends SysAPIPlatform {
+  @override
+  Future<DisplayMetrics?> getDisplayMetrics() => getNativeDisplayMetrics();
+
   static int _enumerateFonts(
     Pointer<LOGFONT> logFont,
     Pointer<TEXTMETRIC> _,

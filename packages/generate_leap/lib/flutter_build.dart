@@ -359,6 +359,10 @@ class FlutterBuild extends BuildContext {
       "if (System.getenv('GENERATE_LEAP_REPRODUCIBILITY_CHECK') == '1') {\n"
       '    gradle.startParameter.buildCacheEnabled = false\n}\n',
     );
+    // CocoaPods requires UTF-8 on Apple platforms.
+    final locale = platform == 'macos' || platform == 'ios'
+        ? 'en_US.UTF-8'
+        : 'C';
     final environment = {
       for (final entry in Platform.environment.entries)
         (Platform.isWindows ? entry.key.toUpperCase() : entry.key): entry.value,
@@ -371,8 +375,8 @@ class FlutterBuild extends BuildContext {
       'COCOAPODS_DISABLE_STATS': 'true',
       'SOURCE_DATE_EPOCH': '$epoch',
       'TZ': 'UTC',
-      'LANG': 'C',
-      'LC_ALL': 'C',
+      'LANG': locale,
+      'LC_ALL': locale,
       'ZERO_AR_DATE': '1',
       if (_rust != null) 'CARGO_INCREMENTAL': '0',
       if (_rust != null) 'CARGO_TARGET_DIR': '${cache.path}/cargo-target',

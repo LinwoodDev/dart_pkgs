@@ -96,6 +96,59 @@ Future<bool> copyPng(Uint8List pngBytes) async {
 
 `getContent` returns `null` and `setContent` returns `false` when the requested operation is unavailable or unsupported. Use `SysAPI.getClipboardManager(internal: true)` for an in-memory, process-local clipboard instead of the system clipboard.
 
+## Drag and drop
+
+`SystemDropTarget` receives external files, browser images, links and text on
+Android, iOS, Linux, macOS, Windows and Web. It uses Flutter hit testing: the
+innermost enabled target receives the drop, while opaque overlays and modal
+routes block targets behind them. Positions are Flutter logical pixels.
+
+```dart
+SystemDropTarget(
+  showFeedback: true,
+  onDrop: (details) async {
+    final result = await details.readContents(); // safeMode: true by default
+    for (final item in result.contents) {
+      final ClipboardContent content = item.content;
+      // Feed the same MIME type and bytes into your clipboard/paste importer.
+      importContent(content.type, content.data, name: item.name,
+          position: details.localPosition);
+    }
+    // Reading one item may fail while the rest of the batch succeeds.
+    for (final error in result.errors) {
+      reportError(error);
+    }
+  },
+  onError: (error, stack) => reportError(error),
+  child: canvas,
+)
+```
+
+`SystemDropItem` exposes a file URI or alternative `ClipboardContent`
+representations. `readContents()` resolves file bytes, HTML image sources, data
+URLs and HTTP(S) URLs without reading or writing the system clipboard. Actual
+files/image bytes are preferred over alternate browser link representations.
+`NamedClipboardContent` preserves file names separately from the shared MIME
+record. Unsupported URI schemes and download failures are returned in `errors`.
+Safe mode is enabled by default and blocks HTTP(S) requests. The host can opt
+in to remote reads with `details.readContents(safeMode: false)`. Local files and
+supplied bytes do not need this opt-in. Remote reads still reject credentials,
+IP literals, local host names, nonstandard ports and redirects. On native
+platforms, resolved DNS addresses must be public and connections use the exact
+validated IP to prevent DNS rebinding; custom injected HTTP clients are
+responsible for equivalent transport-level checks. Hidden local-file references
+inside HTML and network file shares are always rejected.
+
+Each item is limited to 32 MiB, and URI reads time out after 30 seconds; callers
+can configure `maxBytes` and `timeout`. HTTP downloads stream under the byte
+limit and are aborted on timeout. HTTP requests on Web remain subject to the
+source server's CORS policy.
+
+`enabled: false` rejects drops. `showFeedback` adds a hover border and a loading
+indicator. Async `onDrop` handlers run once at a time per target. Use `onError`
+to handle callback failures; otherwise they are reported through `FlutterError`.
+Native clipboard and drop channels are separate and can be used concurrently.
+
 ## Information
 
 This package is only available as git dependency and will be used in Linwood apps.

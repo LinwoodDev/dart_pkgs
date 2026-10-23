@@ -21,6 +21,7 @@ typedef ClipboardContent = ({String type, Uint8List data});
 abstract final class ClipboardMimeTypes {
   static const text = 'text/plain';
   static const html = 'text/html';
+  static const uriList = 'text/uri-list';
   static const png = 'image/png';
   static const jpeg = 'image/jpeg';
   static const gif = 'image/gif';

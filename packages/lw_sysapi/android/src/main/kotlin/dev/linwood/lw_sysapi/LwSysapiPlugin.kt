@@ -33,28 +33,36 @@ class LwSysapiPlugin: FlutterPlugin, MethodCallHandler, ActivityResultListener, 
   private var saveResult: MethodChannel.Result? = null
   private var act: Activity? = null
   private var context: Context? = null
+  private var dropTarget: LwSysapiDropTarget? = null
 
   override fun onAttachedToEngine(flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
     context = flutterPluginBinding.applicationContext
     channel = MethodChannel(flutterPluginBinding.binaryMessenger, "linwood.dev/lw_sysapi")
     channel.setMethodCallHandler(this)
+    dropTarget = LwSysapiDropTarget(flutterPluginBinding.applicationContext,
+      MethodChannel(flutterPluginBinding.binaryMessenger, "linwood.dev/lw_sysapi/drop"))
   }
   
   override fun onAttachedToActivity(binding: ActivityPluginBinding) {
     act = binding.activity
     binding.addActivityResultListener(this)
+    dropTarget?.attach(binding.activity)
   }
 
   override fun onDetachedFromActivityForConfigChanges() {
     act = null
+    dropTarget?.attach(null)
   }
 
   override fun onReattachedToActivityForConfigChanges(binding: ActivityPluginBinding) {
     act = binding.activity
+    binding.addActivityResultListener(this)
+    dropTarget?.attach(binding.activity)
   }
 
   override fun onDetachedFromActivity() {
     act = null
+    dropTarget?.attach(null)
   }
 
   override fun onMethodCall(call: MethodCall, result: Result) {
@@ -237,6 +245,8 @@ class LwSysapiPlugin: FlutterPlugin, MethodCallHandler, ActivityResultListener, 
   }
 
   override fun onDetachedFromEngine(binding: FlutterPlugin.FlutterPluginBinding) {
+    dropTarget?.dispose()
+    dropTarget = null
     channel.setMethodCallHandler(null)
     context = null
   }

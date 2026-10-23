@@ -2,6 +2,7 @@ import Flutter
 import UIKit
 
 public class SwiftLwSysapiPlugin: NSObject, FlutterPlugin {
+  private var dropDelegate: LwSysapiDropDelegate?
   private let defaultTypes = [
     "image/png", "image/jpeg", "image/gif", "image/webp", "image/tiff",
     "image/bmp", "image/svg+xml", "application/pdf", "text/plain",
@@ -17,7 +18,12 @@ public class SwiftLwSysapiPlugin: NSObject, FlutterPlugin {
       name: "linwood.dev/lw_sysapi",
       binaryMessenger: registrar.messenger()
     )
-    registrar.addMethodCallDelegate(SwiftLwSysapiPlugin(), channel: channel)
+    let plugin = SwiftLwSysapiPlugin()
+    registrar.addMethodCallDelegate(plugin, channel: channel)
+    if let view = registrar.viewController?.view {
+      plugin.dropDelegate = LwSysapiDropDelegate(view: view,
+        channel: FlutterMethodChannel(name: "linwood.dev/lw_sysapi/drop", binaryMessenger: registrar.messenger()))
+    }
   }
 
   public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {

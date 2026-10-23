@@ -3,7 +3,7 @@ package dev.linwood.lw_sysapi
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import org.mockito.Mockito
-import kotlin.test.Test
+import org.junit.jupiter.api.Test
 
 /*
  * This demonstrates a simple unit test of the Kotlin portion of this plugin's implementation.
@@ -15,13 +15,13 @@ import kotlin.test.Test
 
 internal class LwSysapiPluginTest {
     @Test
-    fun onMethodCall_getPlatformVersion_returnsExpectedValue() {
+    fun onMethodCall_unknownMethod_isNotImplemented() {
         val plugin = LwSysapiPlugin()
 
         val call = MethodCall("getPlatformVersion", null)
         val mockResult: MethodChannel.Result = Mockito.mock(MethodChannel.Result::class.java)
         plugin.onMethodCall(call, mockResult)
 
-        Mockito.verify(mockResult).success("Android " + android.os.Build.VERSION.RELEASE)
+        Mockito.verify(mockResult).notImplemented()
     }
 }

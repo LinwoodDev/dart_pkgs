@@ -6,6 +6,8 @@ import android.database.Cursor
 import android.net.Uri
 import android.os.ParcelFileDescriptor
 import java.io.FileNotFoundException
+import java.io.IOException
+import java.io.OutputStream
 import java.util.UUID
 
 class LwSysapiClipboardProvider : ContentProvider() {
@@ -41,9 +43,7 @@ class LwSysapiClipboardProvider : ContentProvider() {
     val entry = get(uri) ?: throw FileNotFoundException(uri.toString())
     val pipe = ParcelFileDescriptor.createPipe()
     Thread {
-      ParcelFileDescriptor.AutoCloseOutputStream(pipe[1]).use { output ->
-        output.write(entry.data)
-      }
+      writeClipboardStream(ParcelFileDescriptor.AutoCloseOutputStream(pipe[1]), entry.data)
     }.start()
     return pipe[0]
   }
@@ -66,4 +66,14 @@ class LwSysapiClipboardProvider : ContentProvider() {
     selection: String?,
     selectionArgs: Array<out String>?,
   ): Int = 0
+}
+
+// Clipboard previews may close their end of the pipe before consuming all the data.
+// An uncaught IOException here would terminate the app from the writer thread.
+internal fun writeClipboardStream(output: OutputStream, data: ByteArray) {
+  try {
+    output.use { it.write(data) }
+  } catch (_: IOException) {
+    // The reader disconnected; the stream is closed by use even when writing fails.
+  }
 }

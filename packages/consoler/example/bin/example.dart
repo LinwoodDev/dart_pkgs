@@ -1,16 +1,39 @@
 import 'package:consoler/consoler.dart';
-import 'package:example/example.dart';
 
 Future<void> main(List<String> arguments) async {
-  final consoler = Consoler(
-    defaultProgramConfig:
-        DefaultProgramConfiguration(description: 'Consoler example'),
+  final console = Consoler(
+    description: 'Consoler example',
+    ignoreCase: true,
   );
-  consoler.registerProgram('nothing', NothingProgram());
-  consoler.registerProgram('warn', WarningProgram(consoler));
-  consoler.run();
-  for (var i = 10; i >= 0; i--) {
-    consoler.print('Countdown: $i');
-    await Future.delayed(Duration(seconds: 1));
+  console.command(
+    'echo',
+    description: 'Print a message.',
+    usage: '<text...>',
+    aliases: ['repeat'],
+    examples: ['echo --upper "Hello world"'],
+    minArgs: 1,
+    parser: ArgParser()
+      ..addFlag(
+        'upper',
+        abbr: 'u',
+        negatable: false,
+        help: 'Print in uppercase.',
+      ),
+    run: (context) {
+      final message = context.args.join(' ');
+      context.write(
+        context.options!['upper'] as bool ? message.toUpperCase() : message,
+      );
+    },
+  );
+  console.command(
+    'exit',
+    description: 'Close this console.',
+    run: (_) => console.stop(),
+  );
+  try {
+    await console.start();
+  } finally {
+    await console.dispose();
   }
 }

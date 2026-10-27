@@ -5,3 +5,4 @@ library;
 
 export 'src/localizer_base.dart';
 export 'src/localizer_locale.dart';
+export 'src/localizer_context.dart';

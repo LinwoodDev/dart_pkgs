@@ -1,24 +1,14 @@
 import 'package:consoler/consoler.dart';
 
+/// Compatibility wrapper around the metadata-driven help renderer.
 final class HelpProgram extends ConsoleProgram {
   final Consoler consoler;
   final String description;
-
-  HelpProgram(this.consoler, {required this.description});
-
+  HelpProgram(this.consoler, {this.description = ''});
   @override
-  String getDescription() => "Show an overview about all commands";
-
+  String getDescription() => consoler.messages.helpDescription;
   @override
-  void run(String label, List<String> args) {
-    print("-----");
-    print(description);
-    for (final program in consoler.programs) {
-      final usage = program.value.getUsage();
-      final description = program.value.getDescription();
-      if (description == null) continue;
-      print("> ${program.key}${usage != null ? ' $usage' : ''} - $description");
-    }
-    print("-----");
-  }
+  String getUsage() => consoler.messages.helpUsage;
+  @override
+  void run(String label, List<String> args) => consoler.showHelp(args);
 }

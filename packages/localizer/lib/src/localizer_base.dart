@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:localizer/src/localizer_locale.dart';
+import 'localizer_context.dart';
 import 'package:yaml/yaml.dart' as yaml;
 
 /// Localizer allows you to manage your application's localizations.
@@ -15,6 +16,16 @@ class Localizer {
   /// Create a new Localizer instance.
   /// [defaultLocale] is the default locale to use when a specific locale has not been found.
   Localizer([this.defaultLocale = 'en']);
+
+  /// Creates an independent locale selection over this catalog.
+  LocalizerContext context([String locale = 'en']) =>
+      LocalizerContext(this, locale: locale);
+
+  /// Normalizes an explicitly supplied locale for language-based catalogs.
+  static String normalizeLocale(String value) {
+    final language = value.trim().toLowerCase().split(RegExp(r'[-_.@]')).first;
+    return language.isEmpty ? 'en' : language;
+  }
 
   /// Get all supported locales that you can get using the [getLocale] method.
   Iterable<String> get supportedLocales =>

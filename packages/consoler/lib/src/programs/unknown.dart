@@ -1,11 +1,20 @@
 import 'package:consoler/consoler.dart';
 
+/// Optional compatibility fallback. The built-in dispatcher also suggests names.
 final class UnknownProgram extends ConsoleProgram {
+  final Consoler? consoler;
+  UnknownProgram([this.consoler]);
   @override
   void run(String label, List<String> args) {
-    print(
-      "Command $label not found. Type `help` to see an overview about all commands",
-    );
+    final console = consoler;
+    if (console != null) {
+      console.print(
+        console.messages.unknownCommand(label),
+        level: LogLevel.error,
+      );
+    } else {
+      print('Unknown command: $label. Type help to see available commands.');
+    }
   }
 
   @override

@@ -438,6 +438,143 @@ final class SettingsLeapListSetting<S, V> extends SettingsLeapSetting<S> {
   bool _isSelected(V a, V b) => optionEquals?.call(a, b) ?? a == b;
 }
 
+/// A setting whose options can be selected independently, including none.
+final class SettingsLeapMultiSelectSetting<S, V>
+    extends SettingsLeapSetting<S> {
+  const SettingsLeapMultiSelectSetting({
+    super.id,
+    super.disableOptionSearch,
+    required super.displayName,
+    required this.options,
+    required this.read,
+    required this.write,
+    this.emptySelectionLabel,
+    this.optionEquals,
+    super.description,
+    super.descriptionBuilder,
+    super.help,
+    super.hintBuilder,
+    super.icon,
+    super.keywords,
+    super.keywordsBuilder,
+    super.enabled,
+  });
+
+  final List<SettingsLeapOption<V>> options;
+  final SettingsLeapStateReader<S, Set<V>> read;
+  final SettingsLeapStateWriter<Set<V>> write;
+  final SettingsLeapDisplayName? emptySelectionLabel;
+  final bool Function(V a, V b)? optionEquals;
+
+  bool _isSelected(Set<V> selection, V value) => selection.any(
+    (selected) => optionEquals?.call(selected, value) ?? selected == value,
+  );
+
+  @override
+  Iterable<SettingsLeapNode<S>> buildOptionSearchNodes(
+    BuildContext context,
+    S state,
+  ) sync* {
+    for (final option in options) {
+      yield SettingsLeapOptionSearchNode<S, V>(option: option);
+    }
+  }
+
+  @override
+  Widget buildTile(
+    BuildContext context,
+    S state, {
+    FocusNode? focusNode,
+    bool autofocus = false,
+    bool selected = false,
+  }) {
+    final selection = read(state);
+    final labels = options
+        .where((option) => _isSelected(selection, option.value))
+        .map((option) => option.getDisplayName(context));
+    final summary = labels.isEmpty
+        ? emptySelectionLabel?.call(context)
+        : labels.join(', ');
+    final description = getDescription(context);
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final stackValue = constraints.maxWidth < 480;
+        final value = summary == null ? null : Text(summary);
+        return ListTile(
+          leading: icon == null ? null : Icon(icon),
+          title: _SettingsLeapTitle(
+            title: getDisplayName(context),
+            help: getHelp(context),
+          ),
+          trailing: stackValue || value == null
+              ? null
+              : ConstrainedBox(
+                  constraints: BoxConstraints(
+                    maxWidth: constraints.maxWidth * .4,
+                  ),
+                  child: value,
+                ),
+          subtitle: stackValue && value != null
+              ? Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [if (description != null) Text(description), value],
+                )
+              : description == null
+              ? null
+              : Text(description),
+          focusNode: focusNode,
+          autofocus: autofocus,
+          selected: selected,
+          onTap: () => _openSheet(context, state),
+        );
+      },
+    );
+  }
+
+  Future<void> _openSheet(BuildContext parentContext, S state) {
+    var selection = Set<V>.of(read(state));
+    return showLeapBottomSheet<void>(
+      context: parentContext,
+      titleBuilder: (context) => Text(getDisplayName(context)),
+      childrenBuilder: (context) => [
+        StatefulBuilder(
+          builder: (sheetContext, setState) => Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              for (final option in options)
+                CheckboxListTile(
+                  secondary: option.leadingBuilder?.call(sheetContext),
+                  title: _SettingsLeapTitle(
+                    title: option.getDisplayName(sheetContext),
+                    help: option.getHelp(sheetContext),
+                  ),
+                  subtitle: switch (option.getDescription(sheetContext)) {
+                    final description? => Text(description),
+                    null => null,
+                  },
+                  value: _isSelected(selection, option.value),
+                  onChanged: (checked) {
+                    final next = Set<V>.of(selection);
+                    next.removeWhere(
+                      (value) =>
+                          optionEquals?.call(value, option.value) ??
+                          value == option.value,
+                    );
+                    if (checked == true) next.add(option.value);
+                    setState(() => selection = next);
+                    write(parentContext, Set<V>.unmodifiable(next));
+                  },
+                ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
 final class SettingsLeapEnumSetting<S, V> extends SettingsLeapSetting<S> {
   const SettingsLeapEnumSetting({
     super.id,

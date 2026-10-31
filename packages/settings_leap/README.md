@@ -7,7 +7,7 @@
 * 🚀 Model settings as a tree of pages, sections, and entries
 * 🔎 Search pages, sections, descriptions, and custom keywords
 * 🎨 Keep full control over localization, icons, actions, and custom page bodies
-* 🧩 Use built-in boolean, enum, list, action, and custom settings
+* 🧩 Use built-in boolean, enum, list, multi-select, action, and custom settings
 * 📱 Responsive Material layout for compact and wide screens
 
 ## Getting started
@@ -159,6 +159,27 @@ SettingsLeapListSetting<AppSettings, String>(
   write: (context, value) {
     // Update your app state here.
   },
+);
+```
+
+## Multiple selections
+
+Use `SettingsLeapMultiSelectSetting` for independent options. Its checkbox sheet
+stays open while selecting options, and supports an empty selection. Each option
+is searchable and points back to its owning setting.
+
+```dart
+SettingsLeapMultiSelectSetting<AppSettings, String>(
+  id: 'controls',
+  displayName: (context) => 'Camera controls',
+  options: [
+    SettingsLeapOption(id: 'slider', value: 'slider', displayName: (context) => 'Slider'),
+    SettingsLeapOption(id: 'input', value: 'input', displayName: (context) => 'Text field'),
+    SettingsLeapOption(id: 'buttons', value: 'buttons', displayName: (context) => 'Buttons'),
+  ],
+  read: (state) => state.controls,
+  write: (context, values) { /* Update your app state. */ },
+  emptySelectionLabel: (context) => 'Reset only',
 );
 ```
 

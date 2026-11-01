@@ -53,6 +53,87 @@ void main() {
       );
     });
 
+    test(
+      'reports nested progress without additional filesystem requests',
+      () async {
+        final updates = <SyncProgress>[];
+        final subscription = fileSystem.progressStream.listen(updates.add);
+        addTearDown(subscription.cancel);
+        final atFile = Completer<void>();
+        final resume = Completer<void>();
+        addTearDown(() {
+          if (!resume.isCompleted) resume.complete();
+        });
+        fileSystem.beforeSyncFile = (path) async {
+          if (path != '/projects/archive/2026/notes.bfly') return;
+          if (!atFile.isCompleted) atFile.complete();
+          await resume.future;
+        };
+
+        final syncing = fileSystem.fullSync(
+          paths: [
+            'projects',
+            '/projects/archive',
+            'projects/archive/2026/notes.bfly',
+          ],
+        );
+        await atFile.future;
+        expect(fileSystem.currentProgress.isRunning, true);
+        expect(
+          fileSystem.currentProgress.currentFile,
+          '/projects/archive/2026/notes.bfly',
+        );
+        expect(fileSystem.currentProgress.totalFiles, 4);
+        resume.complete();
+        final result = await syncing;
+        await Future<void>.delayed(Duration.zero);
+        final fetches = fileSystem.fetchCount;
+        final metadataReads = fileSystem.metadataReadCount;
+
+        expect(result.results, hasLength(4));
+        expect(fileSystem.currentProgress.processedFiles, 4);
+        expect(fileSystem.currentProgress.currentFile, isNull);
+        expect(fileSystem.currentProgress.isRunning, false);
+        expect(
+          updates.any(
+            (p) =>
+                p.isRunning &&
+                p.processedFiles > 0 &&
+                p.processedFiles < p.totalFiles,
+          ),
+          true,
+        );
+
+        // Compare with the existing recursive traversal from the same empty cache.
+        await fileSystem.clearCachedContent();
+        fileSystem.beforeSyncFile = null;
+        fileSystem.fetchCount = 0;
+        fileSystem.metadataReadCount = 0;
+        await fileSystem.syncPath('/projects');
+        expect(fetches, fileSystem.fetchCount);
+        expect(metadataReads, fileSystem.metadataReadCount);
+      },
+    );
+
+    test('reports a failed nested transfer and continues syncing', () async {
+      const failedPath = '/projects/archive/2026/notes.bfly';
+      await fileSystem.cacheContent(failedPath, Uint8List.fromList([1]));
+      fileSystem.addFile('projects/next.bfly', Uint8List.fromList([2]));
+      fileSystem.uploadErrorPaths.add(failedPath);
+
+      final result = await fileSystem.fullSync();
+
+      expect(result.failureCount, 1);
+      expect(
+        result.results.any((r) => r.path == '/projects/next.bfly' && r.success),
+        true,
+      );
+      expect(fileSystem.currentProgress.errors, 1);
+      expect(fileSystem.currentProgress.processedFiles, 5);
+      expect(fileSystem.currentProgress.totalFiles, 5);
+      expect(fileSystem.currentProgress.isRunning, false);
+    });
+
     test('uses cached directories immediately after going offline', () async {
       await fileSystem.cacheContent(
         'projects/cached.bfly',
@@ -179,6 +260,9 @@ class _FakeRemoteFileSystem extends RemoteFileSystem {
   bool _initialized = false;
   NetworkException? fetchError;
   int fetchCount = 0;
+  int metadataReadCount = 0;
+  final uploadErrorPaths = <String>{};
+  Future<void> Function(String path)? beforeSyncFile;
 
   @override
   final RemoteStorage storage;
@@ -253,11 +337,22 @@ class _FakeRemoteFileSystem extends RemoteFileSystem {
   }
 
   @override
-  Future<DateTime?> getRemoteFileModified(String path) async =>
-      DateTime(2026, 4, 28);
+  Future<DateTime?> getRemoteFileModified(String path) async {
+    metadataReadCount++;
+    return DateTime(2026, 4, 28);
+  }
+
+  @override
+  Future<SyncFile> getSyncFile(String path) async {
+    await beforeSyncFile?.call(normalizePath(path));
+    return super.getSyncFile(path);
+  }
 
   @override
   Future<void> uploadFile(String path, Uint8List data) async {
+    if (uploadErrorPaths.contains(normalizePath(path))) {
+      throw StateError('Upload failed');
+    }
     addFile(path, data);
   }
 

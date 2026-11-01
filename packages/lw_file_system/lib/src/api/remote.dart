@@ -64,6 +64,15 @@ class NetworkException implements Exception {
 
 class NotModifiedException implements Exception {}
 
+class _FullSyncProgress {
+  final Set<String> paths;
+  final visited = <String>{};
+  int processedFiles = 0;
+  int errors = 0;
+
+  _FullSyncProgress(Iterable<String> paths) : paths = paths.toSet();
+}
+
 abstract class RemoteFileSystem extends DirectoryFileSystem {
   @override
   RemoteStorage get storage;
@@ -482,6 +491,8 @@ abstract class RemoteFileSystem extends DirectoryFileSystem {
   /// Stream controller for sync events
   final _syncEventController = BehaviorSubject<SyncEvent>();
 
+  _FullSyncProgress? _fullSyncProgress;
+
   /// Progress controller for sync progress updates
   final _progressController = BehaviorSubject<SyncProgress>.seeded(
     const SyncProgress(),
@@ -734,6 +745,42 @@ abstract class RemoteFileSystem extends DirectoryFileSystem {
     ConflictResolution conflictResolution = ConflictResolution.keepBoth,
     bool recursive = true,
   }) async {
+    final progress = _fullSyncProgress;
+    if (progress == null) {
+      return _syncPath(
+        path,
+        conflictResolution: conflictResolution,
+        recursive: recursive,
+      );
+    }
+    path = normalizePath(path);
+    if (!progress.visited.add(path)) return [];
+    progress.paths.add(path);
+    _updateFullSyncProgress(progress, currentFile: path);
+    _syncEventController.add(
+      SyncEvent(
+        type: SyncEventType.fileStarted,
+        path: path,
+        progress: progress.processedFiles / progress.paths.length,
+      ),
+    );
+    try {
+      return await _syncPath(
+        path,
+        conflictResolution: conflictResolution,
+        recursive: recursive,
+      );
+    } finally {
+      progress.processedFiles++;
+      _updateFullSyncProgress(progress, currentFile: path);
+    }
+  }
+
+  Future<List<SyncResult>> _syncPath(
+    String path, {
+    required ConflictResolution conflictResolution,
+    required bool recursive,
+  }) async {
     final results = <SyncResult>[];
     var syncFile = await getSyncFile(path);
     RawFileSystemEntity? downloadedAsset;
@@ -803,13 +850,18 @@ abstract class RemoteFileSystem extends DirectoryFileSystem {
         break;
 
       case FileSyncStatus.conflict:
-        results.add(
-          await _resolveConflict(
-            path,
-            conflictResolution,
-            remoteModified: syncFile.remoteLastModified,
-          ),
-        );
+        final result = _fullSyncProgress == null
+            ? await _resolveConflict(
+                path,
+                conflictResolution,
+                remoteModified: syncFile.remoteLastModified,
+              )
+            : await _handleConflictWithResolver(
+                path,
+                syncFile,
+                conflictResolution,
+              );
+        if (result != null) results.add(result);
         break;
 
       case FileSyncStatus.offline:
@@ -822,6 +874,11 @@ abstract class RemoteFileSystem extends DirectoryFileSystem {
           ),
         );
         break;
+    }
+
+    final progress = _fullSyncProgress;
+    if (progress != null) {
+      progress.errors += results.where((result) => !result.success).length;
     }
 
     // Handle recursive sync for directories
@@ -844,6 +901,10 @@ abstract class RemoteFileSystem extends DirectoryFileSystem {
         }
       }
 
+      if (progress != null) {
+        progress.paths.addAll(childPaths.map(normalizePath));
+        _updateFullSyncProgress(progress, currentFile: path);
+      }
       for (final childPath in childPaths) {
         results.addAll(
           await syncPath(
@@ -933,100 +994,64 @@ abstract class RemoteFileSystem extends DirectoryFileSystem {
     return '$nameWithoutExt (conflict $timestamp)$ext';
   }
 
-  /// Perform a full sync of all cached paths
+  void _updateFullSyncProgress(
+    _FullSyncProgress progress, {
+    String? currentFile,
+    bool isRunning = true,
+  }) {
+    _progressController.add(
+      SyncProgress(
+        totalFiles: progress.paths.length,
+        processedFiles: progress.processedFiles,
+        currentFile: currentFile,
+        isRunning: isRunning,
+        pendingConflicts: _pendingConflicts.length,
+        errors: progress.errors,
+      ),
+    );
+  }
+
+  /// Perform a full sync of all pinned paths and their descendants.
   ///
   /// If [paths] is provided, only those paths will be synced.
-  /// Otherwise, all cached paths will be synced.
+  /// Descendants are counted as the sync discovers them, without a separate scan.
   Future<FullSyncResult> fullSync({
     List<String>? paths,
     ConflictResolution conflictResolution = ConflictResolution.skip,
   }) async {
     final startTime = DateTime.now();
     final allResults = <SyncResult>[];
-    List<String> pathsToSync;
-    if (paths != null) {
-      pathsToSync = paths;
-    } else {
-      pathsToSync = getPinnedPaths();
-    }
-
-    _syncEventController.add(const SyncEvent(type: SyncEventType.started));
+    final pathsToSync = (paths ?? getPinnedPaths()).map(normalizePath).toSet();
+    final progress = _FullSyncProgress(pathsToSync);
+    _fullSyncProgress = progress;
     _pendingConflicts.clear();
+    _syncEventController.add(const SyncEvent(type: SyncEventType.started));
+    _updateFullSyncProgress(progress);
 
-    _progressController.add(
-      SyncProgress(
-        totalFiles: pathsToSync.length,
-        processedFiles: 0,
-        isRunning: true,
-        isPaused: false,
-        pendingConflicts: 0,
-        errors: 0,
-      ),
-    );
-
-    for (var i = 0; i < pathsToSync.length; i++) {
-      final path = pathsToSync[i];
-      _syncEventController.add(
-        SyncEvent(
-          type: SyncEventType.fileStarted,
-          path: path,
-          progress: i / pathsToSync.length,
-        ),
-      );
-
-      _progressController.add(
-        _progressController.value.copyWith(
-          currentFile: path,
-          processedFiles: i,
-        ),
-      );
-
-      try {
-        final syncFile = await getSyncFile(path);
-
-        if (syncFile.status == FileSyncStatus.conflict) {
-          final result = await _handleConflictWithResolver(
-            path,
-            syncFile,
-            conflictResolution,
+    try {
+      for (final path in pathsToSync) {
+        try {
+          allResults.addAll(
+            await syncPath(path, conflictResolution: conflictResolution),
           );
-          if (result != null) {
-            allResults.add(result);
-          }
-        } else {
-          final results = await syncPath(
-            path,
-            conflictResolution: conflictResolution,
+        } catch (error) {
+          allResults.add(
+            SyncResult(
+              path: path,
+              action: SyncAction.none,
+              success: false,
+              error: error.toString(),
+            ),
           );
-          allResults.addAll(results);
+          progress.errors++;
+          _updateFullSyncProgress(progress, currentFile: path);
         }
-      } catch (e) {
-        allResults.add(
-          SyncResult(
-            path: path,
-            action: SyncAction.none,
-            success: false,
-            error: e.toString(),
-          ),
-        );
-        _progressController.add(
-          _progressController.value.copyWith(
-            errors: _progressController.value.errors + 1,
-          ),
-        );
       }
+    } finally {
+      _fullSyncProgress = null;
+      _updateFullSyncProgress(progress, isRunning: false);
+      _syncEventController.add(const SyncEvent(type: SyncEventType.completed));
     }
-
-    _syncEventController.add(const SyncEvent(type: SyncEventType.completed));
-
-    _progressController.add(
-      _progressController.value.copyWith(
-        isRunning: false,
-        processedFiles: pathsToSync.length,
-        currentFile: null,
-        pendingConflicts: _pendingConflicts.length,
-      ),
-    );
 
     return FullSyncResult(
       results: allResults,
@@ -1724,7 +1749,7 @@ class SyncConflict {
 
 /// Current sync progress information
 class SyncProgress {
-  /// Total number of files to sync
+  /// Number of known paths to sync; grows as subdirectories are discovered.
   final int totalFiles;
 
   /// Number of files processed so far

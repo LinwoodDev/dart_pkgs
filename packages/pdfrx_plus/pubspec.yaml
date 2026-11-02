@@ -1,0 +1,19 @@
+name: pdfrx_plus
+description: PDFium object editing, annotations and page composition for pdfrx.
+version: 0.1.0
+environment:
+  sdk: ^3.13.0
+resolution: workspace
+dependencies:
+  pdfrx_engine: ^0.9.0
+  pdfium_dart: ^0.4.1
+  ffi: ^2.2.0
+  synchronized: ^3.4.0
+  web: ^1.1.1
+dev_dependencies:
+  test: ^1.29.0
+  lints: ^6.0.0
+flutter:
+  assets:
+    - assets/pdfium_client.js
+    - assets/pdfrx_plus_worker.js

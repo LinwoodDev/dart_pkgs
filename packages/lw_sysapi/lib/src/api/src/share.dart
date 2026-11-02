@@ -1,24 +1,35 @@
 import 'dart:typed_data';
 
 import 'package:share_plus/share_plus.dart';
+import 'package:mime/mime.dart';
+
+import '../../files/file_dialog_models.dart';
 
 Future<void> exportUsingShare({
   required Uint8List bytes,
   required String fileName,
-  required String fileExtension,
-  required String mimeType,
-  required String label,
+  String? fileExtension,
+  String? mimeType,
+  String? label,
 }) async {
+  final extension = resolveFileExtension(
+    fileName: fileName,
+    fileExtension: fileExtension,
+  );
+  final name = extension == null
+      ? fileName
+      : withFileExtension(fileName, extension);
   await SharePlus.instance.share(
     ShareParams(
       files: [
         XFile.fromData(
           bytes,
-          mimeType: mimeType,
-          name: '$fileName.$fileExtension',
+          mimeType:
+              mimeType ?? lookupMimeType(name) ?? 'application/octet-stream',
+          name: name,
         ),
       ],
-      fileNameOverrides: ['$fileName.$fileExtension'],
+      fileNameOverrides: [name],
       downloadFallbackEnabled: true,
       title: label,
     ),

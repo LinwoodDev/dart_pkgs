@@ -3,6 +3,7 @@ import FlutterMacOS
 
 public class SwiftLwSysapiPlugin: NSObject, FlutterPlugin {
   private weak var view: NSView?
+  private var fileDialogs: LwSysapiFileDialogs?
   private var dropView: LwSysapiDropView?
 
   deinit { dropView?.removeFromSuperview() }
@@ -24,6 +25,7 @@ public class SwiftLwSysapiPlugin: NSObject, FlutterPlugin {
     )
     let plugin = SwiftLwSysapiPlugin()
     plugin.view = registrar.view
+    plugin.fileDialogs = LwSysapiFileDialogs(view: registrar.view)
     registrar.addMethodCallDelegate(plugin, channel: channel)
     let dropChannel = FlutterMethodChannel(name: "linwood.dev/lw_sysapi/drop", binaryMessenger: registrar.messenger)
     if let view = registrar.view {
@@ -45,6 +47,7 @@ public class SwiftLwSysapiPlugin: NSObject, FlutterPlugin {
   }
 
   public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
+    if fileDialogs?.handle(call, result: result) == true { return }
     switch call.method {
     case "getDisplayMetrics":
       result(getDisplayMetrics())

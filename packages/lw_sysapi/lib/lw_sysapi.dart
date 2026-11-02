@@ -16,3 +16,5 @@ export 'src/display_metrics.dart';
 export 'src/drop/drop_models.dart';
 export 'src/drop/drop_target.dart';
 export 'src/drop/drop_reader.dart';
+
+export 'src/files/file_dialogs.dart';

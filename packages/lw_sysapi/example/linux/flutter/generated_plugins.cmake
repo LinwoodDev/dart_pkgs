@@ -3,6 +3,7 @@
 #
 
 list(APPEND FLUTTER_PLUGIN_LIST
+  lw_sysapi
   url_launcher_linux
 )
 

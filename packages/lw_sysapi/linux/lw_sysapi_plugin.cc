@@ -2,12 +2,14 @@
 
 #include <gtk/gtk.h>
 #include <cstring>
+#include "linux_file_dialogs.h"
 
 struct _LwSysapiPlugin {
   GObject parent_instance;
   GWeakRef view;
   FlMethodChannel* drop_channel;
   bool drop_enabled;
+  bool file_dialog_open;
 };
 
 typedef struct _LwSysapiPlugin LwSysapiPlugin;
@@ -127,6 +129,10 @@ static FlValue* get_display_metrics(LwSysapiPlugin* self) {
 
 static void method_call_cb(FlMethodChannel*, FlMethodCall* call, gpointer data) {
   auto* self = static_cast<LwSysapiPlugin*>(data);
+  g_autoptr(FlView) view = FL_VIEW(g_weak_ref_get(&self->view));
+  GtkWidget* parent = view ? gtk_widget_get_toplevel(GTK_WIDGET(view)) : nullptr;
+  if (lw_sysapi_handle_file_dialog(call, parent && GTK_IS_WINDOW(parent) ? GTK_WINDOW(parent) : nullptr,
+                                  G_OBJECT(self), &self->file_dialog_open)) return;
   g_autoptr(FlMethodResponse) response = nullptr;
   if (std::strcmp(fl_method_call_get_name(call), "getDisplayMetrics") == 0) {
     g_autoptr(FlValue) metrics = get_display_metrics(self);
@@ -157,6 +163,7 @@ static void lw_sysapi_plugin_init(LwSysapiPlugin* self) {
   g_weak_ref_init(&self->view, nullptr);
   self->drop_channel = nullptr;
   self->drop_enabled = false;
+  self->file_dialog_open = false;
 }
 
 void lw_sysapi_plugin_register_with_registrar(FlPluginRegistrar* registrar) {

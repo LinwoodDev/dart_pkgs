@@ -10,13 +10,13 @@ bool supportsShare() => kIsWeb || !Platform.isLinux;
 bool supportsSave() => kIsWeb || !Platform.isIOS;
 
 Future<void> exportFile({
-  required BuildContext context,
+  BuildContext? context,
   required Uint8List bytes,
   required String fileName,
-  required String fileExtension,
-  required String mimeType,
-  required String uniformTypeIdentifier,
-  required String label,
+  String? fileExtension,
+  String? mimeType,
+  String? uniformTypeIdentifier,
+  String? label,
   bool share = false,
 }) async {
   if (share && supportsShare() || (!share && !supportsSave())) {
@@ -30,12 +30,12 @@ Future<void> exportFile({
   }
   if (supportsSave()) {
     return save.exportFile(
-      bytes,
-      fileName,
-      fileExtension,
-      mimeType,
-      uniformTypeIdentifier,
-      label,
+      bytes: bytes,
+      fileName: fileName,
+      fileExtension: fileExtension,
+      mimeType: mimeType,
+      uniformTypeIdentifier: uniformTypeIdentifier,
+      label: label,
     );
   }
 }

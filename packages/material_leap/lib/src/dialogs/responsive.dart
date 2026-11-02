@@ -1,8 +1,10 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:material_leap/material_leap.dart';
 
-typedef ResponsiveWidgetBuilder =
-    Widget Function(BuildContext context, bool isFullWidth);
+typedef ResponsiveWidgetBuilder = Widget Function(
+  BuildContext context,
+  bool isFullWidth,
+);
 
 class ResponsiveDialog extends StatelessWidget {
   final double breakpoint;

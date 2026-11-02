@@ -11,8 +11,7 @@ import 'widgets.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   if (isWindow) {
-    await windowManager.ensureInitialized();
-    await windowManager.setTitleBarStyle(TitleBarStyle.hidden);
+    WindowManager.instance.getCurrent()?.titleBarStyle = TitleBarStyle.hidden;
   }
   runApp(const MyApp());
 }
@@ -64,10 +63,11 @@ class _MyAppState extends State<MyApp> {
             title: const Text('Material Leap Demo'),
             actions: [
               IconButton(
-                onPressed: () => setState(() => _themeMode =
-                    ThemeMode.light == _themeMode
-                        ? ThemeMode.dark
-                        : ThemeMode.light),
+                onPressed: () => setState(
+                  () => _themeMode = ThemeMode.light == _themeMode
+                      ? ThemeMode.dark
+                      : ThemeMode.light,
+                ),
                 tooltip: _themeMode == ThemeMode.light
                     ? 'Use dark theme'
                     : 'Use light theme',

@@ -10,6 +10,7 @@
 #include <cstdint>
 #include <string>
 #include "drop_target.h"
+#include "windows_file_dialogs.h"
 
 namespace {
 
@@ -22,7 +23,14 @@ class LwSysapiPlugin : public flutter::Plugin {
             &flutter::StandardMethodCodec::GetInstance())) {
     channel_->SetMethodCallHandler(
         [this](const auto& call, auto result) {
-          if (call.method_name() == "getDisplayMetrics") {
+          if (call.method_name() == "pickFiles" || call.method_name() == "pickDirectory" ||
+              call.method_name() == "getSavePath") {
+            if (file_dialog_open_) { result->Error("dialog_in_progress", "A file dialog is already open"); return; }
+            file_dialog_open_ = true;
+            const HWND owner = registrar_->GetView() ? GetAncestor(registrar_->GetView()->GetNativeWindow(), GA_ROOT) : nullptr;
+            LwSysapiFileDialog(call, std::move(result), owner);
+            file_dialog_open_ = false;
+          } else if (call.method_name() == "getDisplayMetrics") {
             result->Success(GetDisplayMetrics());
           } else {
             result->NotImplemented();
@@ -77,6 +85,7 @@ class LwSysapiPlugin : public flutter::Plugin {
     return flutter::EncodableValue(metrics);
   }
 
+  bool file_dialog_open_ = false;
   flutter::PluginRegistrarWindows* registrar_;
   std::unique_ptr<flutter::MethodChannel<flutter::EncodableValue>> channel_;
   std::unique_ptr<flutter::MethodChannel<flutter::EncodableValue>> drop_channel_;

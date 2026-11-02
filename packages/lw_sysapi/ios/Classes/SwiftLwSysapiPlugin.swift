@@ -3,6 +3,7 @@ import UIKit
 
 public class SwiftLwSysapiPlugin: NSObject, FlutterPlugin {
   private var dropDelegate: LwSysapiDropDelegate?
+  private var fileDialogs: LwSysapiFileDialogs?
   private let defaultTypes = [
     "image/png", "image/jpeg", "image/gif", "image/webp", "image/tiff",
     "image/bmp", "image/svg+xml", "application/pdf", "text/plain",
@@ -19,6 +20,7 @@ public class SwiftLwSysapiPlugin: NSObject, FlutterPlugin {
       binaryMessenger: registrar.messenger()
     )
     let plugin = SwiftLwSysapiPlugin()
+    plugin.fileDialogs = LwSysapiFileDialogs(viewController: registrar.viewController)
     registrar.addMethodCallDelegate(plugin, channel: channel)
     if let view = registrar.viewController?.view {
       plugin.dropDelegate = LwSysapiDropDelegate(view: view,
@@ -27,6 +29,7 @@ public class SwiftLwSysapiPlugin: NSObject, FlutterPlugin {
   }
 
   public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
+    if fileDialogs?.handle(call, result: result) == true { return }
     switch call.method {
     case "writeClipboard":
       guard

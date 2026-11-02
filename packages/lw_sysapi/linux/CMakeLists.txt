@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.10)
 project(lw_sysapi LANGUAGES CXX)
 
 set(PLUGIN_NAME "lw_sysapi_plugin")
-add_library(${PLUGIN_NAME} SHARED "lw_sysapi_plugin.cc")
+add_library(${PLUGIN_NAME} SHARED "lw_sysapi_plugin.cc" "linux_file_dialogs.cc")
 apply_standard_settings(${PLUGIN_NAME})
 set_target_properties(${PLUGIN_NAME} PROPERTIES
   CXX_VISIBILITY_PRESET hidden

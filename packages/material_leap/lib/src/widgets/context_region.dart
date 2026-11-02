@@ -2,16 +2,18 @@ import 'package:flutter/foundation.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:material_leap/material_leap.dart';
 
-typedef ContextRegionChildBuilder =
-    Widget Function(
-      BuildContext context,
-      Widget button,
-      MenuController controller,
-    );
-typedef ContextRegionChildrenBuidler =
-    List<ContextMenuButtonItem>? Function(BuildContext context);
-typedef ContextRegionButtonBuilder =
-    Widget Function(BuildContext context, MenuController controller);
+typedef ContextRegionChildBuilder = Widget Function(
+  BuildContext context,
+  Widget button,
+  MenuController controller,
+);
+typedef ContextRegionChildrenBuidler = List<ContextMenuButtonItem>? Function(
+  BuildContext context,
+);
+typedef ContextRegionButtonBuilder = Widget Function(
+  BuildContext context,
+  MenuController controller,
+);
 
 class ContextRegion extends StatefulWidget {
   final ContextRegionChildBuilder builder;

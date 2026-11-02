@@ -8,7 +8,6 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
-import androidx.core.app.ActivityCompat.startActivityForResult
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
@@ -17,8 +16,6 @@ import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
 import io.flutter.plugin.common.PluginRegistry.ActivityResultListener
-import java.io.IOException
-import java.io.OutputStream
 
 
 /** LwSysapiPlugin */
@@ -28,15 +25,14 @@ class LwSysapiPlugin: FlutterPlugin, MethodCallHandler, ActivityResultListener, 
   /// This local reference serves to register the plugin with the Flutter Engine and unregister it
   /// when the Flutter Engine is detached from the Activity
   private lateinit var channel : MethodChannel
-  private val SAVE_REQUEST_CODE = 77777
-  private var saveData: ByteArray? = null
-  private var saveResult: MethodChannel.Result? = null
+  private var fileDialogs: LwSysapiFileDialogs? = null
   private var act: Activity? = null
   private var context: Context? = null
   private var dropTarget: LwSysapiDropTarget? = null
 
   override fun onAttachedToEngine(flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
     context = flutterPluginBinding.applicationContext
+    fileDialogs = LwSysapiFileDialogs(flutterPluginBinding.applicationContext)
     channel = MethodChannel(flutterPluginBinding.binaryMessenger, "linwood.dev/lw_sysapi")
     channel.setMethodCallHandler(this)
     dropTarget = LwSysapiDropTarget(flutterPluginBinding.applicationContext,
@@ -45,33 +41,35 @@ class LwSysapiPlugin: FlutterPlugin, MethodCallHandler, ActivityResultListener, 
   
   override fun onAttachedToActivity(binding: ActivityPluginBinding) {
     act = binding.activity
+    fileDialogs?.activity = binding.activity
     binding.addActivityResultListener(this)
     dropTarget?.attach(binding.activity)
   }
 
   override fun onDetachedFromActivityForConfigChanges() {
     act = null
+    fileDialogs?.activity = null
     dropTarget?.attach(null)
   }
 
   override fun onReattachedToActivityForConfigChanges(binding: ActivityPluginBinding) {
     act = binding.activity
+    fileDialogs?.activity = binding.activity
     binding.addActivityResultListener(this)
     dropTarget?.attach(binding.activity)
   }
 
   override fun onDetachedFromActivity() {
+    fileDialogs?.detach()
     act = null
+    fileDialogs?.activity = null
     dropTarget?.attach(null)
   }
 
   override fun onMethodCall(call: MethodCall, result: Result) {
+    if (fileDialogs?.handle(call, result) == true) return
     if (call.method == "getDisplayMetrics") {
       result.success(getDisplayMetrics())
-    } else if (call.method == "saveFile") {
-      saveResult = result
-      saveData = call.argument("data")
-      saveFile(call.argument("mime")!!, call.argument("name")!!)
     } else if (call.method == "writeClipboard") {
       val mimeType = call.argument<String>("type")
       val data = call.argument<ByteArray>("data")
@@ -111,47 +109,8 @@ class LwSysapiPlugin: FlutterPlugin, MethodCallHandler, ActivityResultListener, 
   }
 
 
-  private fun saveFile(mime: String, fileName: String) {
-    // when you create document, you need to add Intent.ACTION_CREATE_DOCUMENT
-    val intent: Intent = Intent(Intent.ACTION_CREATE_DOCUMENT)
-
-    // filter to only show openable items.
-    intent.addCategory(Intent.CATEGORY_OPENABLE)
-
-    // Create a file with the requested Mime type
-    intent.setType(mime)
-    intent.putExtra(Intent.EXTRA_TITLE, fileName)
-
-    act?.let { startActivityForResult(it, intent, SAVE_REQUEST_CODE, null) }
-  }
-
-  @Override
-  override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?): Boolean {
-    if (requestCode == SAVE_REQUEST_CODE) {
-      when (resultCode) {
-        Activity.RESULT_OK -> data?.data?.let { saveInFile(it) } //data.getData() is Uri
-        Activity.RESULT_CANCELED -> saveResult?.success(false)
-      }
-      return true
-    }
-    return false
-  }
-
-  private fun saveInFile(uri: Uri) {
-    try {
-      val outputStream = act?.contentResolver?.openOutputStream(uri)
-      if (outputStream == null) {
-        saveResult?.success(false)
-        return
-      }
-      outputStream.write(saveData)
-      outputStream.flush()
-      outputStream.close()
-      saveResult?.success(true)
-    } catch (e: IOException) {
-      saveResult?.error("ERROR", "Unable to write", null)
-    }
-  }
+  override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?): Boolean =
+    fileDialogs?.onActivityResult(requestCode, resultCode, data) ?: false
 
   private fun writeClipboard(mimeType: String, data: ByteArray): Boolean {
     val currentContext = context ?: return false
@@ -245,6 +204,8 @@ class LwSysapiPlugin: FlutterPlugin, MethodCallHandler, ActivityResultListener, 
   }
 
   override fun onDetachedFromEngine(binding: FlutterPlugin.FlutterPluginBinding) {
+    fileDialogs?.close()
+    fileDialogs = null
     dropTarget?.dispose()
     dropTarget = null
     channel.setMethodCallHandler(null)

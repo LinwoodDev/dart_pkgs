@@ -138,8 +138,9 @@ class WindowFreeSpace<
         }
         return GestureDetector(
           child: DragToMoveArea(child: Container(color: Colors.transparent)),
-          onSecondaryTap: () => windowManager.popUpWindowMenu(),
-          onLongPress: () => windowManager.popUpWindowMenu(),
+          onLongPressStart: (details) => WindowManager.instance
+              .getCurrent()
+              ?.showSystemMenu(details.globalPosition.toNative()),
         );
       },
     );
@@ -170,56 +171,50 @@ class _WindowButtonsState<
   C extends LeapSettingsBlocBaseMixin<M>,
   M extends LeapSettings
 >
-    extends State<WindowButtons<C, M>>
-    with WindowListener {
+    extends State<WindowButtons<C, M>> {
+  Window? _window;
+  ListenerId? _listener;
   bool maximized = false, alwaysOnTop = false, fullScreen = false;
 
   @override
   void initState() {
-    if (!kIsWeb && isWindow) {
-      windowManager.addListener(this);
-    }
     super.initState();
-    updateStates();
+    if (isWindow) {
+      _window = WindowManager.instance.getCurrent();
+      _listener = _window?.addListener(_onWindowEvent);
+      updateStates();
+    }
   }
 
   @override
   void dispose() {
-    windowManager.removeListener(this);
+    final listener = _listener;
+    if (listener != null) _window?.removeListener(listener);
+    _window?.dispose();
     super.dispose();
   }
 
-  Future<void> updateStates() async {
-    final nextMaximized = await windowManager.isMaximized();
-    final nextAlwaysOnTop = await windowManager.isAlwaysOnTop();
-    final nextFullScreen = await windowManager.isFullScreen();
-    if (mounted) {
-      setState(() {
-        maximized = nextMaximized;
-        alwaysOnTop = nextAlwaysOnTop;
-        fullScreen = nextFullScreen;
-      });
+  void updateStates() {
+    final window = _window;
+    if (!mounted || window == null) return;
+    setState(() {
+      maximized = window.isMaximized;
+      alwaysOnTop = window.isAlwaysOnTop;
+      fullScreen = window.isFullScreen;
+    });
+  }
+
+  void _onWindowEvent(WindowEvent event) {
+    switch (event) {
+      case WindowMaximizedEvent() ||
+          WindowRestoredEvent() ||
+          WindowEnteredFullScreenEvent() ||
+          WindowExitedFullScreenEvent() ||
+          WindowPropertyChangedEvent(property: WindowProperty.alwaysOnTop):
+        updateStates();
+      default:
+        break;
     }
-  }
-
-  @override
-  void onWindowUnmaximize() {
-    if (mounted) setState(() => maximized = false);
-  }
-
-  @override
-  void onWindowMaximize() {
-    if (mounted) setState(() => maximized = true);
-  }
-
-  @override
-  void onWindowEnterFullScreen() {
-    if (mounted) setState(() => fullScreen = true);
-  }
-
-  @override
-  void onWindowLeaveFullScreen() {
-    if (mounted) setState(() => fullScreen = false);
   }
 
   @override
@@ -257,7 +252,7 @@ class _WindowButtonsState<
                       icon: const PhosphorIcon(PhosphorIconsLight.minus),
                       tooltip: localizations.minimize,
                       style: _windowButtonStyle(context),
-                      onPressed: () => windowManager.minimize(),
+                      onPressed: () => _window?.minimize(),
                     ),
                     MenuAnchor(
                       builder: (context, controller, child) => GestureDetector(
@@ -277,9 +272,15 @@ class _WindowButtonsState<
                                     false,
                                   );
                                 }
-                              : () async => await windowManager.isMaximized()
-                                    ? windowManager.unmaximize()
-                                    : windowManager.maximize(),
+                              : () {
+                                  final window = _window;
+                                  if (window == null) return;
+                                  if (window.isMaximized) {
+                                    window.unmaximize();
+                                  } else {
+                                    window.maximize();
+                                  }
+                                },
                           style: _windowButtonStyle(context),
                         ),
                       ),
@@ -295,9 +296,11 @@ class _WindowButtonsState<
                                 ? localizations.exitAlwaysOnTop
                                 : localizations.alwaysOnTop,
                           ),
-                          onPressed: () async {
-                            await windowManager.setAlwaysOnTop(!alwaysOnTop);
-                            setState(() => alwaysOnTop = !alwaysOnTop);
+                          onPressed: () {
+                            final window = _window;
+                            if (window == null) return;
+                            window.isAlwaysOnTop = !window.isAlwaysOnTop;
+                            updateStates();
                           },
                         ),
                         if (widget.fullScreenMode != FullScreenMode.disabled)
@@ -323,9 +326,7 @@ class _WindowButtonsState<
                       tooltip: localizations.close,
                       color: colorScheme.error,
                       style: _windowButtonStyle(context, isClose: true),
-                      onPressed: () async {
-                        windowManager.close();
-                      },
+                      onPressed: () => _window?.close(),
                     ),
                   ],
                 ],

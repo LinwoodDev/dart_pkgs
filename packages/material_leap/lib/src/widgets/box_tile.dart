@@ -54,9 +54,8 @@ class BoxTile extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
                           IconTheme(
-                            data: Theme.of(
-                              context,
-                            ).iconTheme.copyWith(size: 32),
+                            data: Theme.of(context).iconTheme
+                                .copyWith(size: 32),
                             child: icon,
                           ),
                           Column(

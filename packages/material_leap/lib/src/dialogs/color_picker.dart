@@ -276,9 +276,8 @@ class _ColorPickerState<T> extends State<ColorPicker<T>> {
                               children: [
                                 TextButton(
                                   child: Text(
-                                    MaterialLocalizations.of(
-                                      context,
-                                    ).cancelButtonLabel,
+                                    MaterialLocalizations.of(context)
+                                        .cancelButtonLabel,
                                   ),
                                   onPressed: () => Navigator.of(context).pop(),
                                 ),
@@ -286,9 +285,8 @@ class _ColorPickerState<T> extends State<ColorPicker<T>> {
                                 ElevatedButton(
                                   onPressed: _close,
                                   child: Text(
-                                    MaterialLocalizations.of(
-                                      context,
-                                    ).okButtonLabel,
+                                    MaterialLocalizations.of(context)
+                                        .okButtonLabel,
                                   ),
                                 ),
                               ],

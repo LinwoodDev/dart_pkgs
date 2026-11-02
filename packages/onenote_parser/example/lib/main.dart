@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 
-import 'package:file_picker/file_picker.dart';
+import 'package:lw_sysapi/lw_sysapi.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:onenote_parser/onenote_parser.dart';
 
@@ -36,9 +36,8 @@ class PickedOneNoteFile {
 }
 
 Future<PickedOneNoteFile?> pickOneNoteFile() async {
-  final file = await FilePicker.pickFile(
-    type: FileType.custom,
-    allowedExtensions: const ['one', 'onepkg'],
+  final file = await SystemFileDialogs.pickFile(
+    extensions: const ['one', 'onepkg'],
   );
   if (file == null) return null;
   final bytes = await file.readAsBytes();

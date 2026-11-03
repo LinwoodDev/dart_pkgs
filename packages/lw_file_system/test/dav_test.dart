@@ -383,6 +383,68 @@ void main() {
     },
   );
 
+  // Nextcloud escapes `,` and `'` in hrefs, which Uri keeps in request paths.
+  test('finds a file whose href escapes more characters', () async {
+    final paths = <String>[];
+    final handling = server.forEach((request) async {
+      paths.add(request.uri.path);
+      request.response
+        ..statusCode = HttpStatus.multiStatus
+        ..write('''<?xml version="1.0"?>
+<d:multistatus xmlns:d="DAV:">
+  <d:response>
+    <d:href>/folder/Choice%2c%20workers%27%20notes.bfly</d:href>
+    <d:propstat><d:prop><d:resourcetype/><d:getcontentlength>3</d:getcontentlength></d:prop><d:status>HTTP/1.1 200 OK</d:status></d:propstat>
+  </d:response>
+</d:multistatus>''');
+      await request.response.close();
+    });
+
+    final fileSystem = createFileSystem();
+    final asset = await fileSystem.fetchRemoteAsset(
+      "folder/Choice, workers' notes.bfly",
+      readData: false,
+    );
+    expect(asset, isA<RawFileSystemFile>());
+    expect(asset!.path, "folder/Choice, workers' notes.bfly");
+    expect(
+      await fileSystem.hasAsset("folder/Choice, workers' notes.bfly"),
+      isTrue,
+    );
+    expect(paths.first, "/folder/Choice,%20workers'%20notes.bfly");
+    await server.close();
+    await handling;
+  });
+
+  test('lists a folder whose href escapes more characters', () async {
+    final handling = server.forEach((request) async {
+      request.response
+        ..statusCode = HttpStatus.multiStatus
+        ..write('''<?xml version="1.0"?>
+<d:multistatus xmlns:d="DAV:">
+  <d:response>
+    <d:href>/A%2c%20B/</d:href>
+    <d:propstat><d:prop><d:resourcetype><d:collection/></d:resourcetype></d:prop><d:status>HTTP/1.1 200 OK</d:status></d:propstat>
+  </d:response>
+  <d:response>
+    <d:href>/A%2c%20B/100%25%20it%27s.bfly</d:href>
+    <d:propstat><d:prop><d:resourcetype/></d:prop><d:status>HTTP/1.1 200 OK</d:status></d:propstat>
+  </d:response>
+</d:multistatus>''');
+      await request.response.close();
+    });
+
+    final asset = await createFileSystem().fetchRemoteAsset(
+      'A, B',
+      readData: false,
+    );
+    expect(asset, isA<RawFileSystemDirectory>());
+    expect((asset as RawFileSystemDirectory).assets, hasLength(1));
+    expect(asset.assets.single.path, "/A, B/100% it's.bfly");
+    await server.close();
+    await handling;
+  });
+
   test('metadata can be split across successful propstats', () async {
     final handling = server.forEach((request) async {
       request.response

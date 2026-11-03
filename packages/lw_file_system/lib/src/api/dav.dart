@@ -68,7 +68,20 @@ List<int> _readDavStatusCodes(XmlElement element) {
   return statusCodes;
 }
 
+/// Decodes [path] before comparing it: servers escape characters that [Uri]
+/// keeps in the paths it builds, such as Nextcloud sending `,` as `%2c` and
+/// `'` as `%27`.
+String? _decodeDavPath(String? path) {
+  if (path == null) return null;
+  try {
+    return Uri.decodeFull(path);
+  } on ArgumentError {
+    return path;
+  }
+}
+
 class _DavResponse {
+  /// The decoded path of the href.
   final String? path;
   final List<XmlElement> successfulProps;
   final bool isSuccessful;
@@ -106,7 +119,7 @@ class _DavResponse {
     final hasSuccessfulStatus = statusCodes.any(_isSuccessfulStatus);
     final hasResponseStatus = statusCodes.isNotEmpty;
     return _DavResponse(
-      path: href == null ? null : Uri.tryParse(href)?.path,
+      path: href == null ? null : _decodeDavPath(Uri.tryParse(href)?.path),
       successfulProps: successfulProps,
       isSuccessful: hasResponseStatus
           ? hasSuccessfulStatus
@@ -170,9 +183,10 @@ _DavResponse? _matchingDavResponse(
   Iterable<_DavResponse> responses,
   String fileName,
 ) {
+  final path = _decodeDavPath(fileName);
   _DavResponse? fallback;
   for (final response in responses) {
-    if (response.path != fileName && response.path != '$fileName/') continue;
+    if (response.path != path && response.path != '$path/') continue;
     fallback ??= response;
     if (!response.hasError) return response;
   }
@@ -546,7 +560,12 @@ class DavRemoteDirectoryFileSystem extends RemoteFileSystem {
     }
 
     if (currentMeta.isCollection) {
-      final collectionPath = fileName.endsWith('/') ? fileName : '$fileName/';
+      // The paths of the responses are decoded.
+      final directoryPath = _decodeDavPath(fileName)!;
+      final collectionPath = directoryPath.endsWith('/')
+          ? directoryPath
+          : '$directoryPath/';
+      final rootPath = _decodeDavPath(rootDirectory.path)!;
       final assets = await Future.wait(
         davResponses
             .where(
@@ -559,12 +578,12 @@ class DavRemoteDirectoryFileSystem extends RemoteFileSystem {
               final meta = _DavMetadata.fromProps(item.successfulProps);
 
               final hrefPath = item.path;
-              if (hrefPath == null ||
-                  !hrefPath.startsWith(rootDirectory.path)) {
+              if (hrefPath == null || !hrefPath.startsWith(rootPath)) {
                 return null;
               }
-              var childPath = hrefPath.substring(rootDirectory.path.length);
-              childPath = normalizePath(Uri.decodeComponent(childPath));
+              final childPath = normalizePath(
+                hrefPath.substring(rootPath.length),
+              );
 
               if (meta.isCollection) {
                 return RawFileSystemDirectory(

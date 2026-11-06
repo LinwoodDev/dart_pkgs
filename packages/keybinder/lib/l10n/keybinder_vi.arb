@@ -5,5 +5,8 @@
   "shiftKey": "Shift",
   "altKey": "Alt",
   "metaKey": "Meta",
-  "reset": "Đặt lại"
+  "reset": "Đặt lại",
+  "spaceKey": "Phím cách",
+  "mediaTrackPreviousKey": "Media Previous",
+  "mediaTrackNextKey": "Media Next"
 }

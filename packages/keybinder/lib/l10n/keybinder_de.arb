@@ -5,5 +5,8 @@
   "shiftKey": "Umschalt",
   "altKey": "Alt",
   "metaKey": "Meta",
-  "reset": "Zurücksetzen"
+  "reset": "Zurücksetzen",
+  "spaceKey": "Raum",
+  "mediaTrackPreviousKey": "Media Previous",
+  "mediaTrackNextKey": "Media Next"
 }

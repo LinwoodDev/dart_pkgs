@@ -5,5 +5,8 @@
   "shiftKey": "Vaihto",
   "altKey": "Alt",
   "metaKey": "Meta",
-  "reset": "Palauta"
+  "reset": "Palauta",
+  "spaceKey": "Tila",
+  "mediaTrackPreviousKey": "Media Previous",
+  "mediaTrackNextKey": "Media Next"
 }

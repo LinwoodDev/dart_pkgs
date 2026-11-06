@@ -5,5 +5,8 @@
   "shiftKey": "Verschuiving",
   "altKey": "Alt",
   "metaKey": "Meta",
-  "reset": "Resetten"
+  "reset": "Resetten",
+  "spaceKey": "Spatiebalk",
+  "mediaTrackPreviousKey": "Media Previous",
+  "mediaTrackNextKey": "Media Next"
 }

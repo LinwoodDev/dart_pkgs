@@ -5,5 +5,8 @@
   "shiftKey": "Shift",
   "altKey": "Alt",
   "metaKey": "Meta",
-  "reset": "Visszaállítás"
+  "reset": "Visszaállítás",
+  "spaceKey": "Szóköz",
+  "mediaTrackPreviousKey": "Media Previous",
+  "mediaTrackNextKey": "Media Next"
 }

@@ -5,5 +5,8 @@
   "shiftKey": "Shift",
   "altKey": "Alt",
   "metaKey": "Meta",
-  "reset": "リセット"
+  "reset": "リセット",
+  "spaceKey": "スペース",
+  "mediaTrackPreviousKey": "Media Previous",
+  "mediaTrackNextKey": "Media Next"
 }

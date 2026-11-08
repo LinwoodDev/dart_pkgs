@@ -74,8 +74,7 @@ class _NumberInputState extends State<NumberInput> {
     if (oldWidget.value != widget.value ||
         oldWidget.fractionDigits != widget.fractionDigits ||
         oldWidget.roundValues != widget.roundValues) {
-      if (_focusNode.hasFocus &&
-          oldWidget.fractionDigits == widget.fractionDigits) {
+      if (_focusNode.hasFocus) {
         _value = widget.value;
         return;
       }

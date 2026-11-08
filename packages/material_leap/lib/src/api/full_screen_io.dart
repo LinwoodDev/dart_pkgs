@@ -8,7 +8,7 @@ Future<bool> isFullScreen() async {
   if (Platform.isAndroid || Platform.isIOS) {
     return isFullscreen;
   } else {
-    return WindowManager.instance.getCurrent()?.isFullScreen ?? false;
+    return windowManager.isFullScreen();
   }
 }
 
@@ -29,6 +29,6 @@ Future<void> setFullScreen(bool fullScreen) async {
       isFullscreen = false;
     }
   } else {
-    WindowManager.instance.getCurrent()?.isFullScreen = fullScreen;
+    await windowManager.setFullScreen(fullScreen);
   }
 }

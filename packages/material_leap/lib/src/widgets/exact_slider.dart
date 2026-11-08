@@ -5,6 +5,7 @@ import 'package:material_leap/helpers.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import 'number_input.dart';
+import '../../l10n/leap_localizations.dart';
 
 typedef OnValueChanged = void Function(double value);
 
@@ -19,6 +20,10 @@ class ExactSlider extends StatefulWidget {
 
   /// Maximum width of the editable number field.
   final double inputWidth;
+
+  /// Prefer a single row or a stacked layout. Null keeps the adaptive layout.
+  /// A single row falls back to stacked when the controls would not fit.
+  final bool? inline;
   final OnValueChanged? onChanged, onChangeEnd;
   final Color? color, thumbColor;
   final EdgeInsets? contentPadding;
@@ -50,6 +55,7 @@ class ExactSlider extends StatefulWidget {
     this.contentPadding,
     this.headerWidth,
     this.inputWidth = 80,
+    this.inline,
     this.clampValue = false,
     this.showButtons = false,
     this.decrementIcon,
@@ -79,6 +85,7 @@ class ExactSlider extends StatefulWidget {
     this.contentPadding,
     this.headerWidth,
     this.inputWidth = 80,
+    this.inline,
     this.clampValue = false,
     this.showButtons = false,
     this.decrementIcon,
@@ -187,6 +194,12 @@ class _ExactSliderState extends State<ExactSlider> {
               final resetButton = widget.defaultValue == null
                   ? null
                   : IconButton(
+                      tooltip:
+                          Localizations.of<LeapLocalizations>(
+                            context,
+                            LeapLocalizations,
+                          )?.reset ??
+                          'Reset',
                       onPressed: () {
                         _changeValue(widget.defaultValue ?? widget.value);
                         widget.onChangeEnd?.call(
@@ -198,6 +211,67 @@ class _ExactSliderState extends State<ExactSlider> {
                       ),
                     );
               final width = constraints.maxWidth;
+              if (widget.inline != null) {
+                final fieldWidth =
+                    widget.inputWidth + (widget.showButtons ? 100 : 0);
+                final inlineMinimum =
+                    (header == null ? 0 : (widget.headerWidth ?? 180)) +
+                    fieldWidth +
+                    96 +
+                    (resetButton == null ? 0 : 48) +
+                    (widget.leading == null ? 0 : 48) +
+                    (widget.trailing == null ? 0 : 48) +
+                    12;
+                final input = SizedBox(width: fieldWidth, child: textField);
+                final styledHeader = header == null
+                    ? null
+                    : DefaultTextStyle(style: titleStyle, child: header);
+                final singleRow =
+                    widget.inline! &&
+                    width - (widget.contentPadding?.horizontal ?? 0) >=
+                        inlineMinimum;
+                return Padding(
+                  padding: widget.contentPadding ?? EdgeInsets.zero,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      if (singleRow)
+                        Row(
+                          children: [
+                            ?widget.leading,
+                            if (styledHeader != null) ...[
+                              SizedBox(
+                                width: widget.headerWidth ?? 180,
+                                child: styledHeader,
+                              ),
+                              const SizedBox(width: 8),
+                            ],
+                            Expanded(child: slider),
+                            input,
+                            const SizedBox(width: 4),
+                            ?resetButton,
+                            ?widget.trailing,
+                          ],
+                        )
+                      else ...[
+                        Row(
+                          children: [
+                            ?widget.leading,
+                            Expanded(child: styledHeader ?? const SizedBox()),
+                            input,
+                            const SizedBox(width: 4),
+                            ?resetButton,
+                            ?widget.trailing,
+                          ],
+                        ),
+                        slider,
+                      ],
+                      if (subtitle != null)
+                        DefaultTextStyle(style: subtitleStyle, child: subtitle),
+                    ],
+                  ),
+                );
+              }
               if (width < 300) {
                 return Padding(
                   padding: widget.contentPadding ?? EdgeInsets.zero,

@@ -1,12 +1,20 @@
 import 'package:material_ui/material_ui.dart';
 
-class OffsetListTile extends StatefulWidget {
+import 'number_input.dart';
+
+class OffsetListTile extends StatelessWidget {
   final Offset value;
   final ValueChanged<Offset> onChanged;
   final Widget? title, subtitle, leading, trailing;
   final String? xLabel, yLabel;
   final int fractionDigits;
   final EdgeInsetsGeometry? contentPadding;
+
+  /// Null keeps the standard list tile on wide panels and stacks narrow ones.
+  /// True places the title and both fields on one row; false stacks the title.
+  final bool? inline;
+  final bool trimTrailingZeros;
+  final double spacing, titleSpacing, min, max;
 
   const OffsetListTile({
     super.key,
@@ -20,119 +28,115 @@ class OffsetListTile extends StatefulWidget {
     this.xLabel,
     this.yLabel,
     this.contentPadding,
-  });
+    this.inline,
+    this.trimTrailingZeros = false,
+    this.spacing = 4,
+    this.titleSpacing = 16,
+    this.min = double.negativeInfinity,
+    this.max = double.infinity,
+  }) : assert(fractionDigits >= 0 && fractionDigits <= 20),
+       assert(spacing >= 0 && titleSpacing >= 0),
+       assert(min <= max);
 
-  @override
-  State<OffsetListTile> createState() => _OffsetListTileState();
-}
-
-class _OffsetListTileState extends State<OffsetListTile> {
-  final TextEditingController _xController = TextEditingController(),
-      _yController = TextEditingController();
-
-  @override
-  void initState() {
-    super.initState();
-
-    _updateValue(widget.value);
+  int _digits(double number) {
+    if (!trimTrailingZeros) return fractionDigits;
+    final text = number
+        .toStringAsFixed(fractionDigits)
+        .replaceFirst(RegExp(r'0+$'), '');
+    final point = text.indexOf('.');
+    return point < 0 ? 0 : text.length - point - 1;
   }
 
   @override
-  void dispose() {
-    super.dispose();
-
-    _xController.dispose();
-    _yController.dispose();
-  }
-
-  @override
-  void didUpdateWidget(covariant OffsetListTile oldWidget) {
-    super.didUpdateWidget(oldWidget);
-
-    if (oldWidget.value != widget.value) {
-      final offset = widget.value;
-      final expectedX = _numberToString(offset.dx);
-      final expectedY = _numberToString(offset.dy);
-      if (_xController.text != expectedX) {
-        _xController.text = expectedX;
+  Widget build(BuildContext context) => LayoutBuilder(
+    builder: (context, constraints) {
+      Widget field(bool x) => NumberInput(
+        key: ValueKey(x),
+        value: x ? value.dx : value.dy,
+        fractionDigits: _digits(x ? value.dx : value.dy),
+        roundValues: true,
+        min: min,
+        max: max,
+        label: x ? xLabel ?? 'X' : yLabel ?? 'Y',
+        showButtons: false,
+        updateOnInput: true,
+        onChanged: (number) =>
+            onChanged(x ? Offset(number, value.dy) : Offset(value.dx, number)),
+      );
+      if (inline == null && constraints.maxWidth >= 350) {
+        return ListTile(
+          title: title,
+          subtitle: subtitle,
+          leading: leading,
+          contentPadding: contentPadding,
+          trailing: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (trailing != null) ...[trailing!, const SizedBox(width: 4)],
+              SizedBox(width: 100, child: field(true)),
+              SizedBox(width: spacing),
+              SizedBox(width: 100, child: field(false)),
+            ],
+          ),
+        );
       }
-      if (_yController.text != expectedY) {
-        _yController.text = expectedY;
-      }
-    }
-  }
-
-  String _numberToString(num value) =>
-      value.toStringAsFixed(widget.fractionDigits);
-
-  void _updateValue(Offset value) {
-    final x = _numberToString(value.dx);
-    if (_xController.text != x) _xController.text = x;
-    final y = _numberToString(value.dy);
-    if (_yController.text != y) _yController.text = y;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return ListTile(
-      title: widget.title,
-      subtitle: widget.subtitle,
-      leading: widget.leading,
-      contentPadding: widget.contentPadding,
-      trailing: Row(
-        mainAxisSize: MainAxisSize.min,
+      final fields = Row(
         children: [
-          if (widget.trailing != null) ...[
-            widget.trailing!,
-            const SizedBox(width: 4),
-          ],
-          SizedBox(
-            width: 100,
-            child: TextField(
-              decoration: InputDecoration(
-                labelText: widget.xLabel ?? 'X',
-                filled: true,
-                floatingLabelAlignment: FloatingLabelAlignment.center,
-              ),
-              textAlign: TextAlign.center,
-              keyboardType: const TextInputType.numberWithOptions(
-                decimal: true,
-                signed: true,
-              ),
-              controller: _xController,
-              onChanged: (value) {
-                final dx = double.tryParse(value);
-                if (dx != null) {
-                  widget.onChanged(Offset(dx, widget.value.dy));
-                }
-              },
-            ),
-          ),
-          const SizedBox(width: 4),
-          SizedBox(
-            width: 100,
-            child: TextField(
-              decoration: InputDecoration(
-                labelText: widget.yLabel ?? 'Y',
-                filled: true,
-                floatingLabelAlignment: FloatingLabelAlignment.center,
-              ),
-              textAlign: TextAlign.center,
-              keyboardType: const TextInputType.numberWithOptions(
-                decimal: true,
-                signed: true,
-              ),
-              controller: _yController,
-              onChanged: (value) {
-                final dy = double.tryParse(value);
-                if (dy != null) {
-                  widget.onChanged(Offset(widget.value.dx, dy));
-                }
-              },
-            ),
-          ),
+          Expanded(child: field(true)),
+          SizedBox(width: spacing),
+          Expanded(child: field(false)),
         ],
-      ),
-    );
-  }
+      );
+      final style =
+          ListTileTheme.of(context).titleTextStyle ??
+          Theme.of(context).textTheme.bodyLarge;
+      return Padding(
+        padding:
+            contentPadding ??
+            const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            if (inline == true)
+              Row(
+                children: [
+                  if (leading != null) ...[leading!, const SizedBox(width: 8)],
+                  if (title != null) ...[
+                    DefaultTextStyle.merge(style: style, child: title!),
+                    SizedBox(width: titleSpacing),
+                  ],
+                  Expanded(child: fields),
+                  if (trailing != null) ...[
+                    const SizedBox(width: 4),
+                    trailing!,
+                  ],
+                ],
+              )
+            else ...[
+              if (title != null || leading != null || trailing != null) ...[
+                Row(
+                  children: [
+                    if (leading != null) ...[
+                      leading!,
+                      const SizedBox(width: 8),
+                    ],
+                    Expanded(
+                      child: DefaultTextStyle.merge(
+                        style: style,
+                        child: title ?? const SizedBox(),
+                      ),
+                    ),
+                    ?trailing,
+                  ],
+                ),
+                const SizedBox(height: 8),
+              ],
+              fields,
+            ],
+            if (subtitle != null) ...[const SizedBox(height: 4), subtitle!],
+          ],
+        ),
+      );
+    },
+  );
 }

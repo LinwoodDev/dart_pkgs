@@ -11,7 +11,8 @@ import 'widgets.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   if (isWindow) {
-    WindowManager.instance.getCurrent()?.titleBarStyle = TitleBarStyle.hidden;
+    await windowManager.ensureInitialized();
+    await windowManager.setTitleBarStyle(TitleBarStyle.hidden);
   }
   runApp(const MyApp());
 }

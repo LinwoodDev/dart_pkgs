@@ -36,7 +36,7 @@ dependencies:
   material_leap:
     path: ../
   flutter_bloc: ">=8.1.5 <10.0.0"
-  window_manager: ^0.6.0
+  window_manager: ^0.5.2
   flutter_localizations:
     sdk: flutter
   intl: any

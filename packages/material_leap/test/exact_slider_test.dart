@@ -108,4 +108,74 @@ void main() {
     expect(changed, 2.75);
     expect(ended, 2.75);
   });
+
+  testWidgets('inline layout keeps controls in one compact row', (
+    tester,
+  ) async {
+    double? value;
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: SizedBox(
+            width: 360,
+            child: ExactSlider(
+              inline: true,
+              header: const Text('Quality'),
+              headerWidth: 72,
+              inputWidth: 64,
+              value: 2,
+              min: .1,
+              max: 10,
+              defaultValue: 1,
+              onChanged: (next) => value = next,
+            ),
+          ),
+        ),
+      ),
+    );
+    final center = tester.getCenter(find.text('Quality')).dy;
+    for (final finder in [
+      find.byType(Slider),
+      find.byType(NumberInput),
+      find.byType(IconButton),
+    ]) {
+      expect(tester.getCenter(finder).dy, closeTo(center, 1));
+    }
+    await tester.tap(find.byTooltip('Reset'));
+    await tester.pump();
+    expect(value, 1);
+    expect(tester.takeException(), isNull);
+  });
+
+  for (final inline in [true, false]) {
+    testWidgets('compact layout fits a narrow panel with inline=$inline', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: SizedBox(
+              width: 250,
+              child: ExactSlider(
+                inline: inline,
+                header: const Text('Quality'),
+                headerWidth: 72,
+                inputWidth: 64,
+                defaultValue: 1,
+              ),
+            ),
+          ),
+        ),
+      );
+      expect(
+        tester.getCenter(find.byType(Slider)).dy,
+        greaterThan(tester.getCenter(find.byType(NumberInput)).dy),
+      );
+      expect(
+        tester.getCenter(find.text('Quality')).dy,
+        closeTo(tester.getCenter(find.byType(NumberInput)).dy, 1),
+      );
+      expect(tester.takeException(), isNull);
+    });
+  }
 }

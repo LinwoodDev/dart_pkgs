@@ -13,5 +13,5 @@ dependencies:
   xml: ^7.0.1
 
 dev_dependencies:
-  lints: ^6.0.0
-  test: ^1.25.0
+  lints: ^6.1.0
+  test: ^1.32.0

@@ -1,5 +1,6 @@
 analyzer:
   exclude:
+    - lib/l10n/**
     - build/**
 include: package:flutter_lints/flutter.yaml
 

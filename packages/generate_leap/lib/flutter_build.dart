@@ -536,7 +536,11 @@ class FlutterBuild extends BuildContext {
         platforms.join(','),
       ],
       if (platform == 'ios') '--no-codesign',
-      if (platform == 'web') ...['--wasm', '--no-web-resources-cdn'],
+      if (platform == 'web') ...[
+        '--wasm',
+        '--no-web-resources-cdn',
+        '--no-deprecated-js-interop',
+      ],
       if (options.flag('analyze-size')) '--analyze-size',
       if (options.option('code-size-directory') case final directory?)
         '--code-size-directory=$directory',

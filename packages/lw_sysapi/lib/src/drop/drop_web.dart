@@ -1,12 +1,18 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:js_interop';
-import 'dart:typed_data';
 
 import 'package:flutter/widgets.dart';
 import 'package:web/web.dart' as web;
 
 import '../native/lw_sysapi_base.dart';
+import '../native/lw_sysapi_web.dart'
+    show
+        WebClipboardManager,
+        clipboardTextFallbackPrefix,
+        decodeClipboardTextFallback,
+        isCustomClipboardType,
+        supportsClipboardItemType;
 import 'drop_models.dart';
 
 Stream<SystemDropEvent> createDropEvents() {
@@ -39,29 +45,10 @@ Stream<SystemDropEvent> createDropEvents() {
         ClipboardMimeTypes.text,
       ])
         if (transfer.getData(type) case final value when value.isNotEmpty)
-          (type: type, data: Uint8List.fromList(utf8.encode(value))),
+          (type: type, data: utf8.encode(value)),
     ];
-    final files = [
-      for (var i = 0; i < transfer.files.length; i++) transfer.files.item(i)!,
-    ];
-    final items = <SystemDropItem>[];
     try {
-      for (final file in files) {
-        final buffer = await file.arrayBuffer().toDart;
-        items.add(
-          SystemDropItem(
-            name: file.name,
-            contents: [
-              (
-                type: file.type.isEmpty
-                    ? 'application/octet-stream'
-                    : file.type,
-                data: Uint8List.view(buffer.toDart),
-              ),
-            ],
-          ),
-        );
-      }
+      final items = await _readFiles(transfer.files);
       if (items.isEmpty && contents.isNotEmpty) {
         items.add(SystemDropItem(contents: contents));
       }
@@ -102,4 +89,89 @@ Stream<SystemDropEvent> createDropEvents() {
     },
   );
   return controller.stream;
+}
+
+/// Listens for user-initiated browser paste and returns a function that detaches
+/// the listener. Native platforms leave clipboard handling to their callers.
+/// Files take priority over string representations. [types] orders the string
+/// representations to try. Editable DOM targets retain their normal paste.
+void Function() listenForBrowserPaste({
+  required Iterable<String> types,
+  required bool Function() canPaste,
+  required void Function(Future<List<SystemDropItem>>) onPaste,
+}) {
+  final listener = ((web.ClipboardEvent event) {
+    final transfer = event.clipboardData;
+    if (transfer == null || event.defaultPrevented || !canPaste()) return;
+    final target = event.composedPath().toDart.firstOrNull;
+    if (target.isA<web.HTMLElement>()) {
+      final element = target as web.HTMLElement;
+      if (element.isContentEditable || element.matches('input, textarea')) {
+        return;
+      }
+    }
+    event.preventDefault();
+    onPaste(_readContents(transfer, types, trusted: event.isTrusted));
+  }).toJS;
+  web.window.addEventListener('paste', listener);
+  return () => web.window.removeEventListener('paste', listener);
+}
+
+Future<List<SystemDropItem>> _readContents(
+  web.DataTransfer transfer,
+  Iterable<String> types, {
+  required bool trusted,
+}) async {
+  if (transfer.files.length > 0) return _readFiles(transfer.files);
+  final plainText = transfer.getData(ClipboardMimeTypes.text);
+  for (final type in types) {
+    final value = transfer.getData(type);
+    if (value.isNotEmpty) {
+      return [
+        SystemDropItem(contents: [(type: type, data: utf8.encode(value))]),
+      ];
+    }
+    final prefix = clipboardTextFallbackPrefix(type);
+    if (prefix != null) {
+      final data = decodeClipboardTextFallback(plainText, prefix);
+      if (data != null) {
+        return [
+          SystemDropItem(contents: [(type: type, data: data)]),
+        ];
+      }
+    }
+  }
+  if (!trusted) return [];
+  // Some browsers expose typed ClipboardItems only via the async clipboard API.
+  final customTypes = types
+      .where(
+        (type) =>
+            isCustomClipboardType(type) &&
+            supportsClipboardItemType('web $type'),
+      )
+      .toList();
+  if (customTypes.isEmpty) return [];
+  final content = await WebClipboardManager().getContent(types: customTypes);
+  return content == null
+      ? []
+      : [
+          SystemDropItem(contents: [content]),
+        ];
+}
+
+Future<List<SystemDropItem>> _readFiles(web.FileList files) async {
+  // Take a snapshot while the browser event still gives access to the files.
+  final snapshot = [for (var i = 0; i < files.length; i++) files.item(i)!];
+  return [
+    for (final file in snapshot)
+      SystemDropItem(
+        name: file.name,
+        contents: [
+          (
+            type: file.type.isEmpty ? 'application/octet-stream' : file.type,
+            data: (await file.arrayBuffer().toDart).toDart.asUint8List(),
+          ),
+        ],
+      ),
+  ];
 }

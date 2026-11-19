@@ -29,12 +29,14 @@ extension SystemDropDetailsReader on SystemDropDetails {
     safeMode: safeMode,
     maxBytes: maxBytes,
     timeout: timeout,
+    resolveLinks: !isPaste,
   );
 }
 
 /// Resolves local files, browser image fragments, URI lists and direct bytes.
 /// Alternative representations of one item are consumed only once. A failed
-/// file does not prevent the remaining files from being returned.
+/// file does not prevent the remaining files from being returned. Set
+/// [resolveLinks] to false to preserve clipboard text and read only direct data.
 Future<SystemDropReadResult> readSystemDropItems(
   Iterable<SystemDropItem> items, {
   http.Client? client,
@@ -42,6 +44,7 @@ Future<SystemDropReadResult> readSystemDropItems(
   bool safeMode = true,
   int maxBytes = 32 * 1024 * 1024,
   Duration timeout = const Duration(seconds: 30),
+  bool resolveLinks = true,
 }) async {
   if (maxBytes <= 0 || timeout <= Duration.zero) {
     throw ArgumentError('Drop limits must be positive');
@@ -124,6 +127,7 @@ Future<SystemDropReadResult> readSystemDropItems(
       final file = item.contents
           .where(
             (content) =>
+                !resolveLinks ||
                 item.name != null ||
                 (content.type != ClipboardMimeTypes.html &&
                     content.type != ClipboardMimeTypes.text &&
@@ -134,13 +138,16 @@ Future<SystemDropReadResult> readSystemDropItems(
         contents.add((
           name: item.name,
           content: (
-            type: mimeType(item.name, file.data, file.type),
+            type: resolveLinks
+                ? mimeType(item.name, file.data, file.type)
+                : file.type,
             data: file.data,
           ),
         ));
         continue;
       }
 
+      if (!resolveLinks) continue;
       final uris = <Uri>[
         if (item.uri != null) item.uri!,
         for (final value in item.contents.where(

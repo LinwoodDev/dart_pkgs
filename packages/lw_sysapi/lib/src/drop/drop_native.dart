@@ -4,6 +4,8 @@ import 'package:flutter/services.dart';
 
 import 'drop_models.dart';
 
+export 'drop_stub.dart' show listenForBrowserPaste;
+
 Stream<SystemDropEvent> createDropEvents() {
   const channel = MethodChannel('linwood.dev/lw_sysapi/drop');
   late final StreamController<SystemDropEvent> controller;

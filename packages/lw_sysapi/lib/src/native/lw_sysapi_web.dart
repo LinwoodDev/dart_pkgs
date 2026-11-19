@@ -34,6 +34,28 @@ class SysAPIWeb extends SysAPIPlatform {
   ClipboardManager getClipboardManager() => WebClipboardManager();
 }
 
+bool isCustomClipboardType(String type) => type.startsWith('application/x-');
+
+bool supportsClipboardItemType(String type) {
+  final constructor = html.window.getProperty<JSObject?>('ClipboardItem'.toJS);
+  return constructor?.hasProperty('supports'.toJS).toDart == true &&
+      html.ClipboardItem.supports(type);
+}
+
+String? clipboardTextFallbackPrefix(String type) =>
+    isCustomClipboardType(type) && !supportsClipboardItemType('web $type')
+    ? 'data:$type;base64,'
+    : null;
+
+Uint8List? decodeClipboardTextFallback(String text, String prefix) {
+  if (!text.startsWith(prefix)) return null;
+  try {
+    return base64Decode(text.substring(prefix.length));
+  } on FormatException {
+    return null;
+  }
+}
+
 class WebClipboardManager implements ClipboardManager {
   @override
   Future<ClipboardContent?> getContent({Iterable<String>? types}) async {
@@ -42,27 +64,56 @@ class WebClipboardManager implements ClipboardManager {
 
     try {
       final requestedTypes = types?.toList() ?? ClipboardMimeTypes.defaultTypes;
-      final items = await navigator.clipboard.read().toDart;
-      for (final item in items.toDart) {
-        final availableTypes = item.types.toDart.map((e) => e.toDart).toSet();
-        for (final type in requestedTypes) {
-          if (!availableTypes.contains(type)) continue;
-          final blob = await item.getType(type).toDart;
-          final buffer = await blob.arrayBuffer().toDart;
-          return (type: type, data: Uint8List.view(buffer.toDart));
+      final clipboard = navigator.clipboard;
+      if (clipboard.hasProperty('read'.toJS).toDart) {
+        final items = await clipboard.read().toDart;
+        for (final item in items.toDart) {
+          final available = item.types.toDart.map((e) => e.toDart).toSet();
+          String? fallbackText;
+          for (final type in requestedTypes) {
+            final itemType = available.contains(type) ? type : 'web $type';
+            if (available.contains(itemType)) {
+              final blob = await item.getType(itemType).toDart;
+              final buffer = await blob.arrayBuffer().toDart;
+              return (type: type, data: Uint8List.view(buffer.toDart));
+            }
+            final prefix = clipboardTextFallbackPrefix(type);
+            if (prefix == null ||
+                !available.contains(ClipboardMimeTypes.text)) {
+              continue;
+            }
+            if (fallbackText == null) {
+              final blob = await item.getType(ClipboardMimeTypes.text).toDart;
+              fallbackText = (await blob.text().toDart).toDart;
+            }
+            final data = decodeClipboardTextFallback(fallbackText, prefix);
+            if (data != null) return (type: type, data: data);
+          }
         }
+        return null;
       }
-      if (requestedTypes.contains(ClipboardMimeTypes.text)) {
-        final text = await navigator.clipboard.readText().toDart;
-        return (
-          type: ClipboardMimeTypes.text,
-          data: Uint8List.fromList(utf8.encode(text.toDart)),
-        );
+
+      final textTypes = requestedTypes.where(
+        (type) =>
+            type == ClipboardMimeTypes.text ||
+            clipboardTextFallbackPrefix(type) != null,
+      );
+      if (textTypes.isEmpty) return null;
+      final text = (await clipboard.readText().toDart).toDart;
+      if (text.isEmpty) return null;
+      for (final type in textTypes) {
+        if (type == ClipboardMimeTypes.text) {
+          return (type: type, data: utf8.encode(text));
+        }
+        final prefix = clipboardTextFallbackPrefix(type);
+        if (prefix == null) continue;
+        final data = decodeClipboardTextFallback(text, prefix);
+        if (data != null) return (type: type, data: data);
       }
+      return null;
     } catch (_) {
       return null;
     }
-    return null;
   }
 
   @override
@@ -77,12 +128,22 @@ class WebClipboardManager implements ClipboardManager {
             .toDart;
         return true;
       }
-      if (!html.ClipboardItem.supports(content.type)) return false;
-      final blob = html.Blob(
-        [content.data].jsify() as JSArray<html.BlobPart>,
+      final prefix = clipboardTextFallbackPrefix(content.type);
+      if (prefix != null) {
+        await navigator.clipboard
+            .writeText('$prefix${base64Encode(content.data)}')
+            .toDart;
+        return true;
+      }
+      final itemType = isCustomClipboardType(content.type)
+          ? 'web ${content.type}'
+          : content.type;
+      if (!supportsClipboardItemType(itemType)) return false;
+      final itemData = JSObject();
+      itemData[itemType] = html.Blob(
+        [content.data.toJS].toJS,
         html.BlobPropertyBag(type: content.type),
       );
-      final itemData = {content.type: blob}.jsify()! as JSObject;
       final item = html.ClipboardItem(itemData);
       await navigator.clipboard.write([item].toJS).toDart;
       return true;

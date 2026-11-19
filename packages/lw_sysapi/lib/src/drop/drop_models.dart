@@ -75,11 +75,13 @@ class SystemDropEvent {
 }
 
 class SystemDropDetails {
+  final bool isPaste;
   final Offset localPosition;
   final Offset globalPosition;
   final List<SystemDropItem> items;
 
   const SystemDropDetails({
+    this.isPaste = false,
     required this.localPosition,
     required this.globalPosition,
     required this.items,

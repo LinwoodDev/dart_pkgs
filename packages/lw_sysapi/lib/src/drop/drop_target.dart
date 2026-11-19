@@ -1,13 +1,31 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart';
 import 'package:material_ui/material_ui.dart';
 
 import 'drop_models.dart';
 import 'drop_stub.dart'
     if (dart.library.io) 'drop_native.dart'
     if (dart.library.js_interop) 'drop_web.dart';
+
+/// Whether the browser handles this binding by delivering a paste event.
+bool isBrowserPasteShortcut(ShortcutActivator shortcut) {
+  if (!kIsWeb || shortcut is! SingleActivator || shortcut.alt) return false;
+  if (shortcut.trigger == LogicalKeyboardKey.insert) {
+    return shortcut.shift && !shortcut.control && !shortcut.meta;
+  }
+  final usesMeta = switch (defaultTargetPlatform) {
+    TargetPlatform.macOS || TargetPlatform.iOS => true,
+    _ => false,
+  };
+  return shortcut.trigger == LogicalKeyboardKey.keyV &&
+      (usesMeta
+          ? shortcut.meta && !shortcut.control
+          : shortcut.control && !shortcut.meta);
+}
 
 /// Receives OS/browser drops without changing the system clipboard.
 ///
@@ -19,6 +37,15 @@ class SystemDropTarget extends StatefulWidget {
   final FutureOr<void> Function(SystemDropDetails) onDrop;
   final ValueChanged<bool>? onHover;
   final bool showFeedback;
+
+  /// Enables browser paste for this target. The predicate is checked as the
+  /// event arrives and the position defaults to the center of the target.
+  final ({
+    Iterable<String> types,
+    bool Function() enabled,
+    Offset? Function() localPosition,
+  })?
+  paste;
   final void Function(Object, StackTrace)? onError;
 
   const SystemDropTarget({
@@ -28,6 +55,7 @@ class SystemDropTarget extends StatefulWidget {
     this.enabled = true,
     this.onHover,
     this.showFeedback = false,
+    this.paste,
     this.onError,
   });
 
@@ -94,6 +122,7 @@ void _handleEvent(SystemDropEvent event) {
 class _SystemDropTargetState extends State<SystemDropTarget> {
   bool _hovering = false;
   bool _busy = false;
+  VoidCallback? _stopPaste;
 
   void _hover(bool value) {
     if (_hovering == value || !mounted) return;
@@ -116,16 +145,57 @@ class _SystemDropTargetState extends State<SystemDropTarget> {
     }
   }
 
-  Future<void> _receive(SystemDropDetails details) async {
+  Future<void> _receive(FutureOr<SystemDropDetails?> pending) async {
     if (_busy || !widget.enabled) return;
     setState(() => _busy = true);
     try {
-      await widget.onDrop(details);
+      final details = pending is SystemDropDetails ? pending : await pending;
+      if (mounted && widget.enabled && details != null) {
+        await widget.onDrop(details);
+      }
     } catch (error, stack) {
       if (mounted) _error(error, stack);
     } finally {
       if (mounted) setState(() => _busy = false);
     }
+  }
+
+  void _registerPaste() {
+    _stopPaste?.call();
+    final paste = widget.paste;
+    _stopPaste = paste == null
+        ? null
+        : listenForBrowserPaste(
+            types: paste.types,
+            canPaste: () {
+              if (!widget.enabled ||
+                  _busy ||
+                  ModalRoute.isCurrentOf(context) == false ||
+                  widget.paste?.enabled() != true) {
+                return false;
+              }
+              final box = context.findRenderObject();
+              return box is RenderBox && box.hasSize;
+            },
+            onPaste: _receivePaste,
+          );
+  }
+
+  Future<void> _receivePaste(Future<List<SystemDropItem>> pending) {
+    final box = context.findRenderObject() as RenderBox;
+    final local = widget.paste?.localPosition() ?? box.size.center(Offset.zero);
+    final global = box.localToGlobal(local);
+    return _receive(
+      pending.then((items) {
+        if (items.isEmpty) return null;
+        return SystemDropDetails(
+          isPaste: true,
+          localPosition: local,
+          globalPosition: global,
+          items: items,
+        );
+      }),
+    );
   }
 
   void _register() {
@@ -173,16 +243,19 @@ class _SystemDropTargetState extends State<SystemDropTarget> {
   void initState() {
     super.initState();
     _register();
+    _registerPaste();
   }
 
   @override
   void didUpdateWidget(SystemDropTarget oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.enabled != widget.enabled) _register();
+    if (oldWidget.paste?.types != widget.paste?.types) _registerPaste();
   }
 
   @override
   void dispose() {
+    _stopPaste?.call();
     _unregister();
     super.dispose();
   }

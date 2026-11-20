@@ -29,37 +29,49 @@ void main() {
   });
   tearDown(() async => temp.delete(recursive: true));
 
-  test('global fetch distinguishes device and source-relative paths', () async {
-    final devicePath = '${temp.path}/outside/note.bfly';
-    final absolute = AssetLocation(
-      remote: 'notes',
-      path: devicePath,
-      absolute: true,
-    );
-    final relative = AssetLocation(remote: 'notes', path: devicePath);
-    await system.saveAbsolute(devicePath, Uint8List.fromList([42]));
-    await system.updateFile(devicePath, 7);
+  test(
+    'global fetch distinguishes device and source-relative paths',
+    () async {
+      final devicePath = '${temp.path}/outside/note.bfly';
+      final absolute = AssetLocation(
+        remote: 'notes',
+        path: devicePath,
+        absolute: true,
+      );
+      final relative = AssetLocation(remote: 'notes', path: devicePath);
+      await system.saveAbsolute(devicePath, Uint8List.fromList([42]));
+      await system.updateFile(devicePath, 7);
 
-    final snapshots =
-        await GeneralDirectoryFileSystem.fetchAssetsGlobalSync<int>(
-          [
-            absolute,
-            AssetLocation(remote: 'missing', path: devicePath, absolute: true),
-            AssetLocation(
-              remote: 'notes',
-              path: '${temp.path}/missing',
-              absolute: true,
-            ),
-            relative,
-          ],
-          {'notes': system},
-        ).toList();
+      final snapshots =
+          await GeneralDirectoryFileSystem.fetchAssetsGlobalSync<int>(
+            [
+              absolute,
+              AssetLocation(
+                remote: 'missing',
+                path: devicePath,
+                absolute: true,
+              ),
+              AssetLocation(
+                remote: 'notes',
+                path: '${temp.path}/missing',
+                absolute: true,
+              ),
+              relative,
+            ],
+            {'notes': system},
+          ).toList();
 
-    expect(snapshots.map((files) => files.length), [1, 2]);
-    final files = snapshots.last.cast<FileSystemFile<int>>();
-    expect(files.map((file) => file.location), [absolute, relative]);
-    expect(files.map((file) => file.data), [42, 7]);
-  });
+      expect(snapshots.map((files) => files.length), [1, 2]);
+      final files = snapshots.last.cast<FileSystemFile<int>>();
+      expect(files.map((file) => file.location), [absolute, relative]);
+      expect(files.map((file) => file.data), [42, 7]);
+    },
+    // The source-relative copy of a device path needs a folder named like
+    // the drive, such as "C:", which Windows does not allow.
+    skip: io.Platform.isWindows
+        ? 'a device path cannot be a relative path on Windows'
+        : false,
+  );
 
   test(
     'absolute getAsset supports typed data and metadata-only reads',

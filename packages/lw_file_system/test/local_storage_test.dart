@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lw_file_system/lw_file_system.dart';
 import 'package:lw_file_system/src/api/io.dart';
+import 'package:path/path.dart' as p;
 
 void main() {
   late io.Directory temp;
@@ -42,9 +43,10 @@ void main() {
           getDirectory: (_) async => 'unused',
         ),
       );
+      // Compared normalized: on Windows the system temp path has backslashes.
       expect(
-        io.Directory(await local.getDirectory()).absolute.path,
-        io.Directory(entry.value).absolute.path,
+        p.canonicalize(await local.getDirectory()),
+        p.canonicalize(entry.value),
       );
       await local.updateFile('/note.bfly', Uint8List.fromList([42]));
       expect(await io.File('${entry.value}/note.bfly').readAsBytes(), [42]);
